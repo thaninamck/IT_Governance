@@ -12,9 +12,6 @@ function App() {
         <Routes>
           <Route path='/popup' element={<PopUp/>}/>
 
-
-
-          
         </Routes>
         
        </div>
