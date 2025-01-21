@@ -1,11 +1,10 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
-
-html{
+html {
     font-family: "Montserrat", serif;
     font-optical-sizing: auto;
     font-style: normal;
@@ -28,8 +27,7 @@ html{
     --font-gray: #262E36;
 }
 
-
-body{
+body {
     background-color: white;
     color: var(--font-gray);
     font-size: 16px;
