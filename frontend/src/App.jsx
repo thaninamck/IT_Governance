@@ -6,6 +6,8 @@ import './index.css'
 import SideBar from './components/sideBar/SideBar';
 import Header from './components/Header/Header';
 import HeaderBis from './components/Header/HeaderBis';
+import NotificationBar from './components/Notification/NotificationBar';
+import NotificationPopup from './components/Notification/NotificationPopup';
 function App() {
   
 
@@ -17,6 +19,8 @@ function App() {
           <Route path='/sideBar' element={<SideBar userRole="admin"/>}/>
           <Route path='/header' element={<Header/>}/>
           <Route path='/headerbis' element={<HeaderBis/>}/>
+          <Route path='/notification' element={<NotificationBar/>}/>
+          <Route path='/notificationpopup' element={<NotificationPopup/>}/>
           
           
         </Routes>

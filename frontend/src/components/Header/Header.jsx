@@ -2,11 +2,12 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import "./Header.css";
 import icons from '../../assets/Icons'; // Importer l'objet contenant les icônes
+import NotificationPopup from '../Notification/NotificationPopup';
 
 function Header() {
   const navigate = useNavigate();
   const [showNotifications, setShowNotifications] = useState(false);
-  const [unreadCount, setUnreadCount] = useState(3); // Exemple : 3 notifications non lues
+  const [unreadCount, setUnreadCount] = useState(3); // Example: Initial unread notifications count
 
   return (
     <div className='header_container'>
@@ -32,19 +33,15 @@ function Header() {
               sx={{ color: 'var(--blue-icons)', cursor: 'pointer' }} 
               onClick={() => {
                 setShowNotifications(!showNotifications);
-                setUnreadCount(0); // Réinitialiser les notifications non lues quand le popup est ouvert
+                setUnreadCount(0); // Reset unread count when popup is opened
               }} 
             />
-            {/* Marqueur des notifications non lues */}
-            {unreadCount > 0 && <span className="notification_marker">{unreadCount}</span>}
+            {/* Display unread notification count 
+            {unreadCount > 0 && <span className="notification_marker">{unreadCount}</span>}*/}
           </div>
 
           {showNotifications && (
-            <div className="notifications_popup">
-              <p>🔔 Nouvelle notification 1</p>
-              <p>🔔 Nouvelle notification 2</p>
-              <p>🔔 Nouvelle notification 3</p>
-            </div>
+            <NotificationPopup setUnreadCount={setUnreadCount} />
           )}
         </div>
 

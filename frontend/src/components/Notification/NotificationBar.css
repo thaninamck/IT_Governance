@@ -1,0 +1,251 @@
+.notificationBar {
+    width: 75%;
+    background: white;
+   /* border-radius: 8px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);*/
+    padding: 10% ;
+    
+}
+
+/* Header de la barre de notification */
+.notificationBar__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 3%;
+}
+
+.notificationBar__header h3 {
+    margin: 0;
+    font-weight: 500;
+}
+
+.notificationBar__actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding-left: 1%;
+}
+
+.notificationBar__filter {
+    border: 1px solid #DEE2E6;
+    padding: 3px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    margin-left: 6%;
+}
+
+.notificationBar__markAll {
+    font-size: 14px;
+    cursor: pointer;
+    font-weight: 500;
+    padding-right: 3%;
+}
+
+/* Liste des notifications */
+.notificationBar__list {
+    margin-top: 10px;
+   
+}
+
+/* Chaque élément de notification */
+.notificationBar__item {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    border-bottom: 1px solid var( --status-gray);
+    position: relative;
+    transition: background 0.3s;
+    height: 100px;
+    
+}
+
+/*.notificationBar__item.unread {
+    background: #f0f4ff;
+}*/
+
+.notificationBar__item:hover {
+    background:var(--blue-nav);
+    cursor: pointer;
+}
+
+/* Cercle des initiales de l'utilisateur */
+.notificationBar__initials {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background:var(--blue-nav);
+    color: var(--blue-conf);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 400;
+    margin-right: 3%; 
+    margin-top: -25px;
+    
+}
+
+
+/* Détails de la notification */
+.notificationBar__details {
+    flex-grow: 1;
+   
+}
+
+.notificationBar__message {
+    font-size: 14px;
+    margin: 0;
+}
+
+.notificationBar__date {
+    font-size: 12px;
+    color:var(--subfont-gray);
+    margin-top: 2%;
+}
+
+/* Icône d'options (3 points) */
+.notificationBar__icon {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+/* Indicateur de notification non lue */
+.notificationBar__unreadDot {
+    width: 8px;
+    height: 8px;
+    background: var(--await-orange);
+    border-radius: 50%;
+    position: absolute;
+    right: 15px;
+    top: 35%;
+    transform: translateY(-50%);
+}
+
+
+
+/* style pour notification popup*/
+
+
+.notificationPopup {
+    position: absolute;
+    top: 28px;  /* Adjust position above the icon */
+    right: 0;
+    background: white;
+    color: black;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    width: 400px;
+    padding: 10px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    z-index: 1000;  
+}
+
+/* Header of the notification popup */
+.notificationPopup__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 2%;
+}
+
+.notificationPopup__header h3 {
+    margin: 0;
+    font-weight: 500;
+    font-size: 10px; /* Reduce the font size */
+}
+
+.notificationPopup__actions {
+    display: flex;
+    align-items: center;
+    gap: 8px; /* Reduced gap */
+}
+
+.notificationPopup__filter {
+    border: 1px solid #DEE2E6;
+    padding: 3px 4px; /* Reduce padding */
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 10px; /* Smaller font size */
+}
+
+.notificationPopup__markAll {
+    font-size: 10px; /* Smaller font size */
+    cursor: pointer;
+    font-weight: 500;
+}
+
+/* List of notifications */
+.notificationPopup__list {
+    margin-top: 10px;
+}
+
+/* Each notification item */
+.notificationPopup__item {
+    display: flex;
+    align-items: center;
+    padding: 8px; /* Reduced padding */
+    border-bottom: 1px solid var(--status-gray);
+    position: relative;
+    transition: background 0.3s;
+    height: 60px; /* Reduced height */
+    font-size: 10px;
+}
+
+.notificationPopup__item:hover {
+    background: var(--blue-nav);
+    cursor: pointer;
+}
+
+/* Initials circle of the user */
+.notificationPopup__initials {
+    width: 30px; /* Smaller size */
+    height: 30px; /* Smaller size */
+    border-radius: 50%;
+    background: var(--blue-nav);
+    color: var(--blue-conf);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 400;
+    margin-right: 10px; /* Adjusted margin */
+    
+}
+
+/* Details of the notification */
+.notificationPopup__details {
+    flex-grow: 1;
+   
+}
+
+.notificationPopup__message {
+    font-size: 10px; /* Smaller font size */
+    margin: 0;
+}
+
+.notificationPopup__date {
+    font-size: 10px; /* Smaller font size */
+    color: var(--subfont-gray);
+    margin-top: 2%;
+}
+
+/* Unread notification indicator */
+.notificationPopup__unreadDot {
+    width: 6px; /* Smaller dot size */
+    height: 6px; /* Smaller dot size */
+    background: var(--await-orange);
+    border-radius: 50%;
+    position: absolute;
+    right: 10px; /* Adjusted position */
+    top: 35%;
+    transform: translateY(-50%);
+}
+
+/* Empty notification text */
+.notificationPopup__empty {
+    font-size: 14px; /* Smaller font size */
+    color: var(--status-gray);
+    text-align: center;
+    margin-top: 20px;
+}

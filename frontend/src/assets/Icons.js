@@ -10,9 +10,13 @@ import CollectionsBookmarkRoundedIcon from '@mui/icons-material/CollectionsBookm
 import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined';
 import RecentActorsRoundedIcon from '@mui/icons-material/RecentActorsRounded';
 import LanguageRoundedIcon from '@mui/icons-material/LanguageRounded';
-// Importation des icônes utilisées dans le Header
+
+// Icônes ajoutées pour le Header
 import HomeRoundedIcon from '@mui/icons-material/HomeRounded';
 import NotificationsRoundedIcon from '@mui/icons-material/NotificationsRounded';
+
+// icon notification
+import CheckCircleOutlineRoundedIcon from "@mui/icons-material/CheckCircleOutlineRounded";
 
 // Objet contenant toutes les icônes
 const icons = {
@@ -31,6 +35,9 @@ const icons = {
   // Icônes ajoutées pour le Header
   home: HomeRoundedIcon,
   notifications: NotificationsRoundedIcon,
+
+  // icon ajouter pour la notification
+  checkCircle: CheckCircleOutlineRoundedIcon,
 };
 
 export default icons;
