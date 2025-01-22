@@ -20,7 +20,7 @@ const DecisionPopUp = ({text,confirmURL,denyURL}) => {
     className=" rounded-lg w-auto h-auto bg-white drop-shadow-lg text-black
     absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex flex-col  justify-around  gap-4 p-6">
         <div onClick={handleCloseDecisionPopUp}
-         className='absolute top-0 right-0 bg-[#E5E5E5] rounded-full text-blue m-1 '>
+         className='absolute top-0 right-0 bg-[#E5E5E5] rounded-full text-blue mr-1 '>
             <CloseIcon sx={{ color: '#4F4F4F', width: '12px', height: '12px' }} className='mx-1'/>
         </div>
         <h2 className='w-auto h-auto text-blue-menu text-xl font-semibold sm:text-xs'>{text}</h2>
