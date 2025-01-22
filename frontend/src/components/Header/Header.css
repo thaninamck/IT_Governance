@@ -1,0 +1,233 @@
+/* General container styles */
+.header_container {
+    background-color: var(--blue-nav);
+    height: 70px;
+    margin: 0;
+    padding: 0% 4% 0% 2%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.headerbis_container {
+    height: 70px;
+    margin: 0;
+    padding: 0% 4% 0% 2%;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+/* Header logo styles */
+.header_container .header_logo img {
+    width: 100px;  /* Adjust logo size */
+    height: auto;  /* Keep proportions */
+}
+
+/* Header icons container */
+.header_container .header_icons {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 28%;
+}
+
+/* Header second container for icons */
+.headerbis_container .headerbis_icons {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 15%;
+}
+
+/* Notification styles */
+.notification_wrapper {
+    position: relative;
+    display: inline-block;
+}
+
+.notification_icon_container {
+    position: relative;
+    display: inline-block;
+}
+
+/* Notification marker (unread count) */
+.notification_marker {
+    position: absolute;
+    top: -3px;
+    right: -4px;
+    background-color: var(--alert-red);
+    color: white;
+    font-size: 10px;
+    font-weight: 500;
+    width: 15px;
+    height: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.3);
+}
+
+/* Notification popup styling */
+.notifications_popup {
+    position: absolute;
+    top: 40px;  /* Adjust position above the icon */
+    right: 0;
+    background: white;
+    color: black;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    width: 400px;
+    padding: 10px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    z-index: 1000;  /* Ensure the popup is above other content */
+}
+
+.notifications_popup p {
+    margin: 5px 0;
+    font-size: 14px;
+    padding: 5px;
+}
+
+/* Hover effect for notification popup items */
+.notifications_popup p:hover {
+    background: #f5f5f5;
+    cursor: pointer;
+}
+
+/* User initials and username styling */
+.header_container .user_initials {
+    width: 35px;
+    height: 35px;
+    background-color: white;
+    border-radius: 50%;
+    color: var(--blue-conf);
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.header_container .user_name {
+    color: var(--status-gray);
+    font-weight: 400;
+    font-size: 14px;
+    margin-top: 2%;
+    text-align: center;
+    cursor: pointer;
+}
+
+/* Logout button styling */
+.headerbis_container .logout_button {
+    background-color: var(--blue-icons);
+    border: none;
+    color: white;
+    font-size: 14px;
+    cursor: pointer;
+    padding: 10px;
+    text-align: center;
+    transition: background-color 0.3s ease, color 0.3s ease, border 0.3s ease;
+}
+
+/* Hover effect for logout button */
+.headerbis_container .logout_button:hover {
+    background-color: transparent;
+    border: 2px solid var(--blue-icons);
+    color: var(--blue-icons);
+}
+
+/* --- Media Queries for responsiveness --- */
+
+/* Mobile screens */
+@media screen and (max-width: 767px) {
+    .header_container .header_logo img {
+        width: 80px;  /* Smaller logo on mobile */
+    }
+
+    .header_container .header_icons {
+        width: 40%;  /* Adjust icons width for mobile */
+    }
+
+    .headerbis_container .headerbis_icons {
+        width: 25%;  /* Adjust second icons container width */
+    }
+
+    .notifications_popup {
+        width: 200px;  /* Smaller popup on mobile */
+    }
+
+    .header_container .user_name {
+        font-size: 12px;  /* Smaller font for user name */
+    }
+
+    .notification_marker {
+        width: 12px;
+        height: 12px;  /* Smaller notification marker */
+        font-size: 8px;
+    }
+}
+
+/* Tablet screens */
+@media screen and (min-width: 768px) and (max-width: 1024px) {
+    .header_container .header_logo img {
+        width: 90px;  /* Adjust logo size for tablet */
+    }
+
+    .header_container .header_icons {
+        width: 35%;  /* Adjust icons width for tablet */
+    }
+
+    .headerbis_container .headerbis_icons {
+        width: 20%;  /* Adjust second icons container width */
+    }
+
+    .notifications_popup {
+        width: 230px;  /* Slightly larger popup for tablets */
+    }
+
+    .header_container .user_name {
+        font-size: 13px;  /* Adjust font size for tablets */
+    }
+
+    .notification_marker {
+        width: 14px;
+        height: 14px;  /* Adjust notification marker for tablets */
+        font-size: 9px;
+    }
+}
+
+/* Desktop screens */
+@media screen and (max-width: 600px) {
+    .header_container .header_logo img {
+        width: 100px;  /* Default logo size */
+    }
+
+    .header_container .header_icons {
+        width: 48%;  /* Default icons width */
+    }
+
+    .headerbis_container .headerbis_icons {
+        width: 25%;  /* Default second icons container width */
+    }
+
+    .notifications_popup {
+        width: 250px;  /* Default popup size for desktop */
+    }
+
+    .header_container .user_name {
+        font-size: 12px;  /* Default font size for user name */
+    }
+    .header_container .user_initials{
+        width: 25px;
+        height: 25px;
+        font-size: 12px;
+    }
+
+    .notification_marker {
+        width: 15px;
+        height: 15px;  /* Default notification marker size */
+        font-size: 10px;
+    }
+}
