@@ -23,6 +23,7 @@ const InsertionPopUp = ({ value, finishingURL }) => {
             <Progress
                 value={progressValue}
                 size="lg"
+                
                 label="."
                 color="blue"
                 className="border border-[#E3E3E3] bg-[#F4F4F4] py-px"
