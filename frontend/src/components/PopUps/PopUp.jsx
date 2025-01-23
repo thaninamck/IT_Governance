@@ -1,6 +1,6 @@
 import React from 'react';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
-import '../index.css';
+import '../../index.css';
 
 const PopUp = ({text,redirectionURL}) => {
   return (

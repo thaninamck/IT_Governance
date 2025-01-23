@@ -1,10 +1,10 @@
 import { useState } from 'react'
-import PopUp from './components/PopUp';
-import DecisionPopUp from './components/DecisionPopUp';
+import PopUp from './components/PopUps/PopUp';
+import DecisionPopUp from './components/PopUps/DecisionPopUp';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import './App.css'
 import './index.css'
-import InsertionPopUp from './components/InsertionPopUp';
+import InsertionPopUp from './components/PopUps/InsertionPopUp';
 import SideBar from './components/sideBar/SideBar';
 import Header from './components/Header/Header';
 import HeaderBis from './components/Header/HeaderBis';
@@ -17,11 +17,25 @@ import SuiviRemForm from './components/Forms/SuiviRemForm';
 import AddClientForm from './components/Forms/AddClientForm';
 import AddMissionForm from './components/Forms/AddMissionForm';
 import AddUserForm from './components/Forms/AddUserForm';
+import SingleOptionSelect from './components/Selects/SingleOptionSelect';
+import MultiOptionSelect from './components/Selects/MultiOptionSelect';
+import MissionInfo from './components/InfosDisplay/MissionInfo';
 function App() {
-  
+ /* const statuses = [
+    [1, 'Applied'],
+    [2, 'Not applied'],
+    [3, 'NA'],
+  ];
+
+  const layers = [
+    [1, 'Os'],
+    [2, 'Bdd'],
+    [3, 'NA'],
+  ];*/
 
   return (
     <>
+    
        <div className="App">
         <Routes>
           
@@ -41,6 +55,10 @@ function App() {
           <Route path='/addclientForm' element={<AddClientForm title="Ajouter un nouveau client" />}/>
           <Route path='/addmissionForm' element={<AddMissionForm title="Ajouter une mission" />}/>
           <Route path='/adduserForm' element={<AddUserForm title="Ajouter un nouveau utilisateur" />}/>          
+          
+          <Route path='/missionInfo' element={<MissionInfo/>}/>
+          
+          
         </Routes>
         
        </div>
