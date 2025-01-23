@@ -1,8 +1,10 @@
 import { useState } from 'react'
-
+import PopUp from './components/PopUp';
+import DecisionPopUp from './components/DecisionPopUp';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import './App.css'
 import './index.css'
+import InsertionPopUp from './components/InsertionPopUp';
 import SideBar from './components/sideBar/SideBar';
 import Header from './components/Header/Header';
 import HeaderBis from './components/Header/HeaderBis';
@@ -23,6 +25,10 @@ function App() {
        <div className="App">
         <Routes>
           
+          <Route path='/popup' element={<PopUp redirectionURL={'#'} text={'mission crée'}/>}/>
+          <Route path='/decisionpopup' element={<DecisionPopUp confirmURL={'#'} denyURL={'#'} text={'etes vous sure de vouloir supprimer la mission?'}/>}/>
+          <Route path='/insertionpopup' element={<InsertionPopUp value={50} finishingURL={'#'}/>}/>
+          <Route path='/popup' element={<PopUp/>}/>
           <Route path='/sideBar' element={<SideBar userRole="admin"/>}/>
           <Route path='/header' element={<Header/>}/>
           <Route path='/headerbis' element={<HeaderBis/>}/>
@@ -34,11 +40,7 @@ function App() {
           <Route path='/suiviRemForm' element={<SuiviRemForm title="Ajouter une Remédiation" />}/>
           <Route path='/addclientForm' element={<AddClientForm title="Ajouter un nouveau client" />}/>
           <Route path='/addmissionForm' element={<AddMissionForm title="Ajouter une mission" />}/>
-          <Route path='/adduserForm' element={<AddUserForm title="Ajouter un nouveau utilisateur" />}/>
-
-
-          
-          
+          <Route path='/adduserForm' element={<AddUserForm title="Ajouter un nouveau utilisateur" />}/>          
         </Routes>
         
        </div>
