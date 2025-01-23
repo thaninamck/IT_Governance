@@ -5,7 +5,8 @@ import DisplayEquipe from './DisplayEquipe'
 import Separator from '../Decorators/Separator'
 
 const MissionInfo = () => {
-    //juste pour le test
+  //à ajouter comme parametre apres 
+    //juste pour le test 
    const equipe= [
         { membre: "houda", role: "Manager" },
         { membre: "membre2", role: "Testeur" },
