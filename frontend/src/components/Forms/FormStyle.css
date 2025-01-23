@@ -1,0 +1,88 @@
+.input-form {
+    display: flex;
+    flex-direction: column;
+    padding: 2% 0% 0% 0%;
+   
+    
+    
+  }
+  
+  .input-label {
+    font-size: 14px;
+    margin-bottom: 8px;
+    margin-left: 4px;
+  }
+  
+  .input-field {
+    padding: 8px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+  }
+  .input-field::placeholder {
+    font-size: 12px; /* Changez la taille selon vos besoins */
+    
+  }
+  
+  .appForm_container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    width: auto;
+    
+    /*min-width: 700px;*/
+    min-height: 300px;
+  }
+  
+  .appForm_container p {
+    text-align: center;
+    margin: 4% 0%;
+    font-weight: 500;
+  }
+  .close-button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: none;
+    border: none;
+    font-size: 30px;
+    font-weight: 500;
+    color: #333;
+    cursor: pointer;
+    
+  }
+  
+  .btn_addclient{
+    padding: 0px;
+    height: auto;
+    font-size: 13px;
+    font-weight: 500;
+    position: absolute;
+    top: 38%;
+    left: 64%;
+    transform: translate(-50%, -50%);
+    border: none;
+    color: var(--blue-menu);
+    
+  }
+  .close-button:hover {
+    color: var(--alert-red);
+  }
+  
+ .appForm_container .form-row{
+  display: flex;
+  gap: 20px;
+  flex-direction: row;
+  justify-content: space-between;
+ 
+  
+ 
+ }
+  
+
+  
