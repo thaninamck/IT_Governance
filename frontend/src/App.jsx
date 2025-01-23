@@ -1,10 +1,10 @@
 import { useState } from 'react'
-import PopUp from './components/PopUp';
-import DecisionPopUp from './components/DecisionPopUp';
+import PopUp from './components/PopUps/PopUp';
+import DecisionPopUp from './components/PopUps/DecisionPopUp';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import './App.css'
 import './index.css'
-import InsertionPopUp from './components/InsertionPopUp';
+import InsertionPopUp from './components/PopUps/InsertionPopUp';
 import SideBar from './components/sideBar/SideBar';
 import Header from './components/Header/Header';
 import HeaderBis from './components/Header/HeaderBis';
@@ -18,6 +18,10 @@ import AddClientForm from './components/Forms/AddClientForm';
 import AddMissionForm from './components/Forms/AddMissionForm';
 import AddUserForm from './components/Forms/AddUserForm';
 import Table from './components/Table';
+import SingleOptionSelect from './components/Selects/SingleOptionSelect';
+import MultiOptionSelect from './components/Selects/MultiOptionSelect';
+import MissionInfo from './components/InfosDisplay/MissionInfo';
+
 function App() {
   
   const columnsConfig = [
@@ -30,26 +34,22 @@ function App() {
     { field: 'actions', headerName: 'Actions', width: 180 }
 ];
 
+ /* const statuses = [
+    [1, 'Applied'],
+    [2, 'Not applied'],
+    [3, 'NA'],
+  ];
+
+  const layers = [
+    [1, 'Os'],
+    [2, 'Bdd'],
+    [3, 'NA'],
+  ];*/
+
 const rowsData = [
     { id: 1, firstName: 'Jon', lastName: 'Snow', age: 35, status: 'Active' },
     { id: 2, firstName: 'Cersei', lastName: 'Lannister', age: 42, status: 'Inactive' },
-    { id: 2, firstName: 'Cersei', lastName: 'Lannister', age: 42, status: 'Inactive' },
-    { id: 2, firstName: 'Cersei', lastName: 'Lannister', age: 42, status: 'Inactive' },
-    { id: 2, firstName: 'Cersei', lastName: 'Lannister', age: 42, status: 'Inactive' },
-    { id: 2, firstName: 'Cersei', lastName: 'Lannister', age: 42, status: 'Inactive' },
-    { id: 2, firstName: 'Cersei', lastName: 'Lannister', age: 42, status: 'Inactive' },
-    { id: 2, firstName: 'Cersei', lastName: 'Lannister', age: 42, status: 'Inactive' },
-    { id: 2, firstName: 'Cersei', lastName: 'Lannister', age: 42, status: 'Inactive' },
-    { id: 2, firstName: 'Cersei', lastName: 'Lannister', age: 42, status: 'Inactive' },
-    { id: 2, firstName: 'Cersei', lastName: 'Lannister', age: 42, status: 'Inactive' },
-    { id: 2, firstName: 'Cersei', lastName: 'Lannister', age: 42, status: 'Inactive' },
-    { id: 2, firstName: 'Cersei', lastName: 'Lannister', age: 42, status: 'Inactive' },
-    { id: 2, firstName: 'Cersei', lastName: 'Lannister', age: 42, status: 'Inactive' },
-    { id: 2, firstName: 'Cersei', lastName: 'Lannister', age: 42, status: 'Inactive' },
-    { id: 2, firstName: 'Cersei', lastName: 'Lannister', age: 42, status: 'Inactive' },
-    { id: 2, firstName: 'Cersei', lastName: 'Lannister', age: 42, status: 'Inactive' },
-    { id: 2, firstName: 'Cersei', lastName: 'Lannister', age: 42, status: 'Inactive' },
-    // Plus de lignes ici
+  
 ];
 
 const columnsConfig2 = [
@@ -84,18 +84,24 @@ const rowsData3 = [
 ];
   return (
     <>
+    
        <div className="App">
         <Routes>
-          
+        { /*-----------------Popup-----------------------------*/  }
           <Route path='/popup' element={<PopUp redirectionURL={'#'} text={'mission crée'}/>}/>
           <Route path='/decisionpopup' element={<DecisionPopUp confirmURL={'#'} denyURL={'#'} text={'etes vous sure de vouloir supprimer la mission?'}/>}/>
           <Route path='/insertionpopup' element={<InsertionPopUp value={50} finishingURL={'#'}/>}/>
           <Route path='/popup' element={<PopUp/>}/>
+
           <Route path='/sideBar' element={<SideBar userRole="testeur"/>}/>
+          
           <Route path='/header' element={<Header/>}/>
           <Route path='/headerbis' element={<HeaderBis/>}/>
+
           <Route path='/notification' element={<NotificationBar/>}/>
           <Route path='/notificationpopup' element={<NotificationPopup/>}/>
+
+          { /*-----------------Forms-----------------------------*/  }
           <Route path='/inputform' element={<InputForm/>}/>
           <Route path='/appform' element={<AppForm title="Ajouter une nouvelle application" />}/>
           <Route path='/remediationForm' element={<Remediation title="Ajouter une Remédiation" />}/>
@@ -103,10 +109,17 @@ const rowsData3 = [
           <Route path='/addclientForm' element={<AddClientForm title="Ajouter un nouveau client" />}/>
           <Route path='/addmissionForm' element={<AddMissionForm title="Ajouter une mission" />}/>
           <Route path='/adduserForm' element={<AddUserForm title="Ajouter un nouveau utilisateur" />}/> 
+
+          { /*-----------------tables-----------------------------*/  }
           <Route path='/table' element={<Table  columnsConfig={columnsConfig} rowsData={rowsData}   checkboxSelection={true} /> }/>    
           <Route path='/tablemission' element={<Table  columnsConfig={columnsConfig2} rowsData={rowsData2}   checkboxSelection={false} /> }/>  
           <Route path='/tableApp' element={<Table  columnsConfig={columnsConfig3} rowsData={rowsData3}   checkboxSelection={false} /> }/> 
 
+                
+          
+          <Route path='/missionInfo' element={<MissionInfo/>}/>
+          
+          
         </Routes>
         
        </div>
