@@ -23,6 +23,9 @@ import MultiOptionSelect from './components/Selects/MultiOptionSelect';
 import MissionInfo from './components/InfosDisplay/MissionInfo';
 
 import StatusMission from './components/StatusMission';
+import EvidenceList from './components/Evidences/EvidenceList';
+import Separator from './components/Decorators/Separator';
+
 
 function App() {
   
@@ -86,6 +89,9 @@ const rowsData3 = [
   { id: 3, app: 'CV360°', couche: 'BDD'},
   // Ajoute d'autres lignes avec des ids uniques
 ];
+
+
+
   return (
     <>
     
@@ -96,7 +102,7 @@ const rowsData3 = [
           <Route path='/decisionpopup' element={<DecisionPopUp confirmURL={'#'} denyURL={'#'} text={'etes vous sure de vouloir supprimer la mission?'}/>}/>
           <Route path='/insertionpopup' element={<InsertionPopUp value={50} finishingURL={'#'}/>}/>
           <Route path='/popup' element={<PopUp/>}/>
-
+          <Route path='/sep' element={<Separator/>}/>
           <Route path='/sideBar' element={<SideBar userRole="testeur"/>}/>
 
           <Route path='/header' element={<Header/>}/>
@@ -123,6 +129,8 @@ const rowsData3 = [
           <Route path='/missionInfo' element={<MissionInfo/>}/>
           <Route path='/statusmission' element={<StatusMission  status="en_cours"/>}/>
           
+          
+
           
           
         </Routes>
