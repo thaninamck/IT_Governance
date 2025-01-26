@@ -4,6 +4,11 @@
 @tailwind components;
 @tailwind utilities;
 
+
+@layer utilities {
+    
+  }
+
 html {
     font-family: "Montserrat", serif;
     font-optical-sizing: auto;

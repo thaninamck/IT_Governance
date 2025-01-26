@@ -20,6 +20,7 @@ import AddUserForm from './components/Forms/AddUserForm';
 import SingleOptionSelect from './components/Selects/SingleOptionSelect';
 import MultiOptionSelect from './components/Selects/MultiOptionSelect';
 import MissionInfo from './components/InfosDisplay/MissionInfo';
+import FileUploader from './components/FileUploader';
 function App() {
  /* const statuses = [
     [1, 'Applied'],
@@ -57,6 +58,7 @@ function App() {
           <Route path='/adduserForm' element={<AddUserForm title="Ajouter un nouveau utilisateur" />}/>          
           
           <Route path='/missionInfo' element={<MissionInfo/>}/>
+          
           
           
         </Routes>
