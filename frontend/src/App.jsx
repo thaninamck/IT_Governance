@@ -21,6 +21,7 @@ import Table from './components/Table';
 import SingleOptionSelect from './components/Selects/SingleOptionSelect';
 import MultiOptionSelect from './components/Selects/MultiOptionSelect';
 import MissionInfo from './components/InfosDisplay/MissionInfo';
+import StatusMission from './components/StatusMission';
 
 function App() {
   
@@ -55,17 +56,18 @@ const rowsData = [
 
 const columnsConfig2 = [
   
-  { field: 'status', headerName: 'Status', width: 180 },
+  { field: 'statusMission', headerName: 'Status', width: 180 },
   { field: 'mission', headerName: 'Mission', width: 180 },
   { field: 'client', headerName: 'Client', width: 180 },
   { field: 'role', headerName: 'Role', width: 180 },
-  { field: 'actions', headerName: 'Actions', width: 180 },
+  { field: 'actions', headerName: 'Actions', width: 80 },
 ];
 
 const rowsData2 = [
-  { id: 1, status: 'Active', mission: 'DSP', client: 'Djeezy', role: 'Manager' },
-  { id: 2, status: 'Active', mission: 'DSP', client: 'Djeezy', role: 'Manager' },
-  { id: 3, status: 'Active', mission: 'DSP', client: 'Djeezy', role: 'Manager' },
+  { id: 1, statusMission: 'en_cours', mission: 'DSP', client: 'Djeezy', role: 'Manager' },
+  { id: 2, statusMission: 'terminee', mission: 'DSP', client: 'Oredoo', role: 'Testeur' },
+  { id: 3, statusMission: 'non_commencee', mission: 'DSP', client: 'Mazars', role: 'Testeur' },
+  { id: 4, statusMission: 'en_retard', mission: 'DSP', client: 'Djeezy', role: 'Superviseur' },
   // Ajoute d'autres lignes avec des ids uniques
 ];
 
@@ -74,7 +76,7 @@ const columnsConfig3 = [
   { field: 'id', headerName: 'ID', width: 80 },
   { field: 'app', headerName: 'Application', width: 180 },
   { field: 'couche', headerName: 'Couche', width: 180 },
-  { field: 'actions', headerName: 'Actions', width: 180 },
+  { field: 'actions', headerName: 'Actions', width: 80 },
 ];
 
 const rowsData3 = [
@@ -116,9 +118,9 @@ const rowsData3 = [
           <Route path='/tablemission' element={<Table  columnsConfig={columnsConfig2} rowsData={rowsData2}   checkboxSelection={false} /> }/>  
           <Route path='/tableApp' element={<Table  columnsConfig={columnsConfig3} rowsData={rowsData3}   checkboxSelection={false} /> }/> 
 
-                
-          
+
           <Route path='/missionInfo' element={<MissionInfo/>}/>
+          <Route path='/statusmission' element={<StatusMission  status="en_cours"/>}/>
           
           
         </Routes>
