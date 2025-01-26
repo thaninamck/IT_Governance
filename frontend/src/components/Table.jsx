@@ -5,7 +5,8 @@ import MoreVertIcon from '@mui/icons-material/MoreVert';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import { IconButton, Select, MenuItem as MuiMenuItem, FormControl } from '@mui/material';
-import "./componentStyle.css";
+import StatusMission from './StatusMission';
+
 
 function ExpandableCell({ value, maxInitialLength = 50, onExpand }) {
     const [isExpanded, setIsExpanded] = React.useState(false);
@@ -73,7 +74,7 @@ function Table({ columnsConfig, rowsData, checkboxSelection = false }) {
         const isAnyCellExpanded = Object.keys(expandedCells).some((key) =>
             key.startsWith(`${params.id}-`) && expandedCells[key]
         );
-        return isAnyCellExpanded ? 'auto' : 50; // Par défaut 50px, auto si une cellule est étendue
+        return isAnyCellExpanded ? 'auto' : 60; // Par défaut 50px, auto si une cellule est étendue
     };
 
     const columns = [
@@ -139,6 +140,11 @@ function Table({ columnsConfig, rowsData, checkboxSelection = false }) {
                         </IconButton>
                     );
                 }
+                if (colConfig.field === 'statusMission') {
+                    return (
+                       <StatusMission  status={params.value} />
+                    );
+                }
                 // Largeur fixe et hauteur dynamique
                 if (colConfig.expandable) {
                     return   <ExpandableCell
@@ -196,7 +202,7 @@ function Table({ columnsConfig, rowsData, checkboxSelection = false }) {
     };
 
     return (
-        <Paper sx={{ margin: "3%" }}>
+        <Paper sx={{ margin: "3%", width:"max-content" }}>
            <DataGrid
     rows={rows}
     columns={columns}
@@ -208,6 +214,7 @@ function Table({ columnsConfig, rowsData, checkboxSelection = false }) {
     onSelectionModelChange={(newSelection) => setSelectionModel(newSelection)}
     sx={{
         border: "1px solid #ccc",
+        
         '& .MuiDataGrid-cell': {
             borderRight: "1px solid #ddd",
             borderBottom: "1px solid #ddd",
@@ -215,8 +222,10 @@ function Table({ columnsConfig, rowsData, checkboxSelection = false }) {
             wordWrap: "break-word",
             overflow: "visible",
             textOverflow: "clip",
-            alignItems: "flex-start",
-            display: "flex",
+            alignItems: "center", // Centrer le contenu verticalement
+        display: "flex",
+           
+           
         },
         '& .MuiDataGrid-columnHeaders': {
             backgroundColor: "#f4f4f4",
