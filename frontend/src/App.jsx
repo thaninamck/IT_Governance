@@ -27,7 +27,8 @@ function App() {
   const columnsConfig = [
     { field: 'id', headerName: 'ID', width: 100 },
     { field: 'firstName', headerName: 'First Name', width: 180 },
-    { field: 'lastName', headerName: 'Last Name', width: 180 },
+    { field: 'lastName', headerName: 'Last Name', width: 180 , expandable: true, 
+      maxInitialLength: 30 },
     { field: 'age', headerName: 'Age', width: 100 },
     { field: 'status', headerName: 'Status', width: 180 },
     { field: 'rapport', headerName: 'View Report', width: 180 },
@@ -47,7 +48,7 @@ function App() {
   ];*/
 
 const rowsData = [
-    { id: 1, firstName: 'Jon', lastName: 'Snow', age: 35, status: 'Active' },
+    { id: 1, firstName: 'Jon', lastName: 'Ceci est une longue description pour la cellule extensible Ceci est une longue description pour la cellule extensible Ceci est une longue description pour la cellule extensible  ', age: 35, status: 'Active' },
     { id: 2, firstName: 'Cersei', lastName: 'Lannister', age: 42, status: 'Inactive' },
   
 ];
@@ -94,7 +95,7 @@ const rowsData3 = [
           <Route path='/popup' element={<PopUp/>}/>
 
           <Route path='/sideBar' element={<SideBar userRole="testeur"/>}/>
-          
+
           <Route path='/header' element={<Header/>}/>
           <Route path='/headerbis' element={<HeaderBis/>}/>
 
