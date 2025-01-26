@@ -2,7 +2,8 @@
     width: 20%; /* Ajustable pour les grands écrans */
     min-width: 220px; /* Largeur minimale */
     max-width: 280px; /* Largeur maximale */
-    height: 600px;   
+    height: 100vh; /* Par défaut, la hauteur est basée sur la hauteur de la fenêtre */
+    
     background-color: var(--blue-menu);
     border-radius: 0% 5px 5px 0%;
     color: white;
@@ -10,7 +11,7 @@
     flex-direction: column;
     justify-content: space-between; /* Répartir les éléments sur toute la hauteur */
     transition: width 0.3s ease-in-out;
-    height: 800px;
+   
     
 }
 
@@ -104,12 +105,21 @@
     .sideBar_container {
         width: 25%;
         min-width: 180px;
+        height: 70vh;
     }
 }
 
+@media (max-height: 700px) {
+    .sideBar_container {
+        width: 25%;
+        min-width: 180px;
+        height: 830px;
+    }
+}
 @media (max-width: 768px) {
     .sideBar_container {
-        width: 100px; /* Réduit la taille pour les tablettes */
+        width: 100px;
+        height: 60vh; /* Réduit la taille pour les tablettes */
     }
     
     
@@ -121,6 +131,7 @@
 @media (max-width: 480px) {
     .sideBar_container {
         width: 80px; /* Encore plus compact pour les petits écrans */
+        height: 50vh;
     }
 
     .sideBar_container .user_info > h3 {
