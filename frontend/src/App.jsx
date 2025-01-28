@@ -25,6 +25,8 @@ import MissionInfo from './components/InfosDisplay/MissionInfo';
 import StatusMission from './components/StatusMission';
 import EvidenceList from './components/Evidences/EvidenceList';
 import Separator from './components/Decorators/Separator';
+import Test from './components/ModalWindows/Test';
+import ModalWindow from './components/ModalWindows/ControlModalWindow';
 
 
 function App() {
@@ -128,9 +130,10 @@ const rowsData3 = [
 
           <Route path='/missionInfo' element={<MissionInfo/>}/>
           <Route path='/statusmission' element={<StatusMission  status="en_cours"/>}/>
+          <Route path='/test' element={<Test/>}></Route>
+          <Route path='/win' element={<ModalWindow  />}></Route>
           
           
-
           
           
         </Routes>

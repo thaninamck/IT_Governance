@@ -1,16 +1,18 @@
 import React from 'react';
 
-const Separator = ({text="hola"}) => {
+const Separator = ({text}) => {
   return (
-    <>
-    <div className='flex items-center gap-4 m-1 p-2'>
-      <p className='text-subfont-gray text-xl'>{text}</p>
-    <div className='border-b border-[#DFE1E6] w-full '/>
     
+    
+
+
+    <div className='relative w-full  my-4'>
+      <div className='flex items-center  gap-2  '>
+       <p className='text-subfont-gray  whitespace-nowrap text-xs'>{text}</p>
+       <div className='border-b border-[#DFE1E6] w-full '/>
+  
     </div>
-
-
-    </>
+  </div>
     
   );
 };

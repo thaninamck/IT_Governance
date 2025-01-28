@@ -84,5 +84,12 @@
  
  }
   
-
+.input-cntrl-desc{
+  align-items: center;
+  gap: 15px;
+  height: auto;
+}
   
+#multi-line-input{
+  display: block;
+}
