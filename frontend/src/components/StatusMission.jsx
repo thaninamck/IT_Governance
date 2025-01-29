@@ -1,5 +1,4 @@
 import React from 'react';
-import "./componentStyle.css";
 import AccessTimeFilledIcon from '@mui/icons-material/AccessTimeFilled';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import AssignmentLateRoundedIcon from '@mui/icons-material/AssignmentLate';

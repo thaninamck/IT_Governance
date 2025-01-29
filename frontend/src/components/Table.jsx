@@ -6,6 +6,8 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import { IconButton, Select, MenuItem as MuiMenuItem, FormControl } from '@mui/material';
 import StatusMission from './StatusMission';
+import { useNavigate } from 'react-router-dom';
+import { useBreadcrumb } from '../Context/BreadcrumbContext';
 
 
 function ExpandableCell({ value, maxInitialLength = 50, onExpand }) {
@@ -58,10 +60,27 @@ function ExpandableCell({ value, maxInitialLength = 50, onExpand }) {
 }
 
 
-function Table({ columnsConfig, rowsData, checkboxSelection = false }) {
+function Table({ columnsConfig, rowsData, checkboxSelection = false,getRowLink }) {
+
+    const { setBreadcrumbs } = useBreadcrumb();
+    const navigate = useNavigate(); // Hook pour la navigation
+
     const [rows, setRows] = React.useState(rowsData);
     const [expandedCells, setExpandedCells] = React.useState({});
     const [selectionModel, setSelectionModel] = React.useState([]);
+
+
+    const handleRowClick = (params) => {
+        if (getRowLink) {
+            const link = getRowLink(params.row); // Générer dynamiquement le lien
+            setBreadcrumbs([
+                { label: 'Mes Mission', path: '/tablemission' },
+                { label: params.row.mission, path: `/tablemission/${params.row.mission}` },
+    
+            ]);
+            navigate(link);
+        }
+    };
 
     const handleCellExpand = (rowId, field, isExpanded) => {
         setExpandedCells(prev => ({
@@ -212,6 +231,7 @@ function Table({ columnsConfig, rowsData, checkboxSelection = false }) {
     getRowHeight={getRowHeight}
     selectionModel={selectionModel}
     onSelectionModelChange={(newSelection) => setSelectionModel(newSelection)}
+    onRowClick={handleRowClick} // Ajout du gestionnaire de clic sur la ligne
     sx={{
         border: "1px solid #ccc",
         

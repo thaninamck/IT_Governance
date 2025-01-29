@@ -22,8 +22,18 @@ import SingleOptionSelect from './components/Selects/SingleOptionSelect';
 import MultiOptionSelect from './components/Selects/MultiOptionSelect';
 import MissionInfo from './components/InfosDisplay/MissionInfo';
 import StatusMission from './components/StatusMission';
+import MissionDetail from './components/MissionDetail';
+import { BreadcrumbProvider } from './Context/BreadcrumbContext';
+import Breadcrumbs from './components/Breadcrumbs';
+import PasswordChange from './components/Forms/PasswordChange';
+import AddCoucheForm from './components/Forms/AddCoucheForm';
+import AddCategorieForm from './components/Forms/AddCategorieForm';
+import OTPPage from './components/OTPPage';
+import HeaderSettings from './components/Header/HeaderSettings';
+import SearchBar from './components/SearchBar';
 
 function App() {
+  const getRowLink = (row) => `/tablemission/${row.mission}`;
   
   const columnsConfig = [
     { field: 'id', headerName: 'ID', width: 100 },
@@ -65,9 +75,9 @@ const columnsConfig2 = [
 
 const rowsData2 = [
   { id: 1, statusMission: 'en_cours', mission: 'DSP', client: 'Djeezy', role: 'Manager' },
-  { id: 2, statusMission: 'terminee', mission: 'DSP', client: 'Oredoo', role: 'Testeur' },
-  { id: 3, statusMission: 'non_commencee', mission: 'DSP', client: 'Mazars', role: 'Testeur' },
-  { id: 4, statusMission: 'en_retard', mission: 'DSP', client: 'Djeezy', role: 'Superviseur' },
+  { id: 2, statusMission: 'terminee', mission: 'DSP1', client: 'Oredoo', role: 'Testeur' },
+  { id: 3, statusMission: 'non_commencee', mission: 'DSP2', client: 'Mazars', role: 'Testeur' },
+  { id: 4, statusMission: 'en_retard', mission: 'DSP3', client: 'Djeezy', role: 'Superviseur' },
   // Ajoute d'autres lignes avec des ids uniques
 ];
 
@@ -85,10 +95,14 @@ const rowsData3 = [
   { id: 3, app: 'CV360°', couche: 'BDD'},
   // Ajoute d'autres lignes avec des ids uniques
 ];
+
+
   return (
     <>
     
        <div className="App">
+       <BreadcrumbProvider>
+       <Breadcrumbs/>
         <Routes>
         { /*-----------------Popup-----------------------------*/  }
           <Route path='/popup' element={<PopUp redirectionURL={'#'} text={'mission crée'}/>}/>
@@ -97,9 +111,11 @@ const rowsData3 = [
           <Route path='/popup' element={<PopUp/>}/>
 
           <Route path='/sideBar' element={<SideBar userRole="testeur"/>}/>
+          <Route path='/searchBar' element={<SearchBar/>}/>
 
           <Route path='/header' element={<Header/>}/>
           <Route path='/headerbis' element={<HeaderBis/>}/>
+          <Route path='/headersettings' element={<HeaderSettings/>}/>
 
           <Route path='/notification' element={<NotificationBar/>}/>
           <Route path='/notificationpopup' element={<NotificationPopup/>}/>
@@ -112,20 +128,33 @@ const rowsData3 = [
           <Route path='/addclientForm' element={<AddClientForm title="Ajouter un nouveau client" />}/>
           <Route path='/addmissionForm' element={<AddMissionForm title="Ajouter une mission" />}/>
           <Route path='/adduserForm' element={<AddUserForm title="Ajouter un nouveau utilisateur" />}/> 
+          <Route path='/changePWForm' element={<PasswordChange title="Changer mon mot de passe" />}/>
+          <Route path="/coucheForm" element={<AddCoucheForm  title="" />} /> 
+          <Route path="/categorieForm" element={<AddCategorieForm title="" />} />
+          <Route path="/otp" element={<OTPPage/>} />
+          
 
           { /*-----------------tables-----------------------------*/  }
           <Route path='/table' element={<Table  columnsConfig={columnsConfig} rowsData={rowsData}   checkboxSelection={true} /> }/>    
-          <Route path='/tablemission' element={<Table  columnsConfig={columnsConfig2} rowsData={rowsData2}   checkboxSelection={false} /> }/>  
+          <Route path='/tablemission' element={<Table  columnsConfig={columnsConfig2} rowsData={rowsData2}   checkboxSelection={false}  getRowLink={getRowLink} /> }/>  
           <Route path='/tableApp' element={<Table  columnsConfig={columnsConfig3} rowsData={rowsData3}   checkboxSelection={false} /> }/> 
 
 
           <Route path='/missionInfo' element={<MissionInfo/>}/>
           <Route path='/statusmission' element={<StatusMission  status="en_cours"/>}/>
           
+          <Route path="/tablemission/:mission" element={<MissionDetail />} />
+          
+
+         
+          
+          
           
         </Routes>
+        </BreadcrumbProvider>
         
        </div>
+      
       
     </>
 

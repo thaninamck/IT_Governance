@@ -34,15 +34,21 @@
     border-radius: 8px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
     width: auto;
-    
     /*min-width: 700px;*/
     min-height: 300px;
   }
-  
+  .password_container{
+    box-shadow: none;
+  }
+ 
   .appForm_container p {
     text-align: center;
     margin: 4% 0%;
     font-weight: 500;
+  }
+  .password_container p {
+    text-align:left;
+    
   }
   .close-button {
     position: absolute;
@@ -74,15 +80,22 @@
     color: var(--alert-red);
   }
   
- .appForm_container .form-row{
+ .form-row{
   display: flex;
   gap: 20px;
   flex-direction: row;
+  align-items: center;
   justify-content: space-between;
- 
-  
- 
  }
+ 
+ .align_end{
+  align-items:flex-end;
+ }
+  .coucheForm_container{
+    min-height: 200px;
+    box-shadow: none;
+    border-radius: 0px;
+  }
   
 
   
