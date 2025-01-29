@@ -1,4 +1,5 @@
 import React from 'react';
+import Separator from '../Decorators/Separator.jsx';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import '../../index.css';
 
@@ -17,6 +18,9 @@ const PopUp = ({text,redirectionURL}) => {
 >
         Terminer
       </a>
+
+
+      
     </div>
   );
 };

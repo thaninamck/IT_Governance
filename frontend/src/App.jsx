@@ -21,6 +21,7 @@ import Table from './components/Table';
 import SingleOptionSelect from './components/Selects/SingleOptionSelect';
 import MultiOptionSelect from './components/Selects/MultiOptionSelect';
 import MissionInfo from './components/InfosDisplay/MissionInfo';
+
 import StatusMission from './components/StatusMission';
 import MissionDetail from './components/MissionDetail';
 import { BreadcrumbProvider } from './Context/BreadcrumbContext';
@@ -31,6 +32,11 @@ import AddCategorieForm from './components/Forms/AddCategorieForm';
 import OTPPage from './components/OTPPage';
 import HeaderSettings from './components/Header/HeaderSettings';
 import SearchBar from './components/SearchBar';
+import EvidenceList from './components/Evidences/EvidenceList';
+import Separator from './components/Decorators/Separator';
+import Test from './components/ModalWindows/Test';
+import ModalWindow from './components/ModalWindows/ControlModalWindow';
+
 
 function App() {
   const getRowLink = (row) => `/tablemission/${row.mission}`;
@@ -109,7 +115,7 @@ const rowsData3 = [
           <Route path='/decisionpopup' element={<DecisionPopUp confirmURL={'#'} denyURL={'#'} text={'etes vous sure de vouloir supprimer la mission?'}/>}/>
           <Route path='/insertionpopup' element={<InsertionPopUp value={50} finishingURL={'#'}/>}/>
           <Route path='/popup' element={<PopUp/>}/>
-
+          <Route path='/sep' element={<Separator/>}/>
           <Route path='/sideBar' element={<SideBar userRole="testeur"/>}/>
           <Route path='/searchBar' element={<SearchBar/>}/>
 
@@ -142,6 +148,10 @@ const rowsData3 = [
 
           <Route path='/missionInfo' element={<MissionInfo/>}/>
           <Route path='/statusmission' element={<StatusMission  status="en_cours"/>}/>
+          <Route path='/test' element={<Test/>}></Route>
+          <Route path='/win' element={<ModalWindow  />}></Route>
+          
+          
           
           <Route path="/tablemission/:mission" element={<MissionDetail />} />
           

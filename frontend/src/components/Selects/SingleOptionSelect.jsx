@@ -8,7 +8,7 @@ import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import Checkbox from '@mui/material/Checkbox';
 
-const SingleOptionSelect = ({ placeholder, width, statuses, onChange }) => {
+const SingleOptionSelect = ({ placeholder, width, statuses, onChange,checkedStatus }) => {
   const ITEM_HEIGHT = 48;
   const ITEM_PADDING_TOP = 8;
   const MenuProps = {
@@ -21,7 +21,7 @@ const SingleOptionSelect = ({ placeholder, width, statuses, onChange }) => {
   };
 
   // État pour une seule option sélectionnée
-  const [selectedStatus, setSelectedStatus] = React.useState(null);
+  const [selectedStatus, setSelectedStatus] = React.useState(checkedStatus);
 
   const handleChange = (event) => {
     const {

@@ -72,6 +72,7 @@ const AddEquipe = () => {
                   width={250}
                   statuses={members}
                   onChange={(id, name) => handleMemberChange(index, id, name)}
+                  checkedStatus={[]}
                 />
 
                 {/* Sélection du rôle */}
@@ -80,6 +81,7 @@ const AddEquipe = () => {
                   width={90}
                   statuses={roles}
                   onChange={(id, name) => handleRoleChange(index, id, name)}
+                  checkedStatus={[]}
                 />
 
                 {/* Affiche le bouton "Ajouter un autre collaborateur" uniquement pour le dernier collaborateur */}
