@@ -117,7 +117,7 @@ const rowsData3 = [
           <Route path='/insertionpopup' element={<InsertionPopUp value={50} finishingURL={'#'}/>}/>
           <Route path='/popup' element={<PopUp/>}/>
           <Route path='/sep' element={<Separator/>}/>
-          <Route path='/sideBar' element={<SideBar userRole="testeur"/>}/>
+          <Route path='/sideBar' element={<SideBar userRole="admin"/>}/>
           <Route path='/searchBar' element={<SearchBar/>}/>
 
           <Route path='/header' element={<Header/>}/>

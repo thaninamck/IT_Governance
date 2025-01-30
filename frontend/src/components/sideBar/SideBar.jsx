@@ -1,8 +1,11 @@
 import React, { useState } from 'react';
 import "./SideBar.css";
 import icons from '../../assets/Icons'; // Importation des icônes
+import ArrowBackIosNewRoundedIcon from '@mui/icons-material/ArrowBackIosNewRounded';
+import MenuRoundedIcon from '@mui/icons-material/MenuRounded';
 
 function SideBar({ userRole }) {
+  const [isExpanded, setIsExpanded] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
 
   const menuItems = {
@@ -29,7 +32,15 @@ function SideBar({ userRole }) {
   const LogoutIcon = icons["logout"];
 
   return (
-    <div className="sideBar_container">
+    <div className={`sidebar_container ${isExpanded ? "expanded" : "collapsed"}`}>
+    {/* Bouton pour ouvrir/fermer le menu */}
+    <div className="toggle_icon" onClick={() => setIsExpanded(!isExpanded)}>
+      {isExpanded ? <ArrowBackIosNewRoundedIcon sx={{color:"white" ,width:"25px",height:"25px"}}  /> : <MenuRoundedIcon sx={{color:"white" ,width:"38px",height:"38px"}} />}
+    </div>
+
+    {/* Affichage du menu complet si ouvert */}
+    {isExpanded && (
+      <>
       <div className='user_info'>
         <div>LK</div>
         <h3>Lotfi Koliai</h3>
@@ -67,6 +78,8 @@ function SideBar({ userRole }) {
         </li>
         </ul>
       </div>
+      </>
+    )}
     </div>
   );
 }

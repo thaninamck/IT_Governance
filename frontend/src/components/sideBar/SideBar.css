@@ -11,12 +11,51 @@
     flex-direction: column;
     justify-content: space-between; /* Répartir les éléments sur toute la hauteur */
     transition: width 0.3s ease-in-out;
+    position: fixed;
+  top: 0;
+  left: 0;
+  overflow: hidden;
    
     
 }
+.collapsed {
+    width: 60px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100vh; /* Par défaut, la hauteur est basée sur la hauteur de la fenêtre */
+    transition: width 0.3s ease-in-out;
+    background-color: var(--blue-menu);
+    border-radius: 0% 5px 5px 0%;
+  }
+  
+  .expanded {
+    width: 20%; /* Ajustable pour les grands écrans */
+    min-width: 220px; /* Largeur minimale */
+    max-width: 280px; /* Largeur maximale */
+    height: 100vh; /* Par défaut, la hauteur est basée sur la hauteur de la fenêtre */
+    
+    background-color: var(--blue-menu);
+    border-radius: 0% 5px 5px 0%;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; /* Répartir les éléments sur toute la hauteur */
+    transition: width 0.3s ease-in-out;
+  }
+  
+  .toggle_icon {
+    display: flex;
+    align-items: center;
+    justify-content:right;
+    cursor: pointer;
+    padding: 10px;
+  }
+  
+  
 
 /* Section information de l'utilisateur */
-.sideBar_container .user_info {
+ .user_info {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -25,7 +64,7 @@
    
 }
 
-.sideBar_container .user_info > div {
+ .user_info > div {
     width: 60px;
     height: 60px;
     background-color: var(--blue-nav);
@@ -39,7 +78,7 @@
     margin-bottom: 5%;
 }
 
-.sideBar_container .user_info > span {
+.user_info > span {
     color: var(--status-gray);
     font-weight: 400;
     font-size: 14px;
@@ -48,7 +87,7 @@
 }
 
 /* Liste des menus */
-.sideBar_container .menu_list {
+.menu_list {
     flex-grow: 1; /* Permet aux éléments de s'étendre */
     display: flex;
     flex-direction: column;
@@ -59,12 +98,12 @@
     
 }
 
-.sideBar_container .menu_items {
+ .menu_items {
     width: 85%;
   
 }
 
-.sideBar_container .menu_items .menu_item{
+ .menu_items .menu_item{
     display: flex;
     align-items: center;
     width: 100%;
@@ -80,7 +119,7 @@
 
 
 /* Élément actif */
-.sideBar_container .menu_items > .menu_item.active {
+.menu_items > .menu_item.active {
     background-color: var(--blue-hover);
 }
 
@@ -90,7 +129,7 @@
     
 }
 /* Style spécifique pour "Se déconnecter" */
-.sideBar_container .logout_item {
+.logout_item {
     margin-top: 10%; /* Positionne en bas */
     padding: 12px 0px;
     cursor: pointer;
@@ -102,7 +141,7 @@
 
 /* 📌 Responsivité */
 @media (max-width: 1024px) {
-    .sideBar_container {
+    .expanded{
         width: 25%;
         min-width: 180px;
         height: 70vh;
@@ -110,31 +149,31 @@
 }
 
 @media (max-height: 700px) {
-    .sideBar_container {
+    .expanded {
         width: 25%;
         min-width: 180px;
         height: 830px;
     }
 }
 @media (max-width: 768px) {
-    .sideBar_container {
+    .expanded {
         width: 100px;
         height: 60vh; /* Réduit la taille pour les tablettes */
     }
     
     
-    .sideBar_container .menu_items > li span {
+     .menu_items > li span {
         display: none; /* Cache le texte */
     }
 }
 
 @media (max-width: 480px) {
-    .sideBar_container {
+    .expanded {
         width: 80px; /* Encore plus compact pour les petits écrans */
         height: 50vh;
     }
 
-    .sideBar_container .user_info > h3 {
+    .user_info > h3 {
         display: none; /* Cache le nom */
     }
 }
