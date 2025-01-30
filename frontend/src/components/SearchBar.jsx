@@ -1,21 +1,69 @@
 import React, { useState } from "react";
 import { Search } from "lucide-react";
+import Table from "./Table";
 
 function  SearchBar ({ onSearch })  {
   const [isAdvancedSearchOpen, setIsAdvancedSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [filters, setFilters] = useState({
-    dateRange: "",
-    category: "",
+   // dateRange: "",
+    role: "",
   });
 
   const toggleAdvancedSearch = () => {
     setIsAdvancedSearchOpen(!isAdvancedSearchOpen);
   };
 
-  const handleSearch = () => {
+  
+
+  const columnsConfig2 = [
+  
+    { field: 'statusMission', headerName: 'Status', width: 180 },
+    { field: 'mission', headerName: 'Mission', width: 180 },
+    { field: 'client', headerName: 'Client', width: 180 },
+    { field: 'role', headerName: 'Role', width: 180 },
+    { field: 'actions', headerName: 'Actions', width: 80 },
+  ];
+  
+  
+  // Données originales du tableau
+  const initialRows = [
+    { id: 1, statusMission: 'en_cours', mission: 'DSP', client: 'Djeezy', role: 'Manager'},
+    { id: 2, statusMission: 'terminee', mission: 'DSP1', client: 'Oredoo', role: 'Testeur' },
+    { id: 3, statusMission: 'non_commencee', mission: 'DSP2', client: 'Mazars', role: 'Testeur' },
+    { id: 4, statusMission: 'en_retard', mission: 'DSP3', client: 'Djeezy', role: 'Superviseur'},
+  ];
+  const getRowLink = (row) => `/tablemission/${row.mission}`;
+
+   // 🔹 État des données filtrées
+   const [filteredRows, setFilteredRows] = useState(initialRows);
+
+   const handleSearch = () => {
     console.log("Recherche :", searchQuery, filters);
+   
+
+    const filtered = initialRows.filter((row) => {
+      // 🔎 Vérifie si le `searchQuery` correspond à l'une des colonnes
+      const matchesSearch = searchQuery === "" || 
+        row.mission.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        row.client.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        row.role.toLowerCase().includes(searchQuery.toLowerCase());
+        
+
+      // Vérifie le role (si sélectionnée)
+     const matchesRole = filters.role === "" || row.role === filters.role;
+
+      // 🔎 Filtrage par date (à adapter selon ton format)
+      //const matchesDate = true; // (Ajoute ici la logique pour filtrer par date si nécessaire)
+
+      return matchesSearch && matchesRole /*&& matchesDate*/;
+      
+    });
+    console.log(filtered)
+    setFilteredRows(filtered);
+    
   };
+
 
   return (
     <div className="p-6  w-[700px]  ">
@@ -28,6 +76,7 @@ function  SearchBar ({ onSearch })  {
           placeholder="Tapez un mot clé"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
+          onKeyDown={(e) => e.key === "Enter" && handleSearch()} // Déclenche la recherche avec "Entrée"
         />
         <button
           onClick={handleSearch}
@@ -64,19 +113,19 @@ function  SearchBar ({ onSearch })  {
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-600">
-                Catégorie
+                Role
               </label>
               <select
                 className="w-full bg-gray-100 rounded-md border border-gray-300 p-1 mt-1 focus:outline-none focus:ring focus:ring-blue-300"
-                value={filters.category}
+                value={filters.role}
                 onChange={(e) =>
-                  setFilters({ ...filters, category: e.target.value })
+                  setFilters({ ...filters, role: e.target.value })
                 }
               >
                 <option value="">Toutes</option>
-                <option value="finance">Finance</option>
-                <option value="audit">Audit</option>
-                <option value="tech">Technologie</option>
+                <option value="Testeur">Testeur</option>
+                <option value="Manager">Manager</option>
+                <option value="Superviseur">Superviseur</option>
               </select>
             </div>
           </div>
@@ -90,6 +139,9 @@ function  SearchBar ({ onSearch })  {
           </div>
         </div>
       )}
+      {console.log("Données envoyées à Table :", filteredRows)}
+      <Table key={filteredRows.length} columnsConfig={columnsConfig2} rowsData={filteredRows} checkboxSelection={false} getRowLink={getRowLink} />
+
     </div>
   );
 };
