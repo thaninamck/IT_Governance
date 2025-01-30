@@ -41,6 +41,23 @@
     box-shadow: none;
   }
  
+  .signup_container .input-field {
+    border: 1.5px solid var(--blue-menu);
+
+  }
+  .signup_container .input-field::placeholder{
+    font-size: 14px;
+    color: var(--subfont-gray);
+  }
+  .signup_container p{
+    font-size: 30px;
+    letter-spacing: 3px;
+  }
+  .signup_container p span{
+   
+    font-weight: 700;
+    letter-spacing: 3px;
+  }
   .appForm_container p {
     text-align: center;
     margin: 4% 0%;
@@ -105,4 +122,19 @@
   
 #multi-line-input{
   display: block;
+}
+
+.signup_container .forgot-password {
+  text-align: right;
+  width: 100%;
+  margin-top: 9px;
+}
+
+.signup_container .forgot-password a {
+  text-decoration: none;
+  font-size: 12px;
+}
+
+.signup_container .forgot-password a:hover {
+  text-decoration: underline;
 }

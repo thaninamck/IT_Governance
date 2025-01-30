@@ -36,6 +36,7 @@ import EvidenceList from './components/Evidences/EvidenceList';
 import Separator from './components/Decorators/Separator';
 import Test from './components/ModalWindows/Test';
 import ModalWindow from './components/ModalWindows/ControlModalWindow';
+import SignUpForm from './components/Forms/SignUpForm';
 
 
 function App() {
@@ -138,7 +139,7 @@ const rowsData3 = [
           <Route path="/coucheForm" element={<AddCoucheForm  title="" />} /> 
           <Route path="/categorieForm" element={<AddCategorieForm title="" />} />
           <Route path="/otp" element={<OTPPage/>} />
-          
+          <Route path="/signupForm" element={<SignUpForm title="Forvis Mazars" />} />
 
           { /*-----------------tables-----------------------------*/  }
           <Route path='/table' element={<Table  columnsConfig={columnsConfig} rowsData={rowsData}   checkboxSelection={true} /> }/>    
