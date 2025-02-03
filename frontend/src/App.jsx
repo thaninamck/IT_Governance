@@ -2,6 +2,7 @@ import { useState } from 'react'
 import PopUp from './components/PopUps/PopUp';
 import DecisionPopUp from './components/PopUps/DecisionPopUp';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import './App.css'
 import './index.css'
 import InsertionPopUp from './components/PopUps/InsertionPopUp';
@@ -37,6 +38,7 @@ import Separator from './components/Decorators/Separator';
 import Test from './components/ModalWindows/Test';
 import ModalWindow from './components/ModalWindows/ControlModalWindow';
 import SignUpForm from './components/Forms/SignUpForm';
+import Notification from './pages/Notification';
 
 
 function App() {
@@ -103,13 +105,24 @@ const rowsData3 = [
   // Ajoute d'autres lignes avec des ids uniques
 ];
 
+const location = useLocation();
+
+// Liste des chemins où Breadcrumbs doit être affiché
+const breadcrumbRoutes = [
+  "/tablemission",
+  "/missionInfo",
+  "/statusmission",
+  "/table",
+  "/tableApp"
+];
 
   return (
     <>
     
        <div className="App">
        <BreadcrumbProvider>
-       <Breadcrumbs/>
+       {/* Afficher Breadcrumbs uniquement si le chemin est dans la liste */}
+       {breadcrumbRoutes.some(route => location.pathname.startsWith(route)) && <Breadcrumbs />}
         <Routes>
         { /*-----------------Popup-----------------------------*/  }
           <Route path='/popup' element={<PopUp redirectionURL={'#'} text={'mission crée'}/>}/>
@@ -124,7 +137,7 @@ const rowsData3 = [
           <Route path='/headerbis' element={<HeaderBis/>}/>
           <Route path='/headersettings' element={<HeaderSettings/>}/>
 
-          <Route path='/notification' element={<NotificationBar/>}/>
+          <Route path='/notification' element={<Notification/>}/>
           <Route path='/notificationpopup' element={<NotificationPopup/>}/>
 
           { /*-----------------Forms-----------------------------*/  }
