@@ -2,7 +2,7 @@
     width: 20%; /* Ajustable pour les grands écrans */
     min-width: 220px; /* Largeur minimale */
     max-width: 280px; /* Largeur maximale */
-    height: 100vh; /* Par défaut, la hauteur est basée sur la hauteur de la fenêtre */
+    height:min-content; /* Par défaut, la hauteur est basée sur la hauteur de la fenêtre */
     
     background-color: var(--blue-menu);
     border-radius: 0% 5px 5px 0%;
@@ -124,7 +124,7 @@
 }
 
 .logout_section {
-    padding-bottom: 30px;
+  
     width: 90%;
     
 }
@@ -155,11 +155,14 @@
         height: 830px;
     }
 }
-@media (max-width: 768px) {
+@media (min-height: 600px) {
     .expanded {
-        width: 100px;
-        height: 60vh; /* Réduit la taille pour les tablettes */
+        width: 25%;
+        min-width: 180px;
+        height: 800px;
     }
+}
+@media (max-width: 768px) {
     
     
      .menu_items > li span {

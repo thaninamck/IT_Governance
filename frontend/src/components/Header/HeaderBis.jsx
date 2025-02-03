@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import "./Header.css";
 import icons from '../../assets/Icons'; // Importer l'objet contenant les icônes
+import NotificationPopup from '../Notification/NotificationPopup';
 
 function HeaderBis() {
     const navigate = useNavigate();
@@ -20,29 +21,23 @@ function HeaderBis() {
             <div className="notification_icon_container">
               <icons.notifications 
                 className="icon_notifications" 
-                sx={{ color: 'var(--blue-icons)', cursor: 'pointer' }} 
+                sx={{ color: 'var(--blue-icons)', cursor: 'pointer' ,marginRight:"10px"}} 
                 onClick={() => {
                   setShowNotifications(!showNotifications);
                   setUnreadCount(0); // Réinitialiser les notifications non lues quand le popup est ouvert
                 }} 
               />
-              {/* Marqueur des notifications non lues */}
-              {unreadCount > 0 && <span className="notification_marker">{unreadCount}</span>}
+              {/* Marqueur des notifications non lues 
+              {unreadCount > 0 && <span className="notification_marker">{unreadCount}</span>}*/}
             </div>
   
             {showNotifications && (
-              <div className="notifications_popup">
-                <p>🔔 Nouvelle notification 1</p>
-                <p>🔔 Nouvelle notification 2</p>
-                <p>🔔 Nouvelle notification 3</p>
-              </div>
-            )}
+            <NotificationPopup setUnreadCount={setUnreadCount} />
+          )}
           </div>
   
          {/* Logout - Retour à la page de connexion */}
-<button className="logout_button" onClick={() => navigate('/login')}>
-  Se déconnecter
-</button>
+         <button className="logout_button" onClick={() => navigate('/login')}> Se déconnecter</button>
 
         </div>
       </div>
