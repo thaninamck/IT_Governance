@@ -12,7 +12,7 @@
 .headerbis_container {
     height: 70px;
     margin: 0;
-    padding: 0% 4% 0% 2%;
+    padding: 2% 2% 0% 2%;
     display: flex;
     align-items: center;
     justify-content: flex-end;
@@ -37,7 +37,6 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    width: 15%;
 }
 
 /* Notification styles */
@@ -126,7 +125,7 @@
     color: white;
     font-size: 14px;
     cursor: pointer;
-    padding: 10px;
+    padding: 7px;
     text-align: center;
     transition: background-color 0.3s ease, color 0.3s ease, border 0.3s ease;
 }
@@ -134,8 +133,10 @@
 /* Hover effect for logout button */
 .headerbis_container .logout_button:hover {
     background-color: transparent;
-    border: 2px solid var(--blue-icons);
+    border: 1px solid var(--blue-icons);
     color: var(--blue-icons);
+    font-size: 14px;
+   
 }
 
 /* --- Media Queries for responsiveness --- */
@@ -150,9 +151,7 @@
         width: 40%;  /* Adjust icons width for mobile */
     }
 
-    .headerbis_container .headerbis_icons {
-        width: 25%;  /* Adjust second icons container width */
-    }
+    
 
     .notifications_popup {
         width: 200px;  /* Smaller popup on mobile */
@@ -179,9 +178,7 @@
         width: 35%;  /* Adjust icons width for tablet */
     }
 
-    .headerbis_container .headerbis_icons {
-        width: 20%;  /* Adjust second icons container width */
-    }
+   
 
     .notifications_popup {
         width: 230px;  /* Slightly larger popup for tablets */

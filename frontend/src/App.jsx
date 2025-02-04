@@ -2,6 +2,7 @@ import { useState } from 'react'
 import PopUp from './components/PopUps/PopUp';
 import DecisionPopUp from './components/PopUps/DecisionPopUp';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import './App.css'
 import './index.css'
 import InsertionPopUp from './components/PopUps/InsertionPopUp';
@@ -38,6 +39,7 @@ import Test from './components/ModalWindows/Test';
 import ModalWindow from './components/ModalWindows/ControlModalWindow';
 import SignUpForm from './components/Forms/SignUpForm';
 import Login from './pages/Login';
+import Notification from './pages/Notification';
 
 import { useLocation } from 'react-router-dom';
 function App() {
@@ -114,6 +116,7 @@ const rowsData3 = [
 ];
 
 
+
   return (
     <>
     
@@ -135,7 +138,7 @@ const rowsData3 = [
           <Route path='/headerbis' element={<HeaderBis/>}/>
           <Route path='/headersettings' element={<HeaderSettings/>}/>
 
-          <Route path='/notification' element={<NotificationBar/>}/>
+          <Route path='/notification' element={<Notification/>}/>
           <Route path='/notificationpopup' element={<NotificationPopup/>}/>
 
           { /*-----------------Forms-----------------------------*/  }

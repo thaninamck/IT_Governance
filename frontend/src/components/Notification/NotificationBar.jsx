@@ -39,6 +39,27 @@ const NotificationBar = () => {
       date: "11 DEC à 9:42 AM",
       isRead: true,
     },
+    {
+      id: 6,
+      sender: "SL",
+      message: "Sara Lounes a ajouté une remarque concernant le contrôle 5.3 de la mission DSP.",
+      date: "11 DEC à 9:42 AM",
+      isRead: true,
+    },
+    {
+      id: 7,
+      sender: "SL",
+      message: "Sara Lounes a ajouté une remarque concernant le contrôle 5.3 de la mission DSP.",
+      date: "11 DEC à 9:42 AM",
+      isRead: true,
+    },
+    {
+      id: 8,
+      sender: "SL",
+      message: "Sara Lounes a ajouté une remarque concernant le contrôle 5.3 de la mission DSP.",
+      date: "11 DEC à 9:42 AM",
+      isRead: true,
+    },
   ]);
 
   // État pour stocker le filtre sélectionné (Tout ou Non lues)
