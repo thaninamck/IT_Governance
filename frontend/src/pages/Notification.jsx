@@ -7,7 +7,7 @@ function Notification() {
   return (
     <div className="flex ">
       {/* Barre latérale fixe */}
-      <SideBar userRole="manager" className=" flex-shrink-0 h-full fixed" />
+      <SideBar userRole="admin" className=" flex-shrink-0 h-full fixed" />
 
       {/* Contenu principal défilable */}
       <div className=" flex-1 flex flex-col h-screen overflow-y-auto">

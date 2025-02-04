@@ -40,6 +40,8 @@ import ModalWindow from './components/ModalWindows/ControlModalWindow';
 import SignUpForm from './components/Forms/SignUpForm';
 import Login from './pages/Login';
 import Notification from './pages/Notification';
+import ChangePassword from './pages/ChangePassword';
+import AdminHomePage from './pages/AdminHomePage';
 
 import MyProfile from './pages/MyProfile';
 function App() {
@@ -138,7 +140,7 @@ const rowsData3 = [
           <Route path='/headerbis' element={<HeaderBis/>}/>
           <Route path='/headersettings' element={<HeaderSettings/>}/>
 
-          <Route path='/notification' element={<Notification/>}/>
+        
           <Route path='/notificationpopup' element={<NotificationPopup/>}/>
 
           { /*-----------------Forms-----------------------------*/  }
@@ -170,6 +172,13 @@ const rowsData3 = [
           <Route path='/myprofile' element={<MyProfile/>}></Route>
           
           <Route path="/tablemission/:mission" element={<MissionDetail />} />
+
+          {/*----------------------------Pages-------------------*/}
+          <Route path='/notification' element={<Notification/>}/>
+          <Route path='/changePw' element={<ChangePassword/>}/>
+          <Route path='/adminHomePage' element={<AdminHomePage/>}/>
+
+
           
 
          
