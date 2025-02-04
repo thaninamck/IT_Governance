@@ -37,6 +37,18 @@
     /*min-width: 700px;*/
     min-height: 300px;
   }
+  .appForm_container_login {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    width: auto;
+    /*min-width: 700px;*/
+    min-height: 300px;
+  }
   .password_container{
     box-shadow: none;
   }
@@ -59,6 +71,11 @@
     letter-spacing: 3px;
   }
   .appForm_container p {
+    text-align: center;
+    margin: 4% 0%;
+    font-weight: 500;
+  }
+  .appForm_container_login p {
     text-align: center;
     margin: 4% 0%;
     font-weight: 500;
