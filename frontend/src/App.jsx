@@ -39,6 +39,8 @@ import Test from './components/ModalWindows/Test';
 import ModalWindow from './components/ModalWindows/ControlModalWindow';
 import SignUpForm from './components/Forms/SignUpForm';
 import Notification from './pages/Notification';
+import ChangePassword from './pages/ChangePassword';
+import AdminHomePage from './pages/AdminHomePage';
 
 
 function App() {
@@ -137,7 +139,7 @@ const breadcrumbRoutes = [
           <Route path='/headerbis' element={<HeaderBis/>}/>
           <Route path='/headersettings' element={<HeaderSettings/>}/>
 
-          <Route path='/notification' element={<Notification/>}/>
+        
           <Route path='/notificationpopup' element={<NotificationPopup/>}/>
 
           { /*-----------------Forms-----------------------------*/  }
@@ -168,6 +170,13 @@ const breadcrumbRoutes = [
           
           
           <Route path="/tablemission/:mission" element={<MissionDetail />} />
+
+          {/*----------------------------Pages-------------------*/}
+          <Route path='/notification' element={<Notification/>}/>
+          <Route path='/changePw' element={<ChangePassword/>}/>
+          <Route path='/adminHomePage' element={<AdminHomePage/>}/>
+
+
           
 
          

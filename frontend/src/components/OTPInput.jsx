@@ -1,6 +1,6 @@
 import React, { useState, useRef } from "react";
 
-function OTPInput({ length = 4, onSubmit }) {
+function OTPInput({ length = 4, onClick }) {
     const [otp, setOtp] = useState(new Array(length).fill(""));
   const inputRefs = useRef([]);
 
@@ -51,7 +51,7 @@ function OTPInput({ length = 4, onSubmit }) {
         ))}
       </div>
       <button
-        onClick={() => onSubmit(otp.join(""))}
+        onClick={() => onClick(otp.join(""))}
         className="mt-4 px-6 py-2 bg-[--blue-menu] text-white rounded-md border-none "
       >
         Confirmer
