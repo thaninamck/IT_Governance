@@ -41,7 +41,7 @@ import SignUpForm from './components/Forms/SignUpForm';
 import Login from './pages/Login';
 import Notification from './pages/Notification';
 
-import { useLocation } from 'react-router-dom';
+import MyProfile from './pages/MyProfile';
 function App() {
   const getRowLink = (row) => `/tablemission/${row.mission}`;
   
@@ -167,7 +167,7 @@ const rowsData3 = [
           <Route path='/win' element={<ModalWindow  />}></Route>
           
           <Route path='/login' element={<Login  />}></Route>
-
+          <Route path='/myprofile' element={<MyProfile/>}></Route>
           
           <Route path="/tablemission/:mission" element={<MissionDetail />} />
           
