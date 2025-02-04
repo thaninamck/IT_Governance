@@ -20,7 +20,7 @@ function SignUpForm({ title }) {
       };
   return (
 
-    <form className="appForm_container signup_container" onSubmit={handleSubmit}>
+    <form className="appForm_container_login signup_container   " onSubmit={handleSubmit}>
     {/* Titre dynamique */}
     <p>
     <span style={{ color: '#0172D3' }}>{title.split(' ')[0]}</span>{' '}
@@ -47,12 +47,12 @@ function SignUpForm({ title }) {
       onChange={(e) => setPassword(e.target.value)}
     />
    {/* Lien "Mot de passe oublié ?" positionné à droite */}
-   <div className="forgot-password">
+   <div className="flex justify-center items-center mt-4 text-subfont-gray">
                 <a href="/reset-password">Mot de passe oublié ?</a>
             </div>
 
     {/* Bouton Créer */}
-    <Button btnName="Connexion" type="submit" />
+    <Button  btnName="Connexion" type="submit" />
   </form>
   )
 }

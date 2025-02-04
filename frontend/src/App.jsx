@@ -38,11 +38,12 @@ import Separator from './components/Decorators/Separator';
 import Test from './components/ModalWindows/Test';
 import ModalWindow from './components/ModalWindows/ControlModalWindow';
 import SignUpForm from './components/Forms/SignUpForm';
+import Login from './pages/Login';
 import Notification from './pages/Notification';
 import ChangePassword from './pages/ChangePassword';
 import AdminHomePage from './pages/AdminHomePage';
 
-
+import MyProfile from './pages/MyProfile';
 function App() {
   const getRowLink = (row) => `/tablemission/${row.mission}`;
   
@@ -56,7 +57,16 @@ function App() {
     { field: 'rapport', headerName: 'View Report', width: 180 },
     { field: 'actions', headerName: 'Actions', width: 180 }
 ];
+const location = useLocation();
 
+// Liste des chemins où Breadcrumbs doit être affiché
+const breadcrumbRoutes = [
+  "/tablemission",
+  "/missionInfo",
+  "/statusmission",
+  "/table",
+  "/tableApp"
+];
  /* const statuses = [
     [1, 'Applied'],
     [2, 'Not applied'],
@@ -107,16 +117,7 @@ const rowsData3 = [
   // Ajoute d'autres lignes avec des ids uniques
 ];
 
-const location = useLocation();
 
-// Liste des chemins où Breadcrumbs doit être affiché
-const breadcrumbRoutes = [
-  "/tablemission",
-  "/missionInfo",
-  "/statusmission",
-  "/table",
-  "/tableApp"
-];
 
   return (
     <>
@@ -167,7 +168,8 @@ const breadcrumbRoutes = [
           <Route path='/test' element={<Test/>}></Route>
           <Route path='/win' element={<ModalWindow  />}></Route>
           
-          
+          <Route path='/login' element={<Login  />}></Route>
+          <Route path='/myprofile' element={<MyProfile/>}></Route>
           
           <Route path="/tablemission/:mission" element={<MissionDetail />} />
 

@@ -50,7 +50,7 @@ const InsertionPopUp = ({ value, finishingURL }) => {
             {progressValue === 100 && (
                <a 
                href={finishingURL} 
-               className="bg-subfont-gray w-full sm:w-auto py-2 px-8 rounded-md text-white text-xs flex items-center justify-center 
+               className="bg-subfont-gray w-full sm:w-auto py-1 px-8 rounded-md text-white  text-xs sm:text-sm flex items-center justify-center 
                sm:py-1 sm:px-4 max-lg:px-6 max-lg:py-2">
                Terminer
            </a>
