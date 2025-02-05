@@ -3,8 +3,8 @@ import InputForm from './InputForm';
 import './FormStyle.css';
 import Button from '../Button';
 
-function AddUserForm({ title }) {
-  const [open, setOpen] = useState(true);
+function AddUserForm({ title ,isOpen, onClose }) {
+  if (!isOpen) return null; // Ne pas afficher le modal si isOpen est false
 
   // États pour chaque champ
   const [lastName, setLastName] = useState('');
@@ -16,9 +16,7 @@ function AddUserForm({ title }) {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
 
-  const handleClose = () => {
-    setOpen(false);
-  };
+ 
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -38,10 +36,11 @@ function AddUserForm({ title }) {
   };
 
   return (
-    open && (
-      <form className="appForm_container" onSubmit={handleSubmit}>
+    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-md z-50">
+   
+      <form className="appForm_container " onSubmit={handleSubmit}>
         {/* Icône Close */}
-        <button className="close-button" type="button" onClick={handleClose}>
+        <button className="close-button" type="button" onClick={onClose}>
           &times;
         </button>
 
@@ -131,7 +130,8 @@ function AddUserForm({ title }) {
         {/* Bouton Créer */}
         <Button btnName="Créer" type="submit" />
       </form>
-    )
+      </div>
+    
   );
 }
 

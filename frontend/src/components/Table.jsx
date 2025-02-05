@@ -50,9 +50,9 @@ function ExpandableCell({ value, maxInitialLength = 50, onExpand }) {
                 <span style={{ 
                     color: 'blue', 
                     marginLeft: '2px',
-                    fontSize: '0.8em'
+                    fontSize: '0.5em'
                 }}>
-                    {isExpanded ? '(Réduire)' : '(Développer)'}
+                    {isExpanded ? 'Réduire' : 'Développer'}
                 </span>
             )}
         </div>
@@ -60,11 +60,10 @@ function ExpandableCell({ value, maxInitialLength = 50, onExpand }) {
 }
 
 
-function Table({ columnsConfig, rowsData, checkboxSelection = false,getRowLink }) {
+function Table({ columnsConfig, rowsData, checkboxSelection = false,getRowLink ,headerBackground = "transparent",statusOptions = [], statusColors = { } ,rowActions = []}) {
 
     const { setBreadcrumbs } = useBreadcrumb();
     const navigate = useNavigate(); // Hook pour la navigation
-
     const [rows, setRows] = React.useState(rowsData);
     const [expandedCells, setExpandedCells] = React.useState({});
     const [selectionModel, setSelectionModel] = React.useState([]);
@@ -117,7 +116,14 @@ function Table({ columnsConfig, rowsData, checkboxSelection = false,getRowLink }
                                 value={params.row.status}
                                 onChange={(e) => handleStatusChange(e, params.row.id)}
                                 displayEmpty
-                                renderValue={(selected) => selected || "Choisir un statut"}
+                                renderValue={(selected) => {
+                                    const color = statusColors[selected] || 'gray'; // Détermine la couleur du statut sélectionné
+                                    return (
+                                        <span style={{ color: color }}>
+                                            {selected || "Choisir un statut"}
+                                        </span>
+                                    );
+                                }}
                                 sx={{
                                     fontSize: "14px",
                                     height: "40px",
@@ -125,12 +131,28 @@ function Table({ columnsConfig, rowsData, checkboxSelection = false,getRowLink }
                                     borderRadius: "4px",
                                 }}
                             >
-                                <MuiMenuItem value="Active">Active</MuiMenuItem>
-                                <MuiMenuItem value="Inactive">Inactive</MuiMenuItem>
-                                <MuiMenuItem value="Pending">Pending</MuiMenuItem>
+                                {statusOptions.map((status,color) => (
+                                    <MuiMenuItem key={status} value={status}  style={{ color: statusColors[status] || 'gray' }}>
+                                        {status}
+                                    </MuiMenuItem>
+                                ))}
                             </Select>
                         </FormControl>
                     );
+                }
+                if (colConfig.field === 'dateField') {
+                    // Formater la date en "DEC 27, 2024"
+                    const date = new Date(params.value);
+                    const formattedDate = date.toLocaleString('en-US', { month: 'short', day: '2-digit', year: 'numeric' }).toUpperCase();
+    
+                    return <span>{formattedDate}</span>;
+                }
+                if (colConfig.field === 'dateField1') {
+                    // Formater la date en "DEC 27, 2024"
+                    const date = new Date(params.value);
+                    const formattedDate = date.toLocaleString('en-US', { month: 'short', day: '2-digit', year: 'numeric' }).toUpperCase();
+    
+                    return <span>{formattedDate}</span>;
                 }
                 if (colConfig.field === 'rapport') {
                     return (
@@ -194,16 +216,8 @@ function Table({ columnsConfig, rowsData, checkboxSelection = false,getRowLink }
         setAnchorEl(null);
     };
 
-    const handleDeleteRow = () => {
-        setRows(rows.filter((row) => row.id !== selectedRowId));
-        handleClose();
-    };
-
-    const handleHideRow = () => {
-        handleClose();
-    };
-
-    const handleEditRow = () => {
+    const handleRowAction = (action, rowId) => {
+        action.onClick(rowId);  // Appeler la fonction `onClick` de l'action
         handleClose();
     };
 
@@ -221,7 +235,7 @@ function Table({ columnsConfig, rowsData, checkboxSelection = false,getRowLink }
     };
 
     return (
-        <Paper sx={{ margin: "3%", width:"max-content" }}>
+        <Paper sx={{ margin: "0% 3%", width:"max-content" }}>
            <DataGrid
     rows={rows}
     columns={columns}
@@ -247,8 +261,8 @@ function Table({ columnsConfig, rowsData, checkboxSelection = false,getRowLink }
            
            
         },
-        '& .MuiDataGrid-columnHeaders': {
-            backgroundColor: "#f4f4f4",
+        '& .MuiDataGrid-columnHeader': {
+            backgroundColor: headerBackground,
             fontSize: "16px",
             fontWeight: "bold",
             borderBottom: "2px solid #ddd",
@@ -261,14 +275,20 @@ function Table({ columnsConfig, rowsData, checkboxSelection = false,getRowLink }
         },
     }}
 />
-            <Menu
+<Menu
                 anchorEl={anchorEl}
                 open={Boolean(anchorEl)}
                 onClose={handleClose}
             >
-                <MenuItem onClick={handleEditRow}>Edit Row</MenuItem>
-                <MenuItem onClick={handleDeleteRow}>Delete Row</MenuItem>
-                <MenuItem onClick={handleHideRow}>Hide Row</MenuItem>
+                {rowActions.map((action, index) => (
+                    <MenuItem
+                        key={index}
+                        onClick={() => handleRowAction(action, selectedRowId)}
+                    >
+                        {action.icon}
+                        {action.label}
+                    </MenuItem>
+                ))}
             </Menu>
         </Paper>
     );

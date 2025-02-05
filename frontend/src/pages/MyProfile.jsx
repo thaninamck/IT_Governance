@@ -15,7 +15,7 @@ const MyProfile = () => {
     <main className="flex flex-wrap sm:min-h-screen  bg-gray-100">
       {/* Barre latérale */}
      
-      <SideBar />
+      <SideBar userRole="admin" />
       {/* Contenu principal */}
       <div className="bg-white min-h-screen flex overflow-auto flex-1 items-center justify-center p-6   rounded-lg">
         <div className="  flex flex-col  gap-96 sm:flex sm:relative sm:flex-row sm:gap-x-96  ">
