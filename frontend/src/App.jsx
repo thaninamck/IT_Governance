@@ -44,6 +44,7 @@ import ChangePassword from './pages/ChangePassword';
 import AdminHomePage from './pages/AdminHomePage';
 
 import MyProfile from './pages/MyProfile';
+import ManageControls from './pages/ManageControls';
 function App() {
   const getRowLink = (row) => `/tablemission/${row.mission}`;
   
@@ -177,6 +178,7 @@ const rowsData3 = [
           <Route path='/notification' element={<Notification/>}/>
           <Route path='/changePw' element={<ChangePassword/>}/>
           <Route path='/adminHomePage' element={<AdminHomePage/>}/>
+          <Route path='/controlsManager' element={<ManageControls/>}/>
 
 
           
