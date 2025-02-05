@@ -96,44 +96,42 @@ const ManageControls = () => {
               <Button variant="contained">Ajouter un contrôle</Button>
             </div>
 
+            <div className="flex justify-center ml-12 mt-12">
+              {/* Contenu des onglets */}
+              <TabPanel
+                sx={{
+                  "& .MuiTabPanel-root": {
+                    backgroundColor: "transparent",
+                  },
+                }}
+                value={0}
+                className="h-full flex-1 w-full   overflow-auto"
+              >
+                <Table
+                  columnsConfig={columnsConfig}
+                  rowsData={rowsData}
+                  checkboxSelection={false}
+                  className="w-full "
+                  sx={{
+                    "& .MuiTabPanel-root": {
+                      backgroundColor: "green",
+                    },
+                  }}
+                />
+              </TabPanel>
 
-<div className="flex justify-center ml-12">
-{/* Contenu des onglets */}
-<TabPanel
-              sx={{
-                "& .MuiTabPanel-root": {
-                  backgroundColor: "transparent",
-                },
-              }}
-              value={0}
-              className="h-full flex-1 w-full   overflow-auto"
-            >
-              <Table
-                columnsConfig={columnsConfig}
-                rowsData={rowsData}
-                checkboxSelection={false}
-                className="w-full "
+              <TabPanel
                 sx={{
                   "& .MuiTabPanel-root": {
                     backgroundColor: "green",
                   },
                 }}
-              />
-            </TabPanel>
-
-            <TabPanel
-              sx={{
-                "& .MuiTabPanel-root": {
-                  backgroundColor: "green",
-                },
-              }}
-              value={1}
-              className="h-full flex-1 w-full overflow-auto"
-            >
-              <p>Contenu des risques à venir...</p>
-            </TabPanel>
-</div>
-            
+                value={1}
+                className="h-full flex-1 w-full overflow-auto"
+              >
+                <p>Contenu des risques à venir...</p>
+              </TabPanel>
+            </div>
           </Tabs>
         </div>
       </div>

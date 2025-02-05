@@ -120,9 +120,10 @@
 
 /* Logout button styling */
 .headerbis_container .logout_button {
-    background-color: var(--blue-icons);
+   
     border: none;
-    color: white;
+    color: var(--font-gray);
+    font-weight: 500;
     font-size: 14px;
     cursor: pointer;
     padding: 7px;
@@ -132,9 +133,9 @@
 
 /* Hover effect for logout button */
 .headerbis_container .logout_button:hover {
-    background-color: transparent;
+    color: var(--font-gray);
     border: 1px solid var(--blue-icons);
-    color: var(--blue-icons);
+    
     font-size: 14px;
    
 }

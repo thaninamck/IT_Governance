@@ -45,6 +45,8 @@ import AdminHomePage from './pages/AdminHomePage';
 
 import MyProfile from './pages/MyProfile';
 import ManageControls from './pages/ManageControls';
+import MissionListPage from './pages/MissionListPage';
+import GestionUtilisateur from './pages/GestionUtilisateur';
 function App() {
   const getRowLink = (row) => `/tablemission/${row.mission}`;
   
@@ -169,8 +171,7 @@ const rowsData3 = [
           <Route path='/test' element={<Test/>}></Route>
           <Route path='/win' element={<ModalWindow  />}></Route>
           
-          <Route path='/login' element={<Login  />}></Route>
-          <Route path='/myprofile' element={<MyProfile/>}></Route>
+         
           
           <Route path="/tablemission/:mission" element={<MissionDetail />} />
 
@@ -179,6 +180,10 @@ const rowsData3 = [
           <Route path='/changePw' element={<ChangePassword/>}/>
           <Route path='/adminHomePage' element={<AdminHomePage/>}/>
           <Route path='/controlsManager' element={<ManageControls/>}/>
+          <Route path='/login' element={<Login  />}></Route>
+          <Route path='/myprofile' element={<MyProfile/>}></Route>
+          <Route path='/missionList' element={<MissionListPage/>}></Route>
+          <Route path='/utilisateurs' element={<GestionUtilisateur/>}></Route>
 
 
           
