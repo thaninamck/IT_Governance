@@ -107,7 +107,7 @@ function Table({ columnsConfig, rowsData, checkboxSelection = false,getRowLink ,
             width: colConfig.width || 180,
             flex: colConfig.flex || 0,
             cellClassName: 'dynamic-height-cell',
-            editable: true,
+            editable: colConfig.editable || false,
             renderCell: (params) => {
                 if (colConfig.field === 'status') {
                     return (
@@ -284,6 +284,12 @@ function Table({ columnsConfig, rowsData, checkboxSelection = false,getRowLink ,
                     <MenuItem
                         key={index}
                         onClick={() => handleRowAction(action, selectedRowId)}
+                        sx={{
+                            '&.css-1rju2q6-MuiButtonBase-root-MuiMenuItem-root':{
+                                display:'flex',
+                                alignItems:'center',
+                            }
+                        }}
                     >
                         {action.icon}
                         {action.label}
