@@ -78,6 +78,8 @@ const ControlModalWindow = ({ isOpen, onClose, infosCntrl }) => {
     }
   };
 
+  
+
   const EnableEdit = () => {
     setIsEditing(true);
   };
