@@ -75,8 +75,6 @@ const ManageControls = () => {
     },
   };
 
- 
-
   const handleRiskRowSelectionChange = (newRowSelectionModel) => {
     const selectedRow = newRowSelectionModel; //  ligne sélectionnée
 
@@ -95,16 +93,18 @@ const ManageControls = () => {
   const handleArchiveRow = () => {};
   const handleEditRiskRow = () => {};
   const handleEditCntrlRow = (rowData) => {
-    console.log("Modifier le contrôle :", rowData.majorProcessCode)};
-   
+    console.log("Modifier le contrôle :", rowData.majorProcessCode);
+  };
 
   const cntrlRowActions = [
     {
       icon: <ArchiveIcon sx={{ marginRight: "5px" }} />,
       label: "Archiver",
       onClick: (selectedRow) => {
-        console.log("L'objet de la ligne sélectionnée pour l'archivage : ", selectedRow);
-       
+        console.log(
+          "L'objet de la ligne sélectionnée pour l'archivage : ",
+          selectedRow
+        );
       },
     },
     {
@@ -121,8 +121,10 @@ const ManageControls = () => {
       icon: <ArchiveIcon sx={{ marginRight: "5px" }} />,
       label: "Archiver",
       onClick: (selectedRow) => {
-        console.log("L'objet de la ligne sélectionnée pour l'archivage : ", selectedRow);
-       
+        console.log(
+          "L'objet de la ligne sélectionnée pour l'archivage : ",
+          selectedRow
+        );
       },
     },
     {
@@ -216,7 +218,7 @@ const ManageControls = () => {
       editable: false,
       renderCell: (params) =>
         Array.isArray(params.value)
-          ? params.value.map((s) => s.name || "Unknown").join(", ")
+          ? params.value.map((s) => s[0][0] || "Unknown").join(", ")
           : "No sources", // Gestion des valeurs absentes ou non conformes
     },
     { field: "actions", headerName: "Actions", width: 80 },
@@ -363,16 +365,23 @@ const ManageControls = () => {
                   <ImportCsvButton />
                   <Button variant="contained">Ajouter un risque</Button>
                 </div>
-                <div style={{ overflow: "auto", maxHeight: "400px" }}>
-                <Table
-                  columnsConfig={riskColumnsConfig}
-                  rowsData={risksData}
-                  checkboxSelection={false}
-                  rowActions={riskRowActions}
-                  allterRowcolors={true}
-                 /* onRowSelectionChange={handleRiskRowSelectionChange}*/ // au cas ou on veut la sélection
-                  className="w-full"
-                /></div>
+                <div style={{ overflow: "auto", maxHeight: "800px" ,minHeight: "400px",}}>
+                  {risksData.length === 0 ? (
+                    <p className="text-center text-subfont-gray mt-48">
+                      Aucun risque pour le moment. Vous pouvez charger un
+                      fichier Excel ?
+                    </p>
+                  ) : (
+                    <Table
+                      columnsConfig={riskColumnsConfig}
+                      rowsData={risksData}
+                      checkboxSelection={false}
+                      rowActions={riskRowActions}
+                      allterRowcolors={true}
+                      className="w-full"
+                    />
+                  )}
+                </div>
               </TabPanel>
 
               <TabPanel
@@ -391,21 +400,28 @@ const ManageControls = () => {
                 </div>
 
                 {/* Tableau avec défilement */}
-                <div style={{ overflow: "auto", maxHeight: "400px",minHeight:"400px" }}>
-                  <Table
-                    columnsConfig={controlColumnsConfig}
-                    rowsData={controlsData}
-                    checkboxSelection={false}
-                    rowActions={cntrlRowActions}
-                    /*onRowSelectionChange={handleRowSelectionChange1}*/ // au cas ou on veut la séléction
-                    allterRowcolors={true}
-                    className="w-full"
-                    sx={{
-                      "& .MuiTabPanel-root": {
-                        backgroundColor: "green",
-                      },
-                    }}
-                  />
+                <div
+                  style={{
+                    overflow: "auto",
+                    maxHeight: "400px",
+                    minHeight: "400px",
+                  }}
+                >
+                  {controlsData.length === 0 ? (
+                    <p className="text-center align-middle text-subfont-gray mt-48">
+                      Aucun contrôle pour le moment. Vous pouvez charger un
+                      fichier Excel ?
+                    </p>
+                  ) : (
+                    <Table
+                      columnsConfig={controlColumnsConfig}
+                      rowsData={controlsData}
+                      checkboxSelection={false}
+                      rowActions={cntrlRowActions}
+                      allterRowcolors={true}
+                      className="w-full"
+                    />
+                  )}
                 </div>
               </TabPanel>
             </div>
