@@ -75,11 +75,7 @@ const ManageControls = () => {
     },
   };
 
-  const infosRisk = {
-    Code: "32",
-    Nom: "Nom du risque",
-    Description: "Description du risque",
-  };
+ 
 
   const handleRiskRowSelectionChange = (newRowSelectionModel) => {
     const selectedRow = newRowSelectionModel; //  ligne sélectionnée
@@ -106,18 +102,17 @@ const ManageControls = () => {
     {
       icon: <ArchiveIcon sx={{ marginRight: "5px" }} />,
       label: "Archiver",
-      onClick: handleArchiveRow,
+      onClick: (selectedRow) => {
+        console.log("L'objet de la ligne sélectionnée pour l'archivage : ", selectedRow);
+       
+      },
     },
     {
       icon: <SquarePen className="mr-2" />,
       label: "Modifier",
-      onClick: (params) => {
-        console.log("Params reçus :", params); // DEBUG
-        if (params && params.row) {
-          handleEditCntrlRow(params.row);
-        } else {
-          console.error("Données de la ligne non trouvées !");
-        }
+      onClick: (selectedRow) => {
+        console.log("L'objet de la ligne sélectionnée : ", selectedRow);
+        handleRowSelectionChange1(selectedRow);
       },
     },
   ];
@@ -125,12 +120,18 @@ const ManageControls = () => {
     {
       icon: <ArchiveIcon sx={{ marginRight: "5px" }} />,
       label: "Archiver",
-      onClick: handleArchiveRow,
+      onClick: (selectedRow) => {
+        console.log("L'objet de la ligne sélectionnée pour l'archivage : ", selectedRow);
+       
+      },
     },
     {
       icon: <SquarePen className="mr-2" />,
       label: "Modifier",
-      onClick: handleEditRiskRow,
+      onClick: (selectedRow) => {
+        console.log("L'objet de la ligne sélectionnée : ", selectedRow);
+        handleRowSelectionChange1(selectedRow);
+      },
     },
   ];
 
@@ -204,6 +205,8 @@ const ManageControls = () => {
       field: "testScript",
       headerName: "Test Script",
       width: 260,
+      expandable: true,
+      maxInitialLength: 70,
       editable: false,
     },
     {
@@ -367,7 +370,7 @@ const ManageControls = () => {
                   checkboxSelection={false}
                   rowActions={riskRowActions}
                   allterRowcolors={true}
-                  onRowSelectionChange={handleRiskRowSelectionChange}
+                 /* onRowSelectionChange={handleRiskRowSelectionChange}*/ // au cas ou on veut la sélection
                   className="w-full"
                 /></div>
               </TabPanel>
@@ -394,7 +397,7 @@ const ManageControls = () => {
                     rowsData={controlsData}
                     checkboxSelection={false}
                     rowActions={cntrlRowActions}
-                    onRowSelectionChange={handleRowSelectionChange1}
+                    /*onRowSelectionChange={handleRowSelectionChange1}*/ // au cas ou on veut la séléction
                     allterRowcolors={true}
                     className="w-full"
                     sx={{

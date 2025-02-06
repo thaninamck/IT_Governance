@@ -283,7 +283,9 @@ const evenRowColor = "white"
   };
 
   const handleRowAction = (action, rowId) => {
-    action.onClick(rowId); // Appeler la fonction `onClick` de l'action
+    // Récupérer l'objet de la ligne en utilisant l'ID de la ligne
+  const selectedRow = rows.find(row => row.id === rowId); 
+  action.onClick(selectedRow); // Passez l'objet de la ligne à l'action
     handleClose();
   };
 
@@ -310,8 +312,9 @@ const evenRowColor = "white"
         checkboxSelection={checkboxSelection}
        
         getRowHeight={getRowHeight}
-        rowSelectionModel={rowSelectionModel}
-        onRowSelectionModelChange={handleRowSelectionChange}
+        /*rowSelectionModel={rowSelectionModel}
+        onRowSelectionModelChange={handleRowSelectionChange}*/ 
+        
        
            
              
