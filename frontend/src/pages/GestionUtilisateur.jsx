@@ -1,5 +1,4 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState } from 'react'
 import SideBar from '../components/sideBar/SideBar';
 import HeaderBis from '../components/Header/HeaderBis';
 import Table from '../components/Table';
@@ -7,6 +6,9 @@ import SearchBar from '../components/SearchBar';
 import HeaderWithAction from '../components/Header/HeaderWithAction';
 import AddUserForm from '../components/Forms/AddUserForm';
 import PersonOutlineRoundedIcon from '@mui/icons-material/PersonOutlineRounded';
+import { SquarePen} from 'lucide-react';
+import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
+
 
 function GestionUtilisateur() {
 
@@ -21,8 +23,8 @@ const statusColors = {
 };
 
   const columnsConfig2 = [
-    { field: 'username', headerName: 'Nom utilisateur', width: 180 },
-    { field: 'nom', headerName: 'Nom', width: 160 },
+    { field: 'username', headerName: 'Nom utilisateur', width: 180 ,editable: false },
+    { field: 'nom', headerName: 'Nom', width: 160 ,editable: true },
     { field: 'prenom', headerName: 'Prénom', width: 150 },
     { field: 'grade', headerName: 'Grade', width: 180 },
     { field: 'email', headerName: 'Email', width: 260 ,expandable: true,maxInitialLength: 20},
@@ -77,9 +79,9 @@ const handleHideRow = (rowId) => {
 };
 
 const rowActions = [
-    { icon: <PersonOutlineRoundedIcon/> ,label: "Voir Profile", onClick: handleEditRow },
-    { label: "Modifier", onClick: handleDeleteRow },
-    { label: "Supprimer utilisateur", onClick: handleHideRow },
+    { icon: <PersonOutlineRoundedIcon sx={{marginRight:"5px"}}/> ,label: "Voir Profile", onClick: handleEditRow },
+    { icon:<SquarePen className='mr-2' />,label: "Modifier", onClick: handleDeleteRow },
+    {icon:<ErrorOutlineIcon sx={{color:'var(--alert-red)',marginRight:"5px"}}/>, label: "Supprimer utilisateur", onClick: handleHideRow },
 ];
   
   const [filteredRows, setFilteredRows] = useState(rowsData2);
