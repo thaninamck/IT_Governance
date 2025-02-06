@@ -71,6 +71,7 @@ function Table({
   columnsConfig,
   rowsData,
   checkboxSelection = false,
+  allterRowcolors ,
   getRowLink,
   onRowSelectionChange,
   headerBackground = "transparent",
@@ -79,6 +80,9 @@ function Table({
   rowActions = [],
 }) {
 
+    const isZebraStriping = allterRowcolors; // Mets à false pour désactiver
+const oddRowColor = "#E9EFF8"; 
+const evenRowColor = "white"
 
     const handleRowSelectionChange = (newRowSelectionModel) => {
         setRowSelectionModel(newRowSelectionModel);
@@ -338,6 +342,16 @@ function Table({
           "& .MuiDataGrid-cell:focus": {
             outline: "2px solid #1565c0",
           },
+
+          ...(isZebraStriping && { // Applique le style au tableau des elements uniquement si activé
+            "& .MuiDataGrid-row:nth-of-type(odd)": {
+              backgroundColor: oddRowColor,
+            },
+            "& .MuiDataGrid-row:nth-of-type(even)": {
+              backgroundColor: evenRowColor,
+            },
+          }),
+          
         }}
       />
       <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose}>

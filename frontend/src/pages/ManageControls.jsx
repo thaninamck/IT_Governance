@@ -98,12 +98,9 @@ const ManageControls = () => {
 
   const handleArchiveRow = () => {};
   const handleEditRiskRow = () => {};
-  const handleEditCntrlRow = (params) => {
-    // Ouvrir la fenêtre de modification avec les données de la ligne sélectionnée
-    const selectedRow = rowsData.find((row) => row.id === selectionModel[0]);
-    console.log("Modifier le contrôle : ", selectedRow);
-    //openWindow();
-  };
+  const handleEditCntrlRow = (rowData) => {
+    console.log("Modifier le contrôle :", rowData.majorProcessCode)};
+   
 
   const cntrlRowActions = [
     {
@@ -114,7 +111,14 @@ const ManageControls = () => {
     {
       icon: <SquarePen className="mr-2" />,
       label: "Modifier",
-      onClick: handleEditCntrlRow,
+      onClick: (params) => {
+        console.log("Params reçus :", params); // DEBUG
+        if (params && params.row) {
+          handleEditCntrlRow(params.row);
+        } else {
+          console.error("Données de la ligne non trouvées !");
+        }
+      },
     },
   ];
   const riskRowActions = [
@@ -356,16 +360,16 @@ const ManageControls = () => {
                   <ImportCsvButton />
                   <Button variant="contained">Ajouter un risque</Button>
                 </div>
-              
-                  <Table
-                    columnsConfig={riskColumnsConfig}
-                    rowsData={risksData}
-                    checkboxSelection={false}
-                    rowActions={riskRowActions}
-                    onRowSelectionChange={handleRiskRowSelectionChange}
-                    className="w-full"
-                  />
-                
+                <div style={{ overflow: "auto", maxHeight: "400px" }}>
+                <Table
+                  columnsConfig={riskColumnsConfig}
+                  rowsData={risksData}
+                  checkboxSelection={false}
+                  rowActions={riskRowActions}
+                  allterRowcolors={true}
+                  onRowSelectionChange={handleRiskRowSelectionChange}
+                  className="w-full"
+                /></div>
               </TabPanel>
 
               <TabPanel
@@ -375,32 +379,31 @@ const ManageControls = () => {
                   },
                 }}
                 value={1}
-                className="h-full flex-1 w-full overflow-auto"
+                className="h-full flex-1 w-full"
               >
-                {/*<DataGrid
-                  rows={rows}
-                  columns={columns}
-                  checkboxSelection
-                  rowSelectionModel={rowSelectionModel}
-                  onRowSelectionModelChange={handleRowSelectionChange}/>*/}
-
-                <div className="flex justify-end bg-transparent gap-4 p-4 ">
+                {/* Boutons en dehors de la zone de défilement */}
+                <div className="flex justify-end bg-transparent gap-4 p-4">
                   <ImportCsvButton />
                   <Button variant="contained">Ajouter un contrôle</Button>
                 </div>
-                <Table
-                  columnsConfig={controlColumnsConfig}
-                  rowsData={controlsData}
-                  checkboxSelection={false}
-                  rowActions={cntrlRowActions}
-                  onRowSelectionChange={handleRowSelectionChange1}
-                  className="w-full "
-                  sx={{
-                    "& .MuiTabPanel-root": {
-                      backgroundColor: "green",
-                    },
-                  }}
-                />
+
+                {/* Tableau avec défilement */}
+                <div style={{ overflow: "auto", maxHeight: "400px",minHeight:"400px" }}>
+                  <Table
+                    columnsConfig={controlColumnsConfig}
+                    rowsData={controlsData}
+                    checkboxSelection={false}
+                    rowActions={cntrlRowActions}
+                    onRowSelectionChange={handleRowSelectionChange1}
+                    allterRowcolors={true}
+                    className="w-full"
+                    sx={{
+                      "& .MuiTabPanel-root": {
+                        backgroundColor: "green",
+                      },
+                    }}
+                  />
+                </div>
               </TabPanel>
             </div>
           </Tabs>
