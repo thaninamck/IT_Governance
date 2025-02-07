@@ -47,6 +47,10 @@ import MyProfile from './pages/MyProfile';
 import ManageControls from './pages/ManageControls';
 import MissionListPage from './pages/MissionListPage';
 import GestionUtilisateur from './pages/GestionUtilisateur';
+import Flow from './components/workPlan/Flow';
+import Accordion from './components/workPlan/WorkPlanSideBar';
+import Workplan from './pages/Workplan';
+import WorkPlanSideBar from './components/workPlan/WorkPlanSideBar';
 function App() {
   const getRowLink = (row) => `/tablemission/${row.mission}`;
   
@@ -185,8 +189,10 @@ const rowsData3 = [
           <Route path='/missionList' element={<MissionListPage/>}></Route>
           <Route path='/utilisateurs' element={<GestionUtilisateur/>}></Route>
 
+          <Route path='/flow' element={<Flow/>}></Route>
 
-          
+          <Route path='/acc' element={<WorkPlanSideBar/>}></Route>
+          <Route path='/workplan' element={<Workplan/>}></Route>
 
          
           
