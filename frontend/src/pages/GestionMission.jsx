@@ -119,14 +119,14 @@ function GestionMission() {
       isOpen={isModalOpen}
       onClose={closeModal}
       onRisqueCreated={handleMissionCreation}
-    />*/}
+    />
      <AddControleForm
       title="Créer un nouveau risque"
       isOpen={isModalOpen}
       onClose={closeModal}
       onControleCreated={handleMissionCreation}
-    />
-          {/* <AddMissionForm title={'Ajouter une mission'} isOpen={isModalOpen} onClose={closeModal} onMissionCreated={handleMissionCreation} />*/}
+    />*/}
+           <AddMissionForm title={'Ajouter une mission'} isOpen={isModalOpen} onClose={closeModal} onMissionCreated={handleMissionCreation} />
             {isMissionCreated &&
             <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-md z-50">
                  <PopUp text="Mission créée" redirectionURL={handlePopupClose} />

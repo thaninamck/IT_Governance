@@ -33,7 +33,7 @@ const InfoDisplayComponent = ({label,BoxContent,borderWidth,labelWidth}) => {
       >
         <span 
           style={{ 
-            fontSize: '16px', 
+            fontSize: '13px', 
             color: '#555' 
           }}
         >

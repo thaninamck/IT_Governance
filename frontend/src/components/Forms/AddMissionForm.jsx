@@ -1,44 +1,46 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import InputForm from './InputForm';
 import './FormStyle.css';
 import Button from '../Button';
 import icons from '../../assets/Icons';
 
-function AddMissionForm({ title }) {
-  const [open, setOpen] = useState(true);
+function AddMissionForm({ title ,isOpen, onClose,initialValues, onMissionCreated  }) {
+  if (!isOpen) return null; // Ne pas afficher le modal si isOpen est false
+
 
   // États pour chaque champ
-  const [missionName, setMissionName] = useState('');
-  const [client, setClient] = useState('');
-  const [startDate, setStartDate] = useState('');
-  const [duration, setDuration] = useState('');
-  const [auditedPeriod, setAuditedPeriod] = useState('');
-  const [manager, setManager] = useState('');
+  const [missionData, setMissionData] = useState(initialValues || {
+    client: '',
+    mission: '',
+    manager: '',
+    dateField: '',
+    dateField1: '',
+    statusMission: ''
+});
 
-  const handleClose = () => {
-    setOpen(false);
-  };
+useEffect(() => {
+  
+    setMissionData(initialValues || {
+        client: '',
+        mission: '',
+        manager: '',
+        dateField: '',
+        dateField1: '',
+        statusMission: ''
+    });
+}, [initialValues]);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const formData = {
-      missionName,
-      client,
-      startDate,
-      duration,
-      auditedPeriod,
-      manager,
-    };
-    console.log('Form Data:', formData);
-    alert('Formulaire soumis avec succès !');
-    // Vous pouvez ici envoyer les données à une API ou les traiter
-  };
+const handleSubmit = (e) => {
+  e.preventDefault(); // Empêcher le rechargement
+  onMissionCreated(missionData);
+  onClose();
+};
 
   return (
-    open && (
+    <div  className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-md z-50">
       <form className="appForm_container" onSubmit={handleSubmit}>
         {/* Icône Close */}
-        <button className="close-button" onClick={handleClose}>
+        <button className="close-button" onClick={onClose}>
           &times;
         </button>
 
@@ -51,9 +53,9 @@ function AddMissionForm({ title }) {
           label="Nom de la mission"
           placeholder="Entrez le nom de la mission"
           width="420px"
-          flexDirection={"column"}
-          value={missionName}
-          onChange={(e) => setMissionName(e.target.value)}
+         flexDirection="flex-col"
+          value={missionData.mission}
+          onChange={e => setMissionData({...missionData, mission: e.target.value})}
         />
         <div className="form-row">
           <InputForm
@@ -61,9 +63,9 @@ function AddMissionForm({ title }) {
             label="Client"
             placeholder="Raison sociale"
             width="200px"
-            flexDirection={"column"}
-            value={client}
-            onChange={(e) => setClient(e.target.value)}
+           flexDirection="flex-col"
+            value={missionData.client}
+            onChange={e => setMissionData({...missionData, client: e.target.value})}
           />
           <button className="btn_addclient">
             <icons.addCircle sx={{ width: "18px" }} /> Ajouter client
@@ -75,21 +77,21 @@ function AddMissionForm({ title }) {
             label="Date début"
             placeholder=""
             width="200px"
-            flexDirection={"column"}
-            value={startDate}
-            onChange={(e) => setStartDate(e.target.value)}
+           flexDirection="flex-col"
+            value={missionData.dateField}
+            onChange={e => setMissionData({...missionData, dateField: e.target.value})}
           />
           <InputForm
-            type="text"
+            type="date"
             label="Durée"
             placeholder="20 jours"
             width="200px"
-            flexDirection={"column"}
-            value={duration}
-            onChange={(e) => setDuration(e.target.value)}
+         flexDirection="flex-col"
+            value={missionData.dateField1}
+            onChange={e => setMissionData({...missionData, dateField1: e.target.value})}
           />
         </div>
-        <InputForm
+       {/* <InputForm
           type="text"
           label="Période audité"
           placeholder="6 mois"
@@ -97,21 +99,28 @@ function AddMissionForm({ title }) {
           flexDirection={"column"}
           value={auditedPeriod}
           onChange={(e) => setAuditedPeriod(e.target.value)}
-        />
+        />*/}
+        <select value={missionData.statusMission} onChange={e => setMissionData({...missionData, statusMission: e.target.value})}>
+                    <option value="en_cours">En cours</option>
+                    <option value="terminee">Terminée</option>
+                    <option value="non_commencee">Non commencée</option>
+                    <option value="en_retard">En retard</option>
+                </select>
         <InputForm
           type="text"
           label="Manager"
           placeholder="Nom du manager"
           width="420px"
-          flexDirection={"column"}
-          value={manager}
-          onChange={(e) => setManager(e.target.value)}
+         flexDirection="flex-col"
+          value={missionData.manager}
+          onChange={e => setMissionData({...missionData, manager: e.target.value})}
         />
 
         {/* Bouton Créer */}
         <Button btnName="Créer" type="submit" />
       </form>
-    )
+      </div>
+    
   );
 }
 

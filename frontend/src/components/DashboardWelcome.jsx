@@ -14,7 +14,7 @@ const DashboardWelcome = () => {
       id: 1,
       label: "Ajouter d’autre utilisateur",
       icon: <GroupAddRoundedIcon sx={{color:"var(--blue-menu)",width:"30px" ,height:"30px"}}/>,
-      route: "/ajouter-utilisateur",
+      route: "/utilisateurs",
     },
     {
       id: 2,

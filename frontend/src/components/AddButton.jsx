@@ -5,12 +5,12 @@ function AddButton({title,onClick }) {
 
     
   return (
-    <div className='flex gap-x-2 items-center '  onClick={onClick}>
+    <div className='flex gap-x-2 items-center  mt-9 '  onClick={onClick}>
     <AddCircleOutlineIcon
-      sx={{ color: 'var(--blue-menu)', width: '30px', height: '30px', cursor: 'pointer' }}
+      sx={{ color: 'var(--blue-menu)', width: '20px', height: '20px', cursor: 'pointer' }}
      
     />
-    <p className="text-blue-menu text-base font-medium">{title}</p>
+    <p className="text-blue-menu text-base font-medium text-xs">{title}</p>
   </div>
   )
 }

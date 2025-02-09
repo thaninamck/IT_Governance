@@ -42,7 +42,7 @@ function Remediation({ title }) {
           label="Description de la remédiation"
           placeholder="Entrez la description de la remédiation..."
           width="600px"
-          flexDirection="column"
+         flexDirection="flex-col"
           value={description}
           onChange={(e) => setDescription(e.target.value)}
         />
@@ -51,7 +51,7 @@ function Remediation({ title }) {
           label="E-mail"
           placeholder="Entrez l'e-mail de la personne concernée..."
           width="600px"
-          flexDirection="column"
+         flexDirection="flex-col"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
         />

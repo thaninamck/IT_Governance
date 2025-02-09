@@ -24,11 +24,11 @@ import MultiOptionSelect from './components/Selects/MultiOptionSelect';
 import MissionInfo from './components/InfosDisplay/MissionInfo';
 
 import StatusMission from './components/StatusMission';
-import MissionDetail from './components/MissionDetail';
+import MissionDetail from './pages/Manager/MissionDetail';
 import { BreadcrumbProvider } from './Context/BreadcrumbContext';
 import Breadcrumbs from './components/Breadcrumbs';
 import PasswordChange from './components/Forms/PasswordChange';
-import AddCoucheForm from './components/Forms/AddCoucheForm';
+import AddCoucheForm from './components/Forms/DynamicAddForm';
 import AddCategorieForm from './components/Forms/AddCategorieForm';
 import OTPPage from './components/OTPPage';
 import HeaderSettings from './components/Header/HeaderSettings';
@@ -44,8 +44,11 @@ import ChangePassword from './pages/ChangePassword';
 import AdminHomePage from './pages/AdminHomePage';
 
 import MyProfile from './pages/MyProfile';
-import MissionListPage from './pages/MissionListPage';
+import GestionMission from './pages/GestionMission';
 import GestionUtilisateur from './pages/GestionUtilisateur';
+import GestionClient from './pages/GestionClient';
+import Settings from './pages/Settings';
+import AddRisqueForm from './components/Forms/AddRisqueForm';
 function App() {
   const getRowLink = (row) => `/tablemission/${row.mission}`;
   
@@ -125,9 +128,9 @@ const rowsData3 = [
     <>
     
        <div className="App">
-       <BreadcrumbProvider>
-       {/* Afficher Breadcrumbs uniquement si le chemin est dans la liste */}
-       {breadcrumbRoutes.some(route => location.pathname.startsWith(route)) && <Breadcrumbs />}
+        <BreadcrumbProvider>
+      {/* Afficher Breadcrumbs uniquement si le chemin est dans la liste 
+       {breadcrumbRoutes.some(route => location.pathname.startsWith(route)) && <Breadcrumbs />}*/}
         <Routes>
         { /*-----------------Popup-----------------------------*/  }
           <Route path='/popup' element={<PopUp redirectionURL={'#'} text={'mission crée'}/>}/>
@@ -153,6 +156,7 @@ const rowsData3 = [
           <Route path='/addclientForm' element={<AddClientForm title="Ajouter un nouveau client" />}/>
           <Route path='/addmissionForm' element={<AddMissionForm title="Ajouter une mission" />}/>
           <Route path='/adduserForm' element={<AddUserForm title="Ajouter un nouveau utilisateur" />}/> 
+          <Route path='/addrisqueForm' element={<AddRisqueForm title="Ajouter un nouveau risque" />}/> 
           <Route path='/changePWForm' element={<PasswordChange title="Changer mon mot de passe" />}/>
           <Route path="/coucheForm" element={<AddCoucheForm  title="" />} /> 
           <Route path="/categorieForm" element={<AddCategorieForm title="" />} />
@@ -180,8 +184,10 @@ const rowsData3 = [
           <Route path='/adminHomePage' element={<AdminHomePage/>}/>
           <Route path='/login' element={<Login  />}></Route>
           <Route path='/myprofile' element={<MyProfile/>}></Route>
-          <Route path='/missionList' element={<MissionListPage/>}></Route>
+          <Route path='/gestionmission' element={<GestionMission/>}></Route>
           <Route path='/utilisateurs' element={<GestionUtilisateur/>}></Route>
+          <Route path='/clients' element={<GestionClient/>}></Route>
+          <Route path='/settings' element={<Settings/>}></Route>
 
 
           

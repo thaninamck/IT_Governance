@@ -2,12 +2,8 @@ import React, { useState } from "react";
 import "../../index.css";
 import CloseIcon from "@mui/icons-material/Close";
 
-const DecisionPopUp = ({ text, confirmURL, denyURL }) => {
-  const [open, setOpen] = useState(true);
-
-  const handleCloseDecisionPopUp = () => {
-    setOpen(false);
-  };
+const DecisionPopUp = ({name, text, handleConfirm, handleDeny }) => {
+ 
 
   return (
     open && (
@@ -16,32 +12,30 @@ const DecisionPopUp = ({ text, confirmURL, denyURL }) => {
     absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex flex-col  justify-around  gap-4 p-6"
       >
         <div
-          onClick={handleCloseDecisionPopUp}
-          className="absolute top-0 right-0 bg-[#E5E5E5] rounded-full text-blue mr-1 "
+           onClick={handleDeny}
+          className="absolute top-0 right-0 text-3xl text-blue mr-2 "
         >
-          <CloseIcon
-            sx={{ color: "#4F4F4F", width: "12px", height: "12px" }}
-            className="mx-1"
-          />
+           &times;
         </div>
-        <h2 className="sm:w-auto sm:h-auto text-blue-menu sm:text-xl sm:font-semibold text-xs">
+        <h2 className="sm:w-auto sm:h-auto text-blue-menu sm:text-xl sm:font-semibold text-xs mt-3">
           {text}
         </h2>
+        <span className="text-[var(--subfont-gray)] text-center  " >{name}</span>
 
         <div className="sm:flex text-center sm:gap-4 sm:mt-5 mt-1 flex flex-col gap-1 w-auto sm:flex-row  sm:justify-center sm:items-center ">
-          <a
-            href={denyURL}
+          <button
+            onClick={handleDeny}
             className="bg-transparent text-center  border border-1 border-blue-menu w-auto h-auto sm:px-6 py-2 px-8   rounded-md text-blue-menu text-xs "
           >
             Non, Annuler
-          </a>
+          </button>
 
-          <a
-            href={confirmURL}
+          <button
+            onClick={handleConfirm}
             className=" bg-blue-conf w-auto h-auto py-2 px-8 text-center   rounded-md text-white text-xs "
           >
             Confirmer
-          </a>
+          </button>
         </div>
       </div>
     )

@@ -33,7 +33,7 @@ function SignUpForm({ title }) {
       label=""
       placeholder="Nom d'utilisateur"
       width="400px"
-      flexDirection="column"
+     flexDirection="flex-col"
       value={userName}
       onChange={(e) => setUserName(e.target.value)}
     />
@@ -42,7 +42,7 @@ function SignUpForm({ title }) {
       label=""
       placeholder="*********"
       width="400px"
-      flexDirection="column"
+     flexDirection="flex-col"
       value={password}
       onChange={(e) => setPassword(e.target.value)}
     />

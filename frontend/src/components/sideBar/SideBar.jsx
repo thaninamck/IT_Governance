@@ -13,10 +13,10 @@ function SideBar({ userRole }) {
   const menuItems = {
     admin: [
       { key: "profile", label: "Profile", path: "/myprofile" },
-      { key: "dashboard", label: "Dashboard", path: "/dashboard" },
+      { key: "dashboard", label: "Dashboard", path: "/adminHomePage" },
       { key: "utilisateurs", label: "Utilisateurs", path: "/utilisateurs" },
       { key: "Référentiels", label: "Référentiels", path: "/referentiels" },
-      { key: "missions", label: "Missions", path: "/missionList" },
+      { key: "missions", label: "Missions", path: "/gestionmission" },
       { key: "clients", label: "Clients", path: "/clients" },
       { key: "notification", label: "Notification", path: "/notification" },
       { key: "settings", label: "Settings", path: "/settings" },

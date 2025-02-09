@@ -60,7 +60,7 @@ function ExpandableCell({ value, maxInitialLength = 50, onExpand }) {
 }
 
 
-function Table({ columnsConfig, rowsData, checkboxSelection = false,getRowLink ,headerBackground = "transparent",statusOptions = [], statusColors = { } ,rowActions = []}) {
+function Table({ columnsConfig, rowsData, checkboxSelection = false,getRowLink ,headerBackground = "transparent",statusOptions = [], statusColors = { } ,rowActions = [],onCellEditCommit}) {
 
     const { setBreadcrumbs } = useBreadcrumb();
     const navigate = useNavigate(); // Hook pour la navigation
@@ -246,6 +246,7 @@ function Table({ columnsConfig, rowsData, checkboxSelection = false,getRowLink ,
     selectionModel={selectionModel}
     onSelectionModelChange={(newSelection) => setSelectionModel(newSelection)}
     onRowClick={handleRowClick} // Ajout du gestionnaire de clic sur la ligne
+    
     sx={{
         border: "1px solid #ccc",
         

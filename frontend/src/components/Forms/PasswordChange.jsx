@@ -36,7 +36,7 @@ function PasswordChange({title}) {
             label="Mot de passe actuel"
             placeholder="******"
             width="300px"
-            flexDirection="column"
+           flexDirection="flex-col"
             value={oldpassword}
             onChange={(e) => setOldpassword(e.target.value)}
           />
@@ -45,7 +45,7 @@ function PasswordChange({title}) {
             label="Nouveau  mot de passe"
             placeholder="******"
             width="300px"
-            flexDirection="column"
+            flexDirection="flex-col"
             value={newpassword}
             onChange={(e) => setNewpassword(e.target.value)}
           />
@@ -54,7 +54,7 @@ function PasswordChange({title}) {
             label="Confirmation"
             placeholder="******"
             width="300px"
-            flexDirection="column"
+           flexDirection="flex-col"
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
           />
