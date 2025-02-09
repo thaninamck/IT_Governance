@@ -1,0 +1,73 @@
+import React, { useState } from 'react';
+import InputForm from './InputForm';
+import './FormStyle.css';
+import Button from '../Button';
+
+function AddRisqueForm({ title, isOpen, onClose, initialValues, onRisqueCreated }) {
+  if (!isOpen) return null; // Ne pas afficher le modal si isOpen est false
+
+  // États pour chaque champ
+  const [risqueData, setRisqueData] = useState({
+    code: '',
+    nom: '',
+    description: '',
+  });
+
+  const handleSubmit = (e) => {
+    e.preventDefault(); // Empêcher le rechargement
+    onRisqueCreated(risqueData); // Met à jour avant d'envoyer
+    onClose(); // Ferme le formulaire après soumission
+  };
+
+  return (
+    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-md z-50">
+      <form className="appForm_container" onSubmit={handleSubmit}>
+        {/* Icône Close */}
+        <button className="close-button" type="button" onClick={onClose}>
+          &times;
+        </button>
+
+        {/* Titre dynamique */}
+        <p>{title}</p>
+
+        {/* Formulaire */}
+        <div className="form-row">
+          <InputForm
+            type="text"
+            label="Code du risque"
+            placeholder="code"
+            width="150px"
+            flexDirection="flex-col"
+            value={risqueData.code}
+            onChange={(e) => setRisqueData({ ...risqueData, code: e.target.value })}
+          />
+          <InputForm
+            type="text"
+            label="Nom du risque"
+            placeholder="nom"
+            width="450px"
+            flexDirection="flex-col"
+            value={risqueData.nom}
+            onChange={(e) => setRisqueData({ ...risqueData, nom: e.target.value })}
+          />
+        </div>
+        <div className="form-row">
+          <InputForm
+            type="text"
+            label="Description"
+            placeholder="Description du risque"
+            width="630px"
+            flexDirection="flex-col"
+            value={risqueData.description}
+            onChange={(e) => setRisqueData({ ...risqueData, description: e.target.value })}
+          />
+        </div>
+
+        {/* Bouton Créer */}
+        <Button btnName="Créer" type="submit" />
+      </form>
+    </div>
+  );
+}
+
+export default AddRisqueForm;
