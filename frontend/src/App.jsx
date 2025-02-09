@@ -45,10 +45,15 @@ import AdminHomePage from './pages/AdminHomePage';
 
 import MyProfile from './pages/MyProfile';
 import GestionMission from './pages/GestionMission';
-import GestionUtilisateur from './pages/GestionUtilisateur';
 import GestionClient from './pages/GestionClient';
 import Settings from './pages/Settings';
 import AddRisqueForm from './components/Forms/AddRisqueForm';
+import ManageControls from './pages/ManageControls';
+import GestionUtilisateur from './pages/GestionUtilisateur';
+import Flow from './components/workPlan/Flow';
+import Accordion from './components/workPlan/WorkPlanSideBar';
+import Workplan from './pages/Workplan';
+import WorkPlanSideBar from './components/workPlan/WorkPlanSideBar';
 function App() {
   const getRowLink = (row) => `/tablemission/${row.mission}`;
   
@@ -182,6 +187,7 @@ const rowsData3 = [
           <Route path='/notification' element={<Notification/>}/>
           <Route path='/changePw' element={<ChangePassword/>}/>
           <Route path='/adminHomePage' element={<AdminHomePage/>}/>
+          <Route path='/controlsManager' element={<ManageControls/>}/>
           <Route path='/login' element={<Login  />}></Route>
           <Route path='/myprofile' element={<MyProfile/>}></Route>
           <Route path='/gestionmission' element={<GestionMission/>}></Route>
@@ -189,8 +195,10 @@ const rowsData3 = [
           <Route path='/clients' element={<GestionClient/>}></Route>
           <Route path='/settings' element={<Settings/>}></Route>
 
+          <Route path='/flow' element={<Flow/>}></Route>
 
-          
+          <Route path='/acc' element={<WorkPlanSideBar/>}></Route>
+          <Route path='/workplan' element={<Workplan/>}></Route>
 
          
           

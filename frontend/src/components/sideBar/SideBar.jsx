@@ -15,7 +15,7 @@ function SideBar({ userRole }) {
       { key: "profile", label: "Profile", path: "/myprofile" },
       { key: "dashboard", label: "Dashboard", path: "/adminHomePage" },
       { key: "utilisateurs", label: "Utilisateurs", path: "/utilisateurs" },
-      { key: "Référentiels", label: "Référentiels", path: "/referentiels" },
+      { key: "Référentiels", label: "Référentiels", path: "/controlsManager" },
       { key: "missions", label: "Missions", path: "/gestionmission" },
       { key: "clients", label: "Clients", path: "/clients" },
       { key: "notification", label: "Notification", path: "/notification" },
