@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import SideBar from '../components/sideBar/SideBar';
 import HeaderBis from '../components/Header/HeaderBis';
 import Table from '../components/Table';
+import ToggleButton from '../components/ToggleButtons';
 import SearchBar from '../components/SearchBar';
 import HeaderWithAction from '../components/Header/HeaderWithAction';
 import AddUserForm from '../components/Forms/AddUserForm';
@@ -93,10 +94,14 @@ function GestionUtilisateur() {
             rowActions={rowActions}
           />
         </div>
+        <div className='border border-black mb-28 ml-20'>
+        <ToggleButton/>
+        </div>
       </div>
 
       {/* Modal d'ajout d'un utilisateur */}
       <AddUserForm title={'Ajouter un nouveau utilisateur'} isOpen={isModalOpen} onClose={closeModal} onUserCreated={handleUserCreation} />
+      
     </div>
   );
 }
