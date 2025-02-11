@@ -51,9 +51,9 @@ function GestionClient() {
     };
 
     // Modification d'un client
-    const handleEditRow = (rowId) => {
-        const clientToEdit = filteredRows.find(row => row.id === rowId);
-        setSelectedClient(clientToEdit);
+    const handleEditRow = (selectedRow) => {
+        console.log(selectedRow)
+        setSelectedClient(selectedRow);
         setIsEditModalOpen(true);
     };
 
@@ -64,9 +64,10 @@ function GestionClient() {
     };
 
     // Suppression d'un client avec confirmation
-    const handleDeleteRow = (rowId) => {
-        setSelectedClientId(rowId);
+    const handleDeleteRow = (selectedRow) => {
+        setSelectedClientId(selectedRow.id);
         setIsDeletePopupOpen(true);
+        console.log(selectedRow)
     };
 
     const confirmDeleteClient = () => {
@@ -84,8 +85,8 @@ function GestionClient() {
 
     // Actions pour la table
     const rowActions = [
-        { icon: <SquarePen className='mr-2' />, label: "Modifier", onClick: handleEditRow },
-        { icon: <DeleteOutlineRoundedIcon sx={{ color: 'var(--alert-red)', marginRight: "5px" }} />, label: "Supprimer", onClick: handleDeleteRow },
+        { icon: <SquarePen className='mr-2' />, label: "Modifier", onClick:(selectedRow)=>{handleEditRow(selectedRow)} },
+        { icon: <DeleteOutlineRoundedIcon sx={{ color: 'var(--alert-red)', marginRight: "5px" }} />, label: "Supprimer", onClick:(selectedRow)=>{ handleDeleteRow(selectedRow)} },
     ];
 
     // Nom du fichier d'exportation
