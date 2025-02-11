@@ -96,6 +96,8 @@ const evenRowColor = "white"
   const navigate = useNavigate(); // Hook pour la navigation
   const [rows, setRows] = React.useState(rowsData);
   const [expandedCells, setExpandedCells] = React.useState({});
+  const [selectionModel, setSelectionModel] = React.useState([]);
+
 
 
   const handleRowClick = (params) => {
@@ -295,10 +297,14 @@ const evenRowColor = "white"
         rows={rows}
         columns={columns}
         checkboxSelection={checkboxSelection}
-       
+        disableRowSelectionOnClick // Empêche la sélection en cliquant sur une cellule
+        autoHeight
+        onRowClick={handleRowClick} // Ajout du gestionnaire de clic sur la ligne
         getRowHeight={getRowHeight}
         /*rowSelectionModel={rowSelectionModel}
-        onRowSelectionModelChange={handleRowSelectionChange}*/ 
+        onRowSelectionModelChange={handleRowSelectionChange}
+         selectionModel={selectionModel}
+        onSelectionModelChange={(newSelection) => setSelectionModel(newSelection)}*/ 
         
        
            

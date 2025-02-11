@@ -63,9 +63,9 @@ function GestionMission() {
     };
 
     // Modification d'une mission
-    const handleEditRow = (rowId) => {
-        const missionToEdit = filteredRows.find(row => row.id === rowId);
-        setSelectedMission(missionToEdit);
+    const handleEditRow = (selectedRow) => {
+       // const missionToEdit = filteredRows.find(row => row.id === rowId);
+        setSelectedMission(selectedRow);
         setIsEditModalOpen(true);
     };
 
@@ -77,9 +77,10 @@ function GestionMission() {
     };
 
     // Suppression d'une mission
-    const handleDeleteRow = (rowId) => {
-        setSelectedMissionId(rowId);
+    const handleDeleteRow = (selectedRow) => {
+        setSelectedMissionId(selectedRow.id);
         setIsDeletePopupOpen(true);
+        console.log(selectedRow)
     };
 
     // Confirmation de la suppression
@@ -94,8 +95,8 @@ function GestionMission() {
     // Actions sur les lignes de la table
     const rowActions = [
         { icon: <ArchiveRoundedIcon sx={{ marginRight: '5px' }} />, label: 'Archiver', onClick: handleEditRow },
-        { icon: <SquarePen className='mr-2' />, label: 'Modifier', onClick: handleEditRow },
-        { icon: <DeleteOutlineRoundedIcon sx={{ color: 'var(--alert-red)', marginRight: '5px' }} />, label: 'Supprimer mission', onClick: handleDeleteRow },
+        { icon: <SquarePen className='mr-2' />, label: 'Modifier', onClick:(selectedRow)=>{handleEditRow(selectedRow)}},
+        { icon: <DeleteOutlineRoundedIcon sx={{ color: 'var(--alert-red)', marginRight: '5px' }} />, label: 'Supprimer mission', onClick:(selectedRow)=>{ handleDeleteRow(selectedRow)} },
     ];
 
     return (
