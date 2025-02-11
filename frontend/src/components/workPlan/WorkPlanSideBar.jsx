@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import { Menu, X } from "lucide-react";
-import AccordionItem from "./AccordionItem";
+import RiskAccordionItem from "./RiskAccordionItem";
 import AppsAccordionItem from "./AppsAccordionItem";
+import ControlAccordionItem from "./ControlAccordionItem";
 
-const WorkPlanSideBar = ({ onDragStart }) => {
+const WorkPlanSideBar = ({ onDragStart ,onRiskDragStart,onControlDragStart}) => {
 
 // Exemple de structure avec ID et description
 const applications = [
@@ -18,6 +19,14 @@ const risks = [
   { id: "2", description: "furfuzirfyzuf iuzyfoz ruozc ojfyt yth iof furfuzirfyzuf iuzyfoz ruozc ojfyt yth iof furfuzirfyzuf iuzyfoz ruozc ojfyt yth iof" },
   { id: "3", description: "furfuzirfyzuf iuzyfoz ruozc ojfyt yth iof furfuzirfyzuf iuzyfoz ruozc ojfyt yth iof furfuzirfyzuf iuzyfoz ruozc ojfyt yth iof" },
   { id: "4", description: "furfuzirfyzuf iuzyfoz ruozc ojfyt yth iof furfuzirfyzuf iuzyfoz ruozc ojfyt yth iof furfuzirfyzuf iuzyfoz ruozc ojfyt yth iof" },
+
+];
+
+const controls = [
+  { id: "1", description: "Duties and areas of responsibility are separated, in order to reduce opportunities for unauthorized modification... ..." },
+  { id: "2", description: "Duties and areas of responsibility are separated, in order to reduce opportunities for unauthorized modification... ..." },
+  { id: "3", description: "Duties and areas of responsibility are separated, in order to reduce opportunities for unauthorized modification... ..."  },
+  { id: "4", description: "Duties and areas of responsibility are separated, in order to reduce opportunities for unauthorized modification... ..."  },
 
 ];
 
@@ -48,17 +57,18 @@ const risks = [
             onDragStart={onDragStart}
           />
          
-          <AccordionItem
+          <RiskAccordionItem
             title="Risques"
             items={risks}
             color="#f59e0b"
-            onDragStart={onDragStart}
+            onDragStart={onRiskDragStart}
           />
-          {/*<AccordionItem
+          <ControlAccordionItem
             title="Contrôles"
-            items={["Contrôle A", "Contrôle B", "Contrôle C"]}
+            items={controls}
             color="#3b82f6"
-          />*/}
+            onDragStart={onControlDragStart}
+          />
         </div>
       </div>
     </div>

@@ -2,7 +2,7 @@ import React from "react";
 import { Handle, Position } from '@xyflow/react';
 import { ReactFlow } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
-const CustomNode = ({ data }) => {
+const RiskCustomNode = ({ data }) => {
   return (
     <div className="w-80 rounded-lg border shadow-md bg-white relative " >
       {/* Barre supérieure colorée */}
@@ -10,15 +10,15 @@ const CustomNode = ({ data }) => {
 
       {/* Contenu du nœud */}
       <div className="p-4">
-        <h3 className="text-gray-800 font-semibold text-lg">{data.title}</h3>
+        <h3 className="text-gray-800 font-semibold text-lg">Risque</h3>
 
         {/* Description */}
         <div className="mt-2 bg-gray-100 p-2 rounded-lg text-sm text-gray-700">
-          {data.description}
+        {data.riskData?.description}
         </div>
 
         {/* Zone de drop */}
-        <div className="mt-4 border-2 border-dashed border-blue-600 rounded-lg p-4 text-center text-gray-500 text-sm">
+        <div className="mt-4 border-2 border-dashed border-orange-500 rounded-lg p-4 text-center text-gray-500 text-sm">
           Commencez à glisser vos contrôles ici
         </div>
       </div>
@@ -30,4 +30,4 @@ const CustomNode = ({ data }) => {
   );
 };
 
-export default CustomNode;
+export default RiskCustomNode;

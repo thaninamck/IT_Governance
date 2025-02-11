@@ -10,6 +10,88 @@ const Workplan = () => {
     event.dataTransfer.setData("application/json", JSON.stringify(item));
   };
 
+  const onRiskDragStart = (event, item) => {
+    event.dataTransfer.setData("application/json", JSON.stringify(item));
+    console.log("risk dragged here");
+  };
+  const onRiskDrop = (event, layerId) => {
+    event.preventDefault();
+    const riskData = JSON.parse(event.dataTransfer.getData("application/json")); // ✅ Extraction correcte
+    console.log("le risque droppé", riskData);
+    console.log("le id risque", riskData.id);
+    console.log("le desc risk", riskData.description);
+    if (!layerId || !riskData) {
+      console.warn("Layer ID or Risk Data not found");
+      return;
+    }
+
+    const x = event.clientX;
+    const y = event.clientY;
+
+    // Créer le nœud du risque
+    const newRiskNode = {
+      id: riskData.id, // ✅ Correction ici
+      type: "risk",
+      position: { x, y },
+      data: { riskData },
+    };
+
+    // Créer l'edge entre la couche et le risque
+    const newEdge = {
+      id: `e-${layerId}-${riskData.id}`,
+      source: layerId,
+      target: riskData.id,
+      label: "",
+    };
+
+    // Mettre à jour les states
+    setAppNodes((prevNodes) => [...prevNodes, newRiskNode]);
+    setEdges((prevEdges) => [...prevEdges, newEdge]);
+  };
+
+  const onControlDragStart = (event, item) => {
+    event.dataTransfer.setData("application/json", JSON.stringify(item));
+    console.log("control dragged here");
+  };
+  
+
+  const onControlDrop = (event, layerId) => {
+    event.preventDefault();
+    const riskData = JSON.parse(event.dataTransfer.getData("application/json")); // ✅ Extraction correcte
+    console.log("le risque droppé", riskData);
+    console.log("le id risque", riskData.id);
+    console.log("le desc risk", riskData.description);
+    if (!layerId || !riskData) {
+      console.warn("Layer ID or Risk Data not found");
+      return;
+    }
+
+    const x = event.clientX;
+    const y = event.clientY;
+
+    // Créer le nœud du risque
+    const newRiskNode = {
+      id: riskData.id, // ✅ Correction ici
+      type: "risk",
+      position: { x, y },
+      data: { riskData },
+    };
+
+    // Créer l'edge entre la couche et le risque
+    const newEdge = {
+      id: `e-${layerId}-${riskData.id}`,
+      source: layerId,
+      target: riskData.id,
+      label: "",
+    };
+
+    // Mettre à jour les states
+    setAppNodes((prevNodes) => [...prevNodes, newRiskNode]);
+    setEdges((prevEdges) => [...prevEdges, newEdge]);
+  };
+
+
+
   const onDrop = (event) => {
     event.preventDefault();
     const data = JSON.parse(event.dataTransfer.getData("application/json"));
@@ -28,9 +110,12 @@ const Workplan = () => {
     // Créer les nodes pour chaque couche
     const layerNodes = data.layers.map((layer, index) => ({
       id: layer.id,
-      type: "app",
+      type: "layer",
       position: { x: x + 500, y: y + index * 100 },
-      data: { label: layer.name },
+      data: {
+        label: layer.name,
+        onRiskDrop: (event) => onRiskDrop(event, layer.id), // ✅ Fonction bien transmise
+      },
     }));
 
     // Créer les edges entre l'application et ses couches
@@ -56,13 +141,13 @@ const Workplan = () => {
 
     {
       id: "2",
-      type: "app",
+      type: "layer",
       position: { x: 700, y: 50 },
       data: { label: "OS" },
     },
     {
       id: "3",
-      type: "app",
+      type: "layer",
       position: { x: 700, y: 300 },
       data: { label: "APP" },
     },
@@ -93,7 +178,10 @@ const Workplan = () => {
               setEdges={setEdges}
             />
             <div className="relative   z-50 ">
-              <WorkPlanSideBar onDragStart={onDragStart} />
+              <WorkPlanSideBar
+                onDragStart={onDragStart}
+                onRiskDragStart={onRiskDragStart}
+              />
             </div>
           </div>
         </div>

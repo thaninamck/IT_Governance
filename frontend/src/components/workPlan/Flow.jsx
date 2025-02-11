@@ -8,10 +8,12 @@ import {
 import "@xyflow/react/dist/style.css";
 import AppCustomNode from "./AppCustomNode";
 import RiskCustomNode from "./RiskCustomNode";
+import LayerCustomNode from "./LayerCustomNode";
 // Définition du type de nœud personnalisé
 const nodeTypes = { 
   app: AppCustomNode, 
-  risk: RiskCustomNode 
+  risk: RiskCustomNode ,
+  layer:LayerCustomNode
 };
 
 const Flow = ({ nodes, edges, setNodes, setEdges }) => {

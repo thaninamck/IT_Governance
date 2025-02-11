@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { ChevronUp, ChevronDown } from "lucide-react";
 
-const AccordionItem = ({ title, items, color,onDragStart }) => {
+const ControlAccordionItem = ({ title, items, color,onDragStart }) => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
@@ -47,4 +47,4 @@ const AccordionItem = ({ title, items, color,onDragStart }) => {
   );
 };
 
-export default AccordionItem;
+export default ControlAccordionItem;
