@@ -67,6 +67,7 @@ function GestionMission() {
        // const missionToEdit = filteredRows.find(row => row.id === rowId);
         setSelectedMission(selectedRow);
         setIsEditModalOpen(true);
+        console.log(selectedRow)
     };
 
     // Mise à jour des missions après modification

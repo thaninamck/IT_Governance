@@ -63,7 +63,7 @@ function ExpandableCell({ value, maxInitialLength = 50, onExpand }) {
 
 
 
-function Table({ columnsConfig, rowsData, checkboxSelection = false, allterRowcolors , getRowLink,onRowSelectionChange, headerBackground = "transparent",statusOptions = [],statusColors = {},rowActions = [],}) {
+function Table({ columnsConfig, rowsData, checkboxSelection = false, allterRowcolors , getRowLink,onRowSelectionChange, headerBackground = "transparent",statusOptions = [],statusColors = {},rowActions = [], onCellEditCommit}) {
 
     const isZebraStriping = allterRowcolors; // Mets à false pour désactiver
 const oddRowColor = "#E9EFF8"; 
@@ -283,13 +283,16 @@ const evenRowColor = "white"
     setRows(updatedRows);
   };
 
+  
   const handleCellEditCommit = (params) => {
-    setRows(
-      rows.map((row) =>
+    setRows((prevRows) =>
+      prevRows.map((row) =>
         row.id === params.id ? { ...row, [params.field]: params.value } : row
       )
     );
+    console.log("Mise à jour de l'utilisateur :", params);
   };
+  
 
   return (
     <Paper sx={{ margin: "0% 3%", width: "max-content" }}>
@@ -305,11 +308,6 @@ const evenRowColor = "white"
         onRowSelectionModelChange={handleRowSelectionChange}
          selectionModel={selectionModel}
         onSelectionModelChange={(newSelection) => setSelectionModel(newSelection)}*/ 
-        
-       
-           
-             
-           
           
         sx={{
           border: "1px solid #ccc",

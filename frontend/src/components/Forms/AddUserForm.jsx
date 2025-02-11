@@ -32,13 +32,25 @@ function AddUserForm({ title, isOpen, onClose, initialValues, onUserCreated }) {
     return '';
   };
 
+  
+
   // Mettre à jour username dès que prenom ou nom change
   useEffect(() => {
+    if (initialValues) {
+      setUserData(initialValues);
+    }
+  }, [initialValues]);
+  
+// Mettre à jour le username automatiquement
+useEffect(() => {
+  if (userData.nom && userData.prenom) {
+    const generatedUsername = `${userData.prenom.trim().replace(/\s+/g, '').toLowerCase()}.${userData.nom.trim().replace(/\s+/g, '').toLowerCase()}`;
     setUserData(prevData => ({
       ...prevData,
-      username: generateUsername(prevData.prenom, prevData.nom),
+      username: generatedUsername,
     }));
-  }, [userData.prenom, userData.nom]);
+  }
+}, [userData.nom, userData.prenom]);
 
   const handleSubmit = (e) => {
     e.preventDefault(); // Empêcher le rechargement
@@ -123,7 +135,7 @@ function AddUserForm({ title, isOpen, onClose, initialValues, onUserCreated }) {
             placeholder="****"
             width="300px"
             flexDirection="flex-col"
-            value={userData.password}
+            value={userData.password || ""}
             onChange={e => setUserData({ ...userData, password: e.target.value })}
           />
           <InputForm
@@ -132,7 +144,7 @@ function AddUserForm({ title, isOpen, onClose, initialValues, onUserCreated }) {
             placeholder="****"
             width="300px"
             flexDirection="flex-col"
-            value={userData.confirmPassword}
+            value={userData.confirmPassword || ""}
             onChange={e => setUserData({ ...userData, confirmPassword: e.target.value })}
           />
         </div>

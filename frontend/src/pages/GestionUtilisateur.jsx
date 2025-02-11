@@ -9,6 +9,8 @@ import AddUserForm from '../components/Forms/AddUserForm';
 import { PersonOutlineRounded, ErrorOutline as ErrorOutlineIcon } from '@mui/icons-material';
 import { SquarePen } from 'lucide-react';
 import ExportButton from '../components/ExportButton';
+import PopUp from '../components/PopUps/PopUp';
+import DecisionPopUp from '../components/PopUps/DecisionPopUp';
 
 function GestionUtilisateur() {
 
@@ -16,7 +18,7 @@ function GestionUtilisateur() {
   const columnsConfig2 = [
     { field: 'username', headerName: 'Nom utilisateur', width: 180, editable: false },
     { field: 'nom', headerName: 'Nom', width: 160, editable: true },
-    { field: 'prenom', headerName: 'Prénom', width: 150 },
+    { field: 'prenom', headerName: 'Prénom', width: 150,editable: true  },
     { field: 'grade', headerName: 'Grade', width: 180 },
     { field: 'email', headerName: 'Email', width: 260, expandable: true, maxInitialLength: 20 },
     { field: 'contact', headerName: 'Contact', width: 120 },
@@ -34,6 +36,11 @@ function GestionUtilisateur() {
   // État pour gérer l'affichage du modal d'ajout d'utilisateur
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [filteredRows, setFilteredRows] = useState(rowsData2);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [selectedMission, setSelectedMission] = useState(null);
+  const [isDeletePopupOpen, setIsDeletePopupOpen] = useState(false);
+  const [selectedMissionId, setSelectedMissionId] = useState(null);
+  
 
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
@@ -42,15 +49,48 @@ function GestionUtilisateur() {
   const statusOptions = ["Active", "Bloqué"];
   const statusColors = { Active: 'green', Bloqué: 'red' };
 
-  // Gestion des actions sur les lignes
-  const handleEditRow = (rowId) => console.log("Modifier l'utilisateur:", rowId);
-  const handleDeleteRow = (rowId) => console.log("Supprimer l'utilisateur:", rowId);
+// Modification d'une mission
+const handleEditRow = (selectedRow) => {
+  // const missionToEdit = filteredRows.find(row => row.id === rowId);
+  setSelectedMission({ ...selectedRow }); // S'assurer que l'objet est bien copié
+   setIsEditModalOpen(true);
+   console.log("test",selectedRow)
+};
 
-  const rowActions = [
-    { icon: <PersonOutlineRounded />, label: "Voir Profile", onClick: handleEditRow },
-    { icon: <SquarePen />, label: "Modifier", onClick: handleEditRow },
-    { icon: <ErrorOutlineIcon style={{ color: 'red' }} />, label: "Supprimer utilisateur", onClick: handleDeleteRow },
-  ];
+// Mise à jour des missions après modification
+const handleUpdateMission = (updatedMission) => {
+  setFilteredRows(prevRows =>
+    prevRows.map(row =>
+      row.id === updatedMission.id ? { ...row, ...updatedMission } : row
+    )
+  );
+  console.log("test",updatedMission)
+  setIsEditModalOpen(false);
+   setSelectedMission(null);
+};
+
+// Suppression d'une mission
+const handleDeleteRow = (selectedRow) => {
+   setSelectedMissionId(selectedRow.id);
+   setIsDeletePopupOpen(true);
+   console.log(selectedRow)
+};
+
+// Confirmation de la suppression
+const confirmDeleteMission = () => {
+   if (selectedMissionId !== null) {
+       setFilteredRows(prevRows => prevRows.filter(row => row.id !== selectedMissionId));
+   }
+   setIsDeletePopupOpen(false);
+   setSelectedMissionId(null);
+};
+
+const rowActions = [
+  { icon: <PersonOutlineRounded sx={{ marginRight: "8px" }} />, label: "Voir Profile", onClick: handleEditRow },
+  { icon: <SquarePen className='mr-2' />, label: "Modifier", onClick: (selectedRow) => handleEditRow(selectedRow) },
+  { icon: <ErrorOutlineIcon style={{ color: 'var(--alert-red)', marginRight: "8px" }} />, label: "Supprimer utilisateur", onClick: (selectedRow) => handleDeleteRow(selectedRow) },
+];
+
 
   // Gestion de la recherche d'utilisateur
   const handleSearchResults = (results) => setFilteredRows(results);
@@ -61,6 +101,17 @@ function GestionUtilisateur() {
     setIsModalOpen(false);
   };
 
+  const handleCellEditCommit = (params) => {
+    console.log("Cellule éditée :", params);
+    setFilteredRows((prevRows) =>
+      prevRows.map((row) =>
+        row.id === params.id ? { ...row, [params.field]: params.value } : row
+      )
+    );
+    console.log("Cellule éditée :", params);
+  };
+
+  
   return (
     <div className="flex">
       {/* Sidebar pour la navigation */}
@@ -84,7 +135,7 @@ function GestionUtilisateur() {
         {/* Table d'affichage des utilisateurs */}
         <div className="flex-1 overflow-x-auto overflow-y-auto h-[400px]">
           <Table
-            key={filteredRows.length}
+            key={JSON.stringify(filteredRows)}
             columnsConfig={columnsConfig2}
             rowsData={filteredRows}
             checkboxSelection={false}
@@ -92,6 +143,7 @@ function GestionUtilisateur() {
             statusOptions={statusOptions}
             statusColors={statusColors}
             rowActions={rowActions}
+            onCellEditCommit={handleCellEditCommit}
           />
         </div>
         <div className='border border-black mb-28 ml-20'>
@@ -99,8 +151,13 @@ function GestionUtilisateur() {
         </div>
       </div>
 
+
       {/* Modal d'ajout d'un utilisateur */}
       <AddUserForm title={'Ajouter un nouveau utilisateur'} isOpen={isModalOpen} onClose={closeModal} onUserCreated={handleUserCreation} />
+     
+            {isEditModalOpen && <AddUserForm title={'Modifier un utilisateur'} isOpen={isEditModalOpen} onClose={() => setIsEditModalOpen(false)} initialValues={selectedMission || {}} onUserCreated={handleUpdateMission} />}
+            {isDeletePopupOpen && <DecisionPopUp name={filteredRows.find(row => row.id === selectedMissionId)?.username || 'ce utilisateur'} text="Êtes-vous sûr(e) de vouloir supprimer l'utilisateur " handleConfirm={confirmDeleteMission} handleDeny={() => setIsDeletePopupOpen(false)} />}
+        
       
     </div>
   );
