@@ -4,7 +4,7 @@ import { ReactFlow } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 const CustomNode = ({ data }) => {
   return (
-    <div className="w-80 rounded-lg border shadow-md bg-white relative">
+    <div className="w-80 rounded-lg border shadow-md bg-white relative " >
       {/* Barre supérieure colorée */}
       <div className="bg-orange-500 h-2 rounded-t-lg"></div>
 
@@ -25,7 +25,7 @@ const CustomNode = ({ data }) => {
 
       {/* Connecteurs */}
       <Handle type="target" position={Position.Left} className="w-2 h-2 bg-blue-600" />
-      <Handle type="source" position={Position.Right} className="w-2 h-2 bg-blue-600" />
+      
     </div>
   );
 };

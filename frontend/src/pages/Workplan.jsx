@@ -20,7 +20,7 @@ const Workplan = () => {
     // Créer le node principal (l'application)
     const newAppNode = {
       id: data.id,
-      type: "custom",
+      type: "app",
       position: { x, y },
       data: { label: data.description },
     };
@@ -28,7 +28,7 @@ const Workplan = () => {
     // Créer les nodes pour chaque couche
     const layerNodes = data.layers.map((layer, index) => ({
       id: layer.id,
-      type: "custom",
+      type: "app",
       position: { x: x + 500, y: y + index * 100 },
       data: { label: layer.name },
     }));
@@ -49,20 +49,20 @@ const Workplan = () => {
   const appSysNodes = [
     {
       id: "1",
-      type: "custom",
+      type: "app",
       position: { x: 200, y: 150 },
       data: { label: "USSD" },
     },
 
     {
       id: "2",
-      type: "custom",
+      type: "app",
       position: { x: 700, y: 50 },
       data: { label: "OS" },
     },
     {
       id: "3",
-      type: "custom",
+      type: "app",
       position: { x: 700, y: 300 },
       data: { label: "APP" },
     },
@@ -81,21 +81,28 @@ const Workplan = () => {
 
         {/* Contenu principal qui prend le reste */}
         <div className="w-full  ">
-          
           <div
             className="relative w-full  flex my-2 flex-grow overflow-auto"
             onDragOver={(e) => e.preventDefault()} // Permet de drop
             onDrop={onDrop}
           >
-            <Flow nodes={appNodes} edges={edges} />
+            <Flow
+              nodes={appNodes}
+              edges={edges}
+              setNodes={setAppNodes}
+              setEdges={setEdges}
+            />
             <div className="relative   z-50 ">
-            <WorkPlanSideBar onDragStart={onDragStart} />
-          </div>
+              <WorkPlanSideBar onDragStart={onDragStart} />
+            </div>
           </div>
         </div>
       </div>
 
-      <div className="bg-pink-50 min-h-screen text-center"> ici la matrice baby </div>
+      <div className="bg-pink-50 min-h-screen text-center">
+        {" "}
+        ici la matrice baby{" "}
+      </div>
     </main>
   );
 };

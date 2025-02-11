@@ -52,6 +52,7 @@ const risks = [
             title="Risques"
             items={risks}
             color="#f59e0b"
+            onDragStart={onDragStart}
           />
           {/*<AccordionItem
             title="Contrôles"
