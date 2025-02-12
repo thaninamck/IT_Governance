@@ -32,8 +32,13 @@ const Workplan = () => {
     const newRiskNode = {
       id: riskData.id, // ✅ Correction ici
       type: "risk",
-      position: { x, y },
-      data: { riskData },
+      position: { x,y },
+      data: {
+        riskData,
+        onControlDrop: (event) => onControlDrop(event, riskData.id), 
+      },
+    
+      
     };
 
     // Créer l'edge entre la couche et le risque
@@ -55,14 +60,15 @@ const Workplan = () => {
   };
   
 
-  const onControlDrop = (event, layerId) => {
+  const onControlDrop = (event, riskId) => {
     event.preventDefault();
-    const riskData = JSON.parse(event.dataTransfer.getData("application/json")); // ✅ Extraction correcte
-    console.log("le risque droppé", riskData);
-    console.log("le id risque", riskData.id);
-    console.log("le desc risk", riskData.description);
-    if (!layerId || !riskData) {
-      console.warn("Layer ID or Risk Data not found");
+    const controlData = JSON.parse(event.dataTransfer.getData("application/json")); 
+    console.log("le riskID", riskId);
+    console.log("le cntrl droppé", controlData);
+    console.log("le id cntrl", controlData.id);
+    console.log("le desc cntrl", controlData.description);
+    if (!riskId || !controlData) {
+      console.warn("not found");
       return;
     }
 
@@ -70,24 +76,25 @@ const Workplan = () => {
     const y = event.clientY;
 
     // Créer le nœud du risque
-    const newRiskNode = {
-      id: riskData.id, // ✅ Correction ici
-      type: "risk",
-      position: { x, y },
-      data: { riskData },
+    const newControlNode = {
+      id: controlData.id, 
+      type: "cntrl",
+      position: { x:x+500,y:y+5*100 },
+      data: { controlData },
     };
 
     // Créer l'edge entre la couche et le risque
     const newEdge = {
-      id: `e-${layerId}-${riskData.id}`,
-      source: layerId,
-      target: riskData.id,
+      id: `e-${riskId}-${controlData.id}`,
+      source: riskId,
+      target: controlData.id,
       label: "",
     };
 
     // Mettre à jour les states
-    setAppNodes((prevNodes) => [...prevNodes, newRiskNode]);
+    setAppNodes((prevNodes) => [...prevNodes, newControlNode]);
     setEdges((prevEdges) => [...prevEdges, newEdge]);
+    console.log(appNodes)
   };
 
 
@@ -181,6 +188,7 @@ const Workplan = () => {
               <WorkPlanSideBar
                 onDragStart={onDragStart}
                 onRiskDragStart={onRiskDragStart}
+                onControlDragStart={onControlDragStart}
               />
             </div>
           </div>

@@ -1,5 +1,5 @@
 import React from 'react'
-
+import { Handle, Position } from "@xyflow/react";
 const ControlCustomNode = ({ data }) => {
     return (
       <div className="relative w-[350px] bg-white shadow-md rounded-lg border border-gray-300">
@@ -10,14 +10,20 @@ const ControlCustomNode = ({ data }) => {
           {/* Section gauche avec le titre et l'ID */}
           <div className="flex flex-col items-start w-1/3 pr-2">
             <span className="text-gray-700 font-semibold">Controle</span>
-            <span className="text-gray-400 text-sm">{data.id}</span>
+            <span className="text-gray-400 text-sm">{data.controlData.id}</span>
           </div>
   
           {/* Section droite avec la description */}
           <div className="flex-1 bg-gray-100 p-3 rounded-lg text-gray-700 text-sm">
-            {data.description}
+            {data.controlData.description}
           </div>
         </div>
+        <Handle
+                type="target"
+                position={Position.Left}
+                className="w-2 h-2 bg-blue-600"
+              />
+             
       </div>
     );
   };

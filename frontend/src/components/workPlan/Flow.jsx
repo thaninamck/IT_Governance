@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
 import {
+  MiniMap,
   ReactFlow,
   Controls,
   Background,
@@ -9,11 +10,14 @@ import "@xyflow/react/dist/style.css";
 import AppCustomNode from "./AppCustomNode";
 import RiskCustomNode from "./RiskCustomNode";
 import LayerCustomNode from "./LayerCustomNode";
+import ControlCustomNode from "./ControlCustomNode";
+
 // Définition du type de nœud personnalisé
 const nodeTypes = { 
   app: AppCustomNode, 
   risk: RiskCustomNode ,
-  layer:LayerCustomNode
+  layer:LayerCustomNode,
+  cntrl:ControlCustomNode
 };
 
 const Flow = ({ nodes, edges, setNodes, setEdges }) => {
@@ -71,6 +75,23 @@ const Flow = ({ nodes, edges, setNodes, setEdges }) => {
         onNodesChange={onNodesChange}
         onNodeClick={onNodeClick}
       >
+         <MiniMap 
+          nodeColor={(node) => {
+            switch (node.type) {
+              case "app":
+                return "#152259";
+              case "layer":
+                return "#152259";
+              case "risk":
+                return "#FFA000";
+              default:
+                return "#0071FF";
+            }
+          }}
+          nodeStrokeWidth={2}
+        />
+
+        
         <Controls />
         <Background />
       </ReactFlow>

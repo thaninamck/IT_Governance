@@ -23,10 +23,10 @@ const risks = [
 ];
 
 const controls = [
-  { id: "1", description: "Duties and areas of responsibility are separated, in order to reduce opportunities for unauthorized modification... ..." },
-  { id: "2", description: "Duties and areas of responsibility are separated, in order to reduce opportunities for unauthorized modification... ..." },
-  { id: "3", description: "Duties and areas of responsibility are separated, in order to reduce opportunities for unauthorized modification... ..."  },
-  { id: "4", description: "Duties and areas of responsibility are separated, in order to reduce opportunities for unauthorized modification... ..."  },
+  { id: "4", description: "Duties and areas of responsibility are separated, in order to reduce opportunities for unauthorized modification... ..." },
+  { id: "5", description: "Duties and areas of responsibility are separated, in order to reduce opportunities for unauthorized modification... ..." },
+  { id: "6", description: "Duties and areas of responsibility are separated, in order to reduce opportunities for unauthorized modification... ..."  },
+  { id: "7", description: "Duties and areas of responsibility are separated, in order to reduce opportunities for unauthorized modification... ..."  },
 
 ];
 
