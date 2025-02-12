@@ -1,51 +1,148 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Header from "../components/Header/Header";
 import WorkPlanSideBar from "../components/workPlan/WorkPlanSideBar";
 import Flow from "../components/workPlan/Flow";
 const Workplan = () => {
   const [appNodes, setAppNodes] = useState([]);
   const [edges, setEdges] = useState([]);
+  const [existedAppVerified, setExistedAppVerified] = useState(false);
+  const [dataStructure, setDataStructure] = useState({ applications: [] });
+  const [application, setApplication] = useState({});
+  useEffect(() => {
+    console.log("Nouvelle valeur de application:", application);
+  }, [application]);
+
+  const addApplicationWithLayers = (id, description, layers) => {
+
+  
+    setApplication({
+      id: id,
+      description: description,
+      layers: layers.map((layer) => ({
+        
+        
+        id: layer.id,
+        name: layer.name,
+        risks: [],
+      })),
+    });
+
+
+  };
+
+  // Fonction pour ajouter un risque dans une couche spécifique de l'application courante
+  const addRiskToLayer = (idLayer, riskID, riskDescription) => {
+    if (!application) return; // Vérifie qu'une application existe
+    setApplication((prevApp) => ({
+      ...prevApp,
+      layers: prevApp.layers.map((layer) =>
+        layer.id === idLayer
+          ? {
+              ...layer,
+              risks: [
+                ...layer.risks,
+                { id: riskID, description: riskDescription, controls: [] },
+              ],
+            }
+          : layer
+      ),
+    }));
+  };
+
+  const addControlToRisk = (idLayer, idRisk, cntrlID, cntrlDescription) => {
+    if (!application) return; // Vérifie qu'une application existe
+
+    setApplication((prevApp) => ({
+      ...prevApp,
+      layers: prevApp.layers.map((layer) =>
+        layer.id === idLayer
+          ? {
+              ...layer,
+              risks: layer.risks.map((risk) =>
+                risk.id === idRisk
+                  ? {
+                      ...risk,
+                      controls: [
+                        ...risk.controls,
+                        { id: cntrlID, description: cntrlDescription },
+                      ],
+                    }
+                  : risk
+              ),
+            }
+          : layer
+      ),
+    }));
+
+    console.log("lapplication", application);
+  };
+
+  const addToDataStructure = (application) => {
+    console.log("Ajout de l'application :", application);
+
+    setDataStructure((prevApp) => {
+      const updatedStructure = {
+        ...prevApp,
+        applications: [...prevApp.applications, application],
+      };
+
+      console.log("Nouvelle structure :", updatedStructure);
+      return updatedStructure;
+    });
+  };
 
   const onDragStart = (event, item) => {
     event.dataTransfer.setData("application/json", JSON.stringify(item));
   };
 
   const onRiskDragStart = (event, item) => {
+    console.log(item)
     event.dataTransfer.setData("application/json", JSON.stringify(item));
     console.log("risk dragged here");
   };
-  const onRiskDrop = (event, layerId) => {
+
+  const handleAddAppClick= () => {
+    addToDataStructure(application);
+    setExistedAppVerified(false);
+    setAppNodes([]);
+  };
+  const onRiskDrop = (event, layerId) => {          
     event.preventDefault();
     const riskData = JSON.parse(event.dataTransfer.getData("application/json")); // ✅ Extraction correcte
+
+    const isRisk=riskData && "idRisk" in riskData ;
+    if (!isRisk) {
+      alert("Attention veuillez commencer par les risques !");
+     
+      return; // Bloque l'ajout
+    }   
     console.log("le risque droppé", riskData);
-    console.log("le id risque", riskData.id);
+    console.log("le id risque", riskData.idRisk);
     console.log("le desc risk", riskData.description);
     if (!layerId || !riskData) {
       console.warn("Layer ID or Risk Data not found");
       return;
     }
-
+    addRiskToLayer(layerId, riskData.id, riskData.description);
     const x = event.clientX;
     const y = event.clientY;
 
     // Créer le nœud du risque
     const newRiskNode = {
-      id: riskData.id, // ✅ Correction ici
+      id: riskData.idRisk,
       type: "risk",
-      position: { x,y },
+      position: { x, y },
       data: {
         riskData,
-        onControlDrop: (event) => onControlDrop(event, riskData.id), 
+        onControlDrop: (event) => onControlDrop(event, riskData.idRisk, layerId),
       },
-    
-      
     };
 
     // Créer l'edge entre la couche et le risque
     const newEdge = {
-      id: `e-${layerId}-${riskData.id}`,
+      id: `e-${layerId}-${riskData.idRisk}`,
       source: layerId,
-      target: riskData.id,
+      target: riskData.idRisk,
       label: "",
     };
 
@@ -58,14 +155,21 @@ const Workplan = () => {
     event.dataTransfer.setData("application/json", JSON.stringify(item));
     console.log("control dragged here");
   };
-  
 
-  const onControlDrop = (event, riskId) => {
+  const onControlDrop = (event, riskId, layerId) => {
     event.preventDefault();
-    const controlData = JSON.parse(event.dataTransfer.getData("application/json")); 
+    const controlData = JSON.parse(
+      event.dataTransfer.getData("application/json")
+    );
+    const isCntrl=controlData && "idCntrl" in controlData ;
+    if (!isCntrl) {
+      alert("Attention veuillez mettre que les controles !");
+     
+      return; // Bloque l'ajout
+    }  
     console.log("le riskID", riskId);
     console.log("le cntrl droppé", controlData);
-    console.log("le id cntrl", controlData.id);
+    console.log("le id cntrl", controlData.idCntrl);
     console.log("le desc cntrl", controlData.description);
     if (!riskId || !controlData) {
       console.warn("not found");
@@ -77,33 +181,43 @@ const Workplan = () => {
 
     // Créer le nœud du risque
     const newControlNode = {
-      id: controlData.id, 
+      id: controlData.idCntrl,
       type: "cntrl",
-      position: { x:x+500,y:y+5*100 },
+      position: { x: x + 500, y: y + 5 * 100 },
       data: { controlData },
     };
 
     // Créer l'edge entre la couche et le risque
     const newEdge = {
-      id: `e-${riskId}-${controlData.id}`,
+      id: `e-${riskId}-${controlData.idCntrl}`,
       source: riskId,
-      target: controlData.id,
+      target: controlData.idCntrl,
       label: "",
     };
 
     // Mettre à jour les states
     setAppNodes((prevNodes) => [...prevNodes, newControlNode]);
     setEdges((prevEdges) => [...prevEdges, newEdge]);
-    console.log(appNodes)
+    console.log(appNodes);
+    addControlToRisk(layerId, riskId, controlData.idCntrl, controlData.description);
   };
-
-
 
   const onDrop = (event) => {
     event.preventDefault();
     const data = JSON.parse(event.dataTransfer.getData("application/json"));
 
-    const x = event.clientX; // Position où on drop l'élément
+    // Vérifier si une application existe déjà
+    const isApp=data && "layers" in data && Array.isArray(data.layers);
+    const hasApplication = appNodes.some((node) => node.type === "app");
+    if (hasApplication && !existedAppVerified && isApp) {
+      alert("Une application est déjà présente dans le Flow !");
+      setExistedAppVerified(true);
+      return; // Bloque l'ajout
+    }
+
+    //console.log("Ajout de l'application :", data);
+    addApplicationWithLayers(data.id, data.description, data.layers);
+    const x = event.clientX;
     const y = event.clientY;
 
     // Créer le node principal (l'application)
@@ -121,7 +235,7 @@ const Workplan = () => {
       position: { x: x + 500, y: y + index * 100 },
       data: {
         label: layer.name,
-        onRiskDrop: (event) => onRiskDrop(event, layer.id), // ✅ Fonction bien transmise
+        onRiskDrop: (event) => onRiskDrop(event, layer.id),
       },
     }));
 
@@ -134,8 +248,8 @@ const Workplan = () => {
     }));
 
     // Mettre à jour les states
-    setAppNodes((prevNodes) => [...prevNodes, newAppNode, ...layerNodes]);
-    setEdges((prevEdges) => [...prevEdges, ...newEdges]);
+    setAppNodes([newAppNode, ...layerNodes]); // Remplace plutôt qu'ajouter
+    setEdges(newEdges);
   };
 
   const appSysNodes = [
@@ -184,6 +298,18 @@ const Workplan = () => {
               setNodes={setAppNodes}
               setEdges={setEdges}
             />
+            <div className=" z-50 absolute bottom-0 right-0 w-auto h-auto ">
+              <button
+                className={
+                  !existedAppVerified
+                    ? "hidden"
+                    : "bg-blue-menu w-auto h-auto p-2 text-white mr-2 mb-2 hover:bg-blue-conf"
+                }
+                onClick={handleAddAppClick}
+              >
+                Ajouter
+              </button>
+            </div>
             <div className="relative   z-50 ">
               <WorkPlanSideBar
                 onDragStart={onDragStart}

@@ -5,28 +5,29 @@ import AppsAccordionItem from "./AppsAccordionItem";
 import ControlAccordionItem from "./ControlAccordionItem";
 
 const WorkPlanSideBar = ({ onDragStart ,onRiskDragStart,onControlDragStart}) => {
-
+  
+  
 // Exemple de structure avec ID et description
 const applications = [
   { id: "app1", description: "USSD", layers: [{ id: "l1", name: "OS" }, { id: "l2", name: "APP" }] },
-  { id: "app2", description: "CV360", layers: [{ id: "l3", name: "DB" }, { id: "l4", name: "API" }] },
+  { id: "app2", description: "CV360", layers: [{ id: "l1", name: "OS" }, { id: "l4", name: "API" }] },
   { id: "app3", description: "CV360", layers: [{ id: "l3", name: "DB" }, { id: "l4", name: "API" }] },
 
 ];
 
 const risks = [
-  { id: "1", description: "furfuzirfyzuf iuzyfoz ruozc furfuzirfyzuf iuzyfoz ruozc ojfyt yth iof ojfyt yth iof " },
-  { id: "2", description: "furfuzirfyzuf iuzyfoz ruozc ojfyt yth iof furfuzirfyzuf iuzyfoz ruozc ojfyt yth iof furfuzirfyzuf iuzyfoz ruozc ojfyt yth iof" },
-  { id: "3", description: "furfuzirfyzuf iuzyfoz ruozc ojfyt yth iof furfuzirfyzuf iuzyfoz ruozc ojfyt yth iof furfuzirfyzuf iuzyfoz ruozc ojfyt yth iof" },
-  { id: "4", description: "furfuzirfyzuf iuzyfoz ruozc ojfyt yth iof furfuzirfyzuf iuzyfoz ruozc ojfyt yth iof furfuzirfyzuf iuzyfoz ruozc ojfyt yth iof" },
+  { idRisk: "1", description: "furfuzirfyzuf iuzyfoz ruozc furfuzirfyzuf iuzyfoz ruozc ojfyt yth iof ojfyt yth iof " },
+  { idRisk: "2", description: "furfuzirfyzuf iuzyfoz ruozc ojfyt yth iof furfuzirfyzuf iuzyfoz ruozc ojfyt yth iof furfuzirfyzuf iuzyfoz ruozc ojfyt yth iof" },
+  { idRisk: "3", description: "furfuzirfyzuf iuzyfoz ruozc ojfyt yth iof furfuzirfyzuf iuzyfoz ruozc ojfyt yth iof furfuzirfyzuf iuzyfoz ruozc ojfyt yth iof" },
+  { idRisk: "4", description: "furfuzirfyzuf iuzyfoz ruozc ojfyt yth iof furfuzirfyzuf iuzyfoz ruozc ojfyt yth iof furfuzirfyzuf iuzyfoz ruozc ojfyt yth iof" },
 
 ];
 
 const controls = [
-  { id: "4", description: "Duties and areas of responsibility are separated, in order to reduce opportunities for unauthorized modification... ..." },
-  { id: "5", description: "Duties and areas of responsibility are separated, in order to reduce opportunities for unauthorized modification... ..." },
-  { id: "6", description: "Duties and areas of responsibility are separated, in order to reduce opportunities for unauthorized modification... ..."  },
-  { id: "7", description: "Duties and areas of responsibility are separated, in order to reduce opportunities for unauthorized modification... ..."  },
+  { idCntrl: "4", description: "Duties and areas of responsibility are separated, in order to reduce opportunities for unauthorized modification... ..." },
+  { idCntrl: "5", description: "Duties and areas of responsibility are separated, in order to reduce opportunities for unauthorized modification... ..." },
+  { idCntrl: "6", description: "Duties and areas of responsibility are separated, in order to reduce opportunities for unauthorized modification... ..."  },
+  { idCntrl: "7", description: "Duties and areas of responsibility are separated, in order to reduce opportunities for unauthorized modification... ..."  },
 
 ];
 
