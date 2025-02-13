@@ -2,7 +2,15 @@ import React, { useState, useEffect } from "react";
 import Header from "../components/Header/Header";
 import WorkPlanSideBar from "../components/workPlan/WorkPlanSideBar";
 import Flow from "../components/workPlan/Flow";
+import { NotificationDialog } from "../components/workPlan/NotificationDialog";
 const Workplan = () => {
+  const [appDuplicationDialogOpen, setappDuplicationDialogOpen] =
+    useState(false);
+    const [startWithriskDialogOpen, setstartWithriskDialogOpen] =
+    useState(false);
+    const [startWithCntrlDialogOpen, setstartWithCntrlDialogOpen] =
+    useState(false);
+
   const [appNodes, setAppNodes] = useState([]);
   const [edges, setEdges] = useState([]);
   const [existedAppVerified, setExistedAppVerified] = useState(false);
@@ -12,10 +20,9 @@ const Workplan = () => {
     console.log("Nouvelle valeur de application:", application);
   }, [application]);
 
-
   const deleteItemsInApplication = (idsToDelete = []) => {
     if (!application) return;
-  
+
     setApplication((prevApp) => ({
       ...prevApp,
       layers: prevApp.layers
@@ -26,30 +33,24 @@ const Workplan = () => {
             .filter((risk) => !idsToDelete.includes(risk.id)) // Supprime les risks
             .map((risk) => ({
               ...risk,
-              controls: risk.controls.filter((control) => !idsToDelete.includes(control.id)), // Supprime les controls
+              controls: risk.controls.filter(
+                (control) => !idsToDelete.includes(control.id)
+              ), // Supprime les controls
             })),
         })),
     }));
   };
-  
-
 
   const addApplicationWithLayers = (id, description, layers) => {
-
-  
     setApplication({
       id: id,
       description: description,
       layers: layers.map((layer) => ({
-        
-        
         id: layer.id,
         name: layer.name,
         risks: [],
       })),
     });
-
-
   };
 
   // Fonction pour ajouter un risque dans une couche spécifique de l'application courante
@@ -118,26 +119,26 @@ const Workplan = () => {
   };
 
   const onRiskDragStart = (event, item) => {
-    console.log(item)
+    console.log(item);
     event.dataTransfer.setData("application/json", JSON.stringify(item));
     console.log("risk dragged here");
   };
 
-  const handleAddAppClick= () => {
+  const handleAddAppClick = () => {
     addToDataStructure(application);
     setExistedAppVerified(false);
     setAppNodes([]);
   };
-  const onRiskDrop = (event, layerId) => {          
+  const onRiskDrop = (event, layerId) => {
     event.preventDefault();
     const riskData = JSON.parse(event.dataTransfer.getData("application/json")); // ✅ Extraction correcte
 
-    const isRisk=riskData && "idRisk" in riskData ;
+    const isRisk = riskData && "idRisk" in riskData;
     if (!isRisk) {
-      alert("Attention veuillez commencer par les risques !");
-     
+      //alert("Attention veuillez commencer par les risques !");
+setstartWithriskDialogOpen(true)
       return; // Bloque l'ajout
-    }   
+    }
     console.log("le risque droppé", riskData);
     console.log("le id risque", riskData.idRisk);
     console.log("le desc risk", riskData.description);
@@ -156,7 +157,8 @@ const Workplan = () => {
       position: { x, y },
       data: {
         riskData,
-        onControlDrop: (event) => onControlDrop(event, riskData.idRisk, layerId),
+        onControlDrop: (event) =>
+          onControlDrop(event, riskData.idRisk, layerId),
       },
     };
 
@@ -183,12 +185,13 @@ const Workplan = () => {
     const controlData = JSON.parse(
       event.dataTransfer.getData("application/json")
     );
-    const isCntrl=controlData && "idCntrl" in controlData ;
+    const isCntrl = controlData && "idCntrl" in controlData;
     if (!isCntrl) {
-      alert("Attention veuillez mettre que les controles !");
-     
+      //alert("Attention veuillez mettre que les controles !");
+      // <NotificationDialog message="Voulez-vous vraiment effectuer cette action ?" />
+      setstartWithCntrlDialogOpen(true)
       return; // Bloque l'ajout
-    }  
+    }
     console.log("le riskID", riskId);
     console.log("le cntrl droppé", controlData);
     console.log("le id cntrl", controlData.idCntrl);
@@ -221,7 +224,12 @@ const Workplan = () => {
     setAppNodes((prevNodes) => [...prevNodes, newControlNode]);
     setEdges((prevEdges) => [...prevEdges, newEdge]);
     console.log(appNodes);
-    addControlToRisk(layerId, riskId, controlData.idCntrl, controlData.description);
+    addControlToRisk(
+      layerId,
+      riskId,
+      controlData.idCntrl,
+      controlData.description
+    );
   };
 
   const onDrop = (event) => {
@@ -229,10 +237,12 @@ const Workplan = () => {
     const data = JSON.parse(event.dataTransfer.getData("application/json"));
 
     // Vérifier si une application existe déjà
-    const isApp=data && "layers" in data && Array.isArray(data.layers);
+    const isApp = data && "layers" in data && Array.isArray(data.layers);
     const hasApplication = appNodes.some((node) => node.type === "app");
     if (hasApplication && !existedAppVerified && isApp) {
-      alert("Une application est déjà présente dans le Flow !");
+      //alert("Une application est déjà présente dans le Flow !");
+      
+      setappDuplicationDialogOpen(true);
       setExistedAppVerified(true);
       return; // Bloque l'ajout
     }
@@ -343,10 +353,33 @@ const Workplan = () => {
           </div>
         </div>
       </div>
+      {appDuplicationDialogOpen && (
+        <NotificationDialog
+          message="Une application est déjà présente dans le Flow !"
+          open={appDuplicationDialogOpen}
+          setOpen={setappDuplicationDialogOpen} 
+        />
+      )}
 
+{startWithriskDialogOpen && (
+        <NotificationDialog
+          message="Attention veuillez mettre des risques!"
+          open={startWithriskDialogOpen}
+          setOpen={setstartWithriskDialogOpen} 
+        />
+      )}
+
+{startWithCntrlDialogOpen && (
+        <NotificationDialog
+          message="Attention veuillez mettre des risques!"
+          open={startWithCntrlDialogOpen}
+          setOpen={setstartWithCntrlDialogOpen} 
+        />
+      )}
       <div className="bg-pink-50 min-h-screen text-center">
         {" "}
         ici la matrice baby{" "}
+        <NotificationDialog message="Voulez-vous vraiment effectuer cette action ?" />
       </div>
     </main>
   );
