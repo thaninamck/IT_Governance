@@ -20,24 +20,34 @@ const Workplan = () => {
   
   const deleteItemsInApplication = (idsToDelete = []) => {
     if (!application) return;
+  
+    setApplication((prevApp) => {
+      // Vérifier si l'application elle-même doit être supprimée
+      if (idsToDelete.includes(prevApp.id)) {
 
-    setApplication((prevApp) => ({
-      ...prevApp,
-      layers: prevApp.layers
-        .filter((layer) => !idsToDelete.includes(layer.id)) // Supprime les layers
+        return {}; // Supprime toute l'application
+      }
+  
+      // Filtrage des layers
+      const filteredLayers = prevApp.layers
+        .filter((layer) => !idsToDelete.includes(layer.id))
         .map((layer) => ({
           ...layer,
           risks: layer.risks
-            .filter((risk) => !idsToDelete.includes(risk.id)) // Supprime les risks
+            .filter((risk) => !idsToDelete.includes(risk.id))
             .map((risk) => ({
               ...risk,
               controls: risk.controls.filter(
                 (control) => !idsToDelete.includes(control.id)
-              ), // Supprime les controls
+              ),
             })),
-        })),
-    }));
+        }));
+  
+  
+      return  { ...prevApp, layers: filteredLayers };
+    });
   };
+  
 
   const addApplicationWithLayers = (id, description, layers) => {
     setApplication({
@@ -144,7 +154,7 @@ const Workplan = () => {
       console.warn("Layer ID or Risk Data not found");
       return;
     }
-    addRiskToLayer(layerId, riskData.id, riskData.description);
+    addRiskToLayer(layerId, riskData.idRisk, riskData.description);
     const x = event.clientX;
     const y = event.clientY;
 
@@ -269,7 +279,7 @@ const Workplan = () => {
       },
     }));
 
-    
+
     // Créer les edges entre l'application et ses couches
     const newEdges = data.layers.map((layer) => ({
       id: `e-${data.id}-${layer.id}`,
