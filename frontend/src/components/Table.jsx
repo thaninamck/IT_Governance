@@ -63,7 +63,7 @@ function ExpandableCell({ value, maxInitialLength = 50, onExpand }) {
 
 
 
-function Table({ columnsConfig, rowsData, checkboxSelection = false, allterRowcolors , getRowLink,onRowSelectionChange, headerBackground = "transparent",statusOptions = [],statusColors = {},rowActions = [], onCellEditCommit}) {
+function Table({ columnsConfig, rowsData, checkboxSelection = false, allterRowcolors , getRowLink , onRowSelectionChange, headerBackground = "transparent",statusOptions = [],statusColors = {},rowActions = [], onCellEditCommit}) {
 
     const isZebraStriping = allterRowcolors; // Mets à false pour désactiver
 const oddRowColor = "#E9EFF8"; 
@@ -104,13 +104,16 @@ const evenRowColor = "white"
     if (getRowLink) {
       const link = getRowLink(params.row); // Générer dynamiquement le lien
       setBreadcrumbs([
-        { label: "Mes Mission", path: "/tablemission" },
+        { label: "Mes Mission", path: "/gestionmission" },
         {
           label: params.row.mission,
-          path: `/tablemission/${params.row.mission}`,
+          path: `/gestionmission/${params.row.mission}`,
         },
       ]);
-      navigate(link);
+       // Stocker les informations de la ligne dans le state local ou via navigation state
+    navigate(link, { state: { missionData: params.row } });
+    console.log(params.row)
+      
     }
   };
 
@@ -146,6 +149,11 @@ const evenRowColor = "white"
       cellClassName: "dynamic-height-cell",
       editable: colConfig.editable || false,
       renderCell: (params) => {
+        // Vérifie si une fonction personnalisée est fournie
+    if (colConfig.customRenderCell) {
+      return colConfig.customRenderCell(params);
+    }
+    // Ajoute une condition spécifique en fonction du champ
         if (colConfig.field === "status") {
           return (
             <FormControl sx={{ width: "100%" }}>
