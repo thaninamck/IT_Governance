@@ -24,7 +24,7 @@ function PasswordChange({title}) {
       };
     
   return (
-    <form className="appForm_container password_container" onSubmit={handleSubmit}>
+    <form className=" password_container" onSubmit={handleSubmit}>
 
         {/* Titre dynamique */}
         <p>{title}</p>
