@@ -165,7 +165,7 @@ const Workplan = () => {
 
   const handleAddAppClick = () => {
     addToDataStructure(application);
-    setExistedAppVerified(false);
+    //setExistedAppVerified(false);
     setAppNodes([]);
     setApplication({})
   };
@@ -284,11 +284,11 @@ const Workplan = () => {
     // Vérifier si une application existe déjà
     const isApp = data && "layers" in data && Array.isArray(data.layers);
     const hasApplication = appNodes.some((node) => node.type === "app");
-    if (hasApplication && !existedAppVerified && isApp) {
+    if (hasApplication && !appEmpty && isApp) {
       //alert("Une application est déjà présente dans le Flow !");
 
       setappDuplicationDialogOpen(true);
-      setExistedAppVerified(true);
+      //setExistedAppVerified(true);
       return; // Bloque l'ajout
     }
 
