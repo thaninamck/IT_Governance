@@ -18,7 +18,36 @@ const Workplan = () => {
   const appEmpty = application?.id === undefined || application?.id === null;
   useEffect(() => {
     console.log("Nouvelle valeur de application:", application);
-  }, [application]);
+  }, [application]);//juste pour surveiller l'app
+
+  useEffect(() => {
+    console.log("Sauvegarde dans localStorage", application, appNodes, edges);
+    localStorage.setItem("applicationState", JSON.stringify(application));
+    localStorage.setItem("appNodes", JSON.stringify(appNodes));
+    localStorage.setItem("edges", JSON.stringify(edges));
+  }, [application, appNodes, edges]);
+  
+  
+  useEffect(() => {
+    const savedApplication = localStorage.getItem("applicationState");
+    const savedNodes = localStorage.getItem("appNodes");
+    const savedEdges = localStorage.getItem("edges");
+  
+    console.log("Données chargées depuis localStorage", savedApplication, savedNodes, savedEdges);
+    
+    if (savedApplication) {
+      setApplication(JSON.parse(savedApplication));
+    }
+    if (savedNodes) {
+      setAppNodes(JSON.parse(savedNodes));
+    }
+    if (savedEdges) {
+      setEdges(JSON.parse(savedEdges));
+    }
+  }, []);
+  
+  
+
   
   const deleteItemsInApplication = (idsToDelete = []) => {
     if (!application) return;
@@ -348,7 +377,8 @@ const Workplan = () => {
               setEdges={setEdges}
               deleteItemsInApplication={deleteItemsInApplication}
             />
-            <div className=" z-50 absolute bottom-0 right-0 w-auto h-auto ">
+            <div className=" z-50 absolute bg-transparent bottom-0 right-0 w-auto h-auto ">
+             
               <button
                 className={
                   appEmpty
