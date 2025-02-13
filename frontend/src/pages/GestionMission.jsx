@@ -134,7 +134,7 @@ function GestionMission() {
                  <PopUp text="Mission créée" redirectionURL={handlePopupClose} />
                  </div>}
             {isEditModalOpen && <AddMissionForm title={'Modifier une mission'} isOpen={isEditModalOpen} onClose={() => setIsEditModalOpen(false)} initialValues={selectedMission} onMissionCreated={handleUpdateMission} />}
-            {isDeletePopupOpen && <DecisionPopUp name={filteredRows.find(row => row.id === selectedMissionId)?.mission || 'cette mission'} text="Êtes-vous sûr(e) de vouloir supprimer la mission " handleConfirm={confirmDeleteMission} handleDeny={() => setIsDeletePopupOpen(false)} />}
+            {isDeletePopupOpen &&  <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1"> <DecisionPopUp name={filteredRows.find(row => row.id === selectedMissionId)?.mission || 'cette mission'} text="Êtes-vous sûr(e) de vouloir supprimer la mission " handleConfirm={confirmDeleteMission} handleDeny={() => setIsDeletePopupOpen(false)} /></div>}
         </div>
     );
 }

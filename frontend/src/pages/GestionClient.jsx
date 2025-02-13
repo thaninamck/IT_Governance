@@ -121,7 +121,7 @@ function GestionClient() {
             {/* Modals */}
             <AddClientForm title={'Ajouter un Client'} isOpen={isModalOpen} onClose={closeModal} onClientCreated={handleClientCreation} />
             {isEditModalOpen && <AddClientForm title={'Modifier un client'} isOpen={isEditModalOpen} onClose={() => setIsEditModalOpen(false)} initialValues={selectedClient} onClientCreated={handleUpdateClient} />}
-            {isDeletePopupOpen && <DecisionPopUp name={filteredRows.find(row => row.id === selectedClientId)?.nom || 'ce client'} text="Êtes-vous sûr(e) de vouloir supprimer le client ?" handleConfirm={confirmDeleteClient} handleDeny={closeDeletePopup} />}
+            {isDeletePopupOpen && <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1"><DecisionPopUp name={filteredRows.find(row => row.id === selectedClientId)?.nom || 'ce client'} text="Êtes-vous sûr(e) de vouloir supprimer le client ?" handleConfirm={confirmDeleteClient} handleDeny={closeDeletePopup} /></div>}
         </div>
     );
 }

@@ -37,9 +37,9 @@ function GestionUtilisateur() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [filteredRows, setFilteredRows] = useState(rowsData2);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [selectedMission, setSelectedMission] = useState(null);
+  const [selectedApp, setSelectedApp] = useState(null);
   const [isDeletePopupOpen, setIsDeletePopupOpen] = useState(false);
-  const [selectedMissionId, setSelectedMissionId] = useState(null);
+  const [selectedAppId, setSelectedAppId] = useState(null);
   
 
   const openModal = () => setIsModalOpen(true);
@@ -52,37 +52,37 @@ function GestionUtilisateur() {
 // Modification d'une mission
 const handleEditRow = (selectedRow) => {
   // const missionToEdit = filteredRows.find(row => row.id === rowId);
-  setSelectedMission({ ...selectedRow }); // S'assurer que l'objet est bien copié
+  setSelectedApp({ ...selectedRow }); // S'assurer que l'objet est bien copié
    setIsEditModalOpen(true);
    console.log("test",selectedRow)
 };
 
 // Mise à jour des missions après modification
-const handleUpdateMission = (updatedMission) => {
+const handleUpdateApp = (updatedApp) => {
   setFilteredRows(prevRows =>
     prevRows.map(row =>
-      row.id === updatedMission.id ? { ...row, ...updatedMission } : row
+      row.id === updatedApp.id ? { ...row, ...updatedApp } : row
     )
   );
-  console.log("test",updatedMission)
+  console.log("test",updatedApp)
   setIsEditModalOpen(false);
-   setSelectedMission(null);
+   setSelectedApp(null);
 };
 
 // Suppression d'une mission
 const handleDeleteRow = (selectedRow) => {
-   setSelectedMissionId(selectedRow.id);
+   setSelectedAppId(selectedRow.id);
    setIsDeletePopupOpen(true);
    console.log(selectedRow)
 };
 
 // Confirmation de la suppression
-const confirmDeleteMission = () => {
-   if (selectedMissionId !== null) {
-       setFilteredRows(prevRows => prevRows.filter(row => row.id !== selectedMissionId));
+const confirmDeleteApp = () => {
+   if (selectedAppId !== null) {
+       setFilteredRows(prevRows => prevRows.filter(row => row.id !== selectedAppId));
    }
    setIsDeletePopupOpen(false);
-   setSelectedMissionId(null);
+   setSelectedAppId(null);
 };
 
 const rowActions = [
@@ -133,7 +133,7 @@ const rowActions = [
         </div>
 
         {/* Table d'affichage des utilisateurs */}
-        <div className="flex-1 overflow-x-auto overflow-y-auto h-[400px]">
+        <div className={`flex-1 overflow-x-auto overflow-y-auto h-[400px]  ${isDeletePopupOpen ? 'blur-sm' : ''}`}>
           <Table
             key={JSON.stringify(filteredRows)}
             columnsConfig={columnsConfig2}
@@ -146,7 +146,7 @@ const rowActions = [
             onCellEditCommit={handleCellEditCommit}
           />
         </div>
-        <div className='border border-black mb-28 ml-20'>
+        <div className='border border-black mb-2 ml-20'>
         <ToggleButton/>
         </div>
       </div>
@@ -155,8 +155,8 @@ const rowActions = [
       {/* Modal d'ajout d'un utilisateur */}
       <AddUserForm title={'Ajouter un nouveau utilisateur'} isOpen={isModalOpen} onClose={closeModal} onUserCreated={handleUserCreation} />
      
-            {isEditModalOpen && <AddUserForm title={'Modifier un utilisateur'} isOpen={isEditModalOpen} onClose={() => setIsEditModalOpen(false)} initialValues={selectedMission || {}} onUserCreated={handleUpdateMission} />}
-            {isDeletePopupOpen && <DecisionPopUp name={filteredRows.find(row => row.id === selectedMissionId)?.username || 'ce utilisateur'} text="Êtes-vous sûr(e) de vouloir supprimer l'utilisateur " handleConfirm={confirmDeleteMission} handleDeny={() => setIsDeletePopupOpen(false)} />}
+            {isEditModalOpen && <AddUserForm title={'Modifier un utilisateur'} isOpen={isEditModalOpen} onClose={() => setIsEditModalOpen(false)} initialValues={selectedApp || {}} onUserCreated={handleUpdateApp} />}
+            {isDeletePopupOpen &&  <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1"> <DecisionPopUp name={filteredRows.find(row => row.id === selectedAppId)?.username || 'ce utilisateur'} text="Êtes-vous sûr(e) de vouloir supprimer l'utilisateur " handleConfirm={confirmDeleteApp} handleDeny={() => setIsDeletePopupOpen(false)} /> </div>}
         
       
     </div>
