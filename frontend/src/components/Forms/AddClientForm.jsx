@@ -28,11 +28,15 @@ function AddClientForm({ title ,isOpen, onClose,initialValues, onClientCreated  
       });
   }, [initialValues]);
 
-  const handleSubmit = (e) => {
-    e.preventDefault(); // Empêcher le rechargement
-    onClientCreated(clientData);
-    onClose();
-  };
+   const handleSubmit = (e) => {
+     e.preventDefault(); // Empêcher le rechargement
+     console.log(clientData)
+     onClientCreated(clientData);
+     console.log('after',clientData)
+     onClose();
+     
+   };
+  
     
   return (
     <div  className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-md z-50">
