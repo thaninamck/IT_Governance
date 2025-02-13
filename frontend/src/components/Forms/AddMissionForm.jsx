@@ -12,7 +12,7 @@ function AddMissionForm({ title ,isOpen, onClose,initialValues, onMissionCreated
   const [missionData, setMissionData] = useState(initialValues || {
     client: '',
     mission: '',
-    manager: '',
+    manager: [],
     dateField: '',
     dateField1: '',
     statusMission: ''
@@ -23,7 +23,7 @@ useEffect(() => {
     setMissionData(initialValues || {
         client: '',
         mission: '',
-        manager: '',
+        manager: [],
         dateField: '',
         dateField1: '',
         statusMission: ''
