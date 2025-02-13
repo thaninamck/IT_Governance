@@ -269,6 +269,7 @@ const Workplan = () => {
       },
     }));
 
+    
     // Créer les edges entre l'application et ses couches
     const newEdges = data.layers.map((layer) => ({
       id: `e-${data.id}-${layer.id}`,
