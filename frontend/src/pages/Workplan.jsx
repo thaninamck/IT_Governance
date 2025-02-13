@@ -3,11 +3,13 @@ import Header from "../components/Header/Header";
 import WorkPlanSideBar from "../components/workPlan/WorkPlanSideBar";
 import Flow from "../components/workPlan/Flow";
 import { NotificationDialog } from "../components/workPlan/NotificationDialog";
+import { ConfirmationDialog } from "../components/workPlan/ConfirmationDialog";
 const Workplan = () => {
   const [appDuplicationDialogOpen, setappDuplicationDialogOpen] = useState(false);
   const [startWithriskDialogOpen, setstartWithriskDialogOpen] = useState(false);
   const [startWithCntrlDialogOpen, setstartWithCntrlDialogOpen] =useState(false);
- 
+  const [openConfirmationDialog, setopenConfirmationDialog] =useState(false);
+
   const [appNodes, setAppNodes] = useState([]);
   const [edges, setEdges] = useState([]);
   const [existedAppVerified, setExistedAppVerified] = useState(false);
@@ -136,6 +138,12 @@ const Workplan = () => {
     addToDataStructure(application);
     setExistedAppVerified(false);
     setAppNodes([]);
+    setApplication({})
+  };
+
+  const   handleopenConfirmationDialog  = () => {
+    setopenConfirmationDialog(true)
+    
   };
   const onRiskDrop = (event, layerId) => {
     event.preventDefault();
@@ -347,7 +355,7 @@ const Workplan = () => {
                     ? "hidden"
                     : "bg-blue-menu w-auto h-auto p-2 text-white mr-2 mb-2 hover:bg-blue-conf"
                 }
-                onClick={handleAddAppClick}
+                onClick={handleopenConfirmationDialog}
               >
                 Ajouter
               </button>
@@ -385,10 +393,15 @@ const Workplan = () => {
           setOpen={setstartWithCntrlDialogOpen}
         />
       )}
+
+{openConfirmationDialog && (
+        <ConfirmationDialog onConfirm={handleAddAppClick} open={openConfirmationDialog} setOpen={setopenConfirmationDialog} appname={application.description}/>
+      )}
+
+
       <div className="bg-pink-50 min-h-screen text-center">
         {" "}
         ici la matrice baby{" "}
-        <NotificationDialog message="Voulez-vous vraiment effectuer cette action ?" />
       </div>
     </main>
   );
