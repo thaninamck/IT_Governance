@@ -9,7 +9,7 @@ const RiskCustomNode = ({ data }) => {
   return (
     <div
       className={`w-80 rounded-lg border shadow-md bg-white relative   
-        ${isSelected ? "border-4 border-gray-900 border-dashed" : "border-gray-300"}`}
+        ${isSelected ? "border-2 border-gray-900 border-dashed" : "border-gray-300"}`}
       onClick={() => setIsSelected(!isSelected)}
     >
       {/* Barre supérieure colorée */}
