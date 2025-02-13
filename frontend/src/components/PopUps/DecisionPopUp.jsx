@@ -9,7 +9,7 @@ const DecisionPopUp = ({name, text, handleConfirm, handleDeny }) => {
     open && (
       <div
         className=" rounded-lg w-auto h-auto bg-white drop-shadow-lg text-black
-    absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex flex-col  justify-around  gap-4 p-6"
+     flex flex-col  justify-around  gap-4 p-6"
       >
         <div
            onClick={handleDeny}
