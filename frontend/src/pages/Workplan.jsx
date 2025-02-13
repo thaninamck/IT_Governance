@@ -4,22 +4,20 @@ import WorkPlanSideBar from "../components/workPlan/WorkPlanSideBar";
 import Flow from "../components/workPlan/Flow";
 import { NotificationDialog } from "../components/workPlan/NotificationDialog";
 const Workplan = () => {
-  const [appDuplicationDialogOpen, setappDuplicationDialogOpen] =
-    useState(false);
-    const [startWithriskDialogOpen, setstartWithriskDialogOpen] =
-    useState(false);
-    const [startWithCntrlDialogOpen, setstartWithCntrlDialogOpen] =
-    useState(false);
-
+  const [appDuplicationDialogOpen, setappDuplicationDialogOpen] = useState(false);
+  const [startWithriskDialogOpen, setstartWithriskDialogOpen] = useState(false);
+  const [startWithCntrlDialogOpen, setstartWithCntrlDialogOpen] =useState(false);
+ 
   const [appNodes, setAppNodes] = useState([]);
   const [edges, setEdges] = useState([]);
   const [existedAppVerified, setExistedAppVerified] = useState(false);
   const [dataStructure, setDataStructure] = useState({ applications: [] });
   const [application, setApplication] = useState({});
+  const appEmpty = application?.id === undefined || application?.id === null;
   useEffect(() => {
     console.log("Nouvelle valeur de application:", application);
   }, [application]);
-
+  
   const deleteItemsInApplication = (idsToDelete = []) => {
     if (!application) return;
 
@@ -136,7 +134,7 @@ const Workplan = () => {
     const isRisk = riskData && "idRisk" in riskData;
     if (!isRisk) {
       //alert("Attention veuillez commencer par les risques !");
-setstartWithriskDialogOpen(true)
+      setstartWithriskDialogOpen(true);
       return; // Bloque l'ajout
     }
     console.log("le risque droppé", riskData);
@@ -152,7 +150,7 @@ setstartWithriskDialogOpen(true)
 
     // Créer le nœud du risque
     const newRiskNode = {
-      id: riskData.idRisk,
+      id: layerId+"_"+riskData.idRisk,
       type: "risk",
       position: { x, y },
       data: {
@@ -164,9 +162,9 @@ setstartWithriskDialogOpen(true)
 
     // Créer l'edge entre la couche et le risque
     const newEdge = {
-      id: `e-${layerId}-${riskData.idRisk}`,
+      id: `e-${layerId}-${layerId+"_"+riskData.idRisk}`,
       source: layerId,
-      target: riskData.idRisk,
+      target: layerId+"_"+riskData.idRisk,
       label: "",
     };
 
@@ -189,7 +187,7 @@ setstartWithriskDialogOpen(true)
     if (!isCntrl) {
       //alert("Attention veuillez mettre que les controles !");
       // <NotificationDialog message="Voulez-vous vraiment effectuer cette action ?" />
-      setstartWithCntrlDialogOpen(true)
+      setstartWithCntrlDialogOpen(true);
       return; // Bloque l'ajout
     }
     console.log("le riskID", riskId);
@@ -206,7 +204,7 @@ setstartWithriskDialogOpen(true)
 
     // Créer le nœud du risque
     const newControlNode = {
-      id: controlData.idCntrl,
+      id: layerId+"_"+riskId+"_"+controlData.idCntrl,
       type: "cntrl",
       position: { x: x + 500, y: y + 5 * 100 },
       data: { controlData },
@@ -214,9 +212,9 @@ setstartWithriskDialogOpen(true)
 
     // Créer l'edge entre la couche et le risque
     const newEdge = {
-      id: `e-${riskId}-${controlData.idCntrl}`,
-      source: riskId,
-      target: controlData.idCntrl,
+      id: `e-${riskId}-${layerId+"_"+riskId+"_"+controlData.idCntrl}`,
+      source: layerId+"_"+riskId,
+      target: layerId+"_"+riskId+"_"+controlData.idCntrl,
       label: "",
     };
 
@@ -241,7 +239,7 @@ setstartWithriskDialogOpen(true)
     const hasApplication = appNodes.some((node) => node.type === "app");
     if (hasApplication && !existedAppVerified && isApp) {
       //alert("Une application est déjà présente dans le Flow !");
-      
+
       setappDuplicationDialogOpen(true);
       setExistedAppVerified(true);
       return; // Bloque l'ajout
@@ -334,7 +332,7 @@ setstartWithriskDialogOpen(true)
             <div className=" z-50 absolute bottom-0 right-0 w-auto h-auto ">
               <button
                 className={
-                  !existedAppVerified
+                  appEmpty
                     ? "hidden"
                     : "bg-blue-menu w-auto h-auto p-2 text-white mr-2 mb-2 hover:bg-blue-conf"
                 }
@@ -357,23 +355,23 @@ setstartWithriskDialogOpen(true)
         <NotificationDialog
           message="Une application est déjà présente dans le Flow !"
           open={appDuplicationDialogOpen}
-          setOpen={setappDuplicationDialogOpen} 
+          setOpen={setappDuplicationDialogOpen}
         />
       )}
 
-{startWithriskDialogOpen && (
+      {startWithriskDialogOpen && (
         <NotificationDialog
           message="Attention veuillez mettre des risques!"
           open={startWithriskDialogOpen}
-          setOpen={setstartWithriskDialogOpen} 
+          setOpen={setstartWithriskDialogOpen}
         />
       )}
 
-{startWithCntrlDialogOpen && (
+      {startWithCntrlDialogOpen && (
         <NotificationDialog
           message="Attention veuillez mettre des risques!"
           open={startWithCntrlDialogOpen}
-          setOpen={setstartWithCntrlDialogOpen} 
+          setOpen={setstartWithCntrlDialogOpen}
         />
       )}
       <div className="bg-pink-50 min-h-screen text-center">
