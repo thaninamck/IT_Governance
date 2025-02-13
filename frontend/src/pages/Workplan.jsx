@@ -12,6 +12,28 @@ const Workplan = () => {
     console.log("Nouvelle valeur de application:", application);
   }, [application]);
 
+
+  const deleteItemsInApplication = (idsToDelete = []) => {
+    if (!application) return;
+  
+    setApplication((prevApp) => ({
+      ...prevApp,
+      layers: prevApp.layers
+        .filter((layer) => !idsToDelete.includes(layer.id)) // Supprime les layers
+        .map((layer) => ({
+          ...layer,
+          risks: layer.risks
+            .filter((risk) => !idsToDelete.includes(risk.id)) // Supprime les risks
+            .map((risk) => ({
+              ...risk,
+              controls: risk.controls.filter((control) => !idsToDelete.includes(control.id)), // Supprime les controls
+            })),
+        })),
+    }));
+  };
+  
+
+
   const addApplicationWithLayers = (id, description, layers) => {
 
   
@@ -297,6 +319,7 @@ const Workplan = () => {
               edges={edges}
               setNodes={setAppNodes}
               setEdges={setEdges}
+              deleteItemsInApplication={deleteItemsInApplication}
             />
             <div className=" z-50 absolute bottom-0 right-0 w-auto h-auto ">
               <button

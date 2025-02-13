@@ -20,7 +20,7 @@ const nodeTypes = {
   cntrl:ControlCustomNode
 };
 
-const Flow = ({ nodes, edges, setNodes, setEdges }) => {
+const Flow = ({ nodes,deleteItemsInApplication, edges, setNodes, setEdges }) => {
   const [selectedNode, setSelectedNode] = useState(null);
 
   const onNodesChange = useCallback(
@@ -33,6 +33,12 @@ const Flow = ({ nodes, edges, setNodes, setEdges }) => {
     setSelectedNode(node.id);
   }, []);
 
+
+
+
+
+
+
   // Suppression du nœud sélectionné + enfants en appuyant sur "Suppr"
   const handleKeyDown = useCallback(
     (event) => {
@@ -44,7 +50,7 @@ const Flow = ({ nodes, edges, setNodes, setEdges }) => {
 
         // Liste complète des nœuds à supprimer (parent + enfants)
         const nodesToDelete = [selectedNode, ...childIds];
-
+        deleteItemsInApplication(nodesToDelete)
         // Filtrer les nœuds restants
         setNodes((nds) => nds.filter((n) => !nodesToDelete.includes(n.id)));
 
