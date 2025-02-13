@@ -1,41 +1,72 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import InputForm from './InputForm';
 import './FormStyle.css';
 import Button from '../Button';
 import SelectInput from './SelectInput';
+import MultiOptionSelect from '../Selects/MultiOptionSelect';
 
-function NewAppForm({ title ,onAddApp}) {
+function NewAppForm({ title , initialValues = {}, onAddApp}) {
   const [open, setOpen] = useState(true);
+  const isFirstRender = useRef(true); // Pour éviter l'écrasement après la première exécution
 
-  // États pour chaque champ
-   // États pour chaque champ
-   const [nomApp, setNomApp] = useState('');
-   const [description, setDescription] = useState('');
-   const [owner, setOwner] = useState('');
-   const [contact, setContact] = useState('');
-   const [selectedValue, setSelectedValue] = useState('');
 
-  const handleClose = () => {
+   // États pour chaque champ avec valeurs par défaut
+   const [nomApp, setNomApp] = useState(initialValues?.nomApp || '');
+   const [description, setDescription] = useState(initialValues?.description || '');
+   const [owner, setOwner] = useState(initialValues?.owner || '');
+   const [contact, setContact] = useState(initialValues?.contact || '');
+   const [selectedMulti, setSelectedMulti] = useState(initialValues?.couche || []);
+   
+
+   const handleClose = () => {
+    onAddApp({}); // Au lieu de null, passez un objet vide
     setOpen(false);
   };
+  
+  
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const formData = {
-      nomApp,
-      description,
-      owner,
-      contact,
-      couche: selectedValue,
-    };
-    onAddApp(formData); // Ajouter l'application au tableau parent
-    setNomApp('');
-    setDescription('');
-    setOwner('');
-    setContact('');
-    setSelectedValue('');
-    alert('Application créée avec succès !');
+ // Mettre à jour les états si initialValues change
+// Assurer que les valeurs initiales sont prises en compte uniquement au premier rendu
+useEffect(() => {
+  if (isFirstRender.current) {
+    setNomApp(initialValues.nomApp || '');
+    setDescription(initialValues.description || '');
+    setOwner(initialValues.owner || '');
+    setContact(initialValues.contact || '');
+    setSelectedMulti(initialValues.couche || []);
+    isFirstRender.current = false; // Marquer la première mise à jour comme faite
+  }
+}, [initialValues]);
+
+const handleSubmit = (e) => {
+  e.preventDefault();
+  const formData = { 
+    id: initialValues?.id || Date.now(), // Garde l'ID existant si c'est une mise à jour
+    nomApp, 
+    description, 
+    owner, 
+    contact, 
+    couche: selectedMulti 
   };
+
+  onAddApp(formData); 
+
+  setNomApp('');
+  setDescription('');
+  setOwner('');
+  setContact('');
+  setSelectedMulti([]);
+
+  alert(initialValues?.id ? 'Application mise à jour avec succès !' : 'Application créée avec succès !');
+};
+
+
+  
+  const options = [
+    { label: "Operating System", value:"Operating System" },
+    { label: "Application", value: "Application" },
+    { label: "Data Base", value: "Data Base" }
+  ];
 
   return (
     open && (
@@ -79,8 +110,8 @@ function NewAppForm({ title ,onAddApp}) {
           placeholder="Entrez le nom de l'application / système"
           width="300px"
           flexDirection="flex-col"
-          value={nomApp}
-          onChange={(e) => setNomApp(e.target.value)}
+          value={owner}
+          onChange={(e) => setOwner(e.target.value)}
         />
         <InputForm
           type="email"
@@ -88,23 +119,35 @@ function NewAppForm({ title ,onAddApp}) {
           placeholder="Entrez l'email du owner"
           width="300px"
          flexDirection="flex-col"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
+          value={contact}
+          onChange={(e) => setContact(e.target.value)}
         />
         </div>
         </div>
         
+       
         <SelectInput
+        label="Couches"
+        options={options}
+        value={selectedMulti}
+        onChange={(e) => setSelectedMulti(e.target.value)}
+        width="200px"
+        multiSelect={true}
+      />
+       {/* <SelectInput
             label={'couche'}
             options={[
-              { label: "OS", value: "1" },
-              { label: "APP", value: "2" },
-              { label: "DB", value: "3" }
+              { label: "OS", value: "OS" },
+              { label: "APP", value: "APP" },
+              { label: "DB", value: "DB" }
             ]}
             value={selectedValue}
-            onChange={(e) => setSelectedValue(e.target.value)}
+            onChange={(e) =>{ setSelectedValue(e.target.value)
+              console.log(selectedValue)}
+            }
+           
             width="200px"
-          />
+          />*/}
 
 <div className="absolute bottom-2 right-2">
     <button
