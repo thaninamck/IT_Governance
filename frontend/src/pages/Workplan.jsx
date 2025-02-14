@@ -20,31 +20,30 @@ const Workplan = () => {
     console.log("Nouvelle valeur de application:", application);
   }, [application]);//juste pour surveiller l'app
 
-  useEffect(() => {
-    console.log("Sauvegarde dans localStorage", application, appNodes, edges);
-    localStorage.setItem("applicationState", JSON.stringify(application));
-    localStorage.setItem("appNodes", JSON.stringify(appNodes));
-    localStorage.setItem("edges", JSON.stringify(edges));
-  }, [application, appNodes, edges]);
   
+    // Charger l'état sauvegardé au montage
+    useEffect(() => {
+      const savedNodes = JSON.parse(window.localStorage.getItem("appNodes")) || [];
+      const savedEdges = JSON.parse(window.localStorage.getItem("edges")) || [];
+      const savedApp = JSON.parse(window.localStorage.getItem("application")) || {};
+  console.log("savedNodes",savedNodes);
+      setAppNodes(savedNodes);
+      setEdges(savedEdges);
+      setApplication(savedApp);
+    }, []);
   
-  useEffect(() => {
-    const savedApplication = localStorage.getItem("applicationState");
-    const savedNodes = localStorage.getItem("appNodes");
-    const savedEdges = localStorage.getItem("edges");
+    // Sauvegarder l'état à chaque modification
+    useEffect(() => {
+      window.localStorage.setItem("appNodes", JSON.stringify(appNodes));
+    }, [appNodes]);
   
-    console.log("Données chargées depuis localStorage", savedApplication, savedNodes, savedEdges);
-    
-    if (savedApplication) {
-      setApplication(JSON.parse(savedApplication));
-    }
-    if (savedNodes) {
-      setAppNodes(JSON.parse(savedNodes));
-    }
-    if (savedEdges) {
-      setEdges(JSON.parse(savedEdges));
-    }
-  }, []);
+    useEffect(() => {
+      window.localStorage.setItem("edges", JSON.stringify(edges));
+    }, [edges]);
+  
+    useEffect(() => {
+      window.localStorage.setItem("application", JSON.stringify(application));
+    }, [application]);
   
   
 
