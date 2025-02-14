@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import { DataGrid } from "@mui/x-data-grid";
 import { Select, MenuItem, Checkbox, TextField } from "@mui/material";
 import {
@@ -11,7 +11,99 @@ import {
   Paper,
 } from "@mui/material";
 
-function Matrix() {
+function Matrix({data}) {
+
+
+// Données imbriquées
+const data1 = {
+  applications: [
+    {
+      id: "app1",
+      description: "USSD",
+      layers: [
+        {
+          id: "l1",
+          name: "OS",
+          risks: [
+            {
+              id: "1",
+              nom: "SDLC requirements are not exist or are not conducted.",
+              description: "furfuzirfyzuf iuzyfoz ruozc furfuzirfyzuf iuzyfoz ruozc ojfyt yth iof ojfyt yth iof",
+              owner: "",
+              controls: [
+                {
+                  id: "4",
+                  description: "Duties and areas of responsibility are separated, in order to reduce opportunities for unauthorized modification...",
+                  majorProcess: "Technical",
+                  subProcess: "Access control",
+                  testScript: "1. Obtain the access management policy,1.1. Ensure that the policy is validated, signed 2. Obtain HR list of departures during the.......",
+                  owner: "",
+                },
+              ],
+            },
+          ],
+        },
+        {
+          id: "l2",
+          name: "APP",
+          risks: [],
+        },
+      ],
+      owner: "",
+    },
+  ],
+};
+
+const [flattenedData, setFlattenedData] = useState([]);
+const transformData = (data) => {
+  const result = [];
+
+  data.applications.forEach((app) => {
+    const appName = app.description;
+    const appOwner = app.owner;
+
+    app.layers.forEach((layer) => {
+      const layerName = layer.name;
+
+      layer.risks.forEach((risk) => {
+        const riskCode = risk.id;
+        const riskName = risk.nom;
+        const riskDescription = risk.description;
+        const riskOwner = risk.owner;
+
+        risk.controls.forEach((control) => {
+          result.push({
+            id: `${app.id}-${layer.id}-${risk.id}-${control.id}`,
+            application: appName,
+            applicationLayer: layerName,
+            applicationOwner: appOwner ,
+            riskCode: riskCode,
+            riskName: riskName,
+            riskDescription: riskDescription,
+            riskOwner: riskOwner ,
+            controlCode: control.id,
+            controlDescription: control.description,
+            majorProcess: control.majorProcess,
+            subProcess: control.subProcess,
+            testScript: control.testScript,
+            controlOwner: control.owner ,
+            controlTester: "",
+          });
+        });
+      });
+    });
+  });
+
+  return result;
+};
+
+// Utilisation dans le useEffect
+useEffect(() => {
+  const transformedData = transformData(data);
+  setFlattenedData(transformedData);
+}, [data]);
+
+
   const [selectedRisk, setSelectedRisk] = useState({});
   const [selectedControl, setSelectedControl] = useState({});
   const [testerValues, setTesterValues] = useState({});
@@ -241,7 +333,7 @@ function Matrix() {
         <TableBody>
           <TableRow>
             <TableCell colSpan={14} style={{ padding: 0 }}>
-              <Paper style={{ height: 400, width: "100%" }}>
+              <Paper style={{ height: 550, width: "100%" }}>
                 <DataGrid
                  sx={{
                   // Style pour les en-têtes de colonnes
@@ -254,7 +346,7 @@ function Matrix() {
                     backgroundColor: "#E8F5E9", // Couleur de fond au survol
                   },
                 }}
-                  rows={rows}
+                  rows={flattenedData}
                   columns={columns}
                   pageSize={5}
                   rowsPerPageOptions={[5, 10, 20]}

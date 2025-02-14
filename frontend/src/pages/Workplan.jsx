@@ -435,7 +435,7 @@ const Workplan = () => {
 
 
       <div className="bg-pink-50 min-h-screen p-2 text-center">
-        <Matrix></Matrix>
+        <Matrix data={dataStructure}></Matrix>
       </div>
     </main>
   );
