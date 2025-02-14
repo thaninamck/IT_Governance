@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Header from "../components/Header/Header";
+import Matrix from "../components/workPlan/Matrix";
 import WorkPlanSideBar from "../components/workPlan/WorkPlanSideBar";
 import Flow from "../components/workPlan/Flow";
 import { NotificationDialog } from "../components/workPlan/NotificationDialog";
@@ -433,9 +434,8 @@ const Workplan = () => {
       )}
 
 
-      <div className="bg-pink-50 min-h-screen text-center">
-        {" "}
-        ici la matrice baby{" "}
+      <div className="bg-pink-50 min-h-screen p-2 text-center">
+        <Matrix></Matrix>
       </div>
     </main>
   );
