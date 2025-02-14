@@ -26,7 +26,7 @@ const Workplan = () => {
       const savedNodes = JSON.parse(window.localStorage.getItem("appNodes")) || [];
       const savedEdges = JSON.parse(window.localStorage.getItem("edges")) || [];
       const savedApp = JSON.parse(window.localStorage.getItem("application")) || {};
-  console.log("savedNodes",savedNodes);
+      console.log("savedNodes",savedNodes);
       setAppNodes(savedNodes);
       setEdges(savedEdges);
       setApplication(savedApp);
@@ -83,6 +83,7 @@ const Workplan = () => {
     setApplication({
       id: id,
       description: description,
+      owner:"",
       layers: layers.map((layer) => ({
         id: layer.id,
         name: layer.name,
@@ -92,7 +93,7 @@ const Workplan = () => {
   };
 
   // Fonction pour ajouter un risque dans une couche spécifique de l'application courante
-  const addRiskToLayer = (idLayer, riskID, riskDescription) => {
+  const addRiskToLayer = (idLayer, riskID,riskName, riskDescription) => {
     if (!application) return; // Vérifie qu'une application existe
     setApplication((prevApp) => ({
       ...prevApp,
@@ -102,7 +103,7 @@ const Workplan = () => {
               ...layer,
               risks: [
                 ...layer.risks,
-                { id: riskID, description: riskDescription, controls: [] },
+                { id: riskID,nom:riskName, description: riskDescription, owner:"",controls: [] },
               ],
             }
           : layer
@@ -110,7 +111,7 @@ const Workplan = () => {
     }));
   };
 
-  const addControlToRisk = (idLayer, idRisk, cntrlID, cntrlDescription) => {
+  const addControlToRisk = (idLayer, idRisk, cntrlID, cntrlDescription,majorProcess,subProcess,testScript) => {
     if (!application) return; // Vérifie qu'une application existe
 
     setApplication((prevApp) => ({
@@ -125,7 +126,7 @@ const Workplan = () => {
                       ...risk,
                       controls: [
                         ...risk.controls,
-                        { id: cntrlID, description: cntrlDescription },
+                        { id: cntrlID, description: cntrlDescription,majorProcess:majorProcess,subProcess:subProcess,testScript:testScript,owner:"" },
                       ],
                     }
                   : risk
@@ -175,7 +176,7 @@ const Workplan = () => {
   };
   const onRiskDrop = (event, layerId) => {
     event.preventDefault();
-    const riskData = JSON.parse(event.dataTransfer.getData("application/json")); // ✅ Extraction correcte
+    const riskData = JSON.parse(event.dataTransfer.getData("application/json")); 
 
     const isRisk = riskData && "idRisk" in riskData;
     if (!isRisk) {
@@ -183,14 +184,14 @@ const Workplan = () => {
       setstartWithriskDialogOpen(true);
       return; // Bloque l'ajout
     }
-    console.log("le risque droppé", riskData);
-    console.log("le id risque", riskData.idRisk);
-    console.log("le desc risk", riskData.description);
+    //console.log("le risque droppé", riskData);
+    //console.log("le id risque", riskData.idRisk);
+    //console.log("la desc risk", riskData.description);
     if (!layerId || !riskData) {
       console.warn("Layer ID or Risk Data not found");
       return;
     }
-    addRiskToLayer(layerId, riskData.idRisk, riskData.description);
+    addRiskToLayer(layerId, riskData.idRisk,riskData.nom, riskData.description);
     const x = event.clientX;
     const y = event.clientY;
 
@@ -236,10 +237,10 @@ const Workplan = () => {
       setstartWithCntrlDialogOpen(true);
       return; // Bloque l'ajout
     }
-    console.log("le riskID", riskId);
-    console.log("le cntrl droppé", controlData);
-    console.log("le id cntrl", controlData.idCntrl);
-    console.log("le desc cntrl", controlData.description);
+    //console.log("le riskID", riskId);
+    //console.log("le cntrl droppé", controlData);
+    //console.log("le id cntrl", controlData.idCntrl);
+    //console.log("le desc cntrl", controlData.description);
     if (!riskId || !controlData) {
       console.warn("not found");
       return;
@@ -272,7 +273,10 @@ const Workplan = () => {
       layerId,
       riskId,
       controlData.idCntrl,
-      controlData.description
+      controlData.description,
+      controlData.majorProcess,
+      controlData.subProcess,
+      controlData.testScript,
     );
   };
 

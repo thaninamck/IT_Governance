@@ -31,7 +31,7 @@ const RiskCustomNode = ({ data }) => {
       <div className="p-4">
         {/* Description toujours visible */}
         <div className="mt-2 bg-gray-100 p-2 rounded-lg text-sm text-gray-700">
-          {data.riskData?.description}
+          {data.riskData?.nom}
         </div>
 
         {/* Zone de drop cachée si réduit */}

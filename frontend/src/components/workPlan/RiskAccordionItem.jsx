@@ -38,7 +38,7 @@ const RiskAccordionItem = ({ title, items, color,onDragStart }) => {
                 draggable
                 onDragStart={(e) => onDragStart(e, item)}
               >
-                {item.description}
+                {item.nom}
               </li>
             ))}
           </ul>
