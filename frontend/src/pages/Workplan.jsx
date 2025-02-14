@@ -10,6 +10,9 @@ const Workplan = () => {
   const [startWithriskDialogOpen, setstartWithriskDialogOpen] = useState(false);
   const [startWithCntrlDialogOpen, setstartWithCntrlDialogOpen] =useState(false);
   const [openConfirmationDialog, setopenConfirmationDialog] =useState(false);
+  const [openErrorDialog, setopenErrorDialog] =useState(false);
+  const [layerWithoutControl, setlayerWithoutControl] =useState("");
+
 
   const [appNodes, setAppNodes] = useState([]);
   const [edges, setEdges] = useState([]);
@@ -141,9 +144,11 @@ const Workplan = () => {
   };
 
   const addToDataStructure = (application) => {
+    
     console.log("Ajout de l'application :", application);
 
     setDataStructure((prevApp) => {
+
       const updatedStructure = {
         ...prevApp,
         applications: [...prevApp.applications, application],
@@ -165,6 +170,18 @@ const Workplan = () => {
   };
 
   const handleAddAppClick = () => {
+    const layerWithoutControl = application.layers.find((layer) =>
+      layer.risks.every((risk) => risk.controls.length === 0)
+    );
+  
+    if (layerWithoutControl) {
+      setopenErrorDialog( true);
+      setlayerWithoutControl(layerWithoutControl.name)
+       
+      
+      //alert(`La couche '${layerWithoutControl.name}' n'a pas de contrôle. Veuillez en ajouter avant de continuer.`);
+      return ;
+    }
     addToDataStructure(application);
     //setExistedAppVerified(false);
     setAppNodes([]);
@@ -426,6 +443,15 @@ const Workplan = () => {
           message="Attention veuillez mettre des risques!"
           open={startWithCntrlDialogOpen}
           setOpen={setstartWithCntrlDialogOpen}
+        />
+      )}
+
+{openErrorDialog && (
+        <NotificationDialog
+          message={`La couche '${layerWithoutControl}' n'a pas de contrôle. Veuillez en ajouter avant de continuer.`}
+          open={openErrorDialog}
+          setOpen={setopenErrorDialog}
+
         />
       )}
 

@@ -10,7 +10,7 @@ import { ExclamationTriangleIcon } from "@heroicons/react/24/solid";
 
 
 export function NotificationDialog({ message, open, setOpen }) {
-    const handleClose = () => setOpen(false);
+    const handleClose = () => {setOpen(false)};
   
     return (
       <Dialog open={open} handler={handleClose} size="sm">
