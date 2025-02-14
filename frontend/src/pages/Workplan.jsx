@@ -167,6 +167,7 @@ const Workplan = () => {
     addToDataStructure(application);
     //setExistedAppVerified(false);
     setAppNodes([]);
+    setEdges([])
     setApplication({})
   };
 
