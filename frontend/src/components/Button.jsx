@@ -3,7 +3,7 @@ import "./componentStyle.css"
 
 function Button({btnName}) {
   return (
-    <button className="save-button" onClick={() => alert('Données enregistrées')}>
+    <button className="save-button" >
         {btnName}
       </button>
   )
