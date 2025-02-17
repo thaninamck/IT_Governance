@@ -460,7 +460,8 @@ const Workplan = () => {
       )}
 
 
-      <div className="bg-pink-50 min-h-screen p-2 text-center">
+      <div className="bg-white  min-h-screen p-2 text-center">
+        
         <Matrix data={dataStructure}></Matrix>
       </div>
     </main>
