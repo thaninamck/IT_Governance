@@ -7,6 +7,8 @@ const TextDisplay = ({
   onContentChange,
   borderWidth,
   labelWidth,
+  flexDirection = "row",
+  marginLeft = "0px"
   
 }) => {
   const textareaRef = useRef(null);
@@ -25,7 +27,7 @@ const TextDisplay = ({
   }, [content]);
 
   return (
-    <div className="relative flex justify-start">
+    <div className="relative flex justify-start" style={{ flexDirection }}>
       {/* Label */}
       <label
         htmlFor={label}
@@ -40,7 +42,8 @@ const TextDisplay = ({
         style={{
           border: `1px solid #dcdcdc`,
           width: borderWidth,
-          margin: "2px",
+          margin: "2px ",
+          marginLeft: marginLeft,
           borderRadius: "8px",
           display: "flex",
           alignItems: "center",

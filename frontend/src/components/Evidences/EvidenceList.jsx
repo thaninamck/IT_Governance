@@ -21,7 +21,7 @@ const handleDelete = (index) => {
     <>
       {files.map((file, index) => (
         
-        <div key={index} className="flex overflow-y-auto relative w-full flex-col mt-2 justify-center gap-4 bg-white border border-gray-300 rounded-lg p-2">
+        <div key={index} className="flex overflow-y-auto relative w-[95%] flex-col mt-2 justify-center  bg-white border border-gray-300 rounded-lg p-2">
           {/* Détails du fichier */}
           <div className="flex justify-between mx-4">
             <p className="font-medium text-sm">{file.name}</p> {/* Utilisation du nom du fichier */}

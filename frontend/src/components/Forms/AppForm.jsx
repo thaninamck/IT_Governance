@@ -70,7 +70,7 @@ const handleSubmit = (e) => {
 
   return (
     open && (
-      <form className=" ml-4 pr-2 pl-2 relative pb-10 " onSubmit={handleSubmit}>
+      <form className=" ml-4 pr-4 pl-5  mt-3 relative pb-10    bg-gray-100" onSubmit={handleSubmit}>
         {/* Icône Close */}
         <div className='flex justify-end'>
         <button  className="border-none bg-transparent p-0 text-[25px] font-medium text-gray-800 cursor-pointer hover:text-red-500" type="button" onClick={handleClose}>
@@ -151,7 +151,7 @@ const handleSubmit = (e) => {
 
 <div className="absolute bottom-2 right-2">
     <button
-      className="px-4 py-2 bg-[var(--blue-menu)] text-white rounded hover:bg-blue-700"
+      className="px-4 mr-5 mb-4 py-1 bg-[var(--blue-menu)] text-white border-none rounded hover:bg-blue-700"
       type="submit"
     >
       Créer

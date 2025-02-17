@@ -7,7 +7,7 @@ function InputForm({ label, placeholder, type, width, flexDirection, value, onCh
       <label className={`text-sm mb-2 ml-1 ${customStyle} || ""`}>{label}</label>
       <input
         type={type}
-        id="multi-line-input"
+        //id="multi-line-input"
         className="p-2 text-sm border border-gray-300 rounded-lg placeholder:text-xs"
         placeholder={placeholder}
         style={{ width }}

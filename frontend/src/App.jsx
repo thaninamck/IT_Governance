@@ -54,6 +54,7 @@ import Flow from './components/workPlan/Flow';
 import Accordion from './components/workPlan/WorkPlanSideBar';
 import Workplan from './pages/Workplan';
 import WorkPlanSideBar from './components/workPlan/WorkPlanSideBar';
+import ControleExcutionPage from './pages/Testeur/ControleExcutionPage';
 function App() {
   const getRowLink = (row) => `/tablemission/${row.mission}`;
   
@@ -194,6 +195,7 @@ const rowsData3 = [
           <Route path='/utilisateurs' element={<GestionUtilisateur/>}></Route>
           <Route path='/clients' element={<GestionClient/>}></Route>
           <Route path='/settings' element={<Settings/>}></Route>
+          <Route path='/controle' element={<ControleExcutionPage/>}></Route>
 
           <Route path='/flow' element={<Flow/>}></Route>
 

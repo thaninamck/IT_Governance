@@ -117,9 +117,9 @@
   height: auto;
 }
   
-#multi-line-input{
+/*#multi-line-input{
   display: block;
-}
+*/
 
 .signup_container .forgot-password {
   text-align: right;

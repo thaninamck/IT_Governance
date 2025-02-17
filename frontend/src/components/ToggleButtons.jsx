@@ -16,11 +16,11 @@ export default function MultiSelectButtons() {
 
       const currentState = prevSelected[option];
       const nextState =
-        currentState === "Conform"
-          ? "Non Conform"
-          : currentState === "Non Conform"
-          ? "Son État"
-          : "Conform";
+        currentState === "Conforme"
+          ? "Non Conforme"
+          : currentState === "Non Conforme"
+          ? "État"
+          : "Conforme";
 
       const updatedSelection = {
         ...prevSelected,
@@ -28,8 +28,8 @@ export default function MultiSelectButtons() {
       };
 
       // Si "Design" devient "Non Conform", alors "Effectiveness" est automatiquement mis à "Non Conform"
-      if (option === "Design" && nextState === "Non Conform") {
-        updatedSelection["Effectiveness"] = "Non Conform";
+      if (option === "Design" && nextState === "Non Conforme") {
+        updatedSelection["Effectiveness"] = "Non Conforme";
       }
 
       return updatedSelection;
@@ -37,30 +37,30 @@ export default function MultiSelectButtons() {
   };
 
   return (
-    <div className="flex justify-between space-x-4 px-4 w-[540px]">
+    <div className="flex justify-between space-x-4 px-4 w-[75%] ">
       {options.map((option) => (
         <button
           key={option}
           onClick={() => toggleSelection(option)}
-          disabled={option === "Effectiveness" && selected["Design"] === "Non Conform"} // Désactiver le bouton si Design est Non Conform
-          className={`flex flex-col items-center px-4 py-2 rounded-md font-medium transition 
+          disabled={option === "Effectiveness" && selected["Design"] === "Non Conforme"} // Désactiver le bouton si Design est Non Conform
+          className={`flex flex-col items-center px-4 py-2 rounded-md font-medium transition  w-[200px]
             ${
-              selected[option] === "Conform"
+              selected[option] === "Conforme"
                 ? "bg-green-500 text-white border border-green-600"
-                : selected[option] === "Non Conform"
+                : selected[option] === "Non Conforme"
                 ? "bg-red-500 text-white border border-red-600"
                 : "bg-[#D9D9D9] text-black border border-gray-400"
             }
-            ${option === "Effectiveness" && selected["Design"] === "Non Conform" ? "opacity-50 cursor-not-allowed" : ""}
+            ${option === "Effectiveness" && selected["Design"] === "Non Conforme" ? "opacity-50 cursor-not-allowed" : ""}
           `}
         >
           <div className="flex flex-row items-center font-medium">
-            {(selected[option] === "Conform" || selected[option] === "Non Conform") && (
+            {(selected[option] === "Conforme" || selected[option] === "Non Conforme") && (
               <Check size={16} className="mr-4" color="#fff" />
             )}
             {option}
           </div>
-          <span className="text-[8px]">{selected[option] || "Son État"}</span>
+          <span className="text-[8px]">{selected[option] || "État"}</span>
         </button>
       ))}
     </div>

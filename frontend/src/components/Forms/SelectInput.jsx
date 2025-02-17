@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { ChevronDown, Check } from 'lucide-react';
 
-function SelectInput({ label, options, value, onChange, width, flexDirection, customStyle, multiSelect = false }) {
+function SelectInput({ label, options, value, onChange, width, flexDirection, customStyle, multiSelect = false ,mt='mt-20'}) {
   const [isOpen, setIsOpen] = useState(false);
   
   // Vérifier si la valeur sélectionnée est un tableau (pour multi-choix)
@@ -42,7 +42,7 @@ function SelectInput({ label, options, value, onChange, width, flexDirection, cu
 
       {/* Liste des options */}
       {isOpen && (
-        <div className="absolute mt-20 w-full max-h-[150px] overflow-y-auto bg-white border border-gray-300 rounded-lg shadow-md z-10">
+        <div className={`absolute ${mt} w-full max-h-[150px] overflow-y-auto bg-white border border-gray-300 rounded-lg shadow-md z-10 `}>
           {options.map((option, index) => (
             <div
               key={index}
