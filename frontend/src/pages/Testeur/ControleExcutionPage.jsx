@@ -13,7 +13,7 @@ import SelectInput from '../../components/Forms/SelectInput';
 import AddCircleOutlineRoundedIcon from '@mui/icons-material/AddCircleOutlineRounded';
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import Remediation from '../../components/Forms/Remediation';
-import AddRemediation from '../subPages/AddRemediation';
+//import AddRemediation from '../subPages/AddRemediation';
 import Table from '../../components/Table';
 
 function ControleExcutionPage() {

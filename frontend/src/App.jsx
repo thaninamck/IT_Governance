@@ -52,7 +52,7 @@ import ManageControls from './pages/ManageControls';
 import GestionUtilisateur from './pages/GestionUtilisateur';
 import Flow from './components/workPlan/Flow';
 import Accordion from './components/workPlan/WorkPlanSideBar';
-import Workplan from './pages/Workplan';
+import Workplan from './pages/Manager/Workplan';
 import WorkPlanSideBar from './components/workPlan/WorkPlanSideBar';
 import ControleExcutionPage from './pages/Testeur/ControleExcutionPage';
 function App() {

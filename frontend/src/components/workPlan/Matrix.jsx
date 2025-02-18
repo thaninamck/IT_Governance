@@ -100,17 +100,15 @@ function Matrix({ data }) {
     return result;
   };
 
-  
-
   useEffect(() => {
     // Transformer les données et mettre à jour flattenedData
     if (data) {
       const transformedData = transformData(data);
       setFlattenedData(transformedData);
     }
-  }, [data]); 
+  }, [data]);
 
- /* useEffect(() => {
+  /* useEffect(() => {
     // Charger les données depuis le localStorage au premier rendu
     const savedFlattenedData = JSON.parse(window.localStorage.getItem("flattenedData")) || [];
     setFlattenedData(savedFlattenedData);
@@ -122,9 +120,6 @@ function Matrix({ data }) {
       window.localStorage.setItem("flattenedData", JSON.stringify(flattenedData));
     
   }, [flattenedData]);*/
-
-
-
 
   const [selectedRisk, setSelectedRisk] = useState({});
   const [selectedApp, setSelectedApp] = useState({});
@@ -203,7 +198,7 @@ function Matrix({ data }) {
         }
       }
     });
-    setFlattenedData(rows)
+    setFlattenedData(rows);
     return rows; // Retourne les lignes mises à jour
   };
 
@@ -406,12 +401,12 @@ function Matrix({ data }) {
 
   return (
     <>
-      <div className="flex items-center justify-end my-5 ml-2 space-x-4">
+      <div className="flex items-center justify-end my-5 mr-4 space-x-4">
         {/* Label */}
         <label className="text-gray-900 font-semibold">Owner</label>
 
         {/* Input Field */}
-        <div className="relative flex items-center bg-gray-100 rounded-md border border-gray-300 w-60 px-3 py-2">
+        <div className="relative flex items-center bg-white rounded-md border border-gray-300 w-60 px-3 py-2">
           <User className="text-gray-500 mr-2" size={16} />
           <input
             type="text"
@@ -437,7 +432,7 @@ function Matrix({ data }) {
           {/* Dropdown */}
           <div className="relative z-30 w-60">
             <div
-              className="flex items-center bg-gray-100 rounded-md border border-gray-300 px-3 py-2 cursor-pointer"
+              className="flex items-center bg-white rounded-md border border-gray-300 px-3 py-2 cursor-pointer"
               onClick={() => setIsOpen(!isOpen)}
             >
               <User className="text-gray-500 mr-2" size={16} />
@@ -467,66 +462,68 @@ function Matrix({ data }) {
         </div>
       </div>
 
-      <TableContainer component={Paper} className="overflow-auto">
-        <Table>
-          <TableHead>
-            <TableRow className="bg-blue-nav">
-              {/* Application */}
-              <TableCell
-                align="center"
-                style={{ width: 450 }}
-                className="border border-subfont-gray"
-              >
-                Application
-              </TableCell>
+      <div className="mr-4">
+        <TableContainer component={Paper} className="overflow-auto ">
+          <Table>
+            <TableHead>
+              <TableRow className="bg-blue-nav">
+                {/* Application */}
+                <TableCell
+                  align="center"
+                  style={{ width: 450 }}
+                  className="border border-subfont-gray"
+                >
+                  Application
+                </TableCell>
 
-              {/* Risques */}
-              <TableCell
-                align="center"
-                style={{ width: 800 }}
-                className="border border-subfont-gray"
-              >
-                Risques
-              </TableCell>
+                {/* Risques */}
+                <TableCell
+                  align="center"
+                  style={{ width: 800 }}
+                  className="border border-subfont-gray"
+                >
+                  Risques
+                </TableCell>
 
-              {/* Contrôles */}
-              <TableCell
-                colSpan={6} // 7 colonnes pour Contrôles
-                align="center"
-                className="border border-subfont-gray"
-              >
-                Contrôles
-              </TableCell>
-            </TableRow>
-          </TableHead>
+                {/* Contrôles */}
+                <TableCell
+                  colSpan={6} // 7 colonnes pour Contrôles
+                  align="center"
+                  className="border border-subfont-gray"
+                >
+                  Contrôles
+                </TableCell>
+              </TableRow>
+            </TableHead>
 
-          <TableBody>
-            <TableRow>
-              <TableCell colSpan={14} style={{ padding: 0 }}>
-                <Paper style={{ height: 550, width: "100%" }}>
-                  <DataGrid
-                    sx={{
-                      // Style pour les en-têtes de colonnes
-                      "& .MuiDataGrid-columnHeader": {
-                        backgroundColor: "#E9EFF8", // Couleur de fond verte
-                      },
-                      // Style pour les lignes au survol
-                      "& .MuiDataGrid-row:hover": {
-                        backgroundColor: "#E8F5E9", // Couleur de fond au survol
-                      },
-                    }}
-                    rows={flattenedData}
-                    columns={columns}
-                    pageSize={5}
-                    rowsPerPageOptions={[5, 10, 20]}
-                    disableSelectionOnClick
-                  />
-                </Paper>
-              </TableCell>
-            </TableRow>
-          </TableBody>
-        </Table>
-      </TableContainer>
+            <TableBody>
+              <TableRow>
+                <TableCell colSpan={14} style={{ padding: 0 }}>
+                  <Paper style={{ height: 550, width: "100%" }}>
+                    <DataGrid
+                      sx={{
+                        // Style pour les en-têtes de colonnes
+                        "& .MuiDataGrid-columnHeader": {
+                          backgroundColor: "#E9EFF8", // Couleur de fond verte
+                        },
+                        // Style pour les lignes au survol
+                        "& .MuiDataGrid-row:hover": {
+                          backgroundColor: "#E8F5E9", // Couleur de fond au survol
+                        },
+                      }}
+                      rows={flattenedData}
+                      columns={columns}
+                      pageSize={5}
+                      rowsPerPageOptions={[5, 10, 20]}
+                      disableSelectionOnClick
+                    />
+                  </Paper>
+                </TableCell>
+              </TableRow>
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </div>
     </>
   );
 }

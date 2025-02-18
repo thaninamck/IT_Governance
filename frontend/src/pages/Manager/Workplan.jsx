@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
-import Header from "../components/Header/Header";
-import Matrix from "../components/workPlan/Matrix";
-import WorkPlanSideBar from "../components/workPlan/WorkPlanSideBar";
-import Flow from "../components/workPlan/Flow";
-import { NotificationDialog } from "../components/workPlan/NotificationDialog";
-import { ConfirmationDialog } from "../components/workPlan/ConfirmationDialog";
+import Header from "../../components/Header/Header";
+import Matrix from "../../components/workPlan/Matrix";
+import WorkPlanSideBar from "../../components/workPlan/WorkPlanSideBar";
+import Flow from "../../components/workPlan/Flow";
+import { NotificationDialog } from "../../components/workPlan/NotificationDialog";
+import { ConfirmationDialog } from "../../components/workPlan/ConfirmationDialog";
 const Workplan = () => {
   const [appDuplicationDialogOpen, setappDuplicationDialogOpen] = useState(false);
   const [startWithriskDialogOpen, setstartWithriskDialogOpen] = useState(false);
