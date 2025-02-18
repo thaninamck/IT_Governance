@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { DataGrid } from "@mui/x-data-grid";
 import { User, ChevronDown } from "lucide-react";
+//import SaveIcon from '@mui/icons-material/Save';
 
 import { Select, MenuItem, Checkbox, TextField, Button } from "@mui/material";
 import {
@@ -230,6 +231,11 @@ function Matrix({ data }) {
     }));
   };
 
+  const atLeastOneApp = flattenedData.length > 0;
+  const handleSave = () => {
+    console.log("sending data to backend", flattenedData);
+  };
+
   // Gestion des cases à cocher pour les contrôles
   const handleControlCheckboxChange = (id) => (event) => {
     console.log("id slcted", id);
@@ -261,6 +267,25 @@ function Matrix({ data }) {
     }));
   };
 
+
+const handleEditStop = (params, event) => {
+  console.log('Edition terminée sur la cellule', params);
+
+  // Récupérer l'ID de la ligne et la valeur modifiée
+  const { id, field, value } = params;
+
+  // Mettre à jour le tableau de données avec la nouvelle valeur
+  setFlattenedData((prevData) => {
+    const updatedData = prevData.map((row) => {
+      if (row.id === id) {
+        row[field] = value; // Mettre à jour la cellule
+      }
+      return row;
+    });
+    return updatedData;
+  });
+};
+
   const columns = [
     // Application
 
@@ -274,7 +299,7 @@ function Matrix({ data }) {
       field: "applicationLayer",
       headerName: "Layer",
       width: 150,
-      editable: true,
+      editable: false,
     },
     {
       field: "applicationOwner",
@@ -296,13 +321,13 @@ function Matrix({ data }) {
         />
       ),
     },
-    { field: "riskCode", headerName: "Risk Code", width: 150, editable: true },
-    { field: "riskName", headerName: "Risk Name", width: 150, editable: true },
+    { field: "riskCode", headerName: "Risk Code", width: 150, editable: false },
+    { field: "riskName", headerName: "Risk Name", width: 150, editable: false},
     {
       field: "riskDescription",
       headerName: "Risk Description",
       width: 200,
-      editable: true,
+      editable: false,
     },
     {
       field: "riskOwner",
@@ -399,9 +424,27 @@ function Matrix({ data }) {
     setSelectedControl({});
   };
 
+  const handleCellEdit = (params) => {
+    console.log('Cell edited:', params);
+    const { id, field, value } = params;
+    setEditMessage(`Cell in row ${id} edited. Field: ${field}, New Value: ${value}`);
+
+    setFlattenedData((prevData) => {
+      const updatedData = prevData.map((row) => {
+        if (row.id === id) {
+          row[field] = value;
+        }
+        return row;
+      });
+      return updatedData;
+    });
+  };
+
+  const [editMessage, setEditMessage] = useState("");
+
   return (
     <>
-      <div className="flex items-center justify-end my-5 mr-4 space-x-4">
+      <div className="flex items-center gap-4 justify-end my-5 mr-4 space-x-4">
         {/* Label */}
         <label className="text-gray-900 font-semibold">Owner</label>
 
@@ -416,6 +459,7 @@ function Matrix({ data }) {
             value={owner}
           />
         </div>
+        <div>{editMessage && <p>{editMessage}</p>}</div>
 
         {/* Button */}
         <button
@@ -460,6 +504,17 @@ function Matrix({ data }) {
             )}
           </div>
         </div>
+
+        <div className="   ">
+          {atLeastOneApp && (
+            <button
+              onClick={handleSave}
+              className="bg-blue-menu text-white px-4 py-2 rounded-md hover:bg-blue-900"
+            >
+              save
+            </button>
+          )}
+        </div>
       </div>
 
       <div className="mr-4">
@@ -501,7 +556,8 @@ function Matrix({ data }) {
                 <TableCell colSpan={14} style={{ padding: 0 }}>
                   <Paper style={{ height: 550, width: "100%" }}>
                     <DataGrid
-                      sx={{
+
+                    sx={{
                         // Style pour les en-têtes de colonnes
                         "& .MuiDataGrid-columnHeader": {
                           backgroundColor: "#E9EFF8", // Couleur de fond verte
@@ -515,7 +571,8 @@ function Matrix({ data }) {
                       columns={columns}
                       pageSize={5}
                       rowsPerPageOptions={[5, 10, 20]}
-                      disableSelectionOnClick
+                      onEditStop={handleCellEdit}
+                      //disableSelectionOnClick
                     />
                   </Paper>
                 </TableCell>
