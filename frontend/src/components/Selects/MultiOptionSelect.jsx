@@ -8,7 +8,7 @@ import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import Checkbox from '@mui/material/Checkbox';
 
-const MultiOptionSelect = ({ placeholder, width, objects }) => {
+const MultiOptionSelect = ({ placeholder, width, objects,height }) => {
   const ITEM_HEIGHT = 48;
   const ITEM_PADDING_TOP = 8;
   const MenuProps = {
@@ -40,7 +40,9 @@ const MultiOptionSelect = ({ placeholder, width, objects }) => {
           m: 1,
           width: `${width}px`,
           '& .MuiOutlinedInput-root': {
-            borderRadius: 4,
+            borderRadius: 2,
+            height: `${height ? `${height}px` : 'auto'}`
+
           },
         }}
       >

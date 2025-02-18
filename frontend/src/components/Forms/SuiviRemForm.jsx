@@ -20,28 +20,28 @@ function SuiviRemForm({title}) {
       label="Date création "
       placeholder=""
       width="200px"
-      flexDirection={"column"}
+      flexDirection="flex-col"
     />
     <InputForm
       type="text"
       label="Description de la remédiation"
       placeholder="Entrez la description de la remédiation..."
       width="600px"
-      flexDirection={"column"}
+      flexDirection="flex-col"
     />
     <InputForm
         type="email" 
         label="E-mail"
         placeholder="Entrez l'e-mail de la personne concernée..."
         width="600px"
-        flexDirection={"column"}
+       flexDirection="flex-col"
       />
       <InputForm
         type="text" 
         label="Suivi"
         placeholder="Text ..."
         width="600px"
-        flexDirection={"column"}
+        flexDirection="flex-col"
       />
     
 

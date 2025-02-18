@@ -1,17 +1,11 @@
 import * as React from "react";
 import { useState } from "react";
-
 import { DataGrid } from "@mui/x-data-grid";
 import Paper from "@mui/material/Paper";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
-import {
-  IconButton,
-  Select,
-  MenuItem as MuiMenuItem,
-  FormControl,
-} from "@mui/material";
+import { IconButton,Select,MenuItem as MuiMenuItem,FormControl,} from "@mui/material";
 import StatusMission from "./StatusMission";
 import { useNavigate } from "react-router-dom";
 import { useBreadcrumb } from "../Context/BreadcrumbContext";
@@ -67,18 +61,9 @@ function ExpandableCell({ value, maxInitialLength = 50, onExpand }) {
   );
 }
 
-function Table({
-  columnsConfig,
-  rowsData,
-  checkboxSelection = false,
-  allterRowcolors ,
-  getRowLink,
-  onRowSelectionChange,
-  headerBackground = "transparent",
-  statusOptions = [],
-  statusColors = {},
-  rowActions = [],
-}) {
+
+
+function Table({ columnsConfig, rowsData, checkboxSelection = false, allterRowcolors , getRowLink , onRowSelectionChange, headerBackground = "transparent",statusOptions = [],statusColors = {},rowActions = [], onCellEditCommit}) {
 
     const isZebraStriping = allterRowcolors; // Mets à false pour désactiver
 const oddRowColor = "#E9EFF8"; 
@@ -111,19 +96,24 @@ const evenRowColor = "white"
   const navigate = useNavigate(); // Hook pour la navigation
   const [rows, setRows] = React.useState(rowsData);
   const [expandedCells, setExpandedCells] = React.useState({});
+  const [selectionModel, setSelectionModel] = React.useState([]);
+
 
 
   const handleRowClick = (params) => {
     if (getRowLink) {
       const link = getRowLink(params.row); // Générer dynamiquement le lien
       setBreadcrumbs([
-        { label: "Mes Mission", path: "/tablemission" },
+        { label: "Mes Mission", path: "/gestionmission" },
         {
           label: params.row.mission,
-          path: `/tablemission/${params.row.mission}`,
+          path: `/gestionmission/${params.row.mission}`,
         },
       ]);
-      navigate(link);
+       // Stocker les informations de la ligne dans le state local ou via navigation state
+    navigate(link, { state: { missionData: params.row } });
+    console.log(params.row)
+      
     }
   };
 
@@ -159,6 +149,11 @@ const evenRowColor = "white"
       cellClassName: "dynamic-height-cell",
       editable: colConfig.editable || false,
       renderCell: (params) => {
+        // Vérifie si une fonction personnalisée est fournie
+    if (colConfig.customRenderCell) {
+      return colConfig.customRenderCell(params);
+    }
+    // Ajoute une condition spécifique en fonction du champ
         if (colConfig.field === "status") {
           return (
             <FormControl sx={{ width: "100%" }}>
@@ -296,13 +291,16 @@ const evenRowColor = "white"
     setRows(updatedRows);
   };
 
+  
   const handleCellEditCommit = (params) => {
-    setRows(
-      rows.map((row) =>
+    setRows((prevRows) =>
+      prevRows.map((row) =>
         row.id === params.id ? { ...row, [params.field]: params.value } : row
       )
     );
+    console.log("Mise à jour de l'utilisateur :", params);
   };
+  
 
   return (
     <Paper sx={{ margin: "0% 3%", width: "max-content" }}>
@@ -310,15 +308,14 @@ const evenRowColor = "white"
         rows={rows}
         columns={columns}
         checkboxSelection={checkboxSelection}
-       
+        disableRowSelectionOnClick // Empêche la sélection en cliquant sur une cellule
+        autoHeight
+        onRowClick={handleRowClick} // Ajout du gestionnaire de clic sur la ligne
         getRowHeight={getRowHeight}
         /*rowSelectionModel={rowSelectionModel}
-        onRowSelectionModelChange={handleRowSelectionChange}*/ 
-        
-       
-           
-             
-           
+        onRowSelectionModelChange={handleRowSelectionChange}
+         selectionModel={selectionModel}
+        onSelectionModelChange={(newSelection) => setSelectionModel(newSelection)}*/ 
           
         sx={{
           border: "1px solid #ccc",

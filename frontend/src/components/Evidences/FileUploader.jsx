@@ -73,6 +73,9 @@ const FileUploader = ({onSave}) => {
     console.log(key, value);
   }
     onSave(formData);
+     // Réinitialiser la liste des fichiers et la progression après la sauvegarde
+     setSelectedFiles([]);
+     setUploadProgress({});
   };
 
   const handleDrop = (e) => {
@@ -92,10 +95,10 @@ const FileUploader = ({onSave}) => {
   };
 
   return (
-    <div className="flex flex-col justify-center items-center space-y-6">
+    <div className="flex flex-col justify-center items-center space-y-6 ">
       {/* Zone de drop */}
       <div
-        className={`border-2 border-dashed rounded-xl p-6 flex flex-col justify-center items-center h-1/2 w-3/4 ${
+        className={`border-2 border-dashed rounded-xl p-6 flex flex-col justify-center items-center h-1/2 w-[95%] ${
           dragging ? "border-blue-500" : "border-blue-menu"
         }`}
         onDragOver={handleDragOver}
@@ -119,13 +122,13 @@ const FileUploader = ({onSave}) => {
 
       {/* Liste des fichiers uploadés */}
       {selectedFiles.map((file, index) => (
-        <div key={index} className="w-3/4 space-y-4">
-          <div className="flex flex-col justify-center gap-4 bg-white border border-gray-300 rounded-lg p-2">
+        <div key={index} className="w-[90%]  ">
+          <div className="flex flex-col justify-center gap-1 bg-white border border-gray-300 rounded-lg p-2 ">
             {/* Détails du fichier */}
             <div className="flex justify-between mx-4">
               <p className="font-medium text-xs">{file.name}</p>
               <DeleteIcon
-                sx={{ color: "red", cursor: "pointer" }}
+                sx={{ color: "red", cursor: "pointer" ,width:"20px",height:'20px'}}
                 onClick={() => handleDeleteFile(index)}
               />
             </div>
@@ -140,7 +143,7 @@ const FileUploader = ({onSave}) => {
             />
 
             {/* Taille du fichier */}
-            <p className="text-sm text-subfont-gray mx-4">
+            <p className="text-xs text-subfont-gray mx-4">
               {(file.size / 1024 / 1024).toFixed(2)} MB
             </p>
           </div>

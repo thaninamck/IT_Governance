@@ -37,6 +37,10 @@ function SignUpForm({ title }) {
       <Button btnName="Connexion" type="submit" />
     </form>
   );
+    
+
+    
+  
 }
 
 export default SignUpForm;

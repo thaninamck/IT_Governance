@@ -1,117 +1,147 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import InputForm from './InputForm';
 import './FormStyle.css';
 import Button from '../Button';
 import icons from '../../assets/Icons';
+import SelectInput from './SelectInput';
+import AddClientForm from './AddClientForm';
 
-function AddMissionForm({ title }) {
-  const [open, setOpen] = useState(true);
+function AddMissionForm({ title, isOpen, onClose, initialValues, onMissionCreated }) {
+  if (!isOpen) return null;
 
-  // États pour chaque champ
-  const [missionName, setMissionName] = useState('');
-  const [client, setClient] = useState('');
-  const [startDate, setStartDate] = useState('');
-  const [duration, setDuration] = useState('');
-  const [auditedPeriod, setAuditedPeriod] = useState('');
-  const [manager, setManager] = useState('');
+  // États pour la modale d'ajout de client et la liste dynamique des clients
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [clientOptions, setClientOptions] = useState([
+    { label: "Djeezy", value: "Djeezy" },
+    { label: "Mobilis", value: "Mobilis" },
+    { label: "Oredoo", value: "Oredoo" },
+    { label: "Mazars", value: "Mazars" }
+  ]);
 
-  const handleClose = () => {
-    setOpen(false);
+  // Fonction pour gérer l'ouverture/fermeture de la modale d'ajout de client
+  const openModal = () => setIsModalOpen(true);
+  const closeModal = () => setIsModalOpen(false);
+
+  // Fonction pour ajouter dynamiquement un nouveau client
+  const handleClientCreation = (newClient) => {
+    setClientOptions((prev) => [...prev, { label: newClient.nom, value: newClient.nom }]);
+
+    closeModal();
   };
 
+  // États pour chaque champ
+  const [missionData, setMissionData] = useState(initialValues || {
+    client: '',
+    mission: '',
+    manager: '',
+    dateField: '',
+    dateField1: '',
+    statusMission: 'non_commencee'
+  });
+
+  // Réinitialiser le formulaire si les initialValues changent
+  useEffect(() => {
+    setMissionData(initialValues || {
+      client: '',
+      mission: '',
+      manager: '',
+      dateField: '',
+      dateField1: '',
+      statusMission: 'non_commencee'
+    });
+  }, [initialValues]);
+
+  // Soumission du formulaire
   const handleSubmit = (e) => {
     e.preventDefault();
-    const formData = {
-      missionName,
-      client,
-      startDate,
-      duration,
-      auditedPeriod,
-      manager,
+    const missionToCreate = {
+      ...missionData,
+      statusMission: missionData.statusMission || 'non_commencee'
     };
-    console.log('Form Data:', formData);
-    alert('Formulaire soumis avec succès !');
-    // Vous pouvez ici envoyer les données à une API ou les traiter
+    onMissionCreated(missionToCreate);
+    onClose();
   };
 
   return (
-    open && (
+    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-md z-50">
       <form className="appForm_container" onSubmit={handleSubmit}>
         {/* Icône Close */}
-        <button className="close-button" onClick={handleClose}>
+        <button type="button" className="close-button" onClick={onClose}>
           &times;
         </button>
 
         {/* Titre dynamique */}
         <p>{title}</p>
 
-        {/* Formulaire */}
+        {/* Champ : Nom de la mission */}
         <InputForm
           type="text"
           label="Nom de la mission"
           placeholder="Entrez le nom de la mission"
           width="420px"
-          flexDirection={"column"}
-          value={missionName}
-          onChange={(e) => setMissionName(e.target.value)}
+          flexDirection="flex-col"
+          value={missionData.mission}
+          onChange={e => setMissionData({ ...missionData, mission: e.target.value })}
         />
+
+        {/* Sélection et ajout de client */}
         <div className="form-row">
-          <InputForm
-            type="text"
+          <SelectInput
             label="Client"
-            placeholder="Raison sociale"
+            options={clientOptions}
+            value={missionData.client}
+            onChange={e => setMissionData({ ...missionData, client: e.target.value })}
             width="200px"
-            flexDirection={"column"}
-            value={client}
-            onChange={(e) => setClient(e.target.value)}
+            multiSelect={false}
           />
-          <button className="btn_addclient">
+          <button type="button" className="btn_addclient" onClick={openModal}>
             <icons.addCircle sx={{ width: "18px" }} /> Ajouter client
           </button>
         </div>
+
+        {/* Dates */}
         <div className="form-row">
           <InputForm
             type="date"
             label="Date début"
-            placeholder=""
             width="200px"
-            flexDirection={"column"}
-            value={startDate}
-            onChange={(e) => setStartDate(e.target.value)}
+            flexDirection="flex-col"
+            value={missionData.dateField}
+            onChange={e => setMissionData({ ...missionData, dateField: e.target.value })}
           />
           <InputForm
-            type="text"
+            type="date"
             label="Durée"
-            placeholder="20 jours"
             width="200px"
-            flexDirection={"column"}
-            value={duration}
-            onChange={(e) => setDuration(e.target.value)}
+            flexDirection="flex-col"
+            value={missionData.dateField1}
+            onChange={e => setMissionData({ ...missionData, dateField1: e.target.value })}
           />
         </div>
-        <InputForm
-          type="text"
-          label="Période audité"
-          placeholder="6 mois"
-          width="420px"
-          flexDirection={"column"}
-          value={auditedPeriod}
-          onChange={(e) => setAuditedPeriod(e.target.value)}
-        />
+
+        {/* Manager */}
         <InputForm
           type="text"
           label="Manager"
           placeholder="Nom du manager"
           width="420px"
-          flexDirection={"column"}
-          value={manager}
-          onChange={(e) => setManager(e.target.value)}
+          flexDirection="flex-col"
+          value={missionData.manager}
+          onChange={e => setMissionData({ ...missionData, manager: e.target.value })}
         />
 
         {/* Bouton Créer */}
         <Button btnName="Créer" type="submit" />
       </form>
-    )
+
+      {/* Modale d'ajout de client */}
+      <AddClientForm
+        title="Ajouter un Client"
+        isOpen={isModalOpen}
+        onClose={closeModal}
+        onClientCreated={handleClientCreation}
+      />
+    </div>
   );
 }
 
