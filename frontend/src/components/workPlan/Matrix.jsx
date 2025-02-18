@@ -100,11 +100,31 @@ function Matrix({ data }) {
     return result;
   };
 
-  // Utilisation dans le useEffect
+  
+
   useEffect(() => {
-    const transformedData = transformData(data);
-    setFlattenedData(transformedData);
-  }, [data]);
+    // Transformer les données et mettre à jour flattenedData
+    if (data) {
+      const transformedData = transformData(data);
+      setFlattenedData(transformedData);
+    }
+  }, [data]); 
+
+ /* useEffect(() => {
+    // Charger les données depuis le localStorage au premier rendu
+    const savedFlattenedData = JSON.parse(window.localStorage.getItem("flattenedData")) || [];
+    setFlattenedData(savedFlattenedData);
+  }, []); // Dépendances vides pour exécuter une seule fois au montage
+  
+  useEffect(() => {
+    console.log("flatteneddata",flattenedData)
+    
+      window.localStorage.setItem("flattenedData", JSON.stringify(flattenedData));
+    
+  }, [flattenedData]);*/
+
+
+
 
   const [selectedRisk, setSelectedRisk] = useState({});
   const [selectedApp, setSelectedApp] = useState({});
@@ -171,12 +191,10 @@ function Matrix({ data }) {
       const rowIndex = rows.findIndex((row) => row.id === id);
 
       if (rowIndex !== -1) {
-        // Si l'élément est de type "app", on met à jour la cellule correspondante
-        if (type === "app") {
-          rows[rowIndex].applicationOwner = ownername; // Remplace par le nom réel
-        }
         // Si l'élément est de type "risk", on met à jour la cellule correspondante
         if (type === "risk") {
+          rows[rowIndex].riskOwner = ""; // Remplace par le nom réel
+
           rows[rowIndex].riskOwner = ownername; // Remplace par le nom réel
         }
         // Si l'élément est de type "control", on met à jour la cellule correspondante
@@ -185,7 +203,7 @@ function Matrix({ data }) {
         }
       }
     });
-
+    setFlattenedData(rows)
     return rows; // Retourne les lignes mises à jour
   };
 
@@ -236,50 +254,21 @@ function Matrix({ data }) {
     }));
   };
 
-  // Gestion des cases à cocher pour les applications
-  const handleAppCheckboxChange = (id) => (event) => {
-    const type = "app";
-    setSelectedItems((prev) => {
-      if (event.target.checked) {
-        // Si la case est cochée, on ajoute l'objet { id, type }
-        return [...prev, { id, type }];
-      } else {
-        // Si la case est décochée, on retire l'objet { id, type }
-        return prev.filter((item) => item.id !== id || item.type !== type);
-      }
-    });
-    console.log("id slcted", id);
-    setSelectedApp((prev) => ({
-      ...prev,
-      [id]: event.target.checked,
-    }));
-  };
-
   // Gestion des sélections pour les testeurs
-  const handleTesterChange = (id) => (event) => {
+  const handleTesterChange = (id, testerId) => (event) => {
+    const rowIndex = flattenedData.findIndex((row) => row.id === id);
+    if (rowIndex !== -1) {
+      flattenedData[rowIndex].controlTester = testerId;
+    }
     setTesterValues((prev) => ({
       ...prev,
-      [id]: event.target.value, // Stocke l'ID du testeur sélectionné
+      [id]: testerId,
     }));
   };
 
   const columns = [
     // Application
-    {
-      field: "appCheckbox",
-      headerName: "Select app",
-      width: 150,
-      renderCell: (params) => (
-        <Checkbox
-          className="appCheckbox"
-          checked={!!selectedApp[params.row.id]}
-          onChange={handleAppCheckboxChange(
-            params.row.id,
-            params.row.applicationOwner
-          )}
-        />
-      ),
-    },
+
     {
       field: "application",
       headerName: "Application",
@@ -296,7 +285,7 @@ function Matrix({ data }) {
       field: "applicationOwner",
       headerName: "Owner",
       width: 150,
-      editable: true,
+      editable: false,
     },
 
     // Risques
@@ -324,7 +313,7 @@ function Matrix({ data }) {
       field: "riskOwner",
       headerName: "Risk Owner",
       width: 150,
-      editable: true,
+      editable: false,
     },
 
     // Contrôles
@@ -344,7 +333,7 @@ function Matrix({ data }) {
       field: "controlCode",
       headerName: "Control Code",
       width: 150,
-      editable: true,
+      editable: false,
     },
     {
       field: "controlDescription",
@@ -356,13 +345,13 @@ function Matrix({ data }) {
       field: "majorProcess",
       headerName: "Major Process",
       width: 150,
-      editable: true,
+      editable: false,
     },
     {
       field: "subProcess",
       headerName: "Sub Process",
       width: 150,
-      editable: true,
+      editable: false,
     },
     {
       field: "testScript",
@@ -374,7 +363,7 @@ function Matrix({ data }) {
       field: "controlOwner",
       headerName: "Control Owner",
       width: 150,
-      editable: true,
+      editable: false,
     },
     {
       field: "controlTester",
@@ -382,8 +371,11 @@ function Matrix({ data }) {
       width: 150,
       renderCell: (params) => (
         <Select
-          value={testerValues[params.row.id] || params.row.controlTester} // Utilise l'ID du testeur
-          onChange={handleTesterChange(params.row.id)}
+          value={testerValues[params.row.id] || params.row.controlTester || ""}
+          onChange={(event) => {
+            const selectedTesterId = event.target.value;
+            handleTesterChange(params.row.id, selectedTesterId)(event);
+          }}
           fullWidth
           variant="outlined"
           size="small"
@@ -397,6 +389,20 @@ function Matrix({ data }) {
       ),
     },
   ];
+
+  const handleUpdateTesters = (selectedTester) => {
+    selectedItems.forEach((item) => {
+      const { id, type } = item;
+
+      if (type === "control") {
+        const fakeEvent = { target: { value: selectedTester } }; // Simule l'événement avec l'objet testeur
+        handleTesterChange(id, selectedTester.id)(fakeEvent);
+      }
+    });
+
+    setSelectedItems([]); // Réinitialiser les sélections
+    setSelectedControl({});
+  };
 
   return (
     <>
@@ -448,6 +454,7 @@ function Matrix({ data }) {
                     className="px-3 py-2 hover:bg-gray-100 cursor-pointer"
                     onClick={() => {
                       setSelectedTester(tester);
+                      handleUpdateTesters(tester);
                       setIsOpen(false);
                     }}
                   >
@@ -467,7 +474,7 @@ function Matrix({ data }) {
               {/* Application */}
               <TableCell
                 align="center"
-                style={{ width: 500 }}
+                style={{ width: 450 }}
                 className="border border-subfont-gray"
               >
                 Application
@@ -484,7 +491,7 @@ function Matrix({ data }) {
 
               {/* Contrôles */}
               <TableCell
-                colSpan={7} // 7 colonnes pour Contrôles
+                colSpan={6} // 7 colonnes pour Contrôles
                 align="center"
                 className="border border-subfont-gray"
               >
