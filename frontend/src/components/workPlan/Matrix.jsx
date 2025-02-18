@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { DataGrid } from "@mui/x-data-grid";
+import { DataGrid } from "@mui/x-data-grid/DataGrid";
 import { User, ChevronDown } from "lucide-react";
 //import SaveIcon from '@mui/icons-material/Save';
 
@@ -267,24 +267,23 @@ function Matrix({ data }) {
     }));
   };
 
+  const handleEditStop = (params, event) => {
+    console.log("Edition terminée sur la cellule", params);
 
-const handleEditStop = (params, event) => {
-  console.log('Edition terminée sur la cellule', params);
+    // Récupérer l'ID de la ligne et la valeur modifiée
+    const { id, field, value } = params;
 
-  // Récupérer l'ID de la ligne et la valeur modifiée
-  const { id, field, value } = params;
-
-  // Mettre à jour le tableau de données avec la nouvelle valeur
-  setFlattenedData((prevData) => {
-    const updatedData = prevData.map((row) => {
-      if (row.id === id) {
-        row[field] = value; // Mettre à jour la cellule
-      }
-      return row;
+    // Mettre à jour le tableau de données avec la nouvelle valeur
+    setFlattenedData((prevData) => {
+      const updatedData = prevData.map((row) => {
+        if (row.id === id) {
+          row[field] = value; // Mettre à jour la cellule
+        }
+        return row;
+      });
+      return updatedData;
     });
-    return updatedData;
-  });
-};
+  };
 
   const columns = [
     // Application
@@ -322,7 +321,7 @@ const handleEditStop = (params, event) => {
       ),
     },
     { field: "riskCode", headerName: "Risk Code", width: 150, editable: false },
-    { field: "riskName", headerName: "Risk Name", width: 150, editable: false},
+    { field: "riskName", headerName: "Risk Name", width: 150, editable: false },
     {
       field: "riskDescription",
       headerName: "Risk Description",
@@ -422,22 +421,6 @@ const handleEditStop = (params, event) => {
 
     setSelectedItems([]); // Réinitialiser les sélections
     setSelectedControl({});
-  };
-
-  const handleCellEdit = (params) => {
-    console.log('Cell edited:', params);
-    const { id, field, value } = params;
-    setEditMessage(`Cell in row ${id} edited. Field: ${field}, New Value: ${value}`);
-
-    setFlattenedData((prevData) => {
-      const updatedData = prevData.map((row) => {
-        if (row.id === id) {
-          row[field] = value;
-        }
-        return row;
-      });
-      return updatedData;
-    });
   };
 
   const [editMessage, setEditMessage] = useState("");
@@ -556,8 +539,7 @@ const handleEditStop = (params, event) => {
                 <TableCell colSpan={14} style={{ padding: 0 }}>
                   <Paper style={{ height: 550, width: "100%" }}>
                     <DataGrid
-
-                    sx={{
+                      sx={{
                         // Style pour les en-têtes de colonnes
                         "& .MuiDataGrid-columnHeader": {
                           backgroundColor: "#E9EFF8", // Couleur de fond verte
@@ -571,7 +553,25 @@ const handleEditStop = (params, event) => {
                       columns={columns}
                       pageSize={5}
                       rowsPerPageOptions={[5, 10, 20]}
-                      onEditStop={handleCellEdit}
+                      editMode="cell"
+                      onCellEditStop={(params, event) => {
+                        console.log("Edition terminée sur la cellule", params);
+
+                        const { id, field } = params;
+                        const newValue = event.target.value;
+
+                        // Mettre à jour le tableau de données avec la nouvelle valeur
+                        setFlattenedData((prevData) => {
+                          const updatedData = prevData.map((row) => {
+                            if (row.id === id) {
+                              console.log("le row est trouvé", field);
+                              row[field] = newValue; // Mettre à jour la cellule
+                            }
+                            return row;
+                          });
+                          return updatedData;
+                        });
+                      }}
                       //disableSelectionOnClick
                     />
                   </Paper>
