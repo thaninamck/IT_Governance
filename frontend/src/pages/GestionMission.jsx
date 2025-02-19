@@ -220,7 +220,8 @@ function GestionMission() {
             rowsData={filteredRows}
             checkboxSelection={false}
             getRowLink={getRowLink}
-            headerBackground="var(--blue-nav)"
+            headerTextBackground={"white"}
+            headerBackground="var(--blue-menu)"
             rowActions={rowActions}
           />
         </div>

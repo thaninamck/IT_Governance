@@ -74,7 +74,7 @@ function Table({
   checkboxSelection = false,
   allterRowcolors,
   getRowLink,
-  
+  headerTextBackground,
   onRowSelectionChange,
   headerBackground = "transparent",
   statusOptions = [],
@@ -318,6 +318,7 @@ function Table({
       <DataGrid
         rows={rows}
         columns={columns}
+      
         checkboxSelection={checkboxSelection}
         disableRowSelectionOnClick // Empêche la sélection en cliquant sur une cellule
         autoHeight
@@ -343,6 +344,7 @@ function Table({
           },
           "& .MuiDataGrid-columnHeader": {
             backgroundColor: headerBackground,
+            color: headerTextBackground, // Texte blanc
             fontSize: "16px",
             fontWeight: "bold",
             borderBottom: "2px solid #ddd",

@@ -43,8 +43,8 @@ const MissionInfo = ({dataFormat }) => {
       <InfoDisplayComponent
         label="Date fin"
         BoxContent={dataFormat.dateField1 || "Non défini"}
-        borderWidth={200}
-        labelWidth={100}
+        borderWidth={100}
+        labelWidth={80}
       />
     </div>
     <InfoDisplayComponent

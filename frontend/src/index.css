@@ -4,7 +4,16 @@
 @tailwind components;
 @tailwind utilities;
 
-
+@layer base {
+    img{display:initial;}
+}
+.page-break {
+    page-break-before: always;
+  }
+  .no-print {
+    display: none;
+  }
+  
 @layer utilities {
     
   }
