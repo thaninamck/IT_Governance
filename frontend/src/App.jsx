@@ -55,6 +55,7 @@ import Accordion from './components/workPlan/WorkPlanSideBar';
 import Workplan from './pages/Manager/Workplan';
 import WorkPlanSideBar from './components/workPlan/WorkPlanSideBar';
 import ControleExcutionPage from './pages/Testeur/ControleExcutionPage';
+import MissionReport from './pages/Manager/MissionReport';
 function App() {
   const getRowLink = (row) => `/tablemission/${row.mission}`;
   
@@ -72,6 +73,8 @@ const location = useLocation();
 
 // Liste des chemins où Breadcrumbs doit être affiché
 const breadcrumbRoutes = [
+  "/rapportmission", // Ajout pour la page principale
+ "/rapportmission/:missionName", // Ajout pour une mission spécifique
   "/tablemission",
   "/missionInfo",
   "/statusmission",
@@ -192,6 +195,7 @@ const rowsData3 = [
           <Route path='/login' element={<Login  />}></Route>
           <Route path='/myprofile' element={<MyProfile/>}></Route>
           <Route path='/gestionmission' element={<GestionMission/>}></Route>
+
           <Route path='/utilisateurs' element={<GestionUtilisateur/>}></Route>
           <Route path='/clients' element={<GestionClient/>}></Route>
           <Route path='/settings' element={<Settings/>}></Route>
@@ -201,6 +205,7 @@ const rowsData3 = [
 
           <Route path='/acc' element={<WorkPlanSideBar/>}></Route>
           <Route path='/workplan' element={<Workplan/>}></Route>
+          <Route path='/gestionmission/:mission' element={<MissionReport/>}></Route>
 
          
           

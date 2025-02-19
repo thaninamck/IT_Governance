@@ -5,7 +5,14 @@ import Paper from "@mui/material/Paper";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
-import { IconButton,Select,MenuItem as MuiMenuItem,FormControl,} from "@mui/material";
+import VisibilityIcon from '@mui/icons-material/Visibility';
+
+import {
+  IconButton,
+  Select,
+  MenuItem as MuiMenuItem,
+  FormControl,
+} from "@mui/material";
 import StatusMission from "./StatusMission";
 import { useNavigate } from "react-router-dom";
 import { useBreadcrumb } from "../Context/BreadcrumbContext";
@@ -61,36 +68,41 @@ function ExpandableCell({ value, maxInitialLength = 50, onExpand }) {
   );
 }
 
+function Table({
+  columnsConfig,
+  rowsData,
+  checkboxSelection = false,
+  allterRowcolors,
+  getRowLink,
+  
+  onRowSelectionChange,
+  headerBackground = "transparent",
+  statusOptions = [],
+  statusColors = {},
+  rowActions = [],
+  onCellEditCommit,
+}) {
+  const isZebraStriping = allterRowcolors; // Mets à false pour désactiver
+  const oddRowColor = "#E9EFF8";
+  const evenRowColor = "white";
 
+  const handleRowSelectionChange = (newRowSelectionModel) => {
+    setRowSelectionModel(newRowSelectionModel);
 
-function Table({ columnsConfig, rowsData, checkboxSelection = false, allterRowcolors , getRowLink , onRowSelectionChange, headerBackground = "transparent",statusOptions = [],statusColors = {},rowActions = [], onCellEditCommit}) {
+    // Si des lignes sont sélectionnées
+    if (newRowSelectionModel.length > 0) {
+      const selectedRowId = newRowSelectionModel[0]; // ID de la ligne sélectionnée
+      const selectedRow = rows.find((row) => row.id === selectedRowId); // Trouve la ligne correspondante
+      if (onRowSelectionChange) {
+        onRowSelectionChange(selectedRow); // Passer la nouvelle sélection au parent
+      }
+      console.log("Ligne sélectionnée:", selectedRow); // Afficher les informations de la ligne
+    } else {
+      console.log("Aucune ligne sélectionnée");
+    }
+  };
 
-    const isZebraStriping = allterRowcolors; // Mets à false pour désactiver
-const oddRowColor = "#E9EFF8"; 
-const evenRowColor = "white"
-
-    const handleRowSelectionChange = (newRowSelectionModel) => {
-        setRowSelectionModel(newRowSelectionModel);
-        
-        
-
-        // Si des lignes sont sélectionnées
-        if (newRowSelectionModel.length > 0) {
-          const selectedRowId = newRowSelectionModel[0];  // ID de la ligne sélectionnée
-          const selectedRow = rows.find(row => row.id === selectedRowId);  // Trouve la ligne correspondante
-          if (onRowSelectionChange) {
-            onRowSelectionChange(selectedRow);  // Passer la nouvelle sélection au parent
-          }
-          console.log("Ligne sélectionnée:", selectedRow);  // Afficher les informations de la ligne
-        } else {
-          console.log("Aucune ligne sélectionnée");
-        }
-      };
-    
-        const [rowSelectionModel, setRowSelectionModel] = React.useState([]);
-
-
-
+  const [rowSelectionModel, setRowSelectionModel] = React.useState([]);
 
   const { setBreadcrumbs } = useBreadcrumb();
   const navigate = useNavigate(); // Hook pour la navigation
@@ -98,24 +110,25 @@ const evenRowColor = "white"
   const [expandedCells, setExpandedCells] = React.useState({});
   const [selectionModel, setSelectionModel] = React.useState([]);
 
-
-
   const handleRowClick = (params) => {
     if (getRowLink) {
       const link = getRowLink(params.row); // Générer dynamiquement le lien
       setBreadcrumbs([
-        { label: "Mes Mission", path: "/gestionmission" },
+        { label: "Mes Missions", path: "/gestionmission" },
         {
           label: params.row.mission,
           path: `/gestionmission/${params.row.mission}`,
         },
       ]);
-       // Stocker les informations de la ligne dans le state local ou via navigation state
-    navigate(link, { state: { missionData: params.row } });
-    console.log(params.row)
-      
+      // Stocker les informations de la ligne dans le state local ou via navigation state
+      navigate(link, { state: { missionData: params.row } });
+      console.log(params.row);
     }
   };
+
+
+
+  
 
   const handleCellExpand = (rowId, field, isExpanded) => {
     setExpandedCells((prev) => ({
@@ -150,10 +163,10 @@ const evenRowColor = "white"
       editable: colConfig.editable || false,
       renderCell: (params) => {
         // Vérifie si une fonction personnalisée est fournie
-    if (colConfig.customRenderCell) {
-      return colConfig.customRenderCell(params);
-    }
-    // Ajoute une condition spécifique en fonction du champ
+        if (colConfig.customRenderCell) {
+          return colConfig.customRenderCell(params);
+        }
+        // Ajoute une condition spécifique en fonction du champ
         if (colConfig.field === "status") {
           return (
             <FormControl sx={{ width: "100%" }}>
@@ -279,8 +292,8 @@ const evenRowColor = "white"
 
   const handleRowAction = (action, rowId) => {
     // Récupérer l'objet de la ligne en utilisant l'ID de la ligne
-  const selectedRow = rows.find(row => row.id === rowId); 
-  action.onClick(selectedRow); // Passez l'objet de la ligne à l'action
+    const selectedRow = rows.find((row) => row.id === rowId);
+    action.onClick(selectedRow); // Passez l'objet de la ligne à l'action
     handleClose();
   };
 
@@ -291,7 +304,6 @@ const evenRowColor = "white"
     setRows(updatedRows);
   };
 
-  
   const handleCellEditCommit = (params) => {
     setRows((prevRows) =>
       prevRows.map((row) =>
@@ -300,7 +312,6 @@ const evenRowColor = "white"
     );
     console.log("Mise à jour de l'utilisateur :", params);
   };
-  
 
   return (
     <Paper sx={{ margin: "0% 3%", width: "max-content" }}>
@@ -315,8 +326,8 @@ const evenRowColor = "white"
         /*rowSelectionModel={rowSelectionModel}
         onRowSelectionModelChange={handleRowSelectionChange}
          selectionModel={selectionModel}
-        onSelectionModelChange={(newSelection) => setSelectionModel(newSelection)}*/ 
-          
+        onSelectionModelChange={(newSelection) => setSelectionModel(newSelection)}*/
+
         sx={{
           border: "1px solid #ccc",
 
@@ -343,7 +354,8 @@ const evenRowColor = "white"
             outline: "2px solid #1565c0",
           },
 
-          ...(isZebraStriping && { // Applique le style au tableau des elements uniquement si activé
+          ...(isZebraStriping && {
+            // Applique le style au tableau des elements uniquement si activé
             "& .MuiDataGrid-row:nth-of-type(odd)": {
               backgroundColor: oddRowColor,
             },
@@ -351,7 +363,6 @@ const evenRowColor = "white"
               backgroundColor: evenRowColor,
             },
           }),
-          
         }}
       />
       <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose}>
@@ -368,11 +379,11 @@ const evenRowColor = "white"
           >
             {action.icon}
             {action.label}
-            
           </MenuItem>
+          
         ))}
+        
       </Menu>
-      
     </Paper>
   );
 }
