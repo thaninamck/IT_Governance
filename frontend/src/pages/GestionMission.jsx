@@ -216,6 +216,7 @@ function GestionMission() {
         >
           <Table
             key={JSON.stringify(filteredRows)}
+            
             columnsConfig={columnsConfig2}
             rowsData={filteredRows}
             checkboxSelection={false}
