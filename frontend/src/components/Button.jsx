@@ -1,9 +1,9 @@
 import React from 'react'
 import "./componentStyle.css"
 
-function Button({btnName}) {
+function Button({btnName,disabled}) {
   return (
-    <button className="save-button" >
+    <button className="save-button" disabled={disabled} >
         {btnName}
       </button>
   )
