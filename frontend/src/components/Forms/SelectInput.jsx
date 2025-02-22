@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { ChevronDown, Check } from 'lucide-react';
 
-function SelectInput({ label, options, value, onChange, width, flexDirection, customStyle, multiSelect = false ,mt='mt-20'}) {
+function SelectInput({ label, options, value, onChange, width, flexDirection, customStyle,required=false, multiSelect = false ,mt='mt-20'}) {
   const [isOpen, setIsOpen] = useState(false);
+   const [error, setError] = useState(false);
   
   // Vérifier si la valeur sélectionnée est un tableau (pour multi-choix)
   const selectedValues = multiSelect ? (Array.isArray(value) ? value : []) : value;
@@ -19,10 +20,20 @@ function SelectInput({ label, options, value, onChange, width, flexDirection, cu
       setIsOpen(false);
     }
   };
+  const handleBlur = () => {
+    if (required && !value) {
+      setError(true);
+    } else {
+      setError(false);
+    }
+  };
 
   return (
     <div className="relative flex flex-col pt-2" style={{ flexDirection, width }}>
+      <div className='flex items-center gap-2'>
       {label && <label className={`text-sm mb-2 ml-1 ${customStyle || ""}`}>{label}</label>}
+      {required && <span className="text-[var(--alert-red)]">*</span>}
+      </div>
 
       {/* Sélecteur principal */}
       <div
@@ -39,6 +50,7 @@ function SelectInput({ label, options, value, onChange, width, flexDirection, cu
         </span>
         <ChevronDown className={`w-4 h-4 transition-transform ${isOpen ? "rotate-180" : ""}`} />
       </div>
+      {error && <span className="text-red-500 text-xs mt-1">Ce champ est requis</span>}
 
       {/* Liste des options */}
       {isOpen && (
