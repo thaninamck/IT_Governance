@@ -6,6 +6,7 @@ import emailjs from 'emailjs-com';
 
 function AddUserForm({ title, isOpen, onClose, initialValues, onUserCreated }) {
   if (!isOpen) return null;
+  const [loading, setLoading] = useState(false);
 
   const getCurrentDate = () => new Date().toISOString().split('T')[0];
 
@@ -22,6 +23,8 @@ function AddUserForm({ title, isOpen, onClose, initialValues, onUserCreated }) {
     password: '',
   });
   const [isUpdating, setIsUpdating] = useState(false);
+  // État pour gérer les erreurs de validation
+  const [error, setError] = useState('');
 
   // Générer un mot de passe aléatoire
   const generatePassword = () => {
@@ -47,12 +50,20 @@ function AddUserForm({ title, isOpen, onClose, initialValues, onUserCreated }) {
     }
   }, [userData.nom, userData.prenom]);
 
+   
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!userData.nom || !userData.prenom || !userData.username || !userData.email || !userData.contact ||!userData.grade) {
+      setError('Veuillez remplir tous les champs obligatoires.');
+      return; // Empêcher la soumission
+    }
 
     let updatedUser = { ...userData };
 
     if (!isUpdating) {
+      setLoading(true);
       const generatedPassword = generatePassword();
       updatedUser.password = generatedPassword;
 
@@ -74,11 +85,15 @@ function AddUserForm({ title, isOpen, onClose, initialValues, onUserCreated }) {
         alert('Une erreur est survenue lors de l\'envoi de l\'e-mail.');
         return;
       }
+      finally {
+        setLoading(false);
+      }
     }
 
     // Appeler la fonction de création ou de mise à jour
     onUserCreated(updatedUser);
     onClose();
+    setError(''); // Réinitialiser l'erreur après une soumission réussie
   };
 
   return (
@@ -87,6 +102,8 @@ function AddUserForm({ title, isOpen, onClose, initialValues, onUserCreated }) {
         <button className="close-button" type="button" onClick={onClose}>&times;</button>
 
         <p>{title}</p>
+        {error && <span className="text-red-500 text-xs  ">{error}</span>}
+
 
         <div className="form-row">
           <InputForm
@@ -95,6 +112,7 @@ function AddUserForm({ title, isOpen, onClose, initialValues, onUserCreated }) {
             placeholder="Nom"
             width="200px"
               flexDirection="flex-col"
+              required={true}
             value={userData.nom}
             onChange={e => setUserData({ ...userData, nom: e.target.value })}
           />
@@ -103,6 +121,7 @@ function AddUserForm({ title, isOpen, onClose, initialValues, onUserCreated }) {
             label="Prénom"
             placeholder="Prénom"
             width="200px"
+            required={true}
               flexDirection="flex-col"
             value={userData.prenom}
             onChange={e => setUserData({ ...userData, prenom: e.target.value })}
@@ -112,6 +131,7 @@ function AddUserForm({ title, isOpen, onClose, initialValues, onUserCreated }) {
             label="Nom d'utilisateur"
             placeholder="Nom d'utilisateur"
             width="200px"
+            required={true}
               flexDirection="flex-col"
             value={userData.username}
             readOnly // Correction ici
@@ -124,6 +144,7 @@ function AddUserForm({ title, isOpen, onClose, initialValues, onUserCreated }) {
             label="Email"
             placeholder="Email"
             width="200px"
+            required={true}
               flexDirection="flex-col"
             value={userData.email}
             onChange={e => setUserData({ ...userData, email: e.target.value })}
@@ -133,6 +154,7 @@ function AddUserForm({ title, isOpen, onClose, initialValues, onUserCreated }) {
             label="Contact"
             placeholder="Contact"
             width="200px"
+            required={true}
               flexDirection="flex-col"
             value={userData.contact}
             onChange={e => setUserData({ ...userData, contact: e.target.value })}
@@ -142,13 +164,14 @@ function AddUserForm({ title, isOpen, onClose, initialValues, onUserCreated }) {
             label="Grade"
             placeholder="Grade"
             width="200px"
+            required={true}
               flexDirection="flex-col"
             value={userData.grade}
             onChange={e => setUserData({ ...userData, grade: e.target.value })}
           />
         </div>
 
-        <Button btnName="Créer" type="submit" />
+        <Button btnName={loading ?" Création en cours...": "Créer"} type="submit"  disabled={loading}/>
       </form>
     </div>
   );
