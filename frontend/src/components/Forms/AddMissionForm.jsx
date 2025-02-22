@@ -25,7 +25,6 @@ function AddMissionForm({ title, isOpen, onClose, initialValues, onMissionCreate
   // Fonction pour ajouter dynamiquement un nouveau client
   const handleClientCreation = (newClient) => {
     setClientOptions((prev) => [...prev, { label: newClient.nom, value: newClient.nom }]);
-
     closeModal();
   };
 
@@ -39,6 +38,9 @@ function AddMissionForm({ title, isOpen, onClose, initialValues, onMissionCreate
     statusMission: 'non_commencee'
   });
 
+  // État pour gérer les erreurs de validation
+  const [error, setError] = useState('');
+
   // Réinitialiser le formulaire si les initialValues changent
   useEffect(() => {
     setMissionData(initialValues || {
@@ -51,9 +53,39 @@ function AddMissionForm({ title, isOpen, onClose, initialValues, onMissionCreate
     });
   }, [initialValues]);
 
+  // Fonction pour valider les dates
+  const validateDates = (startDate, endDate) => {
+    if (new Date(startDate) > new Date(endDate)) {
+      setError('La date de fin doit être postérieure ou égale à la date de début.');
+      return false;
+    }
+    setError(''); // Réinitialiser l'erreur si les dates sont valides
+    return true;
+  };
+
+  // Fonction pour gérer le changement de la date de fin
+  const handleDateField1Change = (e) => {
+    const selectedDate = e.target.value;
+
+    // Vérifier si la date sélectionnée est antérieure à la date de début
+    if (new Date(selectedDate) < new Date(missionData.dateField)) {
+      setError('La date de fin doit être postérieure ou égale à la date de début.');
+      setMissionData((prev) => ({ ...prev, dateField1: '' })); // Réinitialiser la date de fin si elle est invalide
+    } else {
+      setError('');
+      setMissionData((prev) => ({ ...prev, dateField1: selectedDate }));
+    }
+  };
+
   // Soumission du formulaire
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    // Valider les dates avant de soumettre le formulaire
+    if (!validateDates(missionData.dateField, missionData.dateField1)) {
+      return; // Empêcher la soumission si les dates ne sont pas valides
+    }
+
     const missionToCreate = {
       ...missionData,
       statusMission: missionData.statusMission || 'non_commencee'
@@ -115,9 +147,13 @@ function AddMissionForm({ title, isOpen, onClose, initialValues, onMissionCreate
             width="200px"
             flexDirection="flex-col"
             value={missionData.dateField1}
-            onChange={e => setMissionData({ ...missionData, dateField1: e.target.value })}
+            onChange={handleDateField1Change} // Utiliser la nouvelle fonction de gestion
+            min={missionData.dateField} // L'attribut min est défini sur la date de début
           />
         </div>
+
+        {/* Afficher l'erreur si les dates ne sont pas valides */}
+        {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
 
         {/* Manager */}
         <InputForm
