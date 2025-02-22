@@ -63,7 +63,7 @@ function ExpandableCell({ value, maxInitialLength = 50, onExpand }) {
 
 
 
-function Table({ columnsConfig, rowsData, checkboxSelection = false, allterRowcolors , getRowLink , onRowSelectionChange, headerBackground = "transparent",statusOptions = [],statusColors = {},rowActions = [], onCellEditCommit}) {
+function Table({ columnsConfig, rowsData, checkboxSelection = false, allterRowcolors , getRowLink ,onRowClick, onRowSelectionChange, headerBackground = "transparent",statusOptions = [],statusColors = {},rowActions = [], onCellEditCommit}) {
 
     const isZebraStriping = allterRowcolors; // Mets à false pour désactiver
 const oddRowColor = "#E9EFF8"; 
@@ -99,23 +99,28 @@ const evenRowColor = "white"
   const [selectionModel, setSelectionModel] = React.useState([]);
 
 
-
   const handleRowClick = (params) => {
-    if (getRowLink) {
-      const link = getRowLink(params.row); // Générer dynamiquement le lien
-      setBreadcrumbs([
-        { label: "Mes Mission", path: "/gestionmission" },
-        {
-          label: params.row.mission,
-          path: `/gestionmission/${params.row.mission}`,
-        },
-      ]);
-       // Stocker les informations de la ligne dans le state local ou via navigation state
-    navigate(link, { state: { missionData: params.row } });
-    console.log(params.row)
-      
+    if (onRowClick) {
+      onRowClick(params.row);
     }
   };
+
+  // const handleRowClick = (params) => {
+  //   if (getRowLink) {
+  //     const link = getRowLink(params.row); // Générer dynamiquement le lien
+  //     setBreadcrumbs([
+  //       { label: "Mes Mission", path: "/gestionmission" },
+  //       {
+  //         label: params.row.mission,
+  //         path: `/gestionmission/${params.row.mission}`,
+  //       },
+  //     ]);
+  //      // Stocker les informations de la ligne dans le state local ou via navigation state
+  //   navigate(link, { state: { missionData: params.row } });
+  //   console.log(params.row)
+      
+  //   }
+  // };
 
   const handleCellExpand = (rowId, field, isExpanded) => {
     setExpandedCells((prev) => ({
@@ -310,6 +315,7 @@ const evenRowColor = "white"
         checkboxSelection={checkboxSelection}
         disableRowSelectionOnClick // Empêche la sélection en cliquant sur une cellule
         autoHeight
+        
         onRowClick={handleRowClick} // Ajout du gestionnaire de clic sur la ligne
         getRowHeight={getRowHeight}
         /*rowSelectionModel={rowSelectionModel}
