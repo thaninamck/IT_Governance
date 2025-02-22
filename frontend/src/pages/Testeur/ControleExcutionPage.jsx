@@ -1,227 +1,432 @@
-import { useLocation, useParams } from 'react-router-dom';
 import Breadcrumbs from '../../components/Breadcrumbs';
-import MissionInfo from '../../components/InfosDisplay/MissionInfo';
-import AddScope from '../../components/InfosDisplay/AddScope';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Header from '../../components/Header/Header';
-import Separator from '../../components/Decorators/Separator';
-import TextDisplay from '../../components/ModalWindows/TextDisplay';
-import ToggleButton from '../../components/ToggleButtons';
-import FileUploader from '../../components/Evidences/FileUploader';
-import EvidenceList from '../../components/Evidences/EvidenceList';
-import SelectInput from '../../components/Forms/SelectInput';
-import AddCircleOutlineRoundedIcon from '@mui/icons-material/AddCircleOutlineRounded';
-import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
-import Remediation from '../../components/Forms/Remediation';
-import AddRemediation from '../subPages/AddRemediation';
-import Table from '../../components/Table';
+import PopUp from '../../components/PopUps/PopUp';
+import ConclusionRemediationSection from '../subPages/ConclusionRemediationSection';
+import DescriptionTestScriptSection from '../subPages/DescriptionTestScriptSection';
+import EvidencesSection from '../subPages/EvidencesSection';
+import MultiSelectButtons from '../../components/ToggleButtons';
+import AccessTimeFilledIcon from '@mui/icons-material/AccessTimeFilled';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import {  SquarePen } from 'lucide-react';
+import DeleteOutlineRoundedIcon from '@mui/icons-material/DeleteOutlineRounded';
+import SendIcon from '@mui/icons-material/Send';
+
+// Ajoutez ces imports pour générer un PDF
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
+import emailjs from 'emailjs-com';
+import { useLocation, useNavigate } from 'react-router-dom';
+
+// Initialize EmailJS with your userID
+emailjs.init('oAXuwpg74dQwm0C_s'); // Replace 'YOUR_USER_ID' with your actual userID
 
 function ControleExcutionPage() {
-  const [description, setDescription] = useState("User access rights are removed on termination of employment or contract, or adjusted (starters, leavers, movers) upon change of role.");
-  const [testScript, setTestScript] = useState(
-    "1. Obtain the access management policy,\n" +
-    "2. Obtain HR list of departures during the audited period,\n" +
-    "3. Obtain the 3rd party list of leavers during the audited period,\n" +
-    "4. Obtain the list of active AD user accounts,\n" +
-    "5. Obtain HR list of departures during the audited period,\n" +
-    "6. Obtain the 3rd party list of leavers during the audited period,\n" +
-    "7. Obtain the list of active AD user accounts,\n" +
-    "8. Obtain the list of application user accounts."
-  );
+  const location = useLocation();
+  const controleData = location.state?.controleData || {};
+
+  const [commentaire, setCommentaire] = useState("");
+  const [isEditing, setIsEditing] = useState(true);
+  const statusOptions = ["Terminé", "En_cours","Non_commencee"];
+  const statusColors = { Terminé: 'green', En_cours: 'orange' ,Non_Commencée:'gray'};
+  const [selectedMulti, setSelectedMulti] = useState('');
+  const [showRemediation, setShowRemediation] = useState(false);
+  const [showPopup, setShowPopup] = useState(false);
+  const [description, setDescription] = useState(controleData.description || '');
+  const [testScript, setTestScript] = useState(controleData.testScript || '' );
+  const [type, setType] = useState(controleData.type[1] || '' );
+  const [majorProcess, setMajorProcess] = useState(controleData.majorProcess || '' );
+  const [subProcess, setSubProcess] = useState(controleData.subProcess || '' );
+  const [controleID, setControleID] = useState(controleData.code || '' );
+
+ 
+  const updateStatusBasedOnSuivi = () => {
+    setAction((prevActions) =>
+      prevActions.map((action) => ({
+        ...action,
+        status: action.suivi.trim() !== "" ? "En_cours" : "Non_commencee",
+      }))
+    );
+  };
+
+  useEffect(() => {
+    updateStatusBasedOnSuivi();
+  }, []);
 
   const columnsConfig = [
-    { field: 'id', headerName: 'ID', width: 170, editable: true },
-    { field: 'description', headerName: 'Description', editable: true, width: 220 },
-    { field: 'contact', headerName: 'Contact', width: 200 },
+    { field: 'id', headerName: 'ID', width: 250, editable: true },
+    { field: 'description', headerName: 'Description', editable: true, width: 300 },
+    { field: 'contact', headerName: 'Contact', width: 250 },
     { field: 'dateField', headerName: 'Date début', width: 200 },
     { field: 'dateField1', headerName: 'Date Fin', width: 200 },
-    { field: 'suivi', headerName: 'Suivi', width: 200 },
-    { field: 'status', headerName: 'Status', width: 200 },
+    {
+      field: 'suivi',
+      headerName: 'Suivi',
+      editable: true,
+      width: 300,
+    },
+    { field: 'status', headerName: 'Status', width: 180 },
     { field: 'actions', headerName: 'Action', width: 80 },
   ]
 
-  const [commentaire, setCommentaire] = useState("");
-  const [isEditing, setIsEditing] = useState(false);
+  const [files, setFiles] = useState([
+    // { name: 'document.pdf', size: 1024000 },
+    // { name: 'image.png', size: 2048000 },
+    // { name: 'presentation.pptx', size: 512000 }
+  ]);
 
+  // Options et couleurs de statut utilisateur
+ const options = [
+  { label: "Applied", value: "Applied" },
+  { label: "Partially Applied", value: "Partially Applied" },
+  { label: "Not Applied", value: "Not Applied" },
+  { label: "Not Tested", value: "Not Tested" },
+  { label: "Not Applicable", value: "Not Applicable" },
+];
+const [action, setAction] = useState([
+      {id:1,description:'llllll',contact:'km_mohandouali@esi.dz',dateField:'2025-02-01',dateField1:'2025-02-06', suivi:'',status:'Terminé'},
+     {id:2,description:'llllll',contact:'manelmohandouali@gmail.com',dateField:'2025-02-05',dateField1:'2025-02-10', suivi:'lll',status:'En_cours'},
+     {id:3,description:'llllll',contact:'manel.mohandouali@mazars.dz',dateField:'2025-01-11',dateField1:'2025-01-21', suivi:'mll',status:'Non_commencee'},
+     {id:4,description:'llllll',contact:'farid@gmail.com',dateField:'2025-02-05',dateField1:'2025-02-10', suivi:'lll',status:'En_cours'},
+     {id:5,description:'llllll',contact:'farid@gmail.com',dateField:'2025-01-11',dateField1:'2025-01-21', suivi:'mll',status:'Non_commencee'},
+     
+  ]);
+
+  const[selectedActionId,setSelectedActionId]=useState('')
+  const [isDeletePopupOpen, setIsDeletePopupOpen] = useState(false);
+  const [isAddingAnother, setIsAddingAnother] = useState(false);
+   // États pour stocker les fichiers séparément
+   const [evidenceFiles, setEvidenceFiles] = useState([]);
+   const [testFiles, setTestFiles] = useState([]);
+     
+
+  const handleDeleteRow = (selectedRow) => {
+    setSelectedActionId(selectedRow.id);
+    console.log(selectedActionId)
+    setIsDeletePopupOpen(true);
+  };
+  const confirmDeleteMission = () => {
+    if (selectedActionId !== null) {
+      setAction((prev) => prev.filter((row) => row.id !== selectedActionId));
+    }
+    setIsDeletePopupOpen(false);
+    setSelectedActionId(null);
+  };
+  const handleEditRow = (selectedRow) => {
+    setSelectedActionId(selectedRow);
+    if (!showRemediation)  setShowRemediation((prev) => !prev);
+  };
+
+  const handleDecisionResponse = (response) => {
+    setShowDecisionPopup(false);
+    if (response) {
+      setIsAddingAnother(true);
+    } else {
+      setIsAddingAnother(false);
+      setShowRemediation((prev) => !prev); 
+    }
+  };
+  // Configurez EmailJS avec votre userID
+//emailjs.init('YOUR_USER_ID');
+
+const handlesendAction = (selectedRow) => {
+  if (!selectedRow || !selectedRow.contact) {
+    alert("Aucune adresse e-mail trouvée pour cet élément !");
+    return;
+  }
+
+  const templateParams = {
+    to_email: selectedRow.contact,
+    description: selectedRow.description,
+    dateField: selectedRow.dateField,
+    dateField1: selectedRow.dateField1,
+  };
+
+  console.log("Envoi de l'email avec les paramètres :", templateParams);
+
+  emailjs.send('service_dg6av6d', 'template_f4ojiam', templateParams)
+    .then((response) => {
+      console.log('E-mail envoyé avec succès!', response.status, response.text);
+      alert(`E-mail envoyé avec succès à ${selectedRow.contact} !`);
+    })
+    .catch((error) => {
+      console.error('Erreur lors de l\'envoi de l\'e-mail:', error);
+      alert('Erreur lors de l\'envoi de l\'e-mail. Veuillez réessayer.');
+    });
+};
+
+
+ const rowActions = [
+  { icon: <SendIcon sx={{ marginRight: '5px' ,width:'20px', height:'20px'}} />, label: 'Envoyer',    onClick: (selectedRow) => handlesendAction(selectedRow) },
+    { icon: <SquarePen className='mr-2 w-[20px] h-[20px]' />, label: 'Modifier', onClick: handleEditRow },
+    { icon: <DeleteOutlineRoundedIcon sx={{ color: 'var(--alert-red)', marginRight: '5px' }} />, label: 'Supprimer', onClick: handleDeleteRow },
+    
+ 
+  ];
+  
+
+ const [multiSelectStatus, setMultiSelectStatus] = useState({});
+
+ 
+  const handleCommentSave = (newComment) => {
+    console.log('Nouveau commentaire:', newComment);
+    setCommentaire(newComment);
+  };
+
+  // const handleSaveFiles = (formData) => {
+  //   const newFiles = [];
+  //   for (const [key, file] of formData.entries()) {
+  //     newFiles.push({ name: file.name, size: file.size });
+  //   }
+  //   setFiles((prevFiles) => [...prevFiles, ...newFiles]);
+  // };
+
+  // État pour suivre l'onglet actif
+  const [activePanel, setActivePanel] = useState("evidence");
+
+  // Fonction pour gérer le changement d'onglet
+  const handleTabChange = (event, newValue) => {
+    setActivePanel(newValue === 0 ? "evidence" : "test");
+  };
   const handleSaveFiles = (formData) => {
     const newFiles = [];
+  
     for (const [key, file] of formData.entries()) {
       newFiles.push({ name: file.name, size: file.size });
     }
-    setFiles((prevFiles) => [...prevFiles, ...newFiles]);
+  
+    if (activePanel === "evidence") {
+      setEvidenceFiles((prevFiles) => {
+        const updatedFiles = [...prevFiles, ...newFiles];
+        console.log("ev", updatedFiles);
+        return updatedFiles;
+      });
+    } else if (activePanel === "test") {
+      setTestFiles((prevFiles) => {
+        const updatedFiles = [...prevFiles, ...newFiles];
+        console.log("test", updatedFiles);
+        return updatedFiles;
+      });
+    }
+    
+  
+   
   };
-
-  const [files, setFiles] = useState([
-    { name: 'document.pdf', size: 1024000 },
-    { name: 'image.png', size: 2048000 },
-    { name: 'presentation.pptx', size: 512000 }
-  ]);
+  
 
   const handleDelete = (index) => {
-    const updatedFiles = files.filter((_, i) => i !== index);
-    setFiles(updatedFiles);
+    if (activePanel === "evidence") {
+      setEvidenceFiles((prevFiles) => prevFiles.filter((_, i) => i !== index));
+    } else if (activePanel === "test") {
+      setTestFiles((prevFiles) => prevFiles.filter((_, i) => i !== index));
+    }
   };
-// Options et couleurs de statut utilisateur
-const statusOptions = ["Terminé", "En_cours","Non_commencee"];
-const statusColors = { Terminé: 'green', En_cours: 'orange' ,Non_Commencée:'gray'};
-  const [selectedMulti, setSelectedMulti] = useState('');
-  const options = [
-    { label: "Applied", value: "Applied" },
-    { label: "Partially Applied", value: "Partially Applied" },
-    { label: "Not Applied", value: "Not Applied" },
-    { label: "Not Tested", value: "Not Tested" },
-    { label: "Not Applicable", value: "Not Applicable" },
-  ];
-  const [showRemediation, setShowRemediation] = useState(false);
+  
+  const [localSelections, setLocalSelections] = useState( {}); // Renommé ici
+       
+  // Fonction pour gérer les changements de sélection dans MultiSelectButtons
+  const handleSelectionChange = (newSelection) => {
+      setLocalSelections(newSelection); // Met à jour l'état des sélections
+     // console.log('evd',newSelection)
+  };
+
   const shouldShowRemediation = selectedMulti === 'Partially Applied' || selectedMulti === 'Not Applied';
-  const isValidateDisabled = !selectedMulti || shouldShowRemediation;
-  const [action, setAction] = useState([
-  //   {id:1,description:'llllll',contact:'farid@gmail.com',dateField:'5/20/2025',dateField1:'6/01/2025', suivi:'llllm',status:'Terminé'},
-  //   {id:2,description:'llllll',contact:'farid@gmail.com',dateField:'5/20/2025',dateField1:'6/01/2025', suivi:'llllm',status:'Terminé'},
-  //   {id:3,description:'llllll',contact:'farid@gmail.com',dateField:'5/20/2025',dateField1:'6/01/2025', suivi:'llllm',status:'Terminé'},
-   
-  ]);
+  const isValidateDisabled = !selectedMulti || !commentaire || shouldShowRemediation;
+const [showDecisionPopup, setShowDecisionPopup] = useState(false);
+
 
   const handleAdd = (remediation) => {
+    if (selectedActionId) {
+      // Mise à jour de l'application existante
+      setAction((prevApps) =>
+        prevApps.map((row) => (row.id === remediation.id ? remediation : row))
+      );
+      setSelectedActionId(null);
+      setShowRemediation((prev) => !prev);
+    } else {
     setAction((prev) => [
       ...prev,
       { id: prev.length + 1, ...remediation} // Add the remediation to the list
     ]);
+    setShowDecisionPopup(true);
   };
+}
+  const handleValidate = () => {
+    // Lorsque vous cliquez sur "Valider", affichez le popup
+    console.log('handleValidate called');
+    setShowPopup(true);
+  };
+  const handlePopupClose = () =>  setShowPopup(false);
+
+  const handleSave = () => {
+    const doc = new jsPDF();
+    doc.setFontSize(18);
+    doc.text('Rapport de Contrôle', 105, 20, { align: 'center' });
+    doc.setFontSize(12);
+    doc.text(`Date: ${new Date().toLocaleDateString()}`, 14, 30);
+  
+    // Tableau récapitulatif des informations principales
+    autoTable(doc, {
+      startY: 40,
+      head: [['Champ', 'Valeur']],
+      body: [
+        [ 'Type:', type,],
+        ['Major Process:', majorProcess],
+        ['Sub Process:', subProcess],
+        ['Description', description],
+        ['Test Script', testScript],
+        ['Status', selectedMulti],
+        ['Commentaire', commentaire],
+        ['Critères', JSON.stringify(localSelections)],
+      ],
+    });
+  
+    // Liste des remédiations sous forme de tableau
+    autoTable(doc, {
+      startY: doc.lastAutoTable.finalY + 10,
+      head: [['ID', 'Description', 'Contact', 'Date Début', 'Date Fin', 'Suivi', 'Status']],
+      body: action.map(item => [
+        item.id,
+        item.description,
+        item.contact,
+        item.dateField,
+        item.dateField1,
+        item.suivi,
+        item.status,
+      ]),
+    });
+  
+    // Ajout de liens de téléchargement pour les fichiers de preuves
+    files.forEach((file, index) => {
+      doc.text(`Evidence ${index + 1}: ${file.name}`, 14, doc.lastAutoTable.finalY + 10 + (index * 6));
+    });
+  
+    // Télécharger automatiquement le PDF
+    doc.save('rapport_controle.pdf');
+    setShowPopup(true);
+
+    console.log(
+      'Type:', type,
+      'Major Process:', majorProcess,
+      'Sub Process:', subProcess,
+      'Description:', description,
+      'TestScript:', testScript,
+      'files:',files ,
+      'status:',selectedMulti,
+      'Commentaire:',commentaire,
+      'remediation:',action,
+      'critere:',  localSelections
+    );
+    //setIsEditing(false); // Quitter le mode édition après la sauvegarde
+  };
+
+  const handleSubmit = () => {
+    const payload = {
+      description,
+      testScript,
+      commentaire,
+      evidence: files,
+      status: selectedMulti,
+      remediations: action,
+    };
+    setShowPopup(true);}
+
+    const navigate = useNavigate();
+
+  const handleRowClick = (rowData) => {
+    // Naviguer vers la page de détails avec l'ID du contrôle dans l'URL
+    navigate(`/remediation/${rowData.id}`, { state: { remediationData: rowData }} );
+   // navigate('/controle', { state: { controleData: rowData } });
+    console.log('Détails du contrôle sélectionné:', rowData);
+  };
+
+
+  // Check if all remediations are done
+  const isAllRemediationDone = action.every((remediation) => remediation.status === 'Terminé') && selectedMulti!='';
+  
+  // Determine the status of the control
+  const controlStatus = isAllRemediationDone ? 'Terminé' : 'En_cours';
+
+  const controlIcon = controlStatus === 'Terminé' ? (
+    <CheckCircleIcon style={{ color: 'var( --success-green)', animation: 'fadeIn 1s ease',width:'50px',height:'50px' }} />
+  ) : (
+    <AccessTimeFilledIcon style={{ color: 'var(--await-orange)', animation: 'fadeIn 1s ease',width:'50px',height:'50px'  }} />
+  );
+
 
   return (
     <div className=" ">
       <Header />
       <div className='ml-5 mr-6 pb-9'>
-        <Breadcrumbs />
-        <Separator text={'Description'} />
+      {location.pathname.includes('controle') && <Breadcrumbs />}
+        {/*ajout ici animation and icons*/ }
+         {/* Display Control Status with Icon */}
+         <div className="flex items-center gap-2 justify-end pr-12">
+          <h1 className=' font-semibold text-xl' >Le controle est {controlStatus}</h1>
+          {controlIcon}
+        </div>
 
-        <TextDisplay
-          label="Description"
-          content={description}
+        <DescriptionTestScriptSection
+          description={description}
+          setDescription={setDescription}
+          testScript={testScript}
+          setTestScript={setTestScript}
           isEditing={isEditing}
-          onContentChange={setDescription}
-          borderWidth="95%"
-          labelWidth="120px"
-          flexDirection="column"
-          marginLeft='15px'
+          handleSave={handleSave}
+          type={type}
+          majorProcess={majorProcess}
+          subProcess={subProcess}
+          
         />
-        <div className='mt-4 mb-6'>
-          <TextDisplay
-            label="Test Script"
-            content={testScript}
-            isEditing={isEditing}
-            onContentChange={setTestScript}
-            borderWidth="95%"
-            labelWidth="120px"
-            flexDirection="column"
-            marginLeft='15px'
-          />
-        </div>
-        <Separator text={'Evidences'} />
-        <div className='flex items-center justify-center mt-8 mb-12'>
-          <ToggleButton />
-        </div>
-        <FileUploader onSave={handleSaveFiles} />
-
-        <div className='flex flex-col items-center w-full my-6'>
-          <EvidenceList files={files} onDelete={handleDelete} />
-        </div>
-
-        {files.length === 0 && (
-          <p className="text-center text-gray-500 mt-4">Aucun fichier disponible.</p>
-        )}
-
-        <Separator text={'Conclusion'} />
-        <div className='flex flex-row items-center gap-12 py-7'>
-          <label className="mr-8 font-medium">Status</label>
-          <SelectInput
-            label=""
-            options={options}
-            value={selectedMulti}
-            onChange={(e) => setSelectedMulti(e.target.value)}
-            width="200px"
-            multiSelect={false}
-            mt="mt-10"
-          />
-
-          {shouldShowRemediation && (
-            <div className='flex flex-row items-center gap-1'>
-              <ErrorOutlineIcon sx={{ color: 'var(--await-orange)' }} />
-              <span className='text-[var(--await-orange)]'>Vous devriez completer la section remédiation</span>
-            </div>
-          )}
-        </div>
-
-        <TextDisplay
-          label="Commentaire"
-          content={commentaire}
-          isEditing={isEditing}
-          onContentChange={setTestScript}
-          borderWidth="95%"
-          labelWidth="120px"
-          flexDirection="row"
-          marginLeft='15px'
+      
+         <EvidencesSection
+         handleSelectionChange={handleSelectionChange}
+          files={files}
+          handleSaveFiles={handleSaveFiles}
+          handleDelete={handleDelete}
+          evidenceFiles={evidenceFiles}
+          testFiles={testFiles}
+          activePanel={activePanel}
+          setActivePanel={setActivePanel}
+          handleTabChange={ handleTabChange}
         />
+
        
-        <div className="flex justify-end m-3 py-6 gap-5">
-          {shouldShowRemediation && (
-            <button
-              onClick={() => {
-                setShowRemediation((prevState) => !prevState);
-              }}
-              className='text-[var(--blue-menu)] px-3 py-2 border-[var(--blue-menu)]'
-            >
-              Créer une remédiation <AddCircleOutlineRoundedIcon />
-            </button>
-          )}
-           {action.length === 0 && (
-          <button
-            className={`bg-[var(--blue-menu)] text-white px-4 py-2 ${isValidateDisabled ? 'opacity-50 cursor-not-allowed' : ''}`}
-            disabled={isValidateDisabled}
-          >Valider</button>)}
-        </div>
-        
 
-        {showRemediation && <Remediation title={'Créer une remédiation'} onAdd={handleAdd} />}
+       <ConclusionRemediationSection
+       selectedMulti={selectedMulti}
+       setSelectedMulti={setSelectedMulti}
+       shouldShowRemediation={selectedMulti === 'Partially Applied' || selectedMulti === 'Not Applied'}
+       commentaire={commentaire}
+       setCommentaire={setCommentaire}
+       action={action}
+       handleSubmit={handleSave}
+       handleAdd={handleAdd}
+       handleValidate={handleValidate}
+       statusOptions={statusOptions}
+       statusColors={statusColors}
+       columnsConfig={columnsConfig}
+       isValidateDisabled={isValidateDisabled}
+       showRemediation={showRemediation}
+       setShowRemediation={setShowRemediation}
+       handleRowClick={handleRowClick}
+       rowActions={rowActions}
+       isDeletePopupOpen={isDeletePopupOpen}
+  confirmDeleteMission={confirmDeleteMission}
+  setIsDeletePopupOpen={setIsDeletePopupOpen}
+  selectedActionId={selectedActionId}
+  handleDecisionResponse={handleDecisionResponse}
+  showDecisionPopup={showDecisionPopup}
+  isAddingAnother={isAddingAnother}
+  controleID={controleID}
 
-        {/* Display the list of actions (remediations) at the bottom */}
-        {action.length > 0 && (
-          <>
-         <Separator text={'Remédiation'} />
-           <div className={`mt-6 flex-1 overflow-x-auto overflow-y-auto h-[400px] transition-all }`}>
-           <Table
-             key={JSON.stringify(action)}
-             columnsConfig={columnsConfig}
-             rowsData={action}
-             checkboxSelection={false}
-             headerBackground="var(--blue-nav)"
-             statusOptions={statusOptions}
-             statusColors={statusColors}
-             
-             //rowActions={rowActions}
-             onCellEditCommit={(params) => {
-               setAction((prev) =>
-                 prev.map((row) =>
-                   row.id === params.id ? { ...row, [params.field]: params.value } : row
-                 )
-               );
-             }}
-           />
+       
+       />
+         {showPopup && 
+         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-md z-50">
+        <PopUp text={'Contrôle envoyé au superviseur avec succès'} redirectionURL={handlePopupClose} />
          </div>
-          {/* Move "Valider" Button Below Table if there are actions */}
-        {action.length > 0 && (
-          <div className="flex justify-end mt-5">
-            <button
-              className={`bg-[var(--blue-menu)] text-white px-4 py-2 ${isValidateDisabled ? 'opacity-50 cursor-not-allowed' : ''}`}
-              disabled={isValidateDisabled}
-            >
-              Valider
-            </button>
-          </div>
-        )}
-         </>
-        )}
+}
       </div>
     </div>
   );
