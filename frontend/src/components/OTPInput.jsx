@@ -1,6 +1,7 @@
 import React, { useState, useRef } from "react";
+import VerifiedUserIcon from '@mui/icons-material/VerifiedUser';
 
-function OTPInput({ length = 4, onClick }) {
+function OTPInput({ length = 4, onOTPSubmit,email }) {
     const [otp, setOtp] = useState(new Array(length).fill(""));
   const inputRefs = useRef([]);
 
@@ -18,10 +19,10 @@ function OTPInput({ length = 4, onClick }) {
       inputRefs.current[index + 1].focus();
     }
 
-    // Soumettre si tous les champs sont remplis
-    if (newOtp.every((num) => num !== "")) {
-      onSubmit(newOtp.join(""));
-    }
+    // // Soumettre si tous les champs sont remplis
+    // if (newOtp.every((num) => num !== "")) {
+    //   onSubmit(newOtp.join(""));
+    // }
   };
 
   // Gestion du retour arrière
@@ -34,8 +35,12 @@ function OTPInput({ length = 4, onClick }) {
   };
 
   return (
-     <div className="flex flex-col items-center space-y-7">
+     <div className="flex flex-col items-center space-y-8">
+      <VerifiedUserIcon
+            sx={{ color: 'var(--blue-conf)', fontSize: '4rem' }}
+          />
       <p className="text-lg font-medium">Veuillez saisir le code de 4 chiffres envoyé à votre email</p>
+      <span >{email}</span>
       <div className="flex space-x-2">
         {otp.map((digit, index) => (
           <input
@@ -51,9 +56,9 @@ function OTPInput({ length = 4, onClick }) {
         ))}
       </div>
       <button
-        onClick={() => onClick(otp.join(""))}
-        className="mt-4 px-6 py-2 bg-[--blue-menu] text-white rounded-md border-none "
-      >
+         onClick={() => onOTPSubmit(otp.join(""))}
+        className="border-none bg-[var(--blue-conf)] hover:bg-[var(--blue-menu)] text-white font-semibold py-2 px-6 rounded-lg transition duration-300 ease-in-out text-sm md:text-base lg:text-lg"
+        >
         Confirmer
       </button>
     </div>
