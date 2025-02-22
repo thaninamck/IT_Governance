@@ -11,6 +11,8 @@ import { SquarePen } from 'lucide-react';
 import ExportButton from '../components/ExportButton';
 import PopUp from '../components/PopUps/PopUp';
 import DecisionPopUp from '../components/PopUps/DecisionPopUp';
+import emailjs from 'emailjs-com';
+import RestartAltIcon from '@mui/icons-material/RestartAlt';
 
 function GestionUtilisateur() {
 
@@ -85,9 +87,54 @@ const confirmDeleteApp = () => {
    setSelectedAppId(null);
 };
 
+const generateRandomPassword = () => {
+  const length = 10;
+  const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+  let password = "";
+  for (let i = 0; i < length; i++) {
+    password += charset.charAt(Math.floor(Math.random() * charset.length));
+  }
+  return password;
+};
+
+const handleResetRow = async (selectedRow) => {
+  const newPassword = generateRandomPassword();
+  const userEmail = selectedRow.email;
+
+  // Paramètres pour l'envoi d'email via EmailJS
+  const templateParams = {
+    to_email: userEmail,
+    new_password: newPassword,
+  };
+
+  try {
+    // Envoyer l'email via EmailJS
+    await emailjs.send(
+      'service_ft79mie', // Remplacez par votre Service ID
+      'template_f4ojiam', // Remplacez par votre Template ID
+      templateParams,
+      'oAXuwpg74dQwm0C_s' // Remplacez par votre User ID
+    );
+
+    console.log('Email envoyé avec succès !');
+
+    // Mettre à jour l'état de l'application si nécessaire
+    setFilteredRows((prevRows) =>
+      prevRows.map((row) =>
+        row.id === selectedRow.id ? { ...row, password: newPassword } : row
+      )
+    );
+
+    alert('Un nouveau mot de passe a été envoyé à votre adresse email.');
+  } catch (error) {
+    console.error('Erreur lors de l\'envoi de l\'email :', error);
+    alert('Une erreur est survenue lors de l\'envoi de l\'email.');
+  }
+};
 const rowActions = [
   { icon: <PersonOutlineRounded sx={{ marginRight: "8px" }} />, label: "Voir Profile", onClick: handleEditRow },
   { icon: <SquarePen className='mr-2' />, label: "Modifier", onClick: (selectedRow) => handleEditRow(selectedRow) },
+  { icon: <RestartAltIcon className='mr-2' />, label: "Réinitialiser", onClick: (selectedRow) => handleResetRow(selectedRow)  },
   { icon: <ErrorOutlineIcon style={{ color: 'var(--alert-red)', marginRight: "8px" }} />, label: "Supprimer utilisateur", onClick: (selectedRow) => handleDeleteRow(selectedRow) },
 ];
 
