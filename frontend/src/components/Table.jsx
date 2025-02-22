@@ -81,6 +81,7 @@ function Table({
   statusColors = {},
   rowActions = [],
   onCellEditCommit,
+  onRowClick,
 }) {
   const isZebraStriping = allterRowcolors; // Mets à false pour désactiver
   const oddRowColor = "#E9EFF8";

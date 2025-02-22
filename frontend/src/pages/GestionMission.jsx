@@ -68,8 +68,7 @@ function GestionMission() {
   // Ferme le popup de confirmation
   const handlePopupClose = () => setIsMissionCreated(false);
 
-  // Fonction pour récupérer le lien d'une mission
-  const getRowLink = (row) => `/tablemission/${row.mission}`;
+ 
 
   // Mise à jour des missions après une recherche
   const handleSearchResults = (results) => setFilteredRows(results);
@@ -122,6 +121,17 @@ function GestionMission() {
   };
   const { setBreadcrumbs } = useBreadcrumb();
   const navigate = useNavigate(); // Hook pour la navigation
+
+   // Fonction pour récupérer le lien d'une mission
+   //const getRowLink = (row) => `/tablemission/${row.mission}`;
+  
+
+  const handleRowClick = (rowData) => {
+    // Naviguer vers la page de détails avec l'ID du contrôle dans l'URL
+    navigate(`/tablemission/${rowData.mission}`, { state: { missionData: rowData }} );
+   // navigate('/controle', { state: { controleData: rowData } });
+    console.log('Détails du contrôle sélectionné:', rowData);
+  };
 
   const getRowForReportLink = (row) => `/gestionmission/${row.mission}`;
 
@@ -220,7 +230,8 @@ function GestionMission() {
             columnsConfig={columnsConfig2}
             rowsData={filteredRows}
             checkboxSelection={false}
-            getRowLink={getRowLink}
+            // getRowLink={getRowLink}
+            onRowClick={handleRowClick}
             headerTextBackground={"white"}
             headerBackground="var(--blue-menu)"
             rowActions={rowActions}
