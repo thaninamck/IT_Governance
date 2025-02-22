@@ -112,10 +112,7 @@ const [action, setAction] = useState([
     setIsDeletePopupOpen(false);
     setSelectedActionId(null);
   };
-  const handleEditRow = (selectedRow) => {
-    setSelectedActionId(selectedRow);
-    if (!showRemediation)  setShowRemediation((prev) => !prev);
-  };
+ 
 
   const handleDecisionResponse = (response) => {
     setShowDecisionPopup(false);
@@ -158,8 +155,8 @@ const handlesendAction = (selectedRow) => {
 
  const rowActions = [
   { icon: <SendIcon sx={{ marginRight: '5px' ,width:'20px', height:'20px'}} />, label: 'Envoyer',    onClick: (selectedRow) => handlesendAction(selectedRow) },
-    { icon: <SquarePen className='mr-2 w-[20px] h-[20px]' />, label: 'Modifier', onClick: handleEditRow },
-    { icon: <DeleteOutlineRoundedIcon sx={{ color: 'var(--alert-red)', marginRight: '5px' }} />, label: 'Supprimer', onClick: handleDeleteRow },
+    { icon: <SquarePen className='mr-2 w-[20px] h-[20px]' />, label: 'Modifier', onClick:(selectedRow) =>  handleEditRow (selectedRow) },
+    { icon: <DeleteOutlineRoundedIcon sx={{ color: 'var(--alert-red)', marginRight: '5px' }} />, label: 'Supprimer', onClick: (selectedRow) => handleDeleteRow(selectedRow) },
     
  
   ];
@@ -235,22 +232,28 @@ const handlesendAction = (selectedRow) => {
 const [showDecisionPopup, setShowDecisionPopup] = useState(false);
 
 
-  const handleAdd = (remediation) => {
-    if (selectedActionId) {
-      // Mise à jour de l'application existante
-      setAction((prevApps) =>
-        prevApps.map((row) => (row.id === remediation.id ? remediation : row))
-      );
-      setSelectedActionId(null);
-      setShowRemediation((prev) => !prev);
-    } else {
+const handleAdd = (remediation) => {
+  if (selectedActionId) {
+    // Mise à jour de la remédiation existante
+    setAction((prevActions) =>
+      prevActions.map((row) =>
+        row.id === selectedActionId.id ? { ...row, ...remediation } : row
+      )
+    );
+    setSelectedActionId(null); // Réinitialiser l'ID sélectionné après la mise à jour
+  } else {
+    // Ajout d'une nouvelle remédiation
     setAction((prev) => [
       ...prev,
-      { id: prev.length + 1, ...remediation} // Add the remediation to the list
+      { id: prev.length + 1, ...remediation }, // Ajouter la nouvelle remédiation à la liste
     ]);
-    setShowDecisionPopup(true);
-  };
-}
+  }
+  setShowRemediation(false); // Fermer le formulaire après l'ajout ou la mise à jour
+};
+const handleEditRow = (selectedRow) => {
+  setSelectedActionId(selectedRow);
+  if (!showRemediation)  setShowRemediation((prev) => !prev);
+};
   const handleValidate = () => {
     // Lorsque vous cliquez sur "Valider", affichez le popup
     console.log('handleValidate called');

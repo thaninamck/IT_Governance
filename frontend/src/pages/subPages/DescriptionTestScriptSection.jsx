@@ -19,12 +19,12 @@ function DescriptionTestScriptSection({
   return (
     <div>
       <Separator text={'Description'} />
-      <div className='flex flex-row justify-between w-[97%] px-3 py-4 ' >
+      <div className='flex flex-row justify-between w-full px-3 py-4 ' >
       <InputForm
           type="text"
           label="Type"
           placeholder=""
-          width="150px"
+          width="55%"
           flexDirection="flex-row gap-4 items-center mb-2"
           value={type}
           readOnly
@@ -33,7 +33,7 @@ function DescriptionTestScriptSection({
           type="text"
           label="Major Process"
           placeholder=""
-          width="150px"
+          width="55%"
           flexDirection="flex-row gap-4 items-center mb-2"
           value={majorProcess}
           readOnly
@@ -42,7 +42,7 @@ function DescriptionTestScriptSection({
           type="text"
           label="Sub Process"
           placeholder=""
-          width="150px"
+          width="55%"
           flexDirection="flex-row gap-4 items-center mb-2"
           value={subProcess}
           readOnly

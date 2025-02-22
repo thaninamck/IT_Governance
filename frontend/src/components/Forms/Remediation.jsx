@@ -59,18 +59,16 @@ function Remediation({ title, initialValues = {}, onAdd, idControle }) {
 
   // Fonction pour générer un identifiant d'action unique
   const generateActionId = (idControle) => {
+    if (initialValues.id) {
+      return initialValues.id; // Conserver l'ID existant lors de la mise à jour
+    }
     const now = new Date();
     const mois = now.toLocaleString('fr-FR', { month: 'short' }); // Ex: "Sep"
     const annee = now.getFullYear().toString().slice(-2); // Ex: "24"
     const numeroSequentiel = String(Math.floor(Math.random() * 999)).padStart(3, '0'); // Ex: "001"
-
-    return (
-      <>
-        ACT_{mois}{annee}_<span style={{ fontWeight: 'bold', color: 'var(--blue-menu)' }}>{idControle}</span>_{numeroSequentiel}
-      </>
-    );
-};
-
+  
+    return `ACT_${mois}${annee}_${idControle}_${numeroSequentiel}`;
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -100,7 +98,7 @@ function Remediation({ title, initialValues = {}, onAdd, idControle }) {
 
   return (
     open && (
-      <form className="mr-3 ml-2 pr-4 pl-5 mt-3 relative pb-10 bg-gray-100" onSubmit={handleSubmit}>
+      <form className="mr-3 ml-2 pr-4 pl-5 mt-3 relative pb-10 bg-gray-100 w-full" onSubmit={handleSubmit}>
         <div className="flex justify-end">
           <button
             className="border-none bg-transparent p-0 text-[30px] font-medium text-gray-800 cursor-pointer hover:text-red-500"
@@ -112,13 +110,13 @@ function Remediation({ title, initialValues = {}, onAdd, idControle }) {
         </div>
 
         <p className="font-medium mb-8 text-lg">{title}</p>
-        <div className="flex flex-row gap-7">
-          <div>
+        <div className="flex flex-row gap-7 ">
+          <div className='w-[60%] '>
             <InputForm
               type="text"
               label="Description"
               placeholder="Entrez la description de la remédiation..."
-              width="600px"
+              width="100%"
               flexDirection="flex-row gap-5 items-center mb-2"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
@@ -127,17 +125,17 @@ function Remediation({ title, initialValues = {}, onAdd, idControle }) {
               type="email"
               label="Contact"
               placeholder="Entrez l'e-mail de la personne concernée..."
-              width="600px"
+              width="100%"
               flexDirection="flex-row gap-12 items-center mb-2"
               value={contact}
               onChange={(e) => setContact(e.target.value)}
             />
           </div>
-          <div>
+          <div className='w-[35%] '>
             <InputForm
               type="date"
               label="Date Début"
-              width="200px"
+              width="50%"
               flexDirection="flex-row gap-9 items-center mb-2"
               value={dateField}
               onChange={(e) => setDateField(e.target.value)}
@@ -145,7 +143,7 @@ function Remediation({ title, initialValues = {}, onAdd, idControle }) {
             <InputForm
               type="date"
               label="Date Fin"
-              width="200px"
+              width="50%"
               flexDirection="flex-row gap-14 items-center mb-2"
               value={dateField1}
               onChange={handleDateField1Change} // Utiliser la nouvelle fonction de gestion
@@ -157,9 +155,9 @@ function Remediation({ title, initialValues = {}, onAdd, idControle }) {
         {/* Afficher l'erreur si les dates ne sont pas valides */}
         {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
 
-        <div className="absolute bottom-2 right-2">
+        <div className="absolute bottom-0 right-2">
           <button
-            className="px-4 mr-5 mb-4 py-1 bg-[var(--blue-menu)] text-white border-none rounded hover:bg-blue-700"
+            className="px-4 mr-5  mb-4 py-1 bg-[var(--blue-menu)] text-white border-none rounded hover:bg-blue-700"
             type="submit"
           >
             Créer
