@@ -55,6 +55,13 @@ import Accordion from './components/workPlan/WorkPlanSideBar';
 import Workplan from './pages/Workplan';
 import WorkPlanSideBar from './components/workPlan/WorkPlanSideBar';
 import ControleExcutionPage from './pages/Testeur/ControleExcutionPage';
+import RemediationActionId from './pages/Testeur/RemediationActionId';
+import ListControle from './pages/Testeur/ListControle';
+import ForgotPw from './pages/ForgotPw';
+import StepEmailForm from './pages/subPages/StepEmailForm';
+import StepVerificationCode from './pages/subPages/StepVerificationCode';
+import StepNewPassword from './pages/subPages/StepNewPassword';
+import ChangePasswordAfterFirstLogin from './pages/ChangePasswordAfterFirstLogin';
 function App() {
   const getRowLink = (row) => `/tablemission/${row.mission}`;
   
@@ -195,7 +202,14 @@ const rowsData3 = [
           <Route path='/utilisateurs' element={<GestionUtilisateur/>}></Route>
           <Route path='/clients' element={<GestionClient/>}></Route>
           <Route path='/settings' element={<Settings/>}></Route>
-          <Route path='/controle' element={<ControleExcutionPage/>}></Route>
+          <Route path='/controle/:code' element={<ControleExcutionPage/>}></Route>
+          <Route path='/remediation/:id' element={<RemediationActionId/>}></Route>
+          <Route path='/listcontrole' element={<ListControle/>}></Route>
+          <Route path='/pw' element={<ForgotPw/>}></Route>
+          <Route path='/stepEmailForm' element={<StepEmailForm/>}></Route>
+          <Route path='/stepVerificationCode' element={<StepVerificationCode/>}></Route>
+          <Route path='/stepNewPassword' element={<StepNewPassword/>}></Route>
+          <Route path='/firstconnection' element={<ChangePasswordAfterFirstLogin/>}></Route>
 
           <Route path='/flow' element={<Flow/>}></Route>
 

@@ -54,6 +54,7 @@ const ManageControls = () => {
   const closeRiskWindow = () => {
     setIsOpenRisk(false);
   };
+  
   const infosCntrl = {
     Code: "32",
     Type: [1, "préventif"],

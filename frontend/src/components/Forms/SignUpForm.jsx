@@ -1,60 +1,54 @@
-import React, { useState } from 'react';
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import InputForm from './InputForm';
 import './FormStyle.css';
 import Button from '../Button';
 
-function SignUpForm({ title }) {
-    // États pour chaque champ
-      const [userName, setUserName] = useState('');
-      const [password, setPassword] = useState('');
+function SignUpForm({ title, username, password, onUsernameChange, onPasswordChange, onSubmit }) {
+  const navigate = useNavigate();
 
-      const handleSubmit = (e) => {
-        e.preventDefault();
-        const formData = {
-          userName,
-          password,
-        };
-        console.log('Form Data:', formData);
-        alert('Sign up avec succès !');
-        // Vous pouvez envoyer les données via une API ici
-      };
   return (
+    <form className="appForm_container_login signup_container" onSubmit={onSubmit}>
+      {/* Titre dynamique */}
+      <p>
+        <span style={{ color: '#0172D3' }}>{title.split(' ')[0]}</span>{' '}
+        <span style={{ color: '#181C8F' }}>{title.split(' ')[1]}</span>
+      </p>
 
-    <form className="appForm_container_login signup_container   " onSubmit={handleSubmit}>
-    {/* Titre dynamique */}
-    <p>
-    <span style={{ color: '#0172D3' }}>{title.split(' ')[0]}</span>{' '}
-  <span style={{ color: '#181C8F' }}>{title.split(' ')[1]}</span>
-  </p>
+      {/* Formulaire */}
+      <InputForm
+        type="text"
+        label=""
+        placeholder="Nom d'utilisateur"
+        width="400px"
+        flexDirection="flex-col"
+        value={username}
+        onChange={onUsernameChange}
+      />
+      <InputForm
+        type="password"
+        label=""
+        placeholder="*********"
+        width="400px"
+        flexDirection="flex-col"
+        value={password}
+        onChange={onPasswordChange}
+      />
 
-    {/* Formulaire */}
-    <InputForm
-      type="text"
-      label=""
-      placeholder="Nom d'utilisateur"
-      width="400px"
-     flexDirection="flex-col"
-      value={userName}
-      onChange={(e) => setUserName(e.target.value)}
-    />
-    <InputForm
-      type="password"
-      label=""
-      placeholder="*********"
-      width="400px"
-     flexDirection="flex-col"
-      value={password}
-      onChange={(e) => setPassword(e.target.value)}
-    />
-   {/* Lien "Mot de passe oublié ?" positionné à droite */}
-   <div className="flex justify-center items-center mt-4 text-subfont-gray">
-                <a href="/reset-password">Mot de passe oublié ?</a>
-            </div>
+      {/* Lien "Mot de passe oublié ?" */}
+      <div
+        className="flex items-center justify-center cursor-pointer"
+        onClick={() => navigate('/pw')}
+      >
+        <span className="text-subfont-gray mt-4 hover:underline">
+          Mot de passe oublié ?
+        </span>
+      </div>
 
-    {/* Bouton Créer */}
-    <Button  btnName="Connexion" type="submit" />
-  </form>
-  )
+      {/* Bouton Connexion */}
+      <Button btnName="Connexion" type="submit" />
+    </form>
+  );
 }
 
-export default SignUpForm
+export default SignUpForm;

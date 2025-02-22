@@ -1,10 +1,18 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Check } from "lucide-react";
 
 const options = ["IPE", "Design", "Effectiveness"];
 
-export default function MultiSelectButtons() {
-  const [selected, setSelected] = useState({});
+export default function MultiSelectButtons({ onSelectionChange, selections }) {
+  const [selected, setSelected] = useState(selections || {});
+
+  // Met à jour l'état local lorsque les props changent
+  useEffect(() => {
+    if (selections) {
+      setSelected(selections);
+    }
+    
+  }, [selections]);
 
   // Fonction pour gérer les changements d'état des boutons
   const toggleSelection = (option) => {
@@ -32,18 +40,22 @@ export default function MultiSelectButtons() {
         updatedSelection["Effectiveness"] = "Non Conforme";
       }
 
+      // Appel de la fonction parent pour transmettre les nouvelles sélections
+      onSelectionChange(updatedSelection);
+     // console.log(updatedSelection)
       return updatedSelection;
+     
     });
   };
 
   return (
-    <div className="flex justify-between space-x-4 px-4 w-[75%] ">
+    <div className="flex justify-between space-x-4 px-4 w-[75%]">
       {options.map((option) => (
         <button
           key={option}
           onClick={() => toggleSelection(option)}
           disabled={option === "Effectiveness" && selected["Design"] === "Non Conforme"} // Désactiver le bouton si Design est Non Conform
-          className={`flex flex-col items-center px-4 py-2 rounded-md font-medium transition  w-[200px]
+          className={`flex flex-col items-center px-4 py-2 rounded-md font-medium transition w-[200px]
             ${
               selected[option] === "Conforme"
                 ? "bg-green-500 text-white border border-green-600"
@@ -52,8 +64,7 @@ export default function MultiSelectButtons() {
                 : "bg-[#D9D9D9] text-black border border-gray-400"
             }
             ${option === "Effectiveness" && selected["Design"] === "Non Conforme" ? "opacity-50 cursor-not-allowed" : ""}
-          `}
-        >
+          `}>
           <div className="flex flex-row items-center font-medium">
             {(selected[option] === "Conforme" || selected[option] === "Non Conforme") && (
               <Check size={16} className="mr-4" color="#fff" />

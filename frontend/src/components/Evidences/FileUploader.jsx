@@ -70,7 +70,7 @@ const FileUploader = ({onSave}) => {
     });
     // Afficher le contenu de FormData
   for (const [key, value] of formData.entries()) {
-    console.log(key, value);
+   // console.log(key, value);
   }
     onSave(formData);
      // Réinitialiser la liste des fichiers et la progression après la sauvegarde
