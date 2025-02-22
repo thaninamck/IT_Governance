@@ -35,6 +35,8 @@ function AddMissionForm({ title, isOpen, onClose, initialValues, onMissionCreate
     manager: '',
     dateField: '',
     dateField1: '',
+    auditStartDate:'',
+    auditEndDate:'',
     statusMission: 'non_commencee'
   });
 
@@ -49,16 +51,23 @@ function AddMissionForm({ title, isOpen, onClose, initialValues, onMissionCreate
       manager: '',
       dateField: '',
       dateField1: '',
+      auditStartDate:'',
+    auditEndDate:'',
       statusMission: 'non_commencee'
     });
   }, [initialValues]);
 
   // Fonction pour valider les dates
-  const validateDates = (startDate, endDate) => {
+  const validateDates = (startDate, endDate,maxDate=null) => {
     if (new Date(startDate) > new Date(endDate)) {
       setError('La date de fin doit être postérieure ou égale à la date de début.');
       return false;
     }
+    if (maxDate && new Date(endDate) >= new Date(maxDate)) {
+      setError('La période auditée doit être antérieure à la durée de la mission.');
+      return false;
+    }
+
     setError(''); // Réinitialiser l'erreur si les dates sont valides
     return true;
   };
@@ -77,14 +86,39 @@ function AddMissionForm({ title, isOpen, onClose, initialValues, onMissionCreate
     }
   };
 
+  const handleAuditEndDateChange = (e) => {
+    const selectedDate = e.target.value;
+     // Vérifier si la date sélectionnée est antérieure à la date de début
+     if (new Date(selectedDate) < new Date(missionData.auditStartDate)) {
+      setError('La date de fin doit être postérieure ou égale à la date de début.');
+      setMissionData((prev) => ({ ...prev, auditEndDate: '' })); // Réinitialiser la date de fin si elle est invalide
+    } else {
+      setError('');
+      setMissionData((prev) => ({ ...prev, auditEndDate: selectedDate }));
+    }
+  };
+  
   // Soumission du formulaire
   const handleSubmit = (e) => {
     e.preventDefault();
+    // Vérifier que tous les champs requis sont remplis
+  if (!missionData.mission || !missionData.client || !missionData.manager || !missionData.dateField || !missionData.dateField1 ||!missionData.auditStartDate||!missionData.auditEndDate) {
+    setError('Veuillez remplir tous les champs obligatoires.');
+    return; // Empêcher la soumission
+  }
 
-    // Valider les dates avant de soumettre le formulaire
-    if (!validateDates(missionData.dateField, missionData.dateField1)) {
-      return; // Empêcher la soumission si les dates ne sont pas valides
-    }
+
+   // Vérifier la validité des dates de mission
+  if (!validateDates(missionData.dateField, missionData.dateField1)) {
+    return;
+  }
+
+  // Vérifier la validité des dates d’audit (et qu’elles sont avant la date de fin de mission)
+  if (!validateDates(missionData.auditStartDate, missionData.auditEndDate, missionData.dateField)) {
+    return;
+  }
+
+    setError(''); // Réinitialiser les erreurs si tout est bon
 
     const missionToCreate = {
       ...missionData,
@@ -104,6 +138,8 @@ function AddMissionForm({ title, isOpen, onClose, initialValues, onMissionCreate
 
         {/* Titre dynamique */}
         <p>{title}</p>
+         {/* Afficher l'erreur si les dates ne sont pas valides */}
+         {error && <span className="text-red-500 text-xs  ">{error}</span>}
 
         {/* Champ : Nom de la mission */}
         <InputForm
@@ -112,6 +148,7 @@ function AddMissionForm({ title, isOpen, onClose, initialValues, onMissionCreate
           placeholder="Entrez le nom de la mission"
           width="420px"
           flexDirection="flex-col"
+          required={true}
           value={missionData.mission}
           onChange={e => setMissionData({ ...missionData, mission: e.target.value })}
         />
@@ -125,6 +162,8 @@ function AddMissionForm({ title, isOpen, onClose, initialValues, onMissionCreate
             onChange={e => setMissionData({ ...missionData, client: e.target.value })}
             width="200px"
             multiSelect={false}
+            required={true}
+
           />
           <button type="button" className="btn_addclient" onClick={openModal}>
             <icons.addCircle sx={{ width: "18px" }} /> Ajouter client
@@ -138,23 +177,61 @@ function AddMissionForm({ title, isOpen, onClose, initialValues, onMissionCreate
             label="Date début"
             width="200px"
             flexDirection="flex-col"
+            required={true}
             value={missionData.dateField}
             onChange={e => setMissionData({ ...missionData, dateField: e.target.value })}
           />
           <InputForm
+          
             type="date"
             label="Durée"
             width="200px"
             flexDirection="flex-col"
+            required={true}
             value={missionData.dateField1}
-            onChange={handleDateField1Change} // Utiliser la nouvelle fonction de gestion
+           
+           onChange={handleDateField1Change} Utiliser la nouvelle fonction de gestion
             min={missionData.dateField} // L'attribut min est défini sur la date de début
           />
         </div>
 
-        {/* Afficher l'erreur si les dates ne sont pas valides */}
-        {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
+ {/* Période auditée */}
+        
+ <div className=''> 
+ <div className='flex items-center gap-2'>
+          <lable className='text-sm mb-2 ml-1 '>Période auditée</lable>
+          <span className="text-[var(--alert-red)]">*</span>
+      </div>
+          <div className='flex flex-row items-center justify-between gap-4 mt-1  pl-2  border border-gray-300 rounded-lg '>
+          <span className='text-sm  '>De</span>
+          <input
+          required
+          type='date'
+          className=' py-1 px-3  placeholder:text-xs text-gray-500'
+           placeholder="JJ/MM/AAAA"
+           value={missionData.auditStartDate}
+           onChange={e => setMissionData({ ...missionData, auditStartDate: e.target.value })}
+             max={missionData.dateField} // Empêche la sélection d'une date supérieure à la fin de mission
+          />
+          <span className='text-sm '>à</span>
+          <input
+          required
+          type='date'
+          className=' py-2 px-2  placeholder:text-xs text-gray-500 '
+           placeholder="JJ/MM/AAAA"
+           value={missionData.auditEndDate}
+           onChange={e => setMissionData({ ...missionData, auditEndDate: e.target.value })}
+           min={missionData.auditStartDate} // L'attribut min est défini sur la date de début
+           max={missionData.dateField} // Empêche la sélection d'une date supérieure à la fin de mission
+          />
 
+          </div>
+         
+
+        </div>
+
+       
+       
         {/* Manager */}
         <InputForm
           type="text"
@@ -162,6 +239,7 @@ function AddMissionForm({ title, isOpen, onClose, initialValues, onMissionCreate
           placeholder="Nom du manager"
           width="420px"
           flexDirection="flex-col"
+          required={true}
           value={missionData.manager}
           onChange={e => setMissionData({ ...missionData, manager: e.target.value })}
         />
