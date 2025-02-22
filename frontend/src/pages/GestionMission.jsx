@@ -25,6 +25,16 @@ function GestionMission() {
     { field: "manager", headerName: "Manager", width: 200 },
     { field: "dateField", headerName: "Date de début", width: 150 },
     { field: "dateField1", headerName: "Date fin", width: 150 },
+    {
+      field: "auditPeriod",
+      headerName: "Période auditée",
+      width: 250,
+      customRenderCell: (params) => {
+        const startDate = new Date(params.row.auditStartDate).toLocaleDateString("fr-FR");
+        const endDate = new Date(params.row.auditEndDate).toLocaleDateString("fr-FR");
+        return `De ${startDate} à ${endDate}`;
+      },
+    },
     { field: "statusMission", headerName: "Status", width: 220 },
     { field: "actions", headerName: "Actions", width: 80 },
   ];
@@ -39,6 +49,8 @@ function GestionMission() {
       manager: "Houda Elmaouhab",
       dateField: "2024-11-27",
       dateField1: "2024-12-27",
+      auditStartDate: "2024-01-01", // Date de début de la période auditée
+      auditEndDate: "2024-12-31",   // Date de fin de la période auditée
     },
     {
       id: 2,
@@ -48,6 +60,8 @@ function GestionMission() {
       manager: "Sara Lounes",
       dateField: "2024-11-27",
       dateField1: "2024-12-27",
+      auditStartDate: "2024-02-01", // Date de début de la période auditée
+      auditEndDate: "2024-11-30",   // Date de fin de la période auditée
     },
     // ... autres missions
   ];
