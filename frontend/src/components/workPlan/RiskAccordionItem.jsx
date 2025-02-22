@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { ChevronUp, ChevronDown } from "lucide-react";
 
-const AccordionItem = ({ title, items, color }) => {
+const RiskAccordionItem = ({ title, items, color,onDragStart }) => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
@@ -35,9 +35,10 @@ const AccordionItem = ({ title, items, color }) => {
               <li
                 key={item.id}
                 className="p-2 bg-white rounded-md text-gray-700  cursor-grab"
-                
+                draggable
+                onDragStart={(e) => onDragStart(e, item)}
               >
-                {item.description}
+                {item.nom}
               </li>
             ))}
           </ul>
@@ -46,4 +47,4 @@ const AccordionItem = ({ title, items, color }) => {
   );
 };
 
-export default AccordionItem;
+export default RiskAccordionItem;

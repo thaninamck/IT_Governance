@@ -42,7 +42,7 @@ const ManageControls = () => {
     };
 
     // Maintenant vous pouvez utiliser transformedData, par exemple l'envoyer dans un modal
-    console.log("izanNNN" + transformedData);
+    console.log("transformed  data " + transformedData);
     setIsOpen(true);
     setTransformeData(transformedData);
     //setModalData(transformedData); // Si vous utilisez un modal pour afficher les données
