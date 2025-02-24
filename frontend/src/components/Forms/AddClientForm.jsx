@@ -37,12 +37,15 @@ function AddClientForm({ title ,isOpen, onClose,initialValues, onClientCreated  
       setError('Veuillez remplir tous les champs obligatoires.');
       return; // Empêcher la soumission
     }
+    setError(''); // Réinitialiser les erreurs si tout est bon
+
      console.log(clientData)
      onClientCreated(clientData);
      console.log('after',clientData)
      setLoading(false);
      onClose();
-     setError(''); // Réinitialiser l'erreur après une soumission réussie
+     setError(''); // Réinitialiser les erreurs si tout est bon
+
      
    };
   
