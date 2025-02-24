@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import InputForm from './InputForm';
 import './FormStyle.css';
 
-function Remediation({ title, initialValues = {}, onAdd, idControle }) {
+function Remediation({ title, initialValues = {}, onAdd, idControle ,onClose}) {
   const [open, setOpen] = useState(true);
   const isFirstRender = useRef(true);
 
@@ -18,6 +18,7 @@ function Remediation({ title, initialValues = {}, onAdd, idControle }) {
 
   const handleClose = () => {
     onAdd({});
+    onClose();
     setOpen(false);
   };
 
