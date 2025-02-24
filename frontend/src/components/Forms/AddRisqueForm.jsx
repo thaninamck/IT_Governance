@@ -23,6 +23,8 @@ function AddRisqueForm({ title, isOpen, onClose, initialValues, onRisqueCreated 
       setError('Veuillez remplir tous les champs obligatoires.');
       return; // Empêcher la soumission
     }
+    setError(''); // Réinitialiser les erreurs si tout est bon
+
     onRisqueCreated(risqueData); // Met à jour avant d'envoyer
     onClose(); // Ferme le formulaire après soumission
   };

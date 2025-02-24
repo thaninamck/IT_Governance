@@ -78,6 +78,8 @@ function AddControleForm({ title, isOpen, onClose, onControleCreated }) {
       setError('Veuillez remplir tous les champs obligatoires.');
       return; // Empêcher la soumission
     }
+    setError(''); // Réinitialiser les erreurs si tout est bon
+
     onControleCreated({ ...controleData, comments }); // Inclure les commentaires lors de la soumission
     onClose();
   };
