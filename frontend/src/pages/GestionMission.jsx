@@ -257,13 +257,13 @@ function GestionMission() {
       isOpen={isModalOpen}
       onClose={closeModal}
       onRisqueCreated={handleMissionCreation}
-    />
-     <AddControleForm
+    />*/}
+     {/* <AddControleForm
       title="Créer un nouveau risque"
       isOpen={isModalOpen}
       onClose={closeModal}
       onControleCreated={handleMissionCreation}
-    />*/}
+    /> */}
       <AddMissionForm
         title={"Ajouter une mission"}
         isOpen={isModalOpen}
