@@ -34,6 +34,7 @@ function ConclusionRemediationSection({
   handleDecisionResponse,
   isAddingAnother,
   controleID,
+  onClose,
 }) {
   return (
     <div>
@@ -104,7 +105,7 @@ function ConclusionRemediationSection({
       )}
 
       {(showRemediation|| isAddingAnother) && (
-        <Remediation title={'Créer une remédiation'} initialValues={selectedActionId || {}} onAdd={handleAdd} idControle={controleID}/>)}
+        <Remediation title={'Créer une remédiation'} initialValues={selectedActionId || {}} onAdd={handleAdd} idControle={controleID} onClose={onClose}/>)}
 
       {/* Table for Remédiations */}
       {action.length > 0 && (

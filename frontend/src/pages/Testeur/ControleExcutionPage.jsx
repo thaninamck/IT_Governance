@@ -126,6 +126,9 @@ const [action, setAction] = useState([
       setShowRemediation((prev) => !prev); 
     }
   };
+  const onClose=()=>{
+     setShowDecisionPopup(false)
+  }
   // Configurez EmailJS avec votre userID
 //emailjs.init('YOUR_USER_ID');
 
@@ -421,6 +424,7 @@ const [showDecisionPopup, setShowDecisionPopup] = useState(false);
   showDecisionPopup={showDecisionPopup}
   isAddingAnother={isAddingAnother}
   controleID={controleID}
+  onClose={onClose}
 
        
        />
