@@ -6,6 +6,8 @@ function Remediation({ title, initialValues = {}, onAdd, idControle ,onClose}) {
   const [open, setOpen] = useState(true);
   const isFirstRender = useRef(true);
 
+  
+  
   // États pour chaque champ
   const [description, setDescription] = useState(initialValues?.description || '');
   const [contact, setContact] = useState(initialValues?.contact || '');
@@ -74,10 +76,19 @@ function Remediation({ title, initialValues = {}, onAdd, idControle ,onClose}) {
   const handleSubmit = (e) => {
     e.preventDefault();
 
+     // Vérifier que tous les champs requis sont remplis
+  if (!description || !contact || !dateField ||!dateField1 ) {
+    setError('Veuillez remplir tous les champs obligatoires.');
+    return; // Empêcher la soumission
+  }
+
     // Valider les dates avant de soumettre le formulaire
     if (!validateDates(dateField, dateField1)) {
       return; // Empêcher la soumission si les dates ne sont pas valides
     }
+    
+    setError(''); // Réinitialiser les erreurs si tout est bon
+
 
     const formData = {
       id: generateActionId(idControle),
@@ -108,6 +119,7 @@ function Remediation({ title, initialValues = {}, onAdd, idControle ,onClose}) {
           >
             &times;
           </button>
+          
         </div>
 
         <p className="font-medium mb-8 text-lg">{title}</p>
@@ -118,6 +130,7 @@ function Remediation({ title, initialValues = {}, onAdd, idControle ,onClose}) {
               label="Description"
               placeholder="Entrez la description de la remédiation..."
               width="100%"
+              required={true}
               flexDirection="flex-row gap-5 items-center mb-2"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
@@ -127,6 +140,7 @@ function Remediation({ title, initialValues = {}, onAdd, idControle ,onClose}) {
               label="Contact"
               placeholder="Entrez l'e-mail de la personne concernée..."
               width="100%"
+              required={true}
               flexDirection="flex-row gap-12 items-center mb-2"
               value={contact}
               onChange={(e) => setContact(e.target.value)}
@@ -137,6 +151,7 @@ function Remediation({ title, initialValues = {}, onAdd, idControle ,onClose}) {
               type="date"
               label="Date Début"
               width="50%"
+              required={true}
               flexDirection="flex-row gap-9 items-center mb-2"
               value={dateField}
               onChange={(e) => setDateField(e.target.value)}
@@ -145,6 +160,7 @@ function Remediation({ title, initialValues = {}, onAdd, idControle ,onClose}) {
               type="date"
               label="Date Fin"
               width="50%"
+              required={true}
               flexDirection="flex-row gap-14 items-center mb-2"
               value={dateField1}
               onChange={handleDateField1Change} // Utiliser la nouvelle fonction de gestion
