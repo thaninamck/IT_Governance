@@ -13,14 +13,20 @@ import LayerCustomNode from "./LayerCustomNode";
 import ControlCustomNode from "./ControlCustomNode";
 
 // Définition du type de nœud personnalisé
-const nodeTypes = { 
-  app: AppCustomNode, 
-  risk: RiskCustomNode ,
-  layer:LayerCustomNode,
-  cntrl:ControlCustomNode
+const nodeTypes = {
+  app: AppCustomNode,
+  risk: RiskCustomNode,
+  layer: LayerCustomNode,
+  cntrl: ControlCustomNode,
 };
 
-const Flow = ({ nodes,deleteItemsInApplication, edges, setNodes, setEdges }) => {
+const Flow = ({
+  nodes,
+  deleteItemsInApplication,
+  edges,
+  setNodes,
+  setEdges,
+}) => {
   const [selectedNode, setSelectedNode] = useState(null);
 
   const onNodesChange = useCallback(
@@ -33,12 +39,6 @@ const Flow = ({ nodes,deleteItemsInApplication, edges, setNodes, setEdges }) => 
     setSelectedNode(node.id);
   }, []);
 
-
-
-
-
-
-
   // Suppression du nœud sélectionné + enfants en appuyant sur "Suppr"
   const handleKeyDown = useCallback(
     (event) => {
@@ -50,17 +50,20 @@ const Flow = ({ nodes,deleteItemsInApplication, edges, setNodes, setEdges }) => 
 
         // Liste complète des nœuds à supprimer (parent + enfants)
         const nodesToDelete = [selectedNode, ...childIds];
-        deleteItemsInApplication(nodesToDelete)
+        deleteItemsInApplication(nodesToDelete);
         // Filtrer les nœuds restants
         setNodes((nds) => nds.filter((n) => !nodesToDelete.includes(n.id)));
 
         // Filtrer les edges restants
         setEdges((eds) =>
-          eds.filter((e) => !nodesToDelete.includes(e.source) && !nodesToDelete.includes(e.target))
+          eds.filter(
+            (e) =>
+              !nodesToDelete.includes(e.source) &&
+              !nodesToDelete.includes(e.target)
+          )
         );
 
         setSelectedNode(null);
-       
       }
     },
     [selectedNode, setNodes, setEdges, edges]
@@ -73,7 +76,7 @@ const Flow = ({ nodes,deleteItemsInApplication, edges, setNodes, setEdges }) => 
   }, [handleKeyDown]);
 
   return (
-    <div style={{ height: 560, width: 1280, backgroundColor: "white" }}>
+    <div style={{ height: "100vh", width: "100%", backgroundColor: "white" }}>
       <ReactFlow
         nodes={nodes}
         edges={edges}
@@ -81,7 +84,7 @@ const Flow = ({ nodes,deleteItemsInApplication, edges, setNodes, setEdges }) => 
         onNodesChange={onNodesChange}
         onNodeClick={onNodeClick}
       >
-         <MiniMap 
+        <MiniMap
           nodeColor={(node) => {
             switch (node.type) {
               case "app":
@@ -97,7 +100,6 @@ const Flow = ({ nodes,deleteItemsInApplication, edges, setNodes, setEdges }) => 
           nodeStrokeWidth={2}
         />
 
-        
         <Controls />
         <Background />
       </ReactFlow>

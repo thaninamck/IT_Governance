@@ -97,51 +97,65 @@ const Workplan = () => {
   };
 
   // Fonction pour ajouter un risque dans une couche spécifique de l'application courante
-  const addRiskToLayer = (idLayer, riskID,riskName, riskDescription) => {
-    if (!application) return; // Vérifie qu'une application existe
-    setApplication((prevApp) => ({
-      ...prevApp,
-      layers: prevApp.layers.map((layer) =>
-        layer.id === idLayer
-          ? {
-              ...layer,
-              risks: [
-                ...layer.risks,
-                { id: riskID,nom:riskName, description: riskDescription, owner:"",controls: [] },
-              ],
-            }
-          : layer
-      ),
-    }));
-  };
-
-  const addControlToRisk = (idLayer, idRisk, cntrlID, cntrlDescription,majorProcess,subProcess,testScript) => {
+  const addRiskToLayer = (idLayer, riskID, riskName, riskDescription) => {
     if (!application) return; // Vérifie qu'une application existe
 
     setApplication((prevApp) => ({
-      ...prevApp,
-      layers: prevApp.layers.map((layer) =>
-        layer.id === idLayer
-          ? {
-              ...layer,
-              risks: layer.risks.map((risk) =>
-                risk.id === idRisk
-                  ? {
-                      ...risk,
-                      controls: [
-                        ...risk.controls,
-                        { id: cntrlID, description: cntrlDescription,majorProcess:majorProcess,subProcess:subProcess,testScript:testScript,owner:"" },
-                      ],
-                    }
-                  : risk
-              ),
-            }
-          : layer
-      ),
+        ...prevApp,
+        layers: prevApp.layers.map((layer) =>
+            layer.id === idLayer
+                ? {
+                    ...layer,
+                    risks: layer.risks.some(risk => risk.id === riskID)
+                        ? layer.risks // Ne rien ajouter si le risque existe déjà
+                        : [
+                            ...layer.risks,
+                            { id: riskID, nom: riskName, description: riskDescription, owner: "", controls: [] }
+                        ],
+                }
+                : layer
+        ),
+    }));
+};
+
+
+  const addControlToRisk = (idLayer, idRisk, cntrlID, cntrlDescription, majorProcess, subProcess, testScript) => {
+    if (!application) return; // Vérifie qu'une application existe
+
+    setApplication((prevApp) => ({
+        ...prevApp,
+        layers: prevApp.layers.map((layer) =>
+            layer.id === idLayer
+                ? {
+                    ...layer,
+                    risks: layer.risks.map((risk) =>
+                        risk.id === idRisk
+                            ? {
+                                ...risk,
+                                controls: risk.controls.some(control => control.id === cntrlID)
+                                    ? risk.controls // Ne rien ajouter si le contrôle existe déjà
+                                    : [
+                                        ...risk.controls,
+                                        { 
+                                            id: cntrlID, 
+                                            description: cntrlDescription, 
+                                            majorProcess, 
+                                            subProcess, 
+                                            testScript, 
+                                            owner: "" 
+                                        }
+                                    ],
+                            }
+                            : risk
+                    ),
+                }
+                : layer
+        ),
     }));
 
-    console.log("lapplication", application);
-  };
+    console.log("l'application mise à jour", application);
+};
+
 
   const addToDataStructure = (application) => {
     
