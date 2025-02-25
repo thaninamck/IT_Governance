@@ -3,6 +3,9 @@ import AccessTimeFilledIcon from '@mui/icons-material/AccessTimeFilled';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import AssignmentLateRoundedIcon from '@mui/icons-material/AssignmentLate';
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
+import PauseCircleIcon from '@mui/icons-material/PauseCircle';
+import CancelIcon from '@mui/icons-material/Cancel';
+import ArchiveRoundedIcon from '@mui/icons-material/ArchiveRounded';
 
 function StatusMission({ status }) {
     // Configuration des statuts
@@ -17,15 +20,31 @@ function StatusMission({ status }) {
             icon: <AccessTimeFilledIcon  />, // Bleu
             color: "var(--await-orange)",
         },
-        terminee: {
-            label: "Terminée",
+        en_retard: {
+            label: "En cours retardé",
+            icon: <ErrorOutlineIcon  />, // Rouge
+            color: "var(--alert-red)",
+        },
+        
+        terminer: {
+            label: "Clôturée",
             icon: <CheckCircleIcon  />, // Vert
             color: "var(--success-green)",
         },
-        en_retard: {
-            label: "En retard",
-            icon: <ErrorOutlineIcon  />, // Rouge
-            color: "var(--alert-red)",
+        archiver: {
+            label: "Archivée",
+            icon: <ArchiveRoundedIcon />, // Rouge
+            color: "#6b7280",
+        },
+        annulée: {
+            label: "Annulée",
+            icon: <CancelIcon  />, // Rouge
+            color: "#E53935",
+        },
+        temporaire: {
+            label: "En standby ",
+            icon: <PauseCircleIcon   />, // Rouge
+            color: "var(--blue-hover)",
         },
     };
 
