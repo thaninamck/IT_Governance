@@ -186,7 +186,7 @@ const rowsData3 = [
 
 
           <Route path='/missionInfo' element={<MissionInfo/>}/>
-          <Route path='/statusmission' element={<StatusMission  status="en_cours"/>}/>
+          <Route path='/statusmission' element={<StatusMission  status="temporaire"/>}/>
           <Route path='/test' element={<Test/>}></Route>
           <Route path='/win' element={<ModalWindow  />}></Route>
           
