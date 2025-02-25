@@ -298,6 +298,11 @@ function Table({
   const handleRowAction = (action, rowId) => {
     // Récupérer l'objet de la ligne en utilisant l'ID de la ligne
     const selectedRow = rows.find((row) => row.id === rowId);
+     // Vérifier si l'action est désactivée pour cette ligne
+     if (action.disabled && action.disabled(selectedRow)) {
+      return; // Ne pas exécuter l'action si elle est désactivée
+    }
+
     action.onClick(selectedRow); // Passez l'objet de la ligne à l'action
     handleClose();
   };
@@ -323,7 +328,7 @@ function Table({
       <DataGrid
         rows={rows}
         columns={columns}
-      
+        disableRowSelectionOnClick
         checkboxSelection={checkboxSelection}
         disableRowSelectionOnClick // Empêche la sélection en cliquant sur une cellule
         autoHeight
@@ -373,24 +378,37 @@ function Table({
           }),
         }}
       />
-      <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose}>
-        {rowActions.map((action, index) => (
-          <MenuItem
-            key={index}
-            onClick={() => handleRowAction(action, selectedRowId)}
-            sx={{
-              "&.css-1rju2q6-MuiButtonBase-root-MuiMenuItem-root": {
-                display: "flex",
-                alignItems: "center",
-              },
-            }}
-          >
-            {action.icon}
-            {action.label}
-          </MenuItem>
+       <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose}>
+        {rowActions.map((action, index) => {
+          const selectedRow = rows.find((row) => row.id === selectedRowId);
+          const isDisabled = action.disabled && action.disabled(selectedRow);
+
+          return (
+            <MenuItem
+              key={index}
+              onClick={() => handleRowAction(action, selectedRowId)}
+              disabled={isDisabled} // Désactiver l'élément du menu si nécessaire
+              sx={{
+                "&.css-1rju2q6-MuiButtonBase-root-MuiMenuItem-root": {
+                  display: "flex",
+                  alignItems: "center",
+                  opacity: isDisabled ? 0.5 : 1, // Réduire l'opacité si désactivé
+                  cursor: isDisabled ? "not-allowed" : "pointer", // Changer le curseur si désactivé
+                },
+              }}
+            >
+              {/*action.icon*/}
+              {typeof action.icon === "function"
+          ? action.icon(selectedRow) // Appeler la fonction label avec selectedRow
+          : action.icon}
           
-        ))}
-        
+              {typeof action.label === "function"
+          ? action.label(selectedRow) // Appeler la fonction label avec selectedRow
+          : action.label}
+
+            </MenuItem>
+          );
+        })}
       </Menu>
     </Paper>
   );
