@@ -266,14 +266,14 @@ const Workplan = () => {
 
   const onControlDrop = (event, riskId, layerId) => {
     event.preventDefault();
-    const controlsData = JSON.parse(event.dataTransfer.getData("application/json"));
+    let controlsData = JSON.parse(event.dataTransfer.getData("application/json"));
   
     console.log("Dropped data:", controlsData);
   
-   /* if (!Array.isArray(controlsData)) {
-      console.warn("Dropped data is not an array of controls");
-      return;
-    }*/
+    // Ensure controlsData is an array
+    if (!Array.isArray(controlsData)) {
+      controlsData = [controlsData];
+    }
   
     controlsData.forEach((controlData, index) => {
       const isCntrl = controlData && "idCntrl" in controlData;

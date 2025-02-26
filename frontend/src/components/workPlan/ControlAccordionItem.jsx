@@ -13,11 +13,14 @@ const ControlAccordionItem = ({ title, items, color, onDragStart }) => {
     );
   };
 
+
   const handleDragStart = (e, item) => {
+    let itemsToDrag = selectedItems;
     if (!selectedItems.includes(item)) {
+      itemsToDrag = [item];
       setSelectedItems([item]);
     }
-    onDragStart(e, selectedItems);
+    onDragStart(e, itemsToDrag);
     setSelectedItems([]);
   };
 
