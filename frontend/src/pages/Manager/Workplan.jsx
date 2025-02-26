@@ -24,7 +24,7 @@ const Workplan = () => {
     console.log("Nouvelle valeur de application:", application);
   }, [application]);//juste pour surveiller l'app
 
-  /*
+  
     // Charger l'état sauvegardé au montage
     useEffect(() => {
       const savedNodes = JSON.parse(window.localStorage.getItem("appNodes")) || [];
@@ -50,7 +50,7 @@ const Workplan = () => {
     }, [application]);
   
   
-*/
+
   
   const deleteItemsInApplication = (idsToDelete = []) => {
     if (!application) return;
