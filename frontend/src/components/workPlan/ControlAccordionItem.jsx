@@ -52,9 +52,9 @@ const ControlAccordionItem = ({ title, items, color, onDragStart }) => {
           {items.map((item) => (
             <li
               key={item.id}
-              className={`p-2 bg-white rounded-md text-gray-700 cursor-grab ${
-                selectedItems.includes(item) ? "bg-blue-200" : ""
-              }`}
+              className={`p-2 rounded-md text-gray-700 cursor-grab ${
+                selectedItems.includes(item) ? "bg-blue-200" : "bg-white"
+              } hover:bg-blue-gray-100`}
               draggable
               onClick={() => handleItemClick(item)}
               onDragStart={(e) => handleDragStart(e, item)}

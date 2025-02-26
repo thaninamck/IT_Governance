@@ -51,9 +51,9 @@ const RiskAccordionItem = ({ title, items, color, onDragStart }) => {
           {items.map((item) => (
             <li
               key={item.id}
-              className={`p-2 bg-white rounded-md text-gray-700 cursor-grab ${
-                selectedItems.includes(item) ? "bg-blue-menu" : ""
-              }`}
+              className={`p-2 rounded-md text-gray-700 cursor-grab ${
+                selectedItems.includes(item) ? "bg-orange-300" : "bg-white"
+              } hover:bg-orange-100`}
               draggable
               onClick={() => handleItemClick(item)}
               onDragStart={(e) => handleDragStart(e, item)}
