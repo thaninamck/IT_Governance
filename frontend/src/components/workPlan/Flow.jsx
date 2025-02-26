@@ -39,18 +39,41 @@ const Flow = ({
     setSelectedNode(node.id);
   }, []);
 
+  // Fonction pour trouver tous les descendants d'un nœud
+  const findAllDescendants = (nodeId, edges) => {
+    const descendants = new Set();
+    const stack = [nodeId];
+
+    while (stack.length > 0) {
+      const currentId = stack.pop();
+      const children = edges
+        .filter((edge) => edge.source === currentId)
+        .map((edge) => edge.target);
+
+      children.forEach((childId) => {
+        if (!descendants.has(childId)) {
+          descendants.add(childId);
+          stack.push(childId);
+        }
+      });
+    }
+
+    return Array.from(descendants);
+  };
+
   // Suppression du nœud sélectionné + enfants en appuyant sur "Suppr"
   const handleKeyDown = useCallback(
     (event) => {
       if (event.key === "Delete" && selectedNode) {
-        // Trouver les enfants du nœud sélectionné
-        const childIds = edges
-          .filter((edge) => edge.source === selectedNode) // Récupère tous les enfants du nœud sélectionné
-          .map((edge) => edge.target); // Récupère leurs IDs
+        // Trouver tous les descendants du nœud sélectionné
+        const descendants = findAllDescendants(selectedNode, edges);
 
-        // Liste complète des nœuds à supprimer (parent + enfants)
-        const nodesToDelete = [selectedNode, ...childIds];
+        // Liste complète des nœuds à supprimer (parent + descendants)
+        const nodesToDelete = [selectedNode, ...descendants];
+
+        // Appeler la fonction de suppression (si nécessaire)
         deleteItemsInApplication(nodesToDelete);
+
         // Filtrer les nœuds restants
         setNodes((nds) => nds.filter((n) => !nodesToDelete.includes(n.id)));
 
@@ -63,10 +86,11 @@ const Flow = ({
           )
         );
 
+        // Réinitialiser la sélection
         setSelectedNode(null);
       }
     },
-    [selectedNode, setNodes, setEdges, edges]
+    [selectedNode, setNodes, setEdges, edges, deleteItemsInApplication]
   );
 
   // Ajout de l'écouteur de touche "Suppr"
