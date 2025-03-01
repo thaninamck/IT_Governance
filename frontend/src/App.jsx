@@ -63,6 +63,7 @@ import StepVerificationCode from './pages/subPages/StepVerificationCode';
 import StepNewPassword from './pages/subPages/StepNewPassword';
 import ChangePasswordAfterFirstLogin from './pages/ChangePasswordAfterFirstLogin';
 import MissionReport from './pages/Manager/MissionReport';
+import AppReport from './pages/Manager/AppReport';
 function App() {
   const getRowLink = (row) => `/tablemission/${row.mission}`;
   
@@ -201,7 +202,7 @@ const rowsData3 = [
           <Route path='/controlsManager' element={<ManageControls/>}/>
           <Route path='/login' element={<Login  />}></Route>
           <Route path='/myprofile' element={<MyProfile/>}></Route>
-          <Route path='/gestionmission' element={<GestionMission/>}></Route>
+          <Route path='/missions' element={<GestionMission/>}></Route>
 
           <Route path='/utilisateurs' element={<GestionUtilisateur/>}></Route>
           <Route path='/clients' element={<GestionClient/>}></Route>
@@ -219,7 +220,9 @@ const rowsData3 = [
 
           <Route path='/acc' element={<WorkPlanSideBar/>}></Route>
           <Route path='/workplan' element={<Workplan/>}></Route>
-          <Route path='/gestionmission/:mission' element={<MissionReport/>}></Route>
+          <Route path='/missions/:mission' element={<MissionReport/>}></Route>
+          <Route path='/missions/:mission/:app' element={<AppReport/>}></Route>
+          <Route path='/apprep' element={<AppReport/>}></Route>
 
          
           

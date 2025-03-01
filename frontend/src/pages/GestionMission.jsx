@@ -147,7 +147,7 @@ function GestionMission() {
     console.log('Détails du contrôle sélectionné:', rowData);
   };
 
-  const getRowForReportLink = (row) => `/gestionmission/${row.mission}`;
+  const getRowForReportLink = (row) => `/missions/${row.mission}`;
 
   const handleViewReport = (selectedRow) => {
     if (!selectedRow || !selectedRow.mission) {
@@ -159,11 +159,11 @@ function GestionMission() {
 
     // Met à jour les breadcrumbs
     setBreadcrumbs([
-      { label: "rapportmission", path: "/gestionmission" },
+      { label: "rapportmission", path: "/missions" },
 
       {
         label: selectedRow.mission,
-        path: `/gestionmission/${selectedRow.mission}`,
+        path: `/missions/${selectedRow.mission}`,
       },
     ]);
 

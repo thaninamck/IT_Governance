@@ -106,7 +106,7 @@ const MissionReport = ({
     "/statusmission",
     "/table",
     "/tableApp",
-    "/gestionmission", // Ajout pour la page principale
+    "/missions", // Ajout pour la page principale
   ];
   return (
     <div>
