@@ -5,6 +5,9 @@ import Button from '../Button';
 
 function AddClientForm({ title ,isOpen, onClose,initialValues, onClientCreated  }) {
   if (!isOpen) return null;
+   const [loading, setLoading] = useState(false);
+   // État pour gérer les erreurs de validation
+     const [error, setError] = useState('');
 
  // États pour chaque champ
  const [clientData, setClientData] = useState(initialValues || {
@@ -30,10 +33,19 @@ function AddClientForm({ title ,isOpen, onClose,initialValues, onClientCreated  
 
    const handleSubmit = (e) => {
      e.preventDefault(); // Empêcher le rechargement
+     if (!clientData.nom || !clientData.raisonSocial || !clientData.secteur || !clientData.email || !clientData.contact1 ) {
+      setError('Veuillez remplir tous les champs obligatoires.');
+      return; // Empêcher la soumission
+    }
+    setError(''); // Réinitialiser les erreurs si tout est bon
+
      console.log(clientData)
      onClientCreated(clientData);
      console.log('after',clientData)
+     setLoading(false);
      onClose();
+     setError(''); // Réinitialiser les erreurs si tout est bon
+
      
    };
   
@@ -48,6 +60,8 @@ function AddClientForm({ title ,isOpen, onClose,initialValues, onClientCreated  
 
         {/* Titre dynamique */}
         <p>{title}</p>
+        {error && <span className="text-red-500 text-xs  ">{error}</span>}
+
 
         {/* Formulaire */}
         <InputForm
@@ -56,6 +70,7 @@ function AddClientForm({ title ,isOpen, onClose,initialValues, onClientCreated  
           placeholder="Entrez le nom du client"
           width="420px"
           flexDirection="flex-col"
+          required={true}
           value={clientData.nom}
           onChange={e => setClientData({...clientData, nom: e.target.value})}
         />
@@ -66,6 +81,7 @@ function AddClientForm({ title ,isOpen, onClose,initialValues, onClientCreated  
             placeholder="Raison sociale"
             width="200px"
             flexDirection="flex-col"
+            required={true}
             value={clientData.raisonSocial}
           onChange={e => setClientData({...clientData, raisonSocial: e.target.value})}
           />
@@ -75,6 +91,7 @@ function AddClientForm({ title ,isOpen, onClose,initialValues, onClientCreated  
             placeholder="Secteur"
             width="200px"
            flexDirection="flex-col"
+           required={true}
             value={clientData.secteur}
           onChange={e => setClientData({...clientData, secteur: e.target.value})}
           />
@@ -84,6 +101,7 @@ function AddClientForm({ title ,isOpen, onClose,initialValues, onClientCreated  
           label="E-mail"
           placeholder="Entrez l'e-mail du client"
           width="420px"
+          required={true}
         flexDirection="flex-col"
           value={clientData.email}
           onChange={e => setClientData({...clientData, email: e.target.value})}
@@ -94,6 +112,7 @@ function AddClientForm({ title ,isOpen, onClose,initialValues, onClientCreated  
             label="Contact 1"
             placeholder="Numéro de téléphone"
             width="200px"
+            required={true}
             flexDirection="flex-col"
             value={clientData.contact1}
           onChange={e => setClientData({...clientData, contact1: e.target.value})}
@@ -103,6 +122,7 @@ function AddClientForm({ title ,isOpen, onClose,initialValues, onClientCreated  
             label="Contact 2"
             placeholder="Numéro de téléphone"
             width="200px"
+            
            flexDirection="flex-col"
             value={clientData.contact2}
           onChange={e => setClientData({...clientData, contact2: e.target.value})}
@@ -110,7 +130,7 @@ function AddClientForm({ title ,isOpen, onClose,initialValues, onClientCreated  
         </div>
 
         {/* Bouton Créer */}
-        <Button btnName="Créer" type="submit" />
+        <Button btnName={loading ?" Création en cours...": "Créer"} type="submit"  disabled={loading}/>
       </form>
       </div>
     

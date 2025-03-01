@@ -27,38 +27,64 @@ function AddScope({ title, text, text1, onToggleForm, showForm }) {
       headerName: "Couche",
       width: 200,
       expandable: true,
-      customRenderCell: (params) => (
-        <div className="flex -space-x-2">
-          {Array.isArray(params.value) ? (
-            params.value.map((item, index) => {
-              const words = item.split(" ");
-              const initials = words.length > 1
-                ? words.map((word) => word[0]).join("").toUpperCase()
-                : item.substring(0, 3).toUpperCase();
-              return (
-                <div
-                  key={index}
-                  title={item}
-                  className="w-11 h-11 flex items-center justify-center text-xs bg-blue-100 text-blue-600 rounded-full border border-white shadow cursor-pointer"
-                >
-                  {initials}
-                </div>
-              );
-            })
-          ) : (
-            <span className="text-gray-400">Aucune donnée</span>
-          )}
-        </div>
-      )
+      customRenderCell: (params) => {
+        console.log("Couche value:", params.value); // Debugging line
+      
+        const coucheValues = Array.isArray(params.value) ? params.value : [];
+        return (
+          <div className="flex -space-x-2">
+            {coucheValues.length > 0 ? (
+              coucheValues.map((item, index) => {
+                const words = String(item).split(" ");
+                const initials = words.length > 1
+                  ? words.map((word) => word[0]).join("").toUpperCase()
+                  : String(item).substring(0, 3).toUpperCase();
+                return (
+                  <div
+                    key={index}
+                    title={item}
+                    className="w-11 h-11 flex items-center justify-center text-xs bg-blue-100 text-blue-600 rounded-full border border-white shadow cursor-pointer"
+                  >
+                    {initials}
+                  </div>
+                );
+              })
+            ) : (
+              <span className="text-gray-400">Aucune donnée</span>
+            )}
+          </div>
+        );
+      }
     },
     { field: 'actions', headerName: 'Action', width: 80 }
   ];
+
+  // const handleAddApp = (app) => {
+  //   if (selectedApp) {
+  //     // Mise à jour de l'application existante
+  //     setApplications((prevApps) =>
+  //       prevApps.map((row) => (row.id === app.id ? app : row))
+  //     );
+  //     setSelectedApp(null);
+  //     onToggleForm();
+  //   } else {
+  //     // Ajout d'une nouvelle application
+  //     setApplications((prev) => [
+  //       ...prev,
+  //       { id: prev.length + 1, ...app, couche: Array.isArray(app.couche) ? app.couche : [app.couche] }
+  //     ]);
+  //     setShowDecisionPopup(true);
+  //   }
+    
+  // };
 
   const handleAddApp = (app) => {
     if (selectedApp) {
       // Mise à jour de l'application existante
       setApplications((prevApps) =>
-        prevApps.map((row) => (row.id === app.id ? app : row))
+        prevApps.map((row) =>
+          row.id === app.id ? { ...app, couche: Array.isArray(app.couche) ? app.couche : [] } : row
+        )
       );
       setSelectedApp(null);
       onToggleForm();
@@ -66,14 +92,10 @@ function AddScope({ title, text, text1, onToggleForm, showForm }) {
       // Ajout d'une nouvelle application
       setApplications((prev) => [
         ...prev,
-        { id: prev.length + 1, ...app, couche: Array.isArray(app.couche) ? app.couche : [app.couche] }
+        { id: prev.length + 1, ...app, couche: Array.isArray(app.couche) ? app.couche : [] }
       ]);
       setShowDecisionPopup(true);
     }
-    
-    
-    
-    
   };
 
   const handleDeleteRow = (selectedRow) => {
@@ -139,7 +161,7 @@ function AddScope({ title, text, text1, onToggleForm, showForm }) {
       )}
 
       {(showForm || isAddingAnother) && (
-        <NewAppForm title={''} initialValues={selectedApp || {}} onAddApp={handleAddApp} />
+        <NewAppForm title={''} initialValues={selectedApp || {}} onAddApp={handleAddApp} onClose={() => setShowDecisionPopup(false)} />
       )}
 
       

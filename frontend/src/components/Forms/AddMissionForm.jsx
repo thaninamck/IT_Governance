@@ -72,6 +72,16 @@ function AddMissionForm({ title, isOpen, onClose, initialValues, onMissionCreate
     return true;
   };
 
+
+  const validateStartDate = (startDate) => {
+    const currentDate = new Date().toISOString().split("T")[0]; // Date actuelle au format YYYY-MM-DD
+    if (new Date(startDate) < new Date(currentDate)) {
+      setError("La date de début ne peut pas être dans le passé.");
+      return false;
+    }
+    return true;
+  };
+
   // Fonction pour gérer le changement de la date de fin
   const handleDateField1Change = (e) => {
     const selectedDate = e.target.value;
@@ -101,28 +111,41 @@ function AddMissionForm({ title, isOpen, onClose, initialValues, onMissionCreate
   // Soumission du formulaire
   const handleSubmit = (e) => {
     e.preventDefault();
+  
     // Vérifier que tous les champs requis sont remplis
-  if (!missionData.mission || !missionData.client || !missionData.manager || !missionData.dateField || !missionData.dateField1 ||!missionData.auditStartDate||!missionData.auditEndDate) {
-    setError('Veuillez remplir tous les champs obligatoires.');
-    return; // Empêcher la soumission
-  }
-
-
-   // Vérifier la validité des dates de mission
-  if (!validateDates(missionData.dateField, missionData.dateField1)) {
-    return;
-  }
-
-  // Vérifier la validité des dates d’audit (et qu’elles sont avant la date de fin de mission)
-  if (!validateDates(missionData.auditStartDate, missionData.auditEndDate, missionData.dateField)) {
-    return;
-  }
-
-    setError(''); // Réinitialiser les erreurs si tout est bon
-
+    if (
+      !missionData.mission ||
+      !missionData.client ||
+      !missionData.manager ||
+      !missionData.dateField ||
+      !missionData.dateField1 ||
+      !missionData.auditStartDate ||
+      !missionData.auditEndDate
+    ) {
+      setError("Veuillez remplir tous les champs obligatoires.");
+      return; // Empêcher la soumission
+    }
+  
+    // Vérifier si la date de début est dans le passé
+    if (!validateStartDate(missionData.dateField)) {
+      return; // Empêcher la soumission si la date de début est dans le passé
+    }
+  
+    // Vérifier la validité des dates de mission
+    if (!validateDates(missionData.dateField, missionData.dateField1)) {
+      return;
+    }
+  
+    // Vérifier la validité des dates d’audit (et qu’elles sont avant la date de fin de mission)
+    if (!validateDates(missionData.auditStartDate, missionData.auditEndDate, missionData.dateField)) {
+      return;
+    }
+  
+    setError(""); // Réinitialiser les erreurs si tout est bon
+  
     const missionToCreate = {
       ...missionData,
-      statusMission: missionData.statusMission || 'non_commencee'
+      statusMission: missionData.statusMission || "non_commencee",
     };
     onMissionCreated(missionToCreate);
     onClose();
@@ -180,6 +203,7 @@ function AddMissionForm({ title, isOpen, onClose, initialValues, onMissionCreate
             required={true}
             value={missionData.dateField}
             onChange={e => setMissionData({ ...missionData, dateField: e.target.value })}
+            min={new Date().toISOString().split("T")[0]} // Bloquer les dates passées
           />
           <InputForm
           

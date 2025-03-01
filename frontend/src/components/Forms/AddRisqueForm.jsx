@@ -6,6 +6,9 @@ import Button from '../Button';
 function AddRisqueForm({ title, isOpen, onClose, initialValues, onRisqueCreated }) {
   if (!isOpen) return null; // Ne pas afficher le modal si isOpen est false
 
+   // État pour gérer les erreurs de validation
+    const [error, setError] = useState('');
+
   // États pour chaque champ
   const [risqueData, setRisqueData] = useState({
     code: '',
@@ -15,6 +18,13 @@ function AddRisqueForm({ title, isOpen, onClose, initialValues, onRisqueCreated 
 
   const handleSubmit = (e) => {
     e.preventDefault(); // Empêcher le rechargement
+    
+    if (!risqueData.code || !risqueData.nom|| !risqueData.description ) {
+      setError('Veuillez remplir tous les champs obligatoires.');
+      return; // Empêcher la soumission
+    }
+    setError(''); // Réinitialiser les erreurs si tout est bon
+
     onRisqueCreated(risqueData); // Met à jour avant d'envoyer
     onClose(); // Ferme le formulaire après soumission
   };
@@ -30,6 +40,8 @@ function AddRisqueForm({ title, isOpen, onClose, initialValues, onRisqueCreated 
         {/* Titre dynamique */}
         <p>{title}</p>
 
+        {error && <span className="text-red-500 text-xs  ">{error}</span>}
+
         {/* Formulaire */}
         <div className="form-row">
           <InputForm
@@ -38,6 +50,7 @@ function AddRisqueForm({ title, isOpen, onClose, initialValues, onRisqueCreated 
             placeholder="code"
             width="150px"
             flexDirection="flex-col"
+            required={true}
             value={risqueData.code}
             onChange={(e) => setRisqueData({ ...risqueData, code: e.target.value })}
           />
@@ -47,6 +60,7 @@ function AddRisqueForm({ title, isOpen, onClose, initialValues, onRisqueCreated 
             placeholder="nom"
             width="450px"
             flexDirection="flex-col"
+            required={true}
             value={risqueData.nom}
             onChange={(e) => setRisqueData({ ...risqueData, nom: e.target.value })}
           />
@@ -58,6 +72,7 @@ function AddRisqueForm({ title, isOpen, onClose, initialValues, onRisqueCreated 
             placeholder="Description du risque"
             width="630px"
             flexDirection="flex-col"
+            required={true}
             value={risqueData.description}
             onChange={(e) => setRisqueData({ ...risqueData, description: e.target.value })}
           />

@@ -5,10 +5,11 @@ import Button from '../Button';
 import SelectInput from './SelectInput';
 import MultiOptionSelect from '../Selects/MultiOptionSelect';
 
-function NewAppForm({ title , initialValues = {}, onAddApp}) {
+function NewAppForm({ title , initialValues = {}, onAddApp,onClose}) {
   const [open, setOpen] = useState(true);
   const isFirstRender = useRef(true); // Pour éviter l'écrasement après la première exécution
-
+  // État pour gérer les erreurs de validation
+    const [error, setError] = useState('');
 
    // États pour chaque champ avec valeurs par défaut
    const [nomApp, setNomApp] = useState(initialValues?.nomApp || '');
@@ -20,6 +21,7 @@ function NewAppForm({ title , initialValues = {}, onAddApp}) {
 
    const handleClose = () => {
     onAddApp({}); // Au lieu de null, passez un objet vide
+    onClose(); // Notify the parent component that the form is being closed
     setOpen(false);
   };
   
@@ -40,6 +42,12 @@ useEffect(() => {
 
 const handleSubmit = (e) => {
   e.preventDefault();
+
+  // Vérifier que tous les champs requis sont remplis
+  if (!nomApp || !description|| !owner || !contact || !selectedMulti ) {
+    setError('Veuillez remplir tous les champs obligatoires.');
+    return; // Empêcher la soumission
+  }
   const formData = { 
     id: initialValues?.id || Date.now(), // Garde l'ID existant si c'est une mise à jour
     nomApp, 
@@ -48,6 +56,8 @@ const handleSubmit = (e) => {
     contact, 
     couche: selectedMulti 
   };
+  setError(''); // Réinitialiser les erreurs si tout est bon
+
 
   onAddApp(formData); 
 
@@ -80,6 +90,7 @@ const handleSubmit = (e) => {
 
         {/* Titre dynamique */}
         <p>{title}</p>
+        {error && <span className="text-red-500 text-xs  ">{error}</span>}
 
         {/* Formulaire */}
         <div className='flex flex-row gap-10'>
@@ -90,6 +101,7 @@ const handleSubmit = (e) => {
           placeholder="Entrez le nom de l'application / système"
           width="600px"
           flexDirection="flex-col"
+          required={true}
           value={nomApp}
           onChange={(e) => setNomApp(e.target.value)}
         />
@@ -99,6 +111,7 @@ const handleSubmit = (e) => {
           placeholder="Entrez la description"
           width="600px"
          flexDirection="flex-col"
+         required={true}
           value={description}
           onChange={(e) => setDescription(e.target.value)}
         />
@@ -110,6 +123,7 @@ const handleSubmit = (e) => {
           placeholder="Entrez le nom de l'application / système"
           width="300px"
           flexDirection="flex-col"
+          required={true}
           value={owner}
           onChange={(e) => setOwner(e.target.value)}
         />
@@ -119,6 +133,7 @@ const handleSubmit = (e) => {
           placeholder="Entrez l'email du owner"
           width="300px"
          flexDirection="flex-col"
+         required={true}
           value={contact}
           onChange={(e) => setContact(e.target.value)}
         />
@@ -132,6 +147,7 @@ const handleSubmit = (e) => {
         value={selectedMulti}
         onChange={(e) => setSelectedMulti(e.target.value)}
         width="200px"
+        required={true}
         multiSelect={true}
       />
        {/* <SelectInput

@@ -7,6 +7,8 @@ import SelectInput from './SelectInput';
 
 function AddControleForm({ title, isOpen, onClose, onControleCreated }) {
   if (!isOpen) return null; // Ne pas afficher le modal si isOpen est false
+ // État pour gérer les erreurs de validation
+  const [error, setError] = useState('');
 
   const typeOptions = [
     { label: "Détéctif", value:"étéctif" },
@@ -72,6 +74,12 @@ function AddControleForm({ title, isOpen, onClose, onControleCreated }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (!controleData.code || !controleData.controle|| !controleData.testScripts || !controleData.type || !controleData.source ||!controleData.majorProc ||!controleData.subProc) {
+      setError('Veuillez remplir tous les champs obligatoires.');
+      return; // Empêcher la soumission
+    }
+    setError(''); // Réinitialiser les erreurs si tout est bon
+
     onControleCreated({ ...controleData, comments }); // Inclure les commentaires lors de la soumission
     onClose();
   };
@@ -87,6 +95,9 @@ function AddControleForm({ title, isOpen, onClose, onControleCreated }) {
         </button>
 
         <p>{title}</p>
+
+        {error && <span className="text-red-500 text-xs  ">{error}</span>}
+
         {/* Code du contrôle */}
         <div className="form-row">
         <InputForm
@@ -94,6 +105,7 @@ function AddControleForm({ title, isOpen, onClose, onControleCreated }) {
           label="Code du controle"
           placeholder="code"
           width="130px"
+          required={true}
           flexDirection="flex-col"
           value={controleData.code}
           onChange={(e) => setControleData({ ...controleData, code: e.target.value })}
@@ -105,6 +117,7 @@ function AddControleForm({ title, isOpen, onClose, onControleCreated }) {
           onChange={(e) => setControleData({ ...controleData, type: e.target.value })}
           width="170px"
           multiSelect={false}
+          required={true}
         />
         <SelectInput
           label="Source du controle"
@@ -112,6 +125,7 @@ function AddControleForm({ title, isOpen, onClose, onControleCreated }) {
           value={controleData.source}
           onChange={(e) => setControleData({ ...controleData, source: e.target.value })}
           width="170px"
+          required={true}
           multiSelect={false}
         />
 </div>
@@ -123,6 +137,7 @@ function AddControleForm({ title, isOpen, onClose, onControleCreated }) {
           label="Controle"
           placeholder="description"
           width="540px"
+          required={true}
           flexDirection="flex-col"
           value={controleData.controle}
           onChange={(e) => setControleData({ ...controleData, controle: e.target.value })}
@@ -131,12 +146,17 @@ function AddControleForm({ title, isOpen, onClose, onControleCreated }) {
 
         {/* Liste des Test Scripts */}
         <div className='mt-3'>
+        <div className='flex items-center gap-2'>
           <label className="block text-sm  mb-2">Test Scripts</label>
+          <span className="text-[var(--alert-red)]">*</span>
+          </div>
           <div className="flex flex-col gap-2 max-h-64 overflow-y-auto">
             {controleData.testScripts.map((script, index) => (
               <div key={index} className="py-1 px-2 border border-gray-300 rounded-lg shadow-sm relative">
                 {/* Input script */}
+                
                 <input
+                 required
                   type="text"
                   value={script}
                   onChange={(e) => updateTestScript(index, e.target.value)}
@@ -191,6 +211,7 @@ function AddControleForm({ title, isOpen, onClose, onControleCreated }) {
           onChange={(e) => setControleData({ ...controleData, majorProc: e.target.value })}
           width="250px"
           multiSelect={false}
+          required={true}
         />
         <SelectInput
           label="Sub process"
@@ -199,6 +220,7 @@ function AddControleForm({ title, isOpen, onClose, onControleCreated }) {
           onChange={(e) => setControleData({ ...controleData, subProc: e.target.value })}
           width="250px"
           multiSelect={false}
+          required={true}
         />
         </div>
         {/* Bouton Créer */}
