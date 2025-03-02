@@ -40,8 +40,11 @@ export default function MultiSelectButtons({ onSelectionChange, selections }) {
         updatedSelection["Effectiveness"] = "Non Conforme";
       }
 
+       // Convertir l'objet en tableau de tuples [value, status]
+       const selectionArray = Object.entries(updatedSelection).map(([key, value]) => [key, value]);
+
       // Appel de la fonction parent pour transmettre les nouvelles sélections
-      onSelectionChange(updatedSelection);
+      onSelectionChange(selectionArray);
      // console.log(updatedSelection)
       return updatedSelection;
      

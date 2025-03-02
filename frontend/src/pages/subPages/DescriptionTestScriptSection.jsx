@@ -3,6 +3,7 @@ import Separator from '../../components/Decorators/Separator';
 import TextDisplay from '../../components/ModalWindows/TextDisplay';
 import InputForm from '../../components/Forms/InputForm';
 import SelectInput from '@mui/material/Select/SelectInput';
+import InstructionSplitter from '../../components/InstructionSplitter';
 
 function DescriptionTestScriptSection({
   description,
@@ -14,6 +15,7 @@ function DescriptionTestScriptSection({
   type,
   majorProcess,
   subProcess,
+  onTestScriptChange, // Fonction pour récupérer les données du test script en temps réel
  
 }) {
   return (
@@ -62,8 +64,8 @@ function DescriptionTestScriptSection({
         marginLeft="15px"
       />
 
-      <div className="mt-4 mb-6">
-        <TextDisplay
+      <div className=" mt-2 flex flex-col gap-2  w-[98%]  ">
+        {/* <TextDisplay
           label="Test Script"
           content={testScript}
           isEditing={isEditing}
@@ -73,6 +75,11 @@ function DescriptionTestScriptSection({
           labelWidth="120px"
           flexDirection="column"
           marginLeft="15px"
+        /> */}
+
+        <InstructionSplitter 
+        instructions={testScript} 
+        onChange={onTestScriptChange} // Passer la fonction de rappel
         />
       </div>
     </div>

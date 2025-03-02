@@ -19,7 +19,9 @@ import { useBreadcrumb } from "../Context/BreadcrumbContext";
 import PauseCircleOutlineRoundedIcon from '@mui/icons-material/PauseCircleOutlineRounded';
 import HighlightOffRoundedIcon from '@mui/icons-material/HighlightOffRounded';
 import PlayCircleOutlineRoundedIcon from '@mui/icons-material/PlayCircleOutlineRounded';
+import LockOpenRoundedIcon from '@mui/icons-material/LockOpenRounded';
 import { Snackbar } from "@mui/material";
+import AdminActionsPanel from "./AdminActionsPanel";
 
 function GestionMission() {
 
@@ -59,7 +61,7 @@ function GestionMission() {
     },
     {
       id: 2,
-      statusMission: "terminee",
+      statusMission: "terminer",
       mission: "DSP1",
       client: "Oredoo",
       manager: "Sara Lounes",
@@ -202,18 +204,76 @@ const handleArchiverRow = (selectedRow) => {
   console.log("Mission archivée :", selectedRow);
 };
 
+// const handleCloturerRow = (selectedRow) => {
+
+//   // Si l'utilisateur est admin, exécuter l'action immédiatement
+//   // Mettre à jour le statut de la mission en "archiver"
+//   const updatedRows = filteredRows.map((row) =>
+//     row.id === selectedRow.id ? { ...row, statusMission: "terminer" } : row
+//   );
+
+//   // Mettre à jour l'état des lignes filtrées
+//   setFilteredRows(updatedRows);
+
+//   console.log("Mission cloturée :", selectedRow);
+// };
+
 const handleCloturerRow = (selectedRow) => {
-  // Mettre à jour le statut de la mission en "archiver"
+  if (userRole !== "admin") {
+    // Si l'utilisateur n'est pas admin, ajouter l'action en attente
+    setPendingActions((prevActions) => [
+      ...prevActions,
+      {
+        id:selectedRow.id, // Utiliser un timestamp comme ID unique
+        type: "cloturer",
+        row: selectedRow,
+        requestedBy: userRole,
+        timestamp: new Date(),
+      },
+    ]);
+
+    // Afficher une notification à l'utilisateur
+    setSnackbarMessage("Votre demande de clôture est en attente de validation.");
+    setSnackbarOpen(true);
+    return;
+  }
+
+  // Si l'utilisateur est admin, exécuter l'action immédiatement
   const updatedRows = filteredRows.map((row) =>
     row.id === selectedRow.id ? { ...row, statusMission: "terminer" } : row
   );
-
-  // Mettre à jour l'état des lignes filtrées
   setFilteredRows(updatedRows);
 
-  console.log("Mission cloturée :", selectedRow);
+  console.log("Mission clôturée :", selectedRow);
 };
 
+
+ // Valider une action
+ const handleValidateAction = (selectedRow) => {
+  // Mettre à jour le statut de la mission
+  const updatedRows = filteredRows.map((row) =>
+    row.id === selectedRow.id
+      ? { ...row, statusMission: selectedRow.type === "cloturer" ? "terminer" : "annulée" }
+      : row
+  );
+  setFilteredRows(updatedRows);
+
+  // Supprimer l'action de la liste des actions en attente
+  setPendingActions((prevActions) =>
+    prevActions.filter((a) => a.id !== selectedRow.id)
+  );
+
+  console.log("Action validée :", selectedRow);
+};
+
+const handleRejectAction = (selectedRow) => {
+  // Supprimer l'action de la liste des actions en attente
+  setPendingActions((prevActions) =>
+    prevActions.filter((a) => a.id !== selectedRow.id)
+  );
+
+  console.log("Action rejetée :", selectedRow);
+};
 
 const handleCancelRow = (selectedRow) => {
   // Mettre à jour le statut de la mission en "archiver"
@@ -230,6 +290,14 @@ const handleCancelRow = (selectedRow) => {
 const [previousStatus, setPreviousStatus] = useState({});
 const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
+  //stocker les actions en attente de validation par un administrateur.
+  const [pendingActions, setPendingActions] = useState([]);
+  const userRole = "admin"; // Remplacez par la logique pour obtenir le rôle de l'utilisateur
+  const [activeView, setActiveView] = useState("active"); // "active" ou "archived"
+  const missionsToDisplay =
+  activeView === "active"
+    ? filteredRows.filter((mission) => mission.statusMission !== "archiver")
+    : filteredRows.filter((mission) => mission.statusMission === "archiver");
 
   
 const handlePauseRow = (selectedRow) => {
@@ -361,59 +429,85 @@ const missionEndDate = new Date(selectedRow.dateField1).toISOString().split("T")
 
   // Actions sur les lignes de la table
   const rowActions = [
+    ...(userRole === "admin"
+      ? [
+          {
+            icon: <ArchiveRoundedIcon sx={{ marginRight: "5px" }} />,
+            label: "Archiver",
+            onClick: (selectedRow) => {
+              handleArchiverRow(selectedRow);
+            },
+            disabled: (selectedRow) => {
+              return (
+                !selectedRow ||
+                !["terminer", "en_retard"].includes(selectedRow.statusMission)
+              );
+            },
+          },
+        ]
+      : []),
+  
     {
-      icon: <ArchiveRoundedIcon sx={{ marginRight: "5px" }} />,
-      label: "Archiver",
-      onClick: (selectedRow) => {
-        //console.log("Selected Row:", selectedRow); // Debugging
-        handleArchiverRow(selectedRow);
-      },
-      disabled: (selectedRow) => {
-        //console.log("Selected Row in disabled:", selectedRow); // Debugging
-        return !selectedRow || !["terminee", "en_retard"].includes(selectedRow.statusMission)
-      },
-    },
-    {
-      icon: <ArchiveRoundedIcon sx={{ marginRight: "5px" }} />,
+      icon: <LockOpenRoundedIcon sx={{ marginRight: "5px" }} />,
       label: "Clôturée",
       onClick: (selectedRow) => {
-        //console.log("Selected Row:", selectedRow); // Debugging
         handleCloturerRow(selectedRow);
       },
       disabled: (selectedRow) => {
-       // console.log("Selected Row in disabled:", selectedRow); // Debugging
-        return !selectedRow || !["en_cours", "en_retard"].includes(selectedRow.statusMission)
+        return (
+          !selectedRow || !["en_cours", "en_retard"].includes(selectedRow.statusMission)
+        );
       },
     },
-    {
-      icon: <HighlightOffRoundedIcon sx={{ marginRight: "5px" }} />,
-      label: "Annulée",
-      onClick: (selectedRow) => {
-       // console.log("Selected Row:", selectedRow); // Debugging
-        handleCancelRow(selectedRow);
-      },
-      disabled: (selectedRow) => {
-       // console.log("Selected Row in disabled:", selectedRow); // Debugging
-        return !selectedRow || !["non_commencee", "en_cours","temporaire"].includes(selectedRow.statusMission)
-      },
-    },
-    {
-      icon: (selectedRow)=>{
-        return selectedRow?.statusMission === "temporaire"? <PlayCircleOutlineRoundedIcon sx={{ marginRight: "5px" }}/> : <PauseCircleOutlineRoundedIcon sx={{ marginRight: "5px" }} />},
-      label: (selectedRow) => {
-       
-        return selectedRow?.statusMission === "temporaire" ? "Reprendre" : "Pause";
-      },
-      onClick: (selectedRow) => {
-        //console.log("Selected Row:", selectedRow); 
-        handlePauseRow(selectedRow);
-      },
-      disabled: (selectedRow) => {
-       // console.log("Selected Row in disabled:", selectedRow); 
-        return !selectedRow || !["en_cours","temporaire"].includes(selectedRow.statusMission)
-      },
-    },
-    
+  
+    ...(userRole === "admin"
+      ? [
+          {
+            icon: <HighlightOffRoundedIcon sx={{ marginRight: "5px" }} />,
+            label: "Annulée",
+            onClick: (selectedRow) => {
+              handleCancelRow(selectedRow);
+            },
+            disabled: (selectedRow) => {
+              return (
+                !selectedRow ||
+                !["non_commencee", "en_cours", "temporaire"].includes(
+                  selectedRow.statusMission
+                )
+              );
+            },
+          },
+        ]
+      : []),
+  
+    ...(userRole === "admin"
+      ? [
+          {
+            icon: (selectedRow) => {
+              return selectedRow?.statusMission === "temporaire" ? (
+                <PlayCircleOutlineRoundedIcon sx={{ marginRight: "5px" }} />
+              ) : (
+                <PauseCircleOutlineRoundedIcon sx={{ marginRight: "5px" }} />
+              );
+            },
+            label: (selectedRow) => {
+              return selectedRow?.statusMission === "temporaire"
+                ? "Reprendre"
+                : "Pause";
+            },
+            onClick: (selectedRow) => {
+              handlePauseRow(selectedRow);
+            },
+            disabled: (selectedRow) => {
+              return (
+                !selectedRow ||
+                !["en_cours", "temporaire"].includes(selectedRow.statusMission)
+              );
+            },
+          },
+        ]
+      : []),
+  
     {
       icon: <SquarePen className="mr-2" />,
       label: "Modifier",
@@ -421,22 +515,26 @@ const missionEndDate = new Date(selectedRow.dateField1).toISOString().split("T")
         handleEditRow(selectedRow);
       },
     },
+  
+    ...(userRole === "admin"
+      ? [
+          {
+            icon: (
+              <DeleteOutlineRoundedIcon
+                sx={{ color: "var(--alert-red)", marginRight: "5px" }}
+              />
+            ),
+            label: "Supprimer mission",
+            onClick: (selectedRow) => {
+              handleDeleteRow(selectedRow);
+            },
+          },
+        ]
+      : []),
+  
     {
       icon: (
-        <DeleteOutlineRoundedIcon
-          sx={{ color: "var(--alert-red)", marginRight: "5px" }}
-        />
-      ),
-      label: "Supprimer mission",
-      onClick: (selectedRow) => {
-        handleDeleteRow(selectedRow);
-      },
-    },
-    {
-      icon: (
-        <VisibilityIcon
-          sx={{ color: "var(--font-gray)", marginRight: "5px" }}
-        />
+        <VisibilityIcon sx={{ color: "var(--font-gray)", marginRight: "5px" }} />
       ),
       label: "Voir rapport",
       onClick: handleViewReport,
@@ -445,7 +543,7 @@ const missionEndDate = new Date(selectedRow.dateField1).toISOString().split("T")
 
   return (
     <div className="flex">
-      <SideBar userRole="admin" className="flex-shrink-0 h-full fixed" />
+      <SideBar userRole={userRole} className="flex-shrink-0 h-full fixed" />
       <div className="flex-1 flex flex-col h-screen overflow-y-auto">
         <HeaderBis />
         <HeaderWithAction
@@ -467,24 +565,59 @@ const missionEndDate = new Date(selectedRow.dateField1).toISOString().split("T")
             fileName="missions"
           />
         </div>
+
+ {/* Boutons pour basculer entre les vues */}
+ <div className="flex border-b-2 border-gray-300 mb-3 ml-8 ">
+        <button
+          className={`px-4 py-2 ${
+            activeView === "active"
+              ? "rounded-l rounded-r-none border-none bg-gray-200 text-gray-700 "
+              : "rounded-none text-[var(--subfont-gray)] border-none "
+          } `}
+          onClick={() => setActiveView("active")}
+        >
+          Missions Actives
+        </button>
+        <button
+          className={`px-4 py-2 ${
+            activeView === "archived"
+              ? " rounded-r rounded-l-none  border-none bg-gray-200 text-gray-700"
+              : "rounded-none text-[var(--subfont-gray)] border-none"
+          } `}
+          onClick={() => setActiveView("archived")}
+        >
+          Missions Archivées
+        </button>
+      </div>
+
         <div
           className={`flex-1 overflow-x-auto overflow-y-auto h-[400px] transition-all ${
             isDeletePopupOpen ? "blur-sm" : ""
           }`}
         >
           <Table
-            key={JSON.stringify(filteredRows)}
+            key={JSON.stringify(missionsToDisplay)}
             
             columnsConfig={columnsConfig2}
-            rowsData={filteredRows}
+            // rowsData={filteredRows}
+            rowsData={missionsToDisplay}
             checkboxSelection={false}
             // getRowLink={getRowLink}
             onRowClick={handleRowClick}
             headerTextBackground={"white"}
             headerBackground="var(--blue-menu)"
-            rowActions={rowActions}
+            // rowActions={rowActions}
+            rowActions={rowActions.filter((action) =>
+              activeView === "archived" ? action.label !== "Archiver" : true
+            )}
           />
+           <AdminActionsPanel
+        pendingActions={pendingActions}
+        onValidateAction={handleValidateAction}
+        onRejectAction={handleRejectAction}
+      />
         </div>
+       
       </div>
       {/*  <AddRisqueForm
       title="Créer un nouveau risque"
@@ -539,6 +672,9 @@ const missionEndDate = new Date(selectedRow.dateField1).toISOString().split("T")
           />
         </div>
       )}
+
+
+
     </div>
   );
 }

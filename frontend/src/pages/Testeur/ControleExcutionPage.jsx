@@ -11,6 +11,8 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import {  SquarePen } from 'lucide-react';
 import DeleteOutlineRoundedIcon from '@mui/icons-material/DeleteOutlineRounded';
 import SendIcon from '@mui/icons-material/Send';
+import JSZip from 'jszip';
+import { saveAs } from 'file-saver';
 
 // Ajoutez ces imports pour générer un PDF
 import jsPDF from 'jspdf';
@@ -263,8 +265,24 @@ const [showDecisionPopup, setShowDecisionPopup] = useState(false);
   };
   const handlePopupClose = () =>  setShowPopup(false);
 
-  const handleSave = () => {
+  const [testScriptData, setTestScriptData] = useState([]); // État pour stocker les données du test script
+  const handleTestScriptChange = (data) => {
+    setTestScriptData(data); // Mettre à jour les données du test script en temps réel
+  };
+
+  const handleSave = async () => {
     const doc = new jsPDF();
+    let yOffset = 30; // Position verticale initiale
+
+  // Fonction pour vérifier si une nouvelle page est nécessaire
+  const addNewPageIfNeeded = (offset) => {
+    if (offset > doc.internal.pageSize.height - 20) { // 20 est une marge
+      doc.addPage();
+      return 30; // Réinitialiser la position verticale
+    }
+    return offset;
+  };
+
     doc.setFontSize(18);
     doc.text('Rapport de Contrôle', 105, 20, { align: 'center' });
     doc.setFontSize(12);
@@ -272,7 +290,7 @@ const [showDecisionPopup, setShowDecisionPopup] = useState(false);
   
     // Tableau récapitulatif des informations principales
     autoTable(doc, {
-      startY: 40,
+      startY: yOffset,
       head: [['Champ', 'Valeur']],
       body: [
         [ 'Type:', type,],
@@ -284,43 +302,137 @@ const [showDecisionPopup, setShowDecisionPopup] = useState(false);
         ['Commentaire', commentaire],
         ['Critères', JSON.stringify(localSelections)],
       ],
+      didDrawPage: (data) => {
+        yOffset = data.cursor.y + 10; // Mettre à jour la position verticale après le tableau
+      },
     });
   
-    // Liste des remédiations sous forme de tableau
-    autoTable(doc, {
-      startY: doc.lastAutoTable.finalY + 10,
-      head: [['ID', 'Description', 'Contact', 'Date Début', 'Date Fin', 'Suivi', 'Status']],
-      body: action.map(item => [
-        item.id,
-        item.description,
-        item.contact,
-        item.dateField,
-        item.dateField1,
-        item.suivi,
-        item.status,
-      ]),
-    });
-  
-    // Ajout de liens de téléchargement pour les fichiers de preuves
-    files.forEach((file, index) => {
-      doc.text(`Evidence ${index + 1}: ${file.name}`, 14, doc.lastAutoTable.finalY + 10 + (index * 6));
-    });
-  
-    // Télécharger automatiquement le PDF
-    doc.save('rapport_controle.pdf');
-    setShowPopup(true);
+    // Vérifier si une nouvelle page est nécessaire
+  yOffset = addNewPageIfNeeded(yOffset);
 
+  // Liste des remédiations sous forme de tableau
+  autoTable(doc, {
+    startY: yOffset,
+    head: [['ID', 'Description', 'Contact', 'Date Début', 'Date Fin', 'Suivi', 'Status']],
+    body: action.map(item => [
+      item.id,
+      item.description,
+      item.contact,
+      item.dateField,
+      item.dateField1,
+      item.suivi,
+      item.status,
+    ]),
+    didDrawPage: (data) => {
+      yOffset = data.cursor.y + 10; // Mettre à jour la position verticale après le tableau
+    },
+  });
+   // Vérifier si une nouvelle page est nécessaire
+   yOffset = addNewPageIfNeeded(yOffset);
+
+ //    Ajout des données du test script
+  autoTable(doc, {
+    startY: yOffset,
+    head: [['Étape', 'Phrase', 'Validée', 'Commentaire']],
+    body: testScriptData.map((item, index) => [
+      index + 1,
+      item.phrase,
+      item.isChecked ? 'Oui' : 'Non', // Afficher "Oui" ou "Non" pour la validation
+      item.comment || "Aucun commentaire", // Afficher "Aucun commentaire" si le commentaire est vide
+    ]),
+    didDrawPage: (data) => {
+      yOffset = data.cursor.y + 10; // Mettre à jour la position verticale après le tableau
+    },
+  });
+  // Vérifier si une nouvelle page est nécessaire
+  yOffset = addNewPageIfNeeded(yOffset);
+  
+  // Ajout des fichiers de preuves (evidences)
+  if (evidenceFiles.length > 0) {
+    doc.text("Fichiers de preuves (Evidences):", 14, yOffset);
+    yOffset += 10;
+    evidenceFiles.forEach((file, index) => {
+      doc.text(`- ${file.name}`, 20, yOffset);
+      yOffset += 10;
+      yOffset = addNewPageIfNeeded(yOffset); // Vérifier si une nouvelle page est nécessaire
+    });
+  } else {
+    doc.text("Aucun fichier de preuve (Evidence) disponible.", 14, yOffset);
+    yOffset += 10;
+  }
+
+  // Vérifier si une nouvelle page est nécessaire
+  yOffset = addNewPageIfNeeded(yOffset);
+
+  // Ajout des fichiers de test
+  if (testFiles.length > 0) {
+    doc.text("Fichiers de test:", 14, yOffset);
+    yOffset += 10;
+    testFiles.forEach((file, index) => {
+      doc.text(`- ${file.name}`, 20, yOffset);
+      yOffset += 10;
+      yOffset = addNewPageIfNeeded(yOffset); // Vérifier si une nouvelle page est nécessaire
+    });
+  } else {
+    doc.text("Aucun fichier de test disponible.", 14, yOffset);
+    yOffset += 10;
+  }
+  // Créer un fichier ZIP
+  const zip = new JSZip();
+
+  
+  // Générer le PDF
+  const pdfBlob = doc.output('blob');
+
+  // Ajouter le PDF au ZIP
+  zip.file("rapport_controle.pdf", pdfBlob);
+
+  // // Ajouter les fichiers de preuves (evidences) au ZIP
+  // evidenceFiles.forEach((file, index) => {
+  //   zip.file(`evidences/${file.name}`, file);
+  // });
+
+  // // Ajouter les fichiers de test au ZIP
+  // testFiles.forEach((file, index) => {
+  //   zip.file(`test_files/${file.name}`, file);
+  // });
+
+  // Ajouter les fichiers de preuves (evidences) au ZIP
+  for (const file of evidenceFiles) {
+    if (file instanceof File || file instanceof Blob) {
+      zip.file(`evidences/${file.name}`, file);
+    }
+  }
+   // Ajouter les fichiers de preuves (evidences) au ZIP
+   for (const file of testFiles) {
+    if (file instanceof File || file instanceof Blob) {
+      zip.file(`testFile/${file.name}`, file);
+    }
+  }
+  // Générer le fichier ZIP et le télécharger
+  const zipBlob = await zip.generateAsync({ type: "blob" });
+  saveAs(zipBlob, "rapport_controle.zip");
+
+  setShowPopup(true);
+  
+    // // Télécharger automatiquement le PDF
+    // doc.save('rapport_controle.pdf');
+    // setShowPopup(true);
+
+    
     console.log(
       'Type:', type,
       'Major Process:', majorProcess,
       'Sub Process:', subProcess,
       'Description:', description,
       'TestScript:', testScript,
-      'files:',files ,
-      'status:',selectedMulti,
-      'Commentaire:',commentaire,
-      'remediation:',action,
-      'critere:',  localSelections
+      'Test Script Data:', testScriptData,
+      'Evidence Files:', evidenceFiles,
+      'Test Files:', testFiles,
+      'status:', selectedMulti,
+      'Commentaire:', commentaire,
+      'remediation:', action,
+      'critere:', localSelections
     );
     //setIsEditing(false); // Quitter le mode édition après la sauvegarde
   };
@@ -381,6 +493,7 @@ const [showDecisionPopup, setShowDecisionPopup] = useState(false);
           type={type}
           majorProcess={majorProcess}
           subProcess={subProcess}
+          onTestScriptChange={handleTestScriptChange} // Transmettre la fonction de rappel
           
         />
       

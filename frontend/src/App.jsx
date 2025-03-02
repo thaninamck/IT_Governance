@@ -63,6 +63,8 @@ import StepVerificationCode from './pages/subPages/StepVerificationCode';
 import StepNewPassword from './pages/subPages/StepNewPassword';
 import ChangePasswordAfterFirstLogin from './pages/ChangePasswordAfterFirstLogin';
 import MissionReport from './pages/Manager/MissionReport';
+import InstructionSplitter from './components/InstructionSplitter';
+import AdminActionsPanel from './pages/AdminActionsPanel';
 function App() {
   const getRowLink = (row) => `/tablemission/${row.mission}`;
   
@@ -163,6 +165,7 @@ const rowsData3 = [
 
         
           <Route path='/notificationpopup' element={<NotificationPopup/>}/>
+          <Route path='/testscript' element={<InstructionSplitter/>}/>
 
           { /*-----------------Forms-----------------------------*/  }
           <Route path='/inputform' element={<InputForm/>}/>
@@ -220,6 +223,7 @@ const rowsData3 = [
           <Route path='/acc' element={<WorkPlanSideBar/>}></Route>
           <Route path='/workplan' element={<Workplan/>}></Route>
           <Route path='/gestionmission/:mission' element={<MissionReport/>}></Route>
+          <Route path='/adminaction' element={<AdminActionsPanel/>}></Route>
 
          
           
