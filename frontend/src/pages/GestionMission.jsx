@@ -550,6 +550,7 @@ const missionEndDate = new Date(selectedRow.dateField1).toISOString().split("T")
           title="Missions"
           buttonLabel="Créer une mission"
           onButtonClick={openModal}
+          userRole={userRole}
         />
         <div className="flex items-center justify-center mb-6">
           <SearchBar
@@ -567,6 +568,7 @@ const missionEndDate = new Date(selectedRow.dateField1).toISOString().split("T")
         </div>
 
  {/* Boutons pour basculer entre les vues */}
+ { userRole==='admin' &&
  <div className="flex border-b-2 border-gray-300 mb-3 ml-8 ">
         <button
           className={`px-4 py-2 ${
@@ -588,7 +590,7 @@ const missionEndDate = new Date(selectedRow.dateField1).toISOString().split("T")
         >
           Missions Archivées
         </button>
-      </div>
+      </div> }
 
         <div
           className={`flex-1 overflow-x-auto overflow-y-auto h-[400px] transition-all ${
