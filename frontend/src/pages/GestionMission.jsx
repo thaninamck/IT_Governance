@@ -1,4 +1,4 @@
-import React, { useState,useEffect } from "react";
+import React, { useState,useEffect, useContext } from "react";
 import SideBar from "../components/sideBar/SideBar";
 import HeaderBis from "../components/Header/HeaderBis";
 import Table from "../components/Table";
@@ -22,6 +22,7 @@ import PlayCircleOutlineRoundedIcon from '@mui/icons-material/PlayCircleOutlineR
 import LockOpenRoundedIcon from '@mui/icons-material/LockOpenRounded';
 import { Snackbar } from "@mui/material";
 import AdminActionsPanel from "./AdminActionsPanel";
+import { PermissionRoleContext } from "../Context/permissionRoleContext";
 
 function GestionMission() {
 
@@ -292,7 +293,14 @@ const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   //stocker les actions en attente de validation par un administrateur.
   const [pendingActions, setPendingActions] = useState([]);
-  const userRole = "admin"; // Remplacez par la logique pour obtenir le rôle de l'utilisateur
+  // const userRole = "manager"; // Remplacez par la logique pour obtenir le rôle de l'utilisateur
+
+ // Accédez à userRole et setUserRole via le contexte
+ const { userRole, setUserRole } = useContext(PermissionRoleContext);
+
+ // Utilisez userRole dans votre composant
+ console.log("Rôle de l'utilisateur :", userRole);
+
   const [activeView, setActiveView] = useState("active"); // "active" ou "archived"
   const missionsToDisplay =
   activeView === "active"
