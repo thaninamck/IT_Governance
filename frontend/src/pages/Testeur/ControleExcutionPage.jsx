@@ -1,5 +1,5 @@
 import Breadcrumbs from '../../components/Breadcrumbs';
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import Header from '../../components/Header/Header';
 import PopUp from '../../components/PopUps/PopUp';
 import ConclusionRemediationSection from '../subPages/ConclusionRemediationSection';
@@ -19,11 +19,20 @@ import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import emailjs from 'emailjs-com';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { PermissionRoleContext } from '../../Context/permissionRoleContext';
 
 // Initialize EmailJS with your userID
 emailjs.init('oAXuwpg74dQwm0C_s'); // Replace 'YOUR_USER_ID' with your actual userID
 
 function ControleExcutionPage() {
+
+
+  // Accédez à userRole et setUserRole via le contexte
+     const { userRole, setUserRole } = useContext(PermissionRoleContext);
+    
+     // Utilisez userRole dans votre composant
+     console.log("Rôle de l'utilisateur :", userRole);
+
   const location = useLocation();
   const controleData = location.state?.controleData || {};
 
