@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import HeaderBis from "../components/Header/HeaderBis";
 import SideBar from "../components/sideBar/SideBar";
 import Tabs from "@mui/joy/Tabs";
@@ -15,11 +15,17 @@ import RiskModalWindow from "../components/ModalWindows/RiskModalWindow";
 import ImportCsvButton from "../components/ImportXcelButton";
 import { useState } from "react";
 import { DataGrid } from "@mui/x-data-grid";
+import { PermissionRoleContext } from "../Context/permissionRoleContext";
 const ManageControls = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isOpenRisk, setIsOpenRisk] = useState(false);
   const [transformedData, setTransformeData] = useState({});
   const [riskTransformedData, setRiskTransformeData] = useState({});
+  // Accédez à userRole et setUserRole via le contexte
+  const { userRole, setUserRole } = useContext(PermissionRoleContext);
+  
+  // Utilisez userRole dans votre composant
+  console.log("Rôle de l'utilisateur :", userRole);
 
   const handleRowSelectionChange1 = (newRowSelectionModel) => {
     const selectedRow = newRowSelectionModel; // On suppose qu'une seule ligne est sélectionnée
@@ -228,8 +234,8 @@ const ManageControls = () => {
   const controlsData = [
     {
       id: 7,
-      code: "izan",
-      description: "Dutiesizaaan are separated...",
+      code: "test",
+      description: "Duties are separated...",
       type: [1, "Préventif"],
 
       majorProcess: "Technique",
@@ -319,7 +325,7 @@ const ManageControls = () => {
       )}
       {/* Barre latérale */}
       <div className="h-screen">
-        <SideBar userRole={"admin"} />
+        <SideBar userRole={userRole} />
       </div>
 
       {/* Contenu principal */}

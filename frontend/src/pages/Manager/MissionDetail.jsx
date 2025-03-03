@@ -5,12 +5,19 @@ import Header from "../../components/Header/Header";
 import MissionInfo from "../../components/InfosDisplay/MissionInfo";
 import Separator from "../../components/Decorators/Separator";
 import AddScope from "../../components/InfosDisplay/AddScope";
-import { useState } from "react";
+import { useContext, useState } from "react";
+import { PermissionRoleContext } from "../../Context/permissionRoleContext";
 
 function MissionDetail() {
   // const { mission} = useParams(); // Récupérer les paramètres de l'URL
   const location = useLocation(); // Obtenir l'URL actuelle
   const [showForm, setShowForm] = useState(false);
+
+  // Accédez à userRole et setUserRole via le contexte
+  const { userRole, setUserRole } = useContext(PermissionRoleContext);
+  
+  // Utilisez userRole dans votre composant
+  console.log("Rôle de l'utilisateur :", userRole);
 
   const handleToggleForm = () => {
     setShowForm((prev) => !prev); // Change l'état pour afficher ou masquer le formulaire
@@ -38,13 +45,14 @@ function MissionDetail() {
         {breadcrumbRoutes.some((route) =>
           location.pathname.startsWith(route)
         ) && <Breadcrumbs />}
-        <MissionInfo dataFormat={missionData} />
+        <MissionInfo dataFormat={missionData} userRole={userRole} />
         <AddScope
           title={"Scope Application"}
           text={"Aucune application ajoutée pour le moment"}
           text1={"Ajouter d'autre application "}
           onToggleForm={handleToggleForm} // Passe la fonction en prop
           showForm={showForm}
+          userRole={userRole}
         />
         {/*<AddScope title={'Matrice'} text={'Aucune application ajoutée pour le moment'} onToggleForm={handleToggleForm} // Passe la fonction en prop
           showForm={showForm} /> */}

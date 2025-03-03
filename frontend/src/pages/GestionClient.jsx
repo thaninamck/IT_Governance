@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import SideBar from '../components/sideBar/SideBar';
 import HeaderBis from '../components/Header/HeaderBis';
 import Table from '../components/Table';
@@ -10,6 +10,7 @@ import AddClientForm from '../components/Forms/AddClientForm';
 import PopUp from '../components/PopUps/PopUp';
 import DecisionPopUp from '../components/PopUps/DecisionPopUp';
 import ExportButton from '../components/ExportButton';
+import { PermissionRoleContext } from '../Context/permissionRoleContext';
 
 function GestionClient() {
     // Configuration des colonnes pour la table
@@ -36,6 +37,13 @@ function GestionClient() {
     const [selectedClient, setSelectedClient] = useState(null);
     const [isDeletePopupOpen, setIsDeletePopupOpen] = useState(false);
     const [selectedClientId, setSelectedClientId] = useState(null);
+
+    
+      // Accédez à userRole et setUserRole via le contexte
+         const { userRole, setUserRole } = useContext(PermissionRoleContext);
+        
+         // Utilisez userRole dans votre composant
+         console.log("Rôle de l'utilisateur :", userRole);
 
     // Fonction pour ouvrir le modal d'ajout
     const openModal = () => setIsModalOpen(true);
@@ -95,12 +103,12 @@ function GestionClient() {
     return (
         <div className="flex">
             {/* Barre latérale */}
-            <SideBar userRole="admin" className="flex-shrink-0 h-full fixed" />
+            <SideBar userRole={userRole} className="flex-shrink-0 h-full fixed" />
 
             {/* Contenu principal */}
             <div className="flex-1 flex flex-col h-screen overflow-y-auto">
                 <HeaderBis />
-                <HeaderWithAction title="Client" buttonLabel="Créer un Client" onButtonClick={openModal} />
+                <HeaderWithAction title="Client" buttonLabel="Créer un Client" onButtonClick={openModal} userRole={userRole} />
                 
                 {/* Barre de recherche */}
                 <div className="flex items-center justify-center mb-6">
