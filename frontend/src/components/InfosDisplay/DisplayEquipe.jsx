@@ -2,6 +2,9 @@ import React from 'react';
 import InfoDisplayComponent from './InfoDisplayComponent';
 
 const DisplayEquipe = ({ equipe }) => {
+
+
+  
   return (
     <div className="flex flex-col sm:flex-row sm:items-center mt-4">
       <label htmlFor="Equipe" className="text-font-gray font-medium w-full sm:w-[300px] mb-2 sm:mb-0">

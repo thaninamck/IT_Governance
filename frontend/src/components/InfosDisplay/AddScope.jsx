@@ -5,7 +5,7 @@ import Table from '../Table';
 import DeleteOutlineRoundedIcon from '@mui/icons-material/DeleteOutlineRounded';
 import DecisionPopUp from '../PopUps/DecisionPopUp';
 
-function AddScope({ title, text, text1, onToggleForm, showForm }) {
+function AddScope({ title, text, text1, onToggleForm, showForm,userRole }) {
   const [applications, setApplications] = useState([
     {id:1,nomApp:"USSD",description:'llllll',owner:'farid akbi',contact:'farid@gmail.com',couche:["Data Base","Application"]},
     {id:2,nomApp:"New SNOC",description:'llllll',owner:'farid akbi',contact:'farid@gmail.com',couche:['Data Base']},
@@ -56,7 +56,10 @@ function AddScope({ title, text, text1, onToggleForm, showForm }) {
         );
       }
     },
-    { field: 'actions', headerName: 'Action', width: 80 }
+    // Ajouter la colonne "actions" conditionnellement
+  ...((userRole === 'manager' || userRole === 'admin')
+  ? [{ field: 'actions', headerName: 'Action', width: 80 }]
+  : [])
   ];
 
   // const handleAddApp = (app) => {
@@ -139,6 +142,7 @@ function AddScope({ title, text, text1, onToggleForm, showForm }) {
         <hr className="flex-grow border-t border-[var(--blue-menu)]" />
       </div>
 
+      {(userRole ==='manager' || userRole==='admin')&&
       <div className="flex flex-row items-center gap-4 pl-6">
         <p className="text-[var(--status-gray)] text-s">{applications.length > 0 ? text1 : text}</p>
         <button
@@ -147,7 +151,7 @@ function AddScope({ title, text, text1, onToggleForm, showForm }) {
         >
           Ajouter
         </button>
-      </div>
+      </div>}
 
       {showDecisionPopup && (
         <div className="absolute top-25 left-1/2 -translate-x-1/2 translate-y-1/4 z-50 ">

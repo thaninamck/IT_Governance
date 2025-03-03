@@ -2,20 +2,25 @@ import React, { useState } from 'react';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import SingleOptionSelect from '../Selects/SingleOptionSelect';
 
-const AddEquipe = () => {
+const AddEquipe = ({ onAddCollaborators }) => {
   const [collaborators, setCollaborators] = useState([]); // Liste des collaborateurs
 
   // Données pour les membres et les rôles
   const members = [
-    [1, 'Os'],
-    [2, 'Bdd'],
-    [3, 'NA'],
+    [1, 'Azyadi Zouaghi'],
+    [2, 'Sara Lounes'],
+    [3, 'Kamelia Toubal'],
+    [4, 'Houda Elmaouhab'],
+    [5, 'Manel Mohand Ouali'],
+    [6, 'Thanina Mecherak'],
+    [7, 'Ikram Berihi'],
+    [8, 'Selma Boughoufalah'],
   ];
 
   const roles = [
-    [1, 'Os'],
-    [2, 'Bdd'],
-    [3, 'NA'],
+    [1, 'Manager'],
+    [2, 'Supeviseur'],
+    [3, 'Testeur'],
   ];
 
   // Ajouter un collaborateur vide à la liste
@@ -37,21 +42,34 @@ const AddEquipe = () => {
     setCollaborators(updatedCollaborators);
   };
 
-  // Afficher les données sélectionnées (pour vérification)
   const handleSubmit = () => {
-    console.log('Collaborateurs:', collaborators);
+    if (collaborators.some(c => !c.member || !c.role)) {
+      alert("Veuillez remplir tous les champs.");
+      return;
+    }
+
+    const formattedCollaborators = collaborators.map(c => ({
+      membre: c.member.name,
+      role: c.role.name,
+    }));
+
+    onAddCollaborators(formattedCollaborators);
+    setCollaborators([]); // Réinitialiser après soumission
   };
+  
+  
 
   return (
     <>
       {/* Section pour l'équipe */}
-      <div className="flex items-center mt-4">
-        <label htmlFor="Equipe" className="text-font-gray font-medium w-[300px]">
+      <div className="flex items-center ml-72  mt-4 ">
+         {/* <label htmlFor="Equipe" className="text-font-gray font-medium w-[300px] ">
           Équipe:
-        </label>
+        </label>  */}
+    
 
-        <div className="flex items-center gap-2">
-          <div className='flex flex-col gap-x-2 items-center'>
+        <div className="flex items-center gap-2  ">
+          <div className='flex flex-col gap-x-2  items-left'>
             {/* Affiche "Ajouter des collaborateurs" au début seulement */}
             {collaborators.length === 0 && (
               <div className='flex gap-x-2 items-center'>
@@ -65,7 +83,7 @@ const AddEquipe = () => {
 
             {/* Affiche les collaborateurs ajoutés */}
             {collaborators.map((collaborator, index) => (
-              <div key={index} className='flex gap-x-2 items-center'>
+              <div key={index} className='flex gap-x-2 items-center  '>
                 {/* Sélection du membre */}
                 <SingleOptionSelect
                   placeholder="Membre"

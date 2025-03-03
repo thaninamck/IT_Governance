@@ -1,22 +1,37 @@
-import React from "react";
+import React, { useState } from "react";
 import InfoDisplayComponent from "./InfoDisplayComponent";
 import AddEquipe from "./AddEquipe";
 import DisplayEquipe from "./DisplayEquipe";
 import Separator from "../Decorators/Separator";
 
-const MissionInfo = ({dataFormat }) => {
-  // Vérifier si dataFormat est défini pour éviter les erreurs
-  if (!dataFormat) {
-    return <p className="text-red-500">Aucune donnée disponible</p>;
-  }
+const MissionInfo = ({dataFormat ,userRole}) => {
+ 
+ // Transformer le manager en un tableau d'objets pour DisplayEquipe
+ const [equipe, setEquipe] = useState([
+  {
+    membre: dataFormat.manager || "Non défini",
+    role: "Manager",
+  },
+]);
+
+// Fonction pour ajouter des collaborateurs à l'équipe
+const handleAddCollaborators = (newCollaborators) => {
+  setEquipe((prevEquipe) => [...prevEquipe, ...newCollaborators]);
+};
+
+ // Vérifier si dataFormat est défini pour éviter les erreurs
+ if (!dataFormat) {
+  return <p className="text-red-500">Aucune donnée disponible</p>;
+}
+
   //à ajouter comme parametre apres
   //juste pour le test
-  const equipe = [
-    { membre: "houda", role: "Manager" },
-    { membre: "membre2", role: "Testeur" },
-    { membre: "membre3", role: "Superviseur" },
+   //const equipe = [
+  //   { membre: "houda", role: "Manager" },
+  //   { membre: "membre2", role: "Testeur" },
+  //   { membre: "membre3", role: "Superviseur" },
     
-  ];
+ // ];
 
 
   return (
@@ -49,21 +64,22 @@ const MissionInfo = ({dataFormat }) => {
     </div>
     <InfoDisplayComponent
       label="Période auditée"
-      BoxContent={
-        dataFormat.periodeAuditee
-          ? `Du ${dataFormat.periodeAuditee.debut} à ${dataFormat.periodeAuditee.fin}`
-          : "Non défini"
-      }
+      BoxContent={`Du ${dataFormat.auditStartDate} à ${dataFormat.auditEndDate}`|| "Non défini" }
       borderWidth={220}
       labelWidth={300}
     />
-      {equipe.length !== 0 ? (
+      {/* {equipe.length !== 0 ? (
         <>
           <DisplayEquipe equipe={equipe} />
         </>
       ) : (
         <AddEquipe />
-      )}
+      )} */}
+ <DisplayEquipe equipe={equipe} />
+ 
+ {(userRole==='admin' ||userRole==='manager')&&
+ <AddEquipe onAddCollaborators={handleAddCollaborators} />
+ }
     </div>
   );
 };
