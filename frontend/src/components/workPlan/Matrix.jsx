@@ -97,6 +97,7 @@ function Matrix({ data }) {
                 controlDescription: control.description,
                 majorProcess: control.majorProcess,
                 subProcess: control.subProcess,
+                type: control.type,
                 testScript: control.testScript,
                 controlOwner: control.owner,
                 controlTester: "",
@@ -311,7 +312,7 @@ useEffect(() => {
   };
 
   // Gestion des sélections pour les testeurs
-  const handleTesterChange = (id, testerId) => (event) => {
+  /*const handleTesterChange = (id, testerId) => (event) => {
     const rowIndex = flattenedData.findIndex((row) => row.id === id);
     if (rowIndex !== -1) {
       flattenedData[rowIndex].controlTester = testerId;
@@ -320,7 +321,29 @@ useEffect(() => {
       ...prev,
       [id]: testerId,
     }));
+  };*/ //old version
+
+
+  const handleTesterChange = (id, testerId) => (event) => {
+    setFlattenedData((prevData) => {
+      return prevData.map((row) => {
+        if (row.id === id) {
+          return { ...row, controlTester: testerId }; // Update the tester
+        }
+        return row;
+      });
+    });
+  
+    setTesterValues((prev) => ({
+      ...prev,
+      [id]: testerId,
+    }));
   };
+
+
+
+
+
 
   const handleEditStop = (params, event) => {
     console.log("Edition terminée sur la cellule", params);
@@ -424,6 +447,12 @@ useEffect(() => {
     {
       field: "subProcess",
       headerName: "Sub Process",
+      width: 150,
+      editable: false,
+    },
+    {
+      field: "type",
+      headerName: "Type",
       width: 150,
       editable: false,
     },

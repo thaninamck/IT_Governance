@@ -119,7 +119,7 @@ const Workplan = () => {
 };
 
 
-  const addControlToRisk = (idLayer, idRisk, cntrlID, cntrlDescription, majorProcess, subProcess, testScript) => {
+  const addControlToRisk = (idLayer, idRisk, cntrlID, cntrlDescription, majorProcess, subProcess,  testScript,type) => {
     if (!application) return; // Vérifie qu'une application existe
 
     setApplication((prevApp) => ({
@@ -141,7 +141,10 @@ const Workplan = () => {
                                             description: cntrlDescription, 
                                             majorProcess, 
                                             subProcess, 
-                                            testScript, 
+                                            type,
+                                            testScript,
+                                            
+
                                             owner: "" 
                                         }
                                     ],
@@ -317,7 +320,8 @@ const Workplan = () => {
         controlData.description,
         controlData.majorProcess,
         controlData.subProcess,
-        controlData.testScript
+        controlData.testScript,
+        controlData.type
       );
     });
   };
