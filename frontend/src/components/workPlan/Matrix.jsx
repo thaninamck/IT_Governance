@@ -288,7 +288,7 @@ useEffect(() => {
   const handleSave = () => {
     console.log("sending data to backend", flattenedData);
     localStorage.removeItem("flattenedData");
-    navigate("/tablemission/DSP")
+    navigate("/tablemission/DSP")//pour l'instant on redirige vers la page d'accueil
   };
 
   // Gestion des cases à cocher pour les contrôles
