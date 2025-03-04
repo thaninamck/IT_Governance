@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { DataGrid } from "@mui/x-data-grid/DataGrid";
 import { User, ChevronDown } from "lucide-react";
 //import SaveIcon from '@mui/icons-material/Save';
@@ -282,8 +283,12 @@ useEffect(() => {
   };
 
   const atLeastOneApp = flattenedData.length > 0;
+  const navigate = useNavigate();
+
   const handleSave = () => {
     console.log("sending data to backend", flattenedData);
+    localStorage.removeItem("flattenedData");
+    navigate("/tablemission/DSP")
   };
 
   // Gestion des cases à cocher pour les contrôles
