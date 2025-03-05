@@ -97,51 +97,68 @@ const Workplan = () => {
   };
 
   // Fonction pour ajouter un risque dans une couche spécifique de l'application courante
-  const addRiskToLayer = (idLayer, riskID,riskName, riskDescription) => {
-    if (!application) return; // Vérifie qu'une application existe
-    setApplication((prevApp) => ({
-      ...prevApp,
-      layers: prevApp.layers.map((layer) =>
-        layer.id === idLayer
-          ? {
-              ...layer,
-              risks: [
-                ...layer.risks,
-                { id: riskID,nom:riskName, description: riskDescription, owner:"",controls: [] },
-              ],
-            }
-          : layer
-      ),
-    }));
-  };
-
-  const addControlToRisk = (idLayer, idRisk, cntrlID, cntrlDescription,majorProcess,subProcess,testScript) => {
+  const addRiskToLayer = (idLayer, riskID, riskName, riskDescription) => {
     if (!application) return; // Vérifie qu'une application existe
 
     setApplication((prevApp) => ({
-      ...prevApp,
-      layers: prevApp.layers.map((layer) =>
-        layer.id === idLayer
-          ? {
-              ...layer,
-              risks: layer.risks.map((risk) =>
-                risk.id === idRisk
-                  ? {
-                      ...risk,
-                      controls: [
-                        ...risk.controls,
-                        { id: cntrlID, description: cntrlDescription,majorProcess:majorProcess,subProcess:subProcess,testScript:testScript,owner:"" },
-                      ],
-                    }
-                  : risk
-              ),
-            }
-          : layer
-      ),
+        ...prevApp,
+        layers: prevApp.layers.map((layer) =>
+            layer.id === idLayer
+                ? {
+                    ...layer,
+                    risks: layer.risks.some(risk => risk.id === riskID)
+                        ? layer.risks // Ne rien ajouter si le risque existe déjà
+                        : [
+                            ...layer.risks,
+                            { id: riskID, nom: riskName, description: riskDescription, owner: "", controls: [] }
+                        ],
+                }
+                : layer
+        ),
+    }));
+};
+
+
+  const addControlToRisk = (idLayer, idRisk, cntrlID, cntrlDescription, majorProcess, subProcess,  testScript,type) => {
+    if (!application) return; // Vérifie qu'une application existe
+
+    setApplication((prevApp) => ({
+        ...prevApp,
+        layers: prevApp.layers.map((layer) =>
+            layer.id === idLayer
+                ? {
+                    ...layer,
+                    risks: layer.risks.map((risk) =>
+                        risk.id === idRisk
+                            ? {
+                                ...risk,
+                                controls: risk.controls.some(control => control.id === cntrlID)
+                                    ? risk.controls // Ne rien ajouter si le contrôle existe déjà
+                                    : [
+                                        ...risk.controls,
+                                        { 
+                                            id: cntrlID, 
+                                            description: cntrlDescription, 
+                                            majorProcess, 
+                                            subProcess, 
+                                            type,
+                                            testScript,
+                                            
+
+                                            owner: "" 
+                                        }
+                                    ],
+                            }
+                            : risk
+                    ),
+                }
+                : layer
+        ),
     }));
 
-    console.log("lapplication", application);
-  };
+    console.log("l'application mise à jour", application);
+};
+
 
   const addToDataStructure = (application) => {
     
@@ -163,10 +180,10 @@ const Workplan = () => {
     event.dataTransfer.setData("application/json", JSON.stringify(item));
   };
 
-  const onRiskDragStart = (event, item) => {
-    console.log(item);
-    event.dataTransfer.setData("application/json", JSON.stringify(item));
-    console.log("risk dragged here");
+  const onRiskDragStart = (event, items) => {
+    console.log(items);
+    event.dataTransfer.setData("application/json", JSON.stringify(items));
+    console.log("risks dragged here");
   };
 
   const handleAddAppClick = () => {
@@ -193,50 +210,56 @@ const Workplan = () => {
     setopenConfirmationDialog(true)
     
   };
+  
   const onRiskDrop = (event, layerId) => {
     event.preventDefault();
-    const riskData = JSON.parse(event.dataTransfer.getData("application/json")); 
-
-    const isRisk = riskData && "idRisk" in riskData;
-    if (!isRisk) {
-      //alert("Attention veuillez commencer par les risques !");
-      setstartWithriskDialogOpen(true);
-      return; // Bloque l'ajout
-    }
-    //console.log("le risque droppé", riskData);
-    //console.log("le id risque", riskData.idRisk);
-    //console.log("la desc risk", riskData.description);
-    if (!layerId || !riskData) {
-      console.warn("Layer ID or Risk Data not found");
+    const risksData = JSON.parse(event.dataTransfer.getData("application/json"));
+  
+   if (!Array.isArray(risksData)) {
+      console.warn("Dropped data is not an array of risks");
       return;
     }
-    addRiskToLayer(layerId, riskData.idRisk,riskData.nom, riskData.description);
-    const x = event.clientX;
-    const y = event.clientY;
-
-    // Créer le nœud du risque
-    const newRiskNode = {
-      id: layerId+"_"+riskData.idRisk,
-      type: "risk",
-      position: { x, y },
-      data: {
-        riskData,
-        onControlDrop: (event) =>
-          onControlDrop(event, riskData.idRisk, layerId),
-      },
-    };
-
-    // Créer l'edge entre la couche et le risque
-    const newEdge = {
-      id: `e-${layerId}-${layerId+"_"+riskData.idRisk}`,
-      source: layerId,
-      target: layerId+"_"+riskData.idRisk,
-      label: "",
-    };
-
-    // Mettre à jour les states
-    setAppNodes((prevNodes) => [...prevNodes, newRiskNode]);
-    setEdges((prevEdges) => [...prevEdges, newEdge]);
+  
+    risksData.forEach((riskData, index) => {
+      const isRisk = riskData && "idRisk" in riskData;
+      if (!isRisk) {
+        setstartWithriskDialogOpen(true);
+        return; // Bloque l'ajout
+      }
+  
+      if (!layerId || !riskData) {
+        console.warn("Layer ID or Risk Data not found");
+        return;
+      }
+  
+      addRiskToLayer(layerId, riskData.idRisk, riskData.nom, riskData.description);
+      const x = event.clientX;
+      const y = event.clientY + index * 50; // Adjust position for each risk
+  
+      // Créer le nœud du risque
+      const newRiskNode = {
+        id: layerId + "_" + riskData.idRisk,
+        type: "risk",
+        position: { x, y },
+        data: {
+          riskData,
+          onControlDrop: (event) =>
+            onControlDrop(event, riskData.idRisk, layerId),
+        },
+      };
+  
+      // Créer l'edge entre la couche et le risque
+      const newEdge = {
+        id: `e-${layerId}-${layerId+"_"+riskData.idRisk}`,
+        source: layerId,
+        target: layerId + "_" + riskData.idRisk,
+        label: "",
+      };
+  
+      // Mettre à jour les states
+      setAppNodes((prevNodes) => [...prevNodes, newRiskNode]);
+      setEdges((prevEdges) => [...prevEdges, newEdge]);
+    });
   };
 
   const onControlDragStart = (event, item) => {
@@ -246,57 +269,61 @@ const Workplan = () => {
 
   const onControlDrop = (event, riskId, layerId) => {
     event.preventDefault();
-    const controlData = JSON.parse(
-      event.dataTransfer.getData("application/json")
-    );
-    const isCntrl = controlData && "idCntrl" in controlData;
-    if (!isCntrl) {
-      //alert("Attention veuillez mettre que les controles !");
-      // <NotificationDialog message="Voulez-vous vraiment effectuer cette action ?" />
-      setstartWithCntrlDialogOpen(true);
-      return; // Bloque l'ajout
+    let controlsData = JSON.parse(event.dataTransfer.getData("application/json"));
+  
+    console.log("Dropped data:", controlsData);
+  
+    // Ensure controlsData is an array
+    if (!Array.isArray(controlsData)) {
+      controlsData = [controlsData];
     }
-    //console.log("le riskID", riskId);
-    //console.log("le cntrl droppé", controlData);
-    //console.log("le id cntrl", controlData.idCntrl);
-    //console.log("le desc cntrl", controlData.description);
-    if (!riskId || !controlData) {
-      console.warn("not found");
-      return;
-    }
-
-    const x = event.clientX;
-    const y = event.clientY;
-
-    // Créer le nœud du risque
-    const newControlNode = {
-      id: layerId+"_"+riskId+"_"+controlData.idCntrl,
-      type: "cntrl",
-      position: { x: x + 500, y: y + 5 * 100 },
-      data: { controlData },
-    };
-
-    // Créer l'edge entre la couche et le risque
-    const newEdge = {
-      id: `e-${riskId}-${layerId+"_"+riskId+"_"+controlData.idCntrl}`,
-      source: layerId+"_"+riskId,
-      target: layerId+"_"+riskId+"_"+controlData.idCntrl,
-      label: "",
-    };
-
-    // Mettre à jour les states
-    setAppNodes((prevNodes) => [...prevNodes, newControlNode]);
-    setEdges((prevEdges) => [...prevEdges, newEdge]);
-    console.log(appNodes);
-    addControlToRisk(
-      layerId,
-      riskId,
-      controlData.idCntrl,
-      controlData.description,
-      controlData.majorProcess,
-      controlData.subProcess,
-      controlData.testScript,
-    );
+  
+    controlsData.forEach((controlData, index) => {
+      const isCntrl = controlData && "idCntrl" in controlData;
+      if (!isCntrl) {
+        setstartWithCntrlDialogOpen(true);
+        return; // Bloque l'ajout
+      }
+  
+      if (!riskId || !controlData) {
+        console.warn("Risk ID or Control Data not found");
+        return;
+      }
+  
+      const x = event.clientX;
+      const y = event.clientY + index * 50; // Adjust position for each control
+  
+      // Créer le nœud du contrôle
+      const newControlNode = {
+        id: `${layerId}_${riskId}_${controlData.idCntrl}_${index}`, // Ensure unique ID
+        type: "cntrl",
+        position: { x: x + 500, y: y + 5 * 100 },
+        data: { controlData },
+      };
+  
+      // Créer l'edge entre le risque et le contrôle
+      const newEdge = {
+        id: `e-${riskId}-${layerId}_${riskId}_${controlData.idCntrl}_${index}`, // Ensure unique ID
+        source: `${layerId}_${riskId}`,
+        target: `${layerId}_${riskId}_${controlData.idCntrl}_${index}`,
+        label: "",
+      };
+  
+      // Mettre à jour les states
+      setAppNodes((prevNodes) => [...prevNodes, newControlNode]);
+      setEdges((prevEdges) => [...prevEdges, newEdge]);
+      console.log(appNodes);
+      addControlToRisk(
+        layerId,
+        riskId,
+        controlData.idCntrl,
+        controlData.description,
+        controlData.majorProcess,
+        controlData.subProcess,
+        controlData.testScript,
+        controlData.type
+      );
+    });
   };
 
   const onDrop = (event) => {

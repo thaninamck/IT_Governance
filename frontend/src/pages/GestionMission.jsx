@@ -409,7 +409,7 @@ const missionEndDate = new Date(selectedRow.dateField1).toISOString().split("T")
     console.log('Détails du contrôle sélectionné:', rowData);
   };
 
-  const getRowForReportLink = (row) => `/gestionmission/${row.mission}`;
+  const getRowForReportLink = (row) => `/missions/${row.mission}`;
 
   const handleViewReport = (selectedRow) => {
     if (!selectedRow || !selectedRow.mission) {
@@ -421,11 +421,11 @@ const missionEndDate = new Date(selectedRow.dateField1).toISOString().split("T")
 
     // Met à jour les breadcrumbs
     setBreadcrumbs([
-      { label: "rapportmission", path: "/gestionmission" },
+      { label: "rapportmission", path: "/missions" },
 
       {
         label: selectedRow.mission,
-        path: `/gestionmission/${selectedRow.mission}`,
+        path: `/missions/${selectedRow.mission}`,
       },
     ]);
 

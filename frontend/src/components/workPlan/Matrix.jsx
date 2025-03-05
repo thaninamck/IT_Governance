@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { DataGrid } from "@mui/x-data-grid/DataGrid";
 import { User, ChevronDown } from "lucide-react";
 //import SaveIcon from '@mui/icons-material/Save';
@@ -67,65 +68,117 @@ function Matrix({ data, userRole, onRowClick }) {
       return [];  // Retourne une liste vide au lieu de planter
     }
 
+    const uniqueIds = new Set(); // Track unique IDs
+  
     data.applications.forEach((app) => {
       const appName = app.description;
       const appOwner = app.owner;
-
+  
       app.layers.forEach((layer) => {
         const layerName = layer.name;
-
+  
         layer.risks.forEach((risk) => {
           const riskCode = risk.id;
           const riskName = risk.nom;
           const riskDescription = risk.description;
           const riskOwner = risk.owner;
-
+  
           risk.controls.forEach((control) => {
-            result.push({
-              id: `${app.id}-${layer.id}-${risk.id}-${control.id}`,
-              application: appName,
-              applicationLayer: layerName,
-              applicationOwner: appOwner,
-              riskCode: riskCode,
-              riskName: riskName,
-              riskDescription: riskDescription,
-              riskOwner: riskOwner,
-              controlCode: control.id,
-              controlDescription: control.description,
-              majorProcess: control.majorProcess,
-              subProcess: control.subProcess,
-              testScript: control.testScript,
-              controlOwner: control.owner,
-              controlTester: "",
-            });
+            const uniqueId = `${app.id}-${layer.id}-${risk.id}-${control.id}`;
+  
+            // Check if the ID is already in the Set
+            if (!uniqueIds.has(uniqueId)) {
+              uniqueIds.add(uniqueId); // Add the ID to the Set
+  
+              result.push({
+                id: uniqueId,
+                application: appName,
+                applicationLayer: layerName,
+                applicationOwner: appOwner,
+                riskCode: riskCode,
+                riskName: riskName,
+                riskDescription: riskDescription,
+                riskOwner: riskOwner,
+                controlCode: control.id,
+                controlDescription: control.description,
+                majorProcess: control.majorProcess,
+                subProcess: control.subProcess,
+                type: control.type,
+                testScript: control.testScript,
+                controlOwner: control.owner,
+                controlTester: "",
+              });
+            }
           });
         });
       });
     });
-
+  
     return result;
   };
 
-  useEffect(() => {
-    // Transformer les données et mettre à jour flattenedData
-    if (data) {
-      const transformedData = transformData(data);
-      setFlattenedData(transformedData);
-    }
-  }, [data]);
+ 
 
-  /* useEffect(() => {
-    // Charger les données depuis le localStorage au premier rendu
-    const savedFlattenedData = JSON.parse(window.localStorage.getItem("flattenedData")) || [];
-    setFlattenedData(savedFlattenedData);
-  }, []); // Dépendances vides pour exécuter une seule fois au montage
-  
-  useEffect(() => {
-    console.log("flatteneddata",flattenedData)
-    
-      window.localStorage.setItem("flattenedData", JSON.stringify(flattenedData));
-    
-  }, [flattenedData]);*/
+// Fonction pour fusionner les nouvelles données avec flattenedData existant
+const mergeData = (newData, existingData) => {
+  const mergedData = [...existingData];
+
+  newData.forEach((newItem) => {
+    const existingItemIndex = mergedData.findIndex((item) => item.id === newItem.id);
+
+    if (existingItemIndex !== -1) {
+      // Si l'élément existe déjà, conservez les modifications de l'utilisateur
+      mergedData[existingItemIndex] = {
+        ...newItem,
+        controlOwner: mergedData[existingItemIndex].controlOwner, // Conservez le propriétaire existant
+        controlTester: mergedData[existingItemIndex].controlTester, // Conservez le testeur existant
+      };
+    } else {
+      // Si l'élément n'existe pas, ajoutez-le à mergedData
+      mergedData.push(newItem);
+    }
+  });
+
+  return mergedData;
+};
+
+// Charger les données depuis localStorage au montage du composant
+useEffect(() => {
+  const savedData = localStorage.getItem("flattenedData");
+  if (savedData) {
+    const parsedData = JSON.parse(savedData);
+    setFlattenedData(parsedData); // Mettre à jour flattenedData avec les données sauvegardées
+    console.log("savedData", parsedData); // Vérifier les données chargées
+  }
+}, []);
+
+// Mettre à jour flattenedData lorsque data change
+useEffect(() => {
+  if (data) {
+    const transformedData = transformData(data);
+
+    // Utiliser une fonction de mise à jour pour éviter les dépendances cycliques
+    setFlattenedData((prevFlattenedData) => {
+      const mergedData = mergeData(transformedData, prevFlattenedData);
+      console.log("mergedData", mergedData); // Vérifier les données fusionnées
+      return mergedData;
+    });
+  }
+}, [data]); // Dépend uniquement de data
+
+// Sauvegarder les données dans localStorage à chaque mise à jour de flattenedData
+useEffect(() => {
+  if (flattenedData.length > 0) {
+    localStorage.setItem("flattenedData", JSON.stringify(flattenedData));
+  }
+}, [flattenedData]);
+
+
+
+
+
+
+ 
 
   const [selectedRisk, setSelectedRisk] = useState({});
   const [selectedApp, setSelectedApp] = useState({});
@@ -237,8 +290,12 @@ function Matrix({ data, userRole, onRowClick }) {
   };
 
   const atLeastOneApp = flattenedData.length > 0;
+  const navigate = useNavigate();
+
   const handleSave = () => {
     console.log("sending data to backend", flattenedData);
+    localStorage.removeItem("flattenedData");
+    navigate("/tablemission/DSP")//pour l'instant on redirige vers la page d'accueil
   };
 
   // Gestion des cases à cocher pour les contrôles
@@ -261,7 +318,7 @@ function Matrix({ data, userRole, onRowClick }) {
   };
 
   // Gestion des sélections pour les testeurs
-  const handleTesterChange = (id, testerId) => (event) => {
+  /*const handleTesterChange = (id, testerId) => (event) => {
     const rowIndex = flattenedData.findIndex((row) => row.id === id);
     if (rowIndex !== -1) {
       flattenedData[rowIndex].controlTester = testerId;
@@ -270,7 +327,29 @@ function Matrix({ data, userRole, onRowClick }) {
       ...prev,
       [id]: testerId,
     }));
+  };*/ //old version
+
+
+  const handleTesterChange = (id, testerId) => (event) => {
+    setFlattenedData((prevData) => {
+      return prevData.map((row) => {
+        if (row.id === id) {
+          return { ...row, controlTester: testerId }; // Update the tester
+        }
+        return row;
+      });
+    });
+  
+    setTesterValues((prev) => ({
+      ...prev,
+      [id]: testerId,
+    }));
   };
+
+
+
+
+
 
   const handleEditStop = (params, event) => {
     console.log("Edition terminée sur la cellule", params);
@@ -374,6 +453,12 @@ function Matrix({ data, userRole, onRowClick }) {
     {
       field: "subProcess",
       headerName: "Sub Process",
+      width: 150,
+      editable: false,
+    },
+    {
+      field: "type",
+      headerName: "Type",
       width: 150,
       editable: false,
     },

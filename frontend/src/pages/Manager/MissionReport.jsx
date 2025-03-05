@@ -1,5 +1,5 @@
-import React from "react";
-import { useLocation } from "react-router-dom";
+import React, { useState } from "react";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import html2pdf from "html2pdf.js";
 
 import Header from "../../components/Header/Header";
@@ -19,19 +19,17 @@ import {
   Pie,
   Cell,
 } from "recharts";
-import { Margin } from "@mui/icons-material";
+
 const exportToPDF = () => {
-    const element = document.getElementById("report-content"); // L'élément HTML à exporter
-  
-    html2pdf()
-      .set({
-        filename: "MissionReport.pdf",
-        
-      })
-      .from(element)
-      .save();
-  };
-  
+  const element = document.getElementById("report-content"); // L'élément HTML à exporter
+
+  html2pdf()
+    .set({
+      filename: "MissionReport.pdf",
+    })
+    .from(element)
+    .save();
+};
 
 const MissionReport = ({
   missionName = "DSP",
@@ -42,11 +40,6 @@ const MissionReport = ({
     { name: "CV360°", progress: 10 },
     { name: "HITS", progress: 52 },
     { name: "FileNet", progress: 40 },
-    { name: "Risk Manager", progress: 68 },
-    { name: "Risk Manager", progress: 68 },
-    { name: "Risk Manager", progress: 68 },
-    { name: "Risk Manager", progress: 68 },
-    { name: "Risk Manager", progress: 68 },
     { name: "Risk Manager", progress: 68 },
   ],
 }) => {
@@ -97,42 +90,56 @@ const MissionReport = ({
     { name: "Pourcentage de conformité", value: 84.88, fill: "#4185F4" },
     { name: "Pourcentage de non conformité", value: 15, fill: "#F4B400" },
   ];
+
   const location = useLocation(); // Obtenir l'URL actuelle
-  const missionData = location.state?.missionData; // Récupérer les données envoyées
-  const breadcrumbRoutes = [
-    "/Missions",
-    "/tablemission",
-    "/missionInfo",
-    "/statusmission",
-    "/table",
-    "/tableApp",
-    "/gestionmission", // Ajout pour la page principale
-  ];
+  const navigate = useNavigate(); // Pour la navigation
+  const { missionName: missionParam } = useParams(); // Récupérer le nom de la mission depuis l'URL
+
+  const [breadcrumbs, setBreadcrumbs] = useState([
+    { label: "Missions", path: "/missions" },
+    { label: missionParam || missionName, path: `/missions/${missionParam || missionName}` },
+  ]);
+
+  const handleViewReport = (app) => {
+    if (!app) {
+      console.error("Application non définie !");
+      return;
+    }
+
+    // Met à jour les breadcrumbs
+    setBreadcrumbs([
+      { label: "Missions", path: "/missions" },
+      { label: missionParam || missionName, path: `/missions/${missionParam || missionName}` },
+      { label: app.name, path: `/missions/${missionParam || missionName}/${app.name}` },
+    ]);
+
+    console.log("Application sélectionnée :", app);
+
+    // Navigation vers l'URL de type /missions/DSP/app
+    navigate(`/missions/${missionParam || missionName}/${app.name}`, { state: { appData: app } });
+  };
+
   return (
     <div>
       <Header />
-      
-      
 
-      <div className=" my-3 mx-4">
-        {breadcrumbRoutes.some((route) =>
-          location.pathname.startsWith(route)
-        ) && <Breadcrumbs />}
+      <div className="my-3 mx-4">
+        <Breadcrumbs routes={breadcrumbs} />
       </div>
 
-      <div className="flex justify-end mr-4 ">
-      <button
-        onClick={exportToPDF}
-        className="bg-blue-menu text-white px-4 py-2 rounded-lg mt-4"
-      >
-        Exporter en PDF
-      </button>
+      <div className="flex justify-end mr-4">
+        <button
+          onClick={exportToPDF}
+          className="bg-blue-menu text-white px-4 py-2 rounded-lg mt-4"
+        >
+          Exporter en PDF
+        </button>
       </div>
       <div id="report-content">
-        <h1 className="text-center text-3xl font-normal mt-5 mb-10 ">Rapport de mission</h1>
+        <h1 className="text-center text-3xl font-normal mt-5 mb-10">Rapport de mission</h1>
 
-        <div className=" h-auto p-1 mx-3">
-          <MissionInfo dataFormat={missionData} />
+        <div className="h-auto p-1 mx-3">
+          <MissionInfo dataFormat={location.state?.missionData} />
         </div>
 
         {/* Mission Progress */}
@@ -159,12 +166,12 @@ const MissionReport = ({
               {missionProgress}%
             </div>
             <p className="text-gray-700 font-medium">État de la mission</p>
-            <p className="text-blue-500 font-medium">{missionName}</p>
+            <p className="text-blue-500 font-medium">{missionParam || missionName}</p>
           </div>
 
           {/* Liste des applications  */}
-          <div className="w-full  max-h-80 overflow-y-auto p-1 rounded-lg " data-html2canvas-ignore>
-            <div className="grid   sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-1 gap-4">
+          <div className="w-full max-h-80 overflow-y-auto p-1 rounded-lg" data-html2canvas-ignore>
+            <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-1 gap-4">
               {applications.map((app, index) => (
                 <div
                   key={index}
@@ -185,7 +192,10 @@ const MissionReport = ({
                   />
 
                   {/* Bouton */}
-                  <button className="border border-blue-600 text-[#0571CC] px-3 py-1 rounded whitespace-nowrap">
+                  <button
+                    onClick={() => handleViewReport(app)}
+                    className="border border-blue-600 text-[#0571CC] px-3 py-1 rounded whitespace-nowrap"
+                  >
                     View Report
                   </button>
                 </div>
@@ -194,8 +204,7 @@ const MissionReport = ({
           </div>
         </div>
 
-        {/*liste des graphes*/}
-
+        {/* Liste des graphes */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4 mx-4 mt-24 mb-4">
           {/* Graphique Applications */}
           <div className="bg-white shadow-md rounded-lg p-4">
