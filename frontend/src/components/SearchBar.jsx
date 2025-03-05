@@ -1,10 +1,15 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Search } from "lucide-react";
 
 function SearchBar({ columnsConfig, initialRows, onSearch }) {
   const [isAdvancedSearchOpen, setIsAdvancedSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [filters, setFilters] = useState({});
+
+  // Déclencher la recherche automatiquement lorsque searchQuery ou filters change
+  useEffect(() => {
+    handleSearch();
+  }, [searchQuery, filters]);
 
   const toggleAdvancedSearch = () => {
     setIsAdvancedSearchOpen(!isAdvancedSearchOpen);
@@ -23,6 +28,7 @@ function SearchBar({ columnsConfig, initialRows, onSearch }) {
         );
 
       const matchesFilters = Object.keys(filters).every((key) =>
+
         filters[key] === "" || row[key] === filters[key]
       );
 
@@ -36,7 +42,7 @@ function SearchBar({ columnsConfig, initialRows, onSearch }) {
   };
 
   return (
-    <div className="p-6 w-full max-w-5xl">
+    <div className="py-6 w-full max-w-5xl">
       {/* Barre de recherche */}
       <div className="flex items-center space-x-2 bg-white shadow rounded-full px-4 py-2">
         <Search className="text-gray-400" />
@@ -54,16 +60,16 @@ function SearchBar({ columnsConfig, initialRows, onSearch }) {
         >
           Recherche
         </button>
-        <button
+        {/* <button
           onClick={toggleAdvancedSearch}
           className="text-blue-900 underline text-sm border-none"
         >
           Recherche avancée
-        </button>
+        </button> */}
       </div>
 
       {/* Recherche avancée */}
-      {isAdvancedSearchOpen && (
+      {/* {isAdvancedSearchOpen && (
         <div className="mt-4 p-4 bg-white shadow rounded-lg">
           <h3 className="text-lg font-semibold text-[var(--subfont-gray)]">
             Recherche avancée
@@ -110,7 +116,7 @@ function SearchBar({ columnsConfig, initialRows, onSearch }) {
             </button>
           </div>
         </div>
-      )}
+      )} */}
     </div>
   );
 }
