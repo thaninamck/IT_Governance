@@ -65,6 +65,7 @@ import ChangePasswordAfterFirstLogin from './pages/ChangePasswordAfterFirstLogin
 import MissionReport from './pages/Manager/MissionReport';
 import InstructionSplitter from './components/InstructionSplitter';
 import AdminActionsPanel from './pages/AdminActionsPanel';
+import DisplayControleAppID from './pages/Testeur/DisplayControleAppID';
 function App() {
   const getRowLink = (row) => `/tablemission/${row.mission}`;
   
@@ -196,6 +197,7 @@ const rowsData3 = [
          
           
           <Route path="/tablemission/:mission" element={<MissionDetail />} />
+          <Route path="/tablemission/:mission/:nomApp" element={<DisplayControleAppID />} />
 
           {/*----------------------------Pages-------------------*/}
           <Route path='/notification' element={<Notification/>}/>
@@ -209,7 +211,7 @@ const rowsData3 = [
           <Route path='/utilisateurs' element={<GestionUtilisateur/>}></Route>
           <Route path='/clients' element={<GestionClient/>}></Route>
           <Route path='/settings' element={<Settings/>}></Route>
-          <Route path='/controle/:code' element={<ControleExcutionPage/>}></Route>
+          <Route path='/tablemission/:mission/:nonApp/:controlCode' element={<ControleExcutionPage/>}></Route>
           <Route path='/remediation/:id' element={<RemediationActionId/>}></Route>
           <Route path='/listcontrole' element={<ListControle/>}></Route>
           <Route path='/pw' element={<ForgotPw/>}></Route>

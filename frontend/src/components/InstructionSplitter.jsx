@@ -10,36 +10,71 @@ function InstructionSplitter({ instructions: initialInstructions, onChange }) {
   // Diviser les instructions en phrases lors du montage ou de la mise à jour des instructions
   useEffect(() => {
     if (initialInstructions) {
+      console.log('instruction :' ,initialInstructions)
       splitInstructions(initialInstructions);
+      console.log('instructionafter :' ,initialInstructions)
+
     }
   }, [initialInstructions]);
 
    // Fonction pour diviser les instructions en phrases
-  const splitInstructions = (instructions) => {
-    const lines = instructions.split(/\n/);
-    const result = [];
-    let currentPhrase = "";
-
-    lines.forEach((line) => {
-      if (/^\d+(\.\d+)*([.)-]|\s)/.test(line.trim())) {
-        if (currentPhrase) result.push(currentPhrase.trim());
-        currentPhrase = line;
-      } else if (line.trim()) {
-        currentPhrase += "\n" + line;
+   const splitInstructions = (instructions) => {
+    try {
+      if (!instructions || typeof instructions !== "string") {
+        throw new Error("Invalid instructions format");
       }
-    });
-
-    if (currentPhrase) result.push(currentPhrase.trim());
-    setPhrases(result);
-
-    // Initialiser testScriptData avec des valeurs par défaut
-    const defaultTestScriptData = result.map((phrase) => ({
+  
+      // Diviser les instructions en phrases en utilisant une expression régulière pour détecter les numéros
+      const phrases = instructions.split(/(\d+\.)/g).filter(Boolean);
+  
+      // Combiner les numéros avec leurs phrases correspondantes
+      const result = [];
+      for (let i = 0; i < phrases.length; i += 2) {
+        const numberPart = phrases[i].trim(); // Partie du numéro (ex: "1.")
+        const textPart = phrases[i + 1] ? phrases[i + 1].trim() : ""; // Partie du texte (ex: "Obtain the access management policy")
+        result.push(`${numberPart} ${textPart}`);
+      }
+  
+      console.log("Phrases after splitting:", result);
+      setPhrases(result);
+  
+      // Initialiser testScriptData avec des valeurs par défaut
+      const defaultTestScriptData = result.map((phrase) => ({
         phrase,
-        isChecked: false, // Par défaut, la validation est "Non"
-        comment: "", // Par défaut, le commentaire est vide
+        isChecked: false,
+        comment: "",
       }));
-      onChange(defaultTestScriptData); // Transmettre les données par défaut au parent
+      console.log("Default test script data:", defaultTestScriptData);
+      onChange(defaultTestScriptData);
+    } catch (error) {
+      console.error("Error splitting instructions:", error);
+    }
   };
+  // const splitInstructions = (instructions) => {
+  //   const lines = instructions.split(/\n/);
+  //   const result = [];
+  //   let currentPhrase = "";
+
+  //   lines.forEach((line) => {
+  //     if (/^\d+(\.\d+)*([.)-]|\s)/.test(line.trim())) {
+  //       if (currentPhrase) result.push(currentPhrase.trim());
+  //       currentPhrase = line;
+  //     } else if (line.trim()) {
+  //       currentPhrase += "\n" + line;
+  //     }
+  //   });
+
+  //   if (currentPhrase) result.push(currentPhrase.trim());
+  //   setPhrases(result);
+
+  //   // Initialiser testScriptData avec des valeurs par défaut
+  //   const defaultTestScriptData = result.map((phrase) => ({
+  //       phrase,
+  //       isChecked: false, // Par défaut, la validation est "Non"
+  //       comment: "", // Par défaut, le commentaire est vide
+  //     }));
+  //     onChange(defaultTestScriptData); // Transmettre les données par défaut au parent
+  // };
 
 //   const updateComment = (index, value) => {
 //     setComments((prev) => ({
@@ -108,7 +143,9 @@ function InstructionSplitter({ instructions: initialInstructions, onChange }) {
       isChecked: validatedSteps[index] || false,
       comment: comments[index] || "",
     }));
+   
     onChange(testScriptData); // Appeler la fonction de rappel du parent
+    console.log('data test', testScriptData)
   };
 
 

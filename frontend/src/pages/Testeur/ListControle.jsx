@@ -86,14 +86,7 @@ function ListControle() {
             [2, "Source 2"],
           ], // Mettre une liste vide si aucune source n'est disponible
           testScript:
-          "1. Obtain the access management policy,\n" +
-          "2. Obtain HR list of departures during the audited period,\n" +
-          "3. Obtain the 3rd party list of leavers during the audited period,\n" +
-          "4. Obtain the list of active AD user accounts,\n" +
-          "5. Obtain HR list of departures during the audited period,\n" +
-          "6. Obtain the 3rd party list of leavers during the audited period,\n" +
-          "7. Obtain the list of active AD user accounts,\n" +
-          "8. Obtain the list of application user accounts." },
+          "1. Obtain the access management policy, 2. Obtain HR list of departures during the audited period 3. Obtain the 3rd party list of leavers during the audited period,4. Obtain the list of active AD user accounts,5. Obtain HR list of departures during the audited period," },
         {
           id: 7,
           code: "PIS.2201a",
