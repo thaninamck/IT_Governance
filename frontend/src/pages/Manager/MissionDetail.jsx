@@ -1,23 +1,20 @@
-import { useLocation, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import Breadcrumbs from "../../components/Breadcrumbs";
-import ToggleButtons from "../../components/ToggleButtons";
 import Header from "../../components/Header/Header";
 import MissionInfo from "../../components/InfosDisplay/MissionInfo";
-import Separator from "../../components/Decorators/Separator";
 import AddScope from "../../components/InfosDisplay/AddScope";
 import { useContext, useState } from "react";
 import { PermissionRoleContext } from "../../Context/permissionRoleContext";
+import AddMatrix from "../../components/InfosDisplay/AddMatrix";
 
 function MissionDetail() {
-  // const { mission} = useParams(); // Récupérer les paramètres de l'URL
+  const { mission } = useParams(); // Récupérer les paramètres de l'URL
   const location = useLocation(); // Obtenir l'URL actuelle
   const [showForm, setShowForm] = useState(false);
+  console.log("Mission sélectionnée :", mission); // Vérifie l'ID récupéré
 
-  // Accédez à userRole et setUserRole via le contexte
   const { userRole, setUserRole } = useContext(PermissionRoleContext);
-  
-  // Utilisez userRole dans votre composant
-  console.log("Rôle de l'utilisateur :", userRole);
+
 
   const handleToggleForm = () => {
     setShowForm((prev) => !prev); // Change l'état pour afficher ou masquer le formulaire
@@ -37,6 +34,8 @@ function MissionDetail() {
     "/rapportmission/:missionName", // Ajout pour une mission spécifique
   ];
 
+
+
   return (
     <div className=" ">
       <Header />
@@ -53,9 +52,9 @@ function MissionDetail() {
           onToggleForm={handleToggleForm} // Passe la fonction en prop
           showForm={showForm}
           userRole={userRole}
+          missionId={mission}
         />
-        {/*<AddScope title={'Matrice'} text={'Aucune application ajoutée pour le moment'} onToggleForm={handleToggleForm} // Passe la fonction en prop
-          showForm={showForm} /> */}
+        <AddMatrix userRole={userRole} />
       </div>
     </div>
   );
