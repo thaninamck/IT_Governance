@@ -28,13 +28,18 @@ const InfoDisplayComponent = ({label,BoxContent,borderWidth,labelWidth}) => {
           borderBottom: '1px solid #dcdcdc',
           width: borderWidth,
           marginBottom: '10px',
+          wordBreak: "break-word", // Coupe les mots longs
+          overflowWrap: "break-word", // Force le retour à la ligne
+          whiteSpace: "pre-wrap", // Respecte les retours à la ligne et les espaces
+         
          
         }}
       >
         <span 
           style={{ 
             fontSize: '13px', 
-            color: '#555' 
+            color: '#555' ,
+            
           }}
         >
           {BoxContent}
