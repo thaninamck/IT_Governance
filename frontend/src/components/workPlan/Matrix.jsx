@@ -13,8 +13,9 @@ import {
   TableRow,
   Paper,
 } from "@mui/material";
+import SearchBar from "../SearchBar";
 
-function Matrix({ data }) {
+function Matrix({ data, userRole, onRowClick }) {
   // Données imbriquées
   const data1 = {
     applications: [
@@ -61,6 +62,10 @@ function Matrix({ data }) {
   const [flattenedData, setFlattenedData] = useState([]);
   const transformData = (data) => {
     const result = [];
+    if (!data || !Array.isArray(data.applications)) {
+      console.error("Les données des applications sont manquantes ou incorrectes:", data);
+      return [];  // Retourne une liste vide au lieu de planter
+    }
 
     data.applications.forEach((app) => {
       const appName = app.description;
@@ -425,80 +430,114 @@ function Matrix({ data }) {
 
   const [editMessage, setEditMessage] = useState("");
 
+  //recherche function
+  //   const [searchResults, setSearchResults] = useState(flattenedData);
+
+  //   const searchableColumns = columns.filter((col) => col.field);
+
+
+  //   const handleSearchResults = (results) => {
+  //     setSearchResults(results);
+  //   };
+
+  // //assurer que searchResults est toujours synchronisé avec flattenedData quand data change 
+  //     useEffect(() => {
+  //       setSearchResults(flattenedData);
+  //       console.log("Flattened data updated:", flattenedData);
+  //     }, [flattenedData]);
+
+  const handleRowClick = (params) => {
+    if (onRowClick) {
+      onRowClick(params.row);
+
+    }
+  };
+
   return (
     <>
-      <div className="flex items-center gap-4 justify-end my-5 mr-4 space-x-4">
-        {/* Label */}
-        <label className="text-gray-900 font-semibold">Owner</label>
+      <div className="flex  items-center justify-start mb-6">
+        {/* <SearchBar
+  columnsConfig={searchableColumns}
+  initialRows={flattenedData}
+  onSearch={handleSearchResults}
+/> */}
 
-        {/* Input Field */}
-        <div className="relative flex items-center bg-white rounded-md border border-gray-300 w-60 px-3 py-2">
-          <User className="text-gray-500 mr-2" size={16} />
-          <input
-            type="text"
-            onChange={(e) => setOwner(e.target.value)}
-            className="bg-transparent outline-none w-full"
-            placeholder="Owner"
-            value={owner}
-          />
-        </div>
-        <div>{editMessage && <p>{editMessage}</p>}</div>
-
-        {/* Button */}
-        <button
-          onClick={handleUpdateOwner}
-          className="bg-blue-menu text-white px-4 py-2 rounded-md hover:bg-blue-900"
-        >
-          Ajouter
-        </button>
-
-        <div className="flex items-center  space-x-4">
+      </div>
+      {(userRole === 'admin' || userRole === 'manager') &&
+        <div className="flex items-center gap-4 justify-end my-5 mr-4 space-x-4"
+          style={{ display: (userRole === 'admin' || userRole === 'manager') ? 'none' : 'flex' }}>
           {/* Label */}
-          <label className="text-gray-900 font-semibold">Testeur</label>
+          <label className="text-gray-900 font-semibold">Owner</label>
 
-          {/* Dropdown */}
-          <div className="relative z-30 w-60">
-            <div
-              className="flex items-center bg-white rounded-md border border-gray-300 px-3 py-2 cursor-pointer"
-              onClick={() => setIsOpen(!isOpen)}
-            >
-              <User className="text-gray-500 mr-2" size={16} />
-              <span className="flex-1 text-gray-700">
-                {selectedTester.designation}
-              </span>
-              <ChevronDown className="text-gray-500" size={16} />
+          {/* Input Field */}
+          <div className="relative flex items-center bg-white rounded-md border border-gray-300 w-60 px-3 py-2">
+            <User className="text-gray-500 mr-2" size={16} />
+            <input
+              type="text"
+              onChange={(e) => setOwner(e.target.value)}
+              className="bg-transparent outline-none w-full"
+              placeholder="Owner"
+              value={owner}
+            />
+          </div>
+          <div>{editMessage && <p>{editMessage}</p>}</div>
+
+          {/* Button */}
+          <button
+            onClick={handleUpdateOwner}
+            className="bg-blue-menu text-white px-4 py-2 rounded-md hover:bg-blue-900"
+          >
+            Ajouter
+          </button>
+
+          <div className="flex items-center  space-x-4">
+            {/* Label */}
+            <label className="text-gray-900 font-semibold">Testeur</label>
+
+            {/* Dropdown */}
+            <div className="relative z-30 w-60">
+              <div
+                className="flex items-center bg-white rounded-md border border-gray-300 px-3 py-2 cursor-pointer"
+                onClick={() => setIsOpen(!isOpen)}
+              >
+                <User className="text-gray-500 mr-2" size={16} />
+                <span className="flex-1 text-gray-700">
+                  {selectedTester.designation}
+                </span>
+                <ChevronDown className="text-gray-500" size={16} />
+              </div>
+              {isOpen && (
+                <ul className="absolute w-full bg-white border border-gray-300 rounded-md shadow-md mt-1">
+                  {testers.map((tester) => (
+                    <li
+                      key={tester.id}
+                      className="px-3 py-2 hover:bg-gray-100 cursor-pointer"
+                      onClick={() => {
+                        setSelectedTester(tester);
+                        handleUpdateTesters(tester);
+                        setIsOpen(false);
+                      }}
+                    >
+                      {tester.designation}
+                    </li>
+                  ))}
+                </ul>
+              )}
             </div>
-            {isOpen && (
-              <ul className="absolute w-full bg-white border border-gray-300 rounded-md shadow-md mt-1">
-                {testers.map((tester) => (
-                  <li
-                    key={tester.id}
-                    className="px-3 py-2 hover:bg-gray-100 cursor-pointer"
-                    onClick={() => {
-                      setSelectedTester(tester);
-                      handleUpdateTesters(tester);
-                      setIsOpen(false);
-                    }}
-                  >
-                    {tester.designation}
-                  </li>
-                ))}
-              </ul>
+          </div>
+
+          <div className="   ">
+            {atLeastOneApp && (
+              <button
+                onClick={handleSave}
+                className="bg-blue-menu text-white px-4 py-2 rounded-md hover:bg-blue-900"
+              >
+                save
+              </button>
             )}
           </div>
         </div>
-
-        <div className="   ">
-          {atLeastOneApp && (
-            <button
-              onClick={handleSave}
-              className="bg-blue-menu text-white px-4 py-2 rounded-md hover:bg-blue-900"
-            >
-              save
-            </button>
-          )}
-        </div>
-      </div>
+      }
 
       <div className="mr-4">
         <TableContainer component={Paper} className="overflow-auto ">
@@ -550,6 +589,8 @@ function Matrix({ data }) {
                         },
                       }}
                       rows={flattenedData}
+                      onRowClick={handleRowClick}
+                      // rows={searchResults} 
                       columns={columns}
                       pageSize={5}
                       rowsPerPageOptions={[5, 10, 20]}
@@ -572,7 +613,7 @@ function Matrix({ data }) {
                           return updatedData;
                         });
                       }}
-                      //disableSelectionOnClick
+                    //disableSelectionOnClick
                     />
                   </Paper>
                 </TableCell>
