@@ -4,6 +4,7 @@ import SingleOptionSelect from '../Selects/SingleOptionSelect';
 
 const AddEquipe = ({ onAddCollaborators }) => {
   const [collaborators, setCollaborators] = useState([]); // Liste des collaborateurs
+  const [errors, setErrors] = useState({});
 
   // Données pour les membres et les rôles
   const members = [
@@ -28,11 +29,42 @@ const AddEquipe = ({ onAddCollaborators }) => {
     setCollaborators([...collaborators, { member: null, role: null }]);
   };
 
+    // Vérifier les erreurs en temps réel
+  const validateCollaborators = (updatedCollaborators) => {
+    const newErrors = {};
+
+    updatedCollaborators.forEach((collab, index) => {
+      // Vérifier si les champs sont vides
+      if (!collab.member) {
+        newErrors[index] = "Sélectionnez un membre.";
+      } else if (!collab.role) {
+        newErrors[index] = "Sélectionnez un rôle.";
+      } else {
+        // Vérifier les doublons
+        const isDuplicate = updatedCollaborators.some(
+          (otherCollab, otherIndex) =>
+            index !== otherIndex &&
+            collab.member?.id === otherCollab.member?.id &&
+            collab.role?.id === otherCollab.role?.id
+        );
+
+        if (isDuplicate) {
+          newErrors[index] = "Ce membre avec ce rôle est déjà ajouté.";
+        }
+      }
+    });
+
+    setErrors(newErrors);
+  };
+
+
+  
   // Mettre à jour la sélection d'un membre pour un collaborateur spécifique
   const handleMemberChange = (index, id, name) => {
     const updatedCollaborators = [...collaborators];
     updatedCollaborators[index].member = { id, name };
     setCollaborators(updatedCollaborators);
+    validateCollaborators(updatedCollaborators);
   };
 
   // Mettre à jour la sélection d'un rôle pour un collaborateur spécifique
@@ -40,21 +72,31 @@ const AddEquipe = ({ onAddCollaborators }) => {
     const updatedCollaborators = [...collaborators];
     updatedCollaborators[index].role = { id, name };
     setCollaborators(updatedCollaborators);
+    validateCollaborators(updatedCollaborators);
   };
 
-  const handleSubmit = () => {
-    if (collaborators.some(c => !c.member || !c.role)) {
-      alert("Veuillez remplir tous les champs.");
-      return;
-    }
+  
+// Soumission des collaborateurs
+const handleSubmit = () => {
+  if (Object.keys(errors).length > 0) {
+    alert("Corrigez les erreurs avant de soumettre.");
+    return;
+  }
 
-    const formattedCollaborators = collaborators.map(c => ({
-      membre: c.member.name,
-      role: c.role.name,
-    }));
+  if (collaborators.some(c => !c.member || !c.role)) {
+    alert("Veuillez remplir tous les champs.");
+    return;
+  }
 
+  const formattedCollaborators = collaborators.map(c => ({
+    membre: c.member.name,
+    role: c.role.name,
+  }));
+
+  
     onAddCollaborators(formattedCollaborators);
     setCollaborators([]); // Réinitialiser après soumission
+    setErrors({}); // Réinitialisation des erreurs
   };
   
   
@@ -72,45 +114,48 @@ const AddEquipe = ({ onAddCollaborators }) => {
           <div className='flex flex-col gap-x-2  items-left'>
             {/* Affiche "Ajouter des collaborateurs" au début seulement */}
             {collaborators.length === 0 && (
-              <div className='flex gap-x-2 items-center'>
+              <div className='flex gap-x-2 items-center cursor-pointer' onClick={handleAddCollaborator}>
                 <AddCircleOutlineIcon
                   sx={{ color: 'var(--blue-menu)', width: '30px', height: '30px', cursor: 'pointer' }}
-                  onClick={handleAddCollaborator}
+                  
                 />
                 <p className="text-blue-menu text-base font-medium">Ajouter des collaborateurs</p>
               </div>
             )}
 
             {/* Affiche les collaborateurs ajoutés */}
-            {collaborators.map((collaborator, index) => (
-              <div key={index} className='flex gap-x-2 items-center  '>
-                {/* Sélection du membre */}
-                <SingleOptionSelect
-                  placeholder="Membre"
-                  width={250}
-                  statuses={members}
-                  onChange={(id, name) => handleMemberChange(index, id, name)}
-                  checkedStatus={[]}
-                />
-
-                {/* Sélection du rôle */}
-                <SingleOptionSelect
-                  placeholder="Rôle"
-                  width={90}
-                  statuses={roles}
-                  onChange={(id, name) => handleRoleChange(index, id, name)}
-                  checkedStatus={[]}
-                />
-
-                {/* Affiche le bouton "Ajouter un autre collaborateur" uniquement pour le dernier collaborateur */}
-                {index === collaborators.length - 1 && (
-                  <AddCircleOutlineIcon
-                    sx={{ color: 'var(--blue-menu)', width: '20px', height: '20px', cursor: 'pointer' }}
-                    onClick={handleAddCollaborator}
+           {/* Affichage des collaborateurs */}
+           {collaborators.map((collaborator, index) => (
+              <div key={index} className="flex flex-col gap-1">
+                <div className="flex gap-x-2 items-center">
+                  <SingleOptionSelect
+                    placeholder="Membre"
+                    width={250}
+                    statuses={members}
+                    onChange={(id, name) => handleMemberChange(index, id, name)}
+                    checkedStatus={[]}
                   />
+                  <SingleOptionSelect
+                    placeholder="Rôle"
+                    width={90}
+                    statuses={roles}
+                    onChange={(id, name) => handleRoleChange(index, id, name)}
+                    checkedStatus={[]}
+                  />
+                  {index === collaborators.length - 1 && (
+                    <AddCircleOutlineIcon
+                      sx={{ color: 'var(--blue-menu)', width: '20px', height: '20px', cursor: 'pointer' }}
+                      onClick={handleAddCollaborator}
+                    />
+                  )}
+                </div>
+                {/* Message d'erreur */}
+                {errors[index] && (
+                  <p className="text-[var(--alert-red)] text-xs">{errors[index]}</p>
                 )}
               </div>
             ))}
+
 
 
 
