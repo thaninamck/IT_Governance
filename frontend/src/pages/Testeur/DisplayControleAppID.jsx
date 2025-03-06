@@ -66,6 +66,7 @@ function DisplayControleAppID() {
                           "Duties and areas of responsibility are separated, in order to reduce opportunities for unauthorized modification...",
                         majorProcess: "Technical",
                         subProcess: "Access control",
+                        type:"detectif",
                         testScript:
                           "1. Obtain the access management policy,1.1. Ensure that the policy is validated, signed 2. Obtain HR list of departures during the.......",
                         owner: "titi",
@@ -91,6 +92,7 @@ function DisplayControleAppID() {
                           "Duties and areas of responsibility are separated, in order to reduce opportunities for unauthorized modification...",
                         majorProcess: "Technical",
                         subProcess: "Access control",
+                        type:"detectif",
                         testScript:
                           "1. Obtain the access management policy,1.1. Ensure that the policy is validated, signed 2. Obtain HR list of departures during the.......",
                         owner: "mimi",
@@ -99,16 +101,11 @@ function DisplayControleAppID() {
                   },
                 ],
               },
-
-              {
-                id: "l2",
-                name: "APP",
-                risks: [],
-              },
+    
             ],
             owner: "",
           },
-
+    
           {
             id: "app2",
             description: "New SNOC",
@@ -125,11 +122,12 @@ function DisplayControleAppID() {
                     owner: "sisi 3",
                     controls: [
                       {
-                        id: "2",
+                        id: "1",
                         description:
                           "Duties 212and areas of responsibility are separated, in order to reduce opportunities for unauthorized modification...",
                         majorProcess: "Technical",
                         subProcess: "Access control",
+                        type:"detectif",
                         testScript:
                           "1. Obtain the access management policy,1.1. Ensure that the policy is validated, signed 2. Obtain HR list of departures during the.......",
                         owner: "titi",
@@ -150,11 +148,12 @@ function DisplayControleAppID() {
                     owner: "TEST",
                     controls: [
                       {
-                        id: "4",
+                        id: "8",
                         description:
                           "Duties and areas of responsibility are separated, in order to reduce opportunities for unauthorized modification...",
                         majorProcess: "Technical",
                         subProcess: "Access control",
+                        type:"correctif",
                         testScript:
                           "1. Obtain the access management policy,1.1. Ensure that the policy is validated, signed 2. Obtain HR list of departures during the.......",
                         owner: "mimi",
@@ -168,18 +167,19 @@ function DisplayControleAppID() {
                 name: "OS",
                 risks: [
                   {
-                    id: "5",
+                    id: "6",
                     nom: " requirements are not exist or are not conducted.",
                     description:
                       "furfuzirfyzuf iuzyfoz ruozc furfuzirfyzuf iuzyfoz ruozc ojfyt yth iof ojfyt yth iof",
                     owner: "sisi 3",
                     controls: [
                       {
-                        id: "2",
+                        id: "9",
                         description:
                           "Duties  of responsibility are separated, in order to reduce opportunities for unauthorized modification...",
                         majorProcess: "Technical",
                         subProcess: "Access control",
+                        type:"detectif",
                         testScript:
                           "1. Obtain the access management policy,1.1. Ensure that the policy is validated, signed 2. Obtain HR list of departures during the.......",
                         owner: "AAA",
@@ -188,29 +188,25 @@ function DisplayControleAppID() {
                   },
                 ],
               },
-
-              {
-                id: "l2",
-                name: "APP",
-                risks: [],
-              },
+    
             ],
             owner: "",
           },
         ]
-
+    
       };
 
       // Trouver l'application correspondante
       const selectedApp = data.applications.find(
-        (app) => app.description === nomApp
+        (app) => nomApp === app.description
       );
+  
       setAppData(selectedApp);
 
       console.log('app', selectedApp)
     };
 
-
+console.log('Appdata',AppData)
     fetchAppData();
   }, [AppData, nomApp]);
 
@@ -219,12 +215,13 @@ function DisplayControleAppID() {
   //   }
 
 
-  // Extraire les contrôles de l'application
-  const controls = appData
-    ? appData.layers
-      .flatMap((layer) => layer.risks)
-      .flatMap((risk) => risk.controls)
-    : [];
+ // Extraire les contrôles de l'application
+ const controls = appData
+ console.log('appData',appData)
+ ? appData.layers
+     .flatMap((layer) => layer.risks || []) // Vérifier si layer.risks existe
+     .flatMap((risk) => risk.controls || []) // Vérifier si risk.controls existe
+ : [];
 
   return (
     <div className=" ">
@@ -244,6 +241,7 @@ function DisplayControleAppID() {
           />
         </div> */}
         <Separator text='List des Controles' />
+        {console.log("Données passées à Matrix:", { applications: [{ ...appData }] })}
         {appData ? (
           <Matrix
             data={{ applications: [{ ...appData, controls }] }}

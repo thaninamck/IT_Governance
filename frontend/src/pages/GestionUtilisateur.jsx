@@ -208,7 +208,7 @@ const rowActions = [
      
             {isEditModalOpen && <AddUserForm title={'Modifier un utilisateur'} isOpen={isEditModalOpen} onClose={() => setIsEditModalOpen(false)} initialValues={selectedApp || {}} onUserCreated={handleUpdateApp} />}
             {isDeletePopupOpen &&  <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1"> <DecisionPopUp name={filteredRows.find(row => row.id === selectedAppId)?.username || 'ce utilisateur'} text="Êtes-vous sûr(e) de vouloir supprimer l'utilisateur " handleConfirm={confirmDeleteApp} handleDeny={() => setIsDeletePopupOpen(false)} /> </div>}
-        
+        {console.log(selectedApp)}
       
     </div>
   );
