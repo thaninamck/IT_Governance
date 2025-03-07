@@ -15,7 +15,7 @@ function SignUpForm({ title, username, password, onUsernameChange, onPasswordCha
     setCaptchaError(!captchaValue);
     if (!captchaValue) return;
 
-    console.log("Form Data:", { userName, password, captchaValue });
+    console.log("Form Data:", { username, password, captchaValue });
   };
 
   return (
@@ -44,7 +44,7 @@ function SignUpForm({ title, username, password, onUsernameChange, onPasswordCha
       />
 
 <div className="flex justify-center">
-        <ReCAPTCHA size="normal" sitekey="6Lf1RdgqAAAAAO3IEJRIRtcR8bdaOxXwmm7_ChYY" onChange={setCaptchaValue} />
+        <ReCAPTCHA size="normal" sitekey="6LfzaOwqAAAAAGyx4zcdwN8kT5AH6Ov891S4nS0P" onChange={setCaptchaValue} />
       </div>
       
       {captchaError && <h5 className="mt-2 text-xs text-red-600">Veuillez compléter le reCAPTCHA !</h5>}
