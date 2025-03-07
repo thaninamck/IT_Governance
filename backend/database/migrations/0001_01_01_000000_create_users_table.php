@@ -22,6 +22,7 @@ return new class extends Migration
             $table->string('grade', 255)->nullable();
             $table->boolean('is_active')->default(false);
             $table->timestamp('last_activity')->nullable();
+            $table->boolean('must_change_password')->default(true);
             $table->timestamps(); //c pour  created_at et updated_at
             $table->rememberToken();
         });
