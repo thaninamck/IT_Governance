@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class system_layer extends Model
+class SystemLayer extends Model
 {
     //
 }
