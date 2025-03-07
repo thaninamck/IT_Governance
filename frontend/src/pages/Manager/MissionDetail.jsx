@@ -24,7 +24,7 @@ function MissionDetail() {
 
   // Liste des chemins où les breadcrumbs doivent s'afficher
   const breadcrumbRoutes = [
-    "/Missions",
+    "/missions",
     "/tablemission",
     "/missionInfo",
     "/statusmission",

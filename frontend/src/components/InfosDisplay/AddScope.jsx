@@ -122,7 +122,7 @@ function AddScope({ title, text, text1, onToggleForm, showForm, userRole, missio
   const navigate = useNavigate(); // Hook pour la navigation
   const handleRowClick = (rowData) => {
     // Naviguer vers la page de détails avec l'ID du contrôle dans l'URL
-    navigate(`/tablemission/${missionId}/${rowData.nomApp}`, { state: { AppData: rowData } });
+    navigate(`/missions/${missionId}/${rowData.nomApp}`, { state: { AppData: rowData } });
     console.log('Détails du app sélectionné:', rowData);
   };
 

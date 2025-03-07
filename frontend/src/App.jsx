@@ -197,8 +197,6 @@ const rowsData3 = [
           
          
           
-          <Route path="/tablemission/:mission" element={<MissionDetail />} />
-          <Route path="/tablemission/:mission/:nomApp" element={<DisplayControleAppID />} />
 
           {/*----------------------------Pages-------------------*/}
           <Route path='/notification' element={<Notification/>}/>
@@ -208,11 +206,16 @@ const rowsData3 = [
           <Route path='/login' element={<Login  />}></Route>
           <Route path='/myprofile' element={<MyProfile/>}></Route>
           <Route path='/missions' element={<GestionMission/>}></Route>
+          
+          
+          <Route path="/missions/:mission" element={<MissionDetail />} />
+          <Route path='/rapportmissions/:mission' element={<MissionReport/>}></Route>
+          <Route path="/missions/:mission/:nomApp" element={<DisplayControleAppID />} />
 
           <Route path='/utilisateurs' element={<GestionUtilisateur/>}></Route>
           <Route path='/clients' element={<GestionClient/>}></Route>
           <Route path='/settings' element={<Settings/>}></Route>
-          <Route path='/tablemission/:mission/:nonApp/:controlCode' element={<ControleExcutionPage/>}></Route>
+          <Route path='/missions/:mission/:nonApp/:controlCode' element={<ControleExcutionPage/>}></Route>
           <Route path='/remediation/:id' element={<RemediationActionId/>}></Route>
           <Route path='/listcontrole' element={<ListControle/>}></Route>
           <Route path='/pw' element={<ForgotPw/>}></Route>
@@ -225,7 +228,7 @@ const rowsData3 = [
 
           <Route path='/acc' element={<WorkPlanSideBar/>}></Route>
           <Route path='/workplan' element={<Workplan/>}></Route>
-          <Route path='/gestionmission/:mission' element={<MissionReport/>}></Route>
+          {/* <Route path='/gestionmission/:mission' element={<MissionReport/>}></Route> */}
           <Route path='/adminaction' element={<AdminActionsPanel/>}></Route>
           <Route path='/missions/:mission' element={<MissionReport/>}></Route>
           <Route path='/missions/:mission/:app' element={<AppReport/>}></Route>

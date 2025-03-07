@@ -23,6 +23,7 @@ import LockOpenRoundedIcon from '@mui/icons-material/LockOpenRounded';
 import { Snackbar } from "@mui/material";
 import AdminActionsPanel from "./AdminActionsPanel";
 import { PermissionRoleContext } from "../Context/permissionRoleContext";
+import ImportCsvButton from "../components/ImportXcelButton";
 
 function GestionMission() {
 
@@ -46,88 +47,113 @@ function GestionMission() {
     { field: "statusMission", headerName: "Status", width: 220 },
     { field: "actions", headerName: "Actions", width: 80 },
   ];
+  const [rowsData2, setRowsData2] = useState([]);
 
+  // Fonction pour gérer les données importées
+  const handleDataImported = (importedData) => {
+    // Ignorer la première ligne (en-tête)
+    const dataWithoutHeader = importedData.slice(1);
+  
+    // Convertir les données importées en format compatible avec rowsData2
+    const newRows = dataWithoutHeader.map((row, index) => ({
+      id: row[0], // Générer un ID unique
+      client: row[3],
+      mission: row[2],
+      manager: row[4],
+      dateField: row[5],
+      dateField1: row[6],
+      auditStartDate: row[7],
+      auditEndDate: row[8],
+      statusMission: getAutomaticStatus(row[5], row[6]), // Calculer le statut automatique
+    }));
+  
+    // Mettre à jour rowsData2 avec les nouvelles données
+    setRowsData2((prevRows) => [...prevRows, ...newRows]);
+  
+    // Mettre à jour filteredRows avec les nouvelles données
+    setFilteredRows((prevRows) => [...prevRows, ...newRows]);
+  };
   // Données des missions
-  const rowsData2 = [
-    {
-      id: 1,
-      statusMission: "en_cours",
-      mission: "DSP",
-      client: "Djeezy",
-      manager: "Houda Elmaouhab",
-      dateField: "2025-01-27",
-      dateField1: "2025-2-7",
-      auditStartDate: "2024-01-01", // Date de début de la période auditée
-      auditEndDate: "2024-12-31",   // Date de fin de la période auditée
-    },
-    {
-      id: 2,
-      statusMission: "terminer",
-      mission: "DSP1",
-      client: "Oredoo",
-      manager: "Sara Lounes",
-      dateField: "2024-11-27",
-      dateField1: "2025-02-25",
-      auditStartDate: "2024-02-01", // Date de début de la période auditée
-      auditEndDate: "2024-11-30",   // Date de fin de la période auditée
-    },
-    {
-      id: 3,
-      statusMission: "non_commencee",
-      mission: "DSP2",
-      client: "Oredoo",
-      manager: "Sara Lounes",
-      dateField: "2025-06-27",
-      dateField1: "2025-12-27",
-      auditStartDate: "2024-02-01", // Date de début de la période auditée
-      auditEndDate: "2024-11-30",   // Date de fin de la période auditée
-    },
-    {
-      id: 4,
-      statusMission: "en_retard",
-      mission: "DSP3",
-      client: "Oredoo",
-      manager: "Sara Lounes",
-      dateField: "2025-01-27",
-      dateField1: "2025-02-27",
-      auditStartDate: "2024-02-01", // Date de début de la période auditée
-      auditEndDate: "2024-11-30",   // Date de fin de la période auditée
-    },
-    {
-      id: 5,
-      statusMission: "archiver",
-      mission: "DSP4",
-      client: "Oredoo",
-      manager: "Sara Lounes",
-      dateField: "2025-06-27",
-      dateField1: "2025-12-27",
-      auditStartDate: "2024-02-01", // Date de début de la période auditée
-      auditEndDate: "2024-11-30",   // Date de fin de la période auditée
-    },
-    {
-      id: 6,
-      statusMission: "annulée",
-      mission: "DSP5",
-      client: "Oredoo",
-      manager: "Sara Lounes",
-      dateField: "2025-06-27",
-      dateField1: "2025-12-27",
-      auditStartDate: "2024-02-01", // Date de début de la période auditée
-      auditEndDate: "2024-11-30",   // Date de fin de la période auditée
-    },
-    {
-      id: 7,
-      statusMission: "temporaire",
-      mission: "DSP6",
-      client: "Oredoo",
-      manager: "Sara Lounes",
-      dateField: "2025-06-27",
-      dateField1: "2025-12-27",
-      auditStartDate: "2024-02-01", // Date de début de la période auditée
-      auditEndDate: "2024-11-30",   // Date de fin de la période auditée
-    },
+ // const rowsData2 = [
+    // {
+    //   id: 1,
+    //   statusMission: "en_cours",
+    //   mission: "DSP",
+    //   client: "Djeezy",
+    //   manager: "Houda Elmaouhab",
+    //   dateField: "2025-01-27",
+    //   dateField1: "2025-2-7",
+    //   auditStartDate: "2024-01-01", // Date de début de la période auditée
+    //   auditEndDate: "2024-12-31",   // Date de fin de la période auditée
+    // },
+    // {
+    //   id: 2,
+    //   statusMission: "terminer",
+    //   mission: "DSP1",
+    //   client: "Oredoo",
+    //   manager: "Sara Lounes",
+    //   dateField: "2024-11-27",
+    //   dateField1: "2025-02-25",
+    //   auditStartDate: "2024-02-01", // Date de début de la période auditée
+    //   auditEndDate: "2024-11-30",   // Date de fin de la période auditée
+    // },
+    // {
+    //   id: 3,
+    //   statusMission: "non_commencee",
+    //   mission: "DSP2",
+    //   client: "Oredoo",
+    //   manager: "Sara Lounes",
+    //   dateField: "2025-06-27",
+    //   dateField1: "2025-12-27",
+    //   auditStartDate: "2024-02-01", // Date de début de la période auditée
+    //   auditEndDate: "2024-11-30",   // Date de fin de la période auditée
+    // },
+    // {
+    //   id: 4,
+    //   statusMission: "en_retard",
+    //   mission: "DSP3",
+    //   client: "Oredoo",
+    //   manager: "Sara Lounes",
+    //   dateField: "2025-01-27",
+    //   dateField1: "2025-02-27",
+    //   auditStartDate: "2024-02-01", // Date de début de la période auditée
+    //   auditEndDate: "2024-11-30",   // Date de fin de la période auditée
+    // },
+    // {
+    //   id: 5,
+    //   statusMission: "archiver",
+    //   mission: "DSP4",
+    //   client: "Oredoo",
+    //   manager: "Sara Lounes",
+    //   dateField: "2025-06-27",
+    //   dateField1: "2025-12-27",
+    //   auditStartDate: "2024-02-01", // Date de début de la période auditée
+    //   auditEndDate: "2024-11-30",   // Date de fin de la période auditée
+    // },
+    // {
+    //   id: 6,
+    //   statusMission: "annulée",
+    //   mission: "DSP5",
+    //   client: "Oredoo",
+    //   manager: "Sara Lounes",
+    //   dateField: "2025-06-27",
+    //   dateField1: "2025-12-27",
+    //   auditStartDate: "2024-02-01", // Date de début de la période auditée
+    //   auditEndDate: "2024-11-30",   // Date de fin de la période auditée
+    // },
+    // {
+    //   id: 7,
+    //   statusMission: "temporaire",
+    //   mission: "DSP6",
+    //   client: "Oredoo",
+    //   manager: "Sara Lounes",
+    //   dateField: "2025-06-27",
+    //   dateField1: "2025-12-27",
+    //   auditStartDate: "2024-02-01", // Date de début de la période auditée
+    //   auditEndDate: "2024-11-30",   // Date de fin de la période auditée
+    // },
     // ... autres missions
-  ];
+ // ];
 
   // Fonction pour déterminer le statut automatique
   const getAutomaticStatus = (startDate, endDate) => {
@@ -404,12 +430,12 @@ const missionEndDate = new Date(selectedRow.dateField1).toISOString().split("T")
 
   const handleRowClick = (rowData) => {
     // Naviguer vers la page de détails avec l'ID du contrôle dans l'URL
-    navigate(`/tablemission/${rowData.mission}`, { state: { missionData: rowData }} );
+    navigate(`/missions/${rowData.mission}`, { state: { missionData: rowData }} );
    // navigate('/controle', { state: { controleData: rowData } });
     console.log('Détails du contrôle sélectionné:', rowData);
   };
 
-  const getRowForReportLink = (row) => `/missions/${row.mission}`;
+  const getRowForReportLink = (row) => `/rapportmissions/${row.mission}`;
 
   const handleViewReport = (selectedRow) => {
     if (!selectedRow || !selectedRow.mission) {
@@ -567,7 +593,8 @@ const missionEndDate = new Date(selectedRow.dateField1).toISOString().split("T")
             onSearch={handleSearchResults}
           />
         </div>
-        <div className="flex justify-end items-center pr-10 mb-6">
+        <div className="flex justify-end items-center gap-4 pr-10 mb-6">
+        <ImportCsvButton  onDataImported={handleDataImported} />
           <ExportButton
             rowsData={filteredRows}
             headers={columnsConfig2.map((col) => col.headerName)}
@@ -605,6 +632,12 @@ const missionEndDate = new Date(selectedRow.dateField1).toISOString().split("T")
             isDeletePopupOpen ? "blur-sm" : ""
           }`}
         >
+          {missionsToDisplay.length === 0 ?(
+            <p className="text-center text-subfont-gray mt-20">
+            Aucune mission pour le moment. Vous pouvez charger un
+            fichier Excel ?
+          </p>
+          ):(
           <Table
             key={JSON.stringify(missionsToDisplay)}
             
@@ -621,11 +654,12 @@ const missionEndDate = new Date(selectedRow.dateField1).toISOString().split("T")
               activeView === "archived" ? action.label !== "Archiver" : true
             )}
           />
-           <AdminActionsPanel
+        )}
+           {/* <AdminActionsPanel
         pendingActions={pendingActions}
         onValidateAction={handleValidateAction}
         onRejectAction={handleRejectAction}
-      />
+      /> */}
         </div>
        
       </div>

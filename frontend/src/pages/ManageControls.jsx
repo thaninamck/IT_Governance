@@ -92,7 +92,7 @@ const ManageControls = () => {
       Description: selectedRow.description,
     };
 
-    console.log("izan" + transformedData);
+    console.log("transformedData" + transformedData);
     setIsOpenRisk(true);
     setRiskTransformeData(transformedData);
   };
@@ -324,9 +324,9 @@ const ManageControls = () => {
         />
       )}
       {/* Barre latérale */}
-      <div className="h-screen">
+  
         <SideBar userRole={userRole} />
-      </div>
+      
 
       {/* Contenu principal */}
       <div className="flex flex-col flex-1 p-4 bg-[#fbfcfe] min-h-screen overflow-hidden">

@@ -15,7 +15,8 @@ function DisplayControleAppID() {
   const location = useLocation(); // Obtenir l'URL actuell
   const AppData = location.state?.AppData; // Récupérer les données envoyées
   const breadcrumbRoutes = [
-    "/Missions",
+    "/missions",
+    "/missions/:mission/:nomApp",
     "/tablemission",
     "gestionmission",
     "/rapportmission", // Ajout pour la page principale
@@ -33,7 +34,7 @@ function DisplayControleAppID() {
 
   const handleRowClick = (rowData) => {
     // Naviguer vers la page de détails avec l'ID du contrôle dans l'URL
-    navigate(`/tablemission/${mission}/${nomApp}/${rowData.controlCode}`, { state: { controleData: rowData } });
+    navigate(`/missions/${mission}/${nomApp}/${rowData.controlCode}`, { state: { controleData: rowData } });
     // navigate('/controle', { state: { controleData: rowData } });
     console.log('Détails du contrôle sélectionné:', rowData);
   };
