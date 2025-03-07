@@ -1,6 +1,7 @@
 <?php
 
 namespace Database\Seeders;
+use App\Models\Setting;
 
 use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
@@ -15,6 +16,13 @@ class DatabaseSeeder extends Seeder
     {
         // User::factory(10)->create();
 
+        Setting::insert([
+            ['key' => 'password_min_length', 'value' => '12'],
+            ['key' => 'password_max_length', 'value' => '20'],
+            ['key' => 'password_expiration_days', 'value' => '60'],
+            ['key' => 'password_notification_before_expiration', 'value' => '7']
+        ]);
+        
         $this->call([
             StatusSeeder::class,
             ClientSeeder::class,

@@ -27,7 +27,7 @@ class UserFactory extends Factory
             'first_name' => fake()->randomElement(['Zouaghi','Koliai','Ouakli','Labsi','Hafri','Toubal','El Maouhab','Lounas']),
             'last_name' => fake()->randomElement(['Azyadi','Lotfi','Adel','Karim','Sif Ali','Kamelia','Houda','Sara']),
             'email' => fake()->unique()->safeEmail(),
-            'password' => static::$password ??= Hash::make('password'),
+            'password' => static::$password ??= Hash::make('passwordpass'),
             'remember_token' => Str::random(10),
             'grade' => fake()->randomElement(['junior1', 'junior2', 'directeur IT','senior2','senior1','manager','assistant manager','senior manager']),
             'is_active' => fake()->boolean(),
