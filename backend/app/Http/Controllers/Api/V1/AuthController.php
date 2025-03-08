@@ -62,7 +62,9 @@ class AuthController extends BaseController
                 return $this->sendError("Incorrect data", ["password" => ["No user found with the specified data"]]);
             }
 
-            $user->update(["is_active" => true]);
+            $user->update(["last_activity" => now()]);
+
+            
             $token = $user->createToken($user->first_name)->plainTextToken;
 
 
@@ -88,7 +90,6 @@ class AuthController extends BaseController
         $user = $request->user();
 
 
-        $user->update(['is_active' => false]);
 
         $user->tokens()->delete();
         return $this->sendResponse('logged out', 'Logged out succesfully');
