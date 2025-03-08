@@ -20,7 +20,7 @@ class ClientRepository
     {
         $client=Client::find($id);
 
-        if($client){
+        if(!$client){
             return null;
         }
         
