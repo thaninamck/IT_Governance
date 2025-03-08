@@ -31,6 +31,7 @@ class UserFactory extends Factory
             'remember_token' => Str::random(10),
             'grade' => fake()->randomElement(['junior1', 'junior2', 'directeur IT','senior2','senior1','manager','assistant manager','senior manager']),
             'is_active' => fake()->boolean(),
+            'phone_number' => fake()->phoneNumber(),
             'last_activity' => fake()->dateTime(),
             'role' => fake()->randomElement(['0']),
         ];

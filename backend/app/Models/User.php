@@ -1,7 +1,8 @@
 <?php
 
 namespace App\Models;
-
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -51,4 +52,18 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+    public function executions(): HasMany
+    {
+        return $this->hasMany(Execution::class);
+    }
+    public function participations(): HasMany
+    {
+        return $this->hasMany(Participation::class);
+    }
+    public function notifications(): BelongsToMany
+{
+    return $this->belongsToMany(Notification::class, 'notification_users')
+                ->withTimestamps();
+}
+
 }
