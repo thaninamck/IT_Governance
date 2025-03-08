@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('password');
             $table->integer('role')->default('0'); 
             $table->string('grade', 255)->nullable();
+            $table->string('phone_number', 255)->nullable();
             $table->boolean('is_active')->default(false);
             $table->timestamp('last_activity')->nullable();
             $table->boolean('must_change_password')->default(true);
