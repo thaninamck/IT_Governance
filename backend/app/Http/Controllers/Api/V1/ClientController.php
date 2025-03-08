@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\ClientResource;
 use App\Models\Client;
 use App\Services\V1\ClientService;
+use App\Services\LogService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -13,10 +14,11 @@ use Illuminate\Support\Facades\Validator;
 class ClientController extends BaseController
 {
     protected $clientService;
+    protected $logService;
 
-    public function __construct(ClientService $clientService)
+    public function __construct(ClientService $clientService ,LogService $logService)
     {
-
+        $this->logService = $logService;
         $this->clientService=$clientService;
     }
 
@@ -57,6 +59,12 @@ class ClientController extends BaseController
 
             $client=$this->clientService->createClient($clientData);
 
+            $this->logService->logUserAction(
+                auth()->user()->email ??'Unknown',
+                'Admin',
+                "Création d'un client {$client->commercial_name}",
+                "" 
+            );
             $response=[
                 'client' =>new ClientResource($client),
                 'message'=>'client created successfully'
@@ -89,6 +97,12 @@ class ClientController extends BaseController
             if(!$client){
                 return $this->sendError("client not found update",[],404);
             }
+            $this->logService->logUserAction(
+                auth()->user()->email ?? 'Unknown',
+                'Admin',
+                "Modification du client: {$client->commercial_name}",
+                " "
+            );
             return $this->sendResponse(new ClientResource($client),"client updated successfully");
 
         }catch(\Exception $e){
@@ -104,6 +118,12 @@ class ClientController extends BaseController
             if(!$commercial_name){
                 return $this->sendError("client not found",[],404);
             }
+            $this->logService->logUserAction(
+                auth()->user()->email ?? 'Unknown',
+                'Admin',
+                "Suppression  d'un client:{$commercial_name}",
+                " "
+            );    
             return $this->sendResponse(['success'=>true],"client deleted successfully");
 
         }catch(\Exception $e)
@@ -118,6 +138,13 @@ class ClientController extends BaseController
         try{
             if(!empty($validClients)){
                 $clients=$this->clientService->createMultipleClients($validClients);
+
+                $this->logService->logUserAction(
+                    auth()->user()->email ?? 'Unknown',
+                    'Admin',
+                    "Insertion des clients",
+                    " "
+                );
 
                 return $this->sendResponse([
                     'success'=>true,
