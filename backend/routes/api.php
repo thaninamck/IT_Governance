@@ -18,18 +18,22 @@ use App\Http\Controllers\Api\V1\LogController;
 
 
 
-Route::middleware(['auth:sanctum', AdminMiddleware::class])->prefix('v1')->controller(UserController::class)->group(function () {
-    Route::get('/users', 'index');
-    Route::post('/insert-user', 'store');
-    Route::post('/reset-user/{id}', 'resetUser');
+Route::middleware(['auth:sanctum', AdminMiddleware::class])
+    ->prefix('v1')
+    ->group(function () {
+        Route::controller(UserController::class)->group(function () {
+            Route::get('/users', 'index');
+            Route::post('/insert-user', 'store');
+            Route::post('/reset-user/{id}', 'resetUser');
+            Route::patch('/update-user/{id}', 'updateUser');
+            Route::patch('/block-user/{id}', 'blockUser');
+            Route::patch('/unblock-user/{id}', 'unblockUser');
+            Route::delete('/user/{id}', 'deleteUser');
+            Route::post('/insert-users', 'storeMultiple');
+        });
 
-    Route::patch('/update-user/{id}', 'updateUser');
-    Route::patch('/block-user/{id}', 'blockUser');
-    Route::patch('/unblock-user/{id}', 'unblockUser');
-    Route::delete('/user/{id}', 'deleteUser');
-    Route::post('/insert-users', 'storeMultiple');
-    Route::get('/logs',  'getUserActivityLogs');
-});
+        Route::get('/logs', [LogController::class, 'getUserActivityLogs']);
+    });
 
 Route::post('/login', action: [AuthController::class, 'login'])->middleware(CheckPasswordReset::class);
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
