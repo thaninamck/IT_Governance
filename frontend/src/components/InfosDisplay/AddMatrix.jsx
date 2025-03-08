@@ -4,6 +4,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import Matrix from '../workPlan/Matrix';
 
 function AddMatrix({ userRole }) {
+  
   const data1 = {
     applications: [
       {
@@ -27,6 +28,7 @@ function AddMatrix({ userRole }) {
                       "Duties and areas of responsibility are separated, in order to reduce opportunities for unauthorized modification...",
                     majorProcess: "Technical",
                     subProcess: "Access control",
+                    type:"detectif",
                     testScript:
                       "1. Obtain the access management policy,1.1. Ensure that the policy is validated, signed 2. Obtain HR list of departures during the.......",
                     owner: "titi",
@@ -52,6 +54,7 @@ function AddMatrix({ userRole }) {
                       "Duties and areas of responsibility are separated, in order to reduce opportunities for unauthorized modification...",
                     majorProcess: "Technical",
                     subProcess: "Access control",
+                    type:"detectif",
                     testScript:
                       "1. Obtain the access management policy,1.1. Ensure that the policy is validated, signed 2. Obtain HR list of departures during the.......",
                     owner: "mimi",
@@ -61,11 +64,6 @@ function AddMatrix({ userRole }) {
             ],
           },
 
-          {
-            id: "l2",
-            name: "APP",
-            risks: [],
-          },
         ],
         owner: "",
       },
@@ -82,15 +80,16 @@ function AddMatrix({ userRole }) {
                 id: "5",
                 nom: "SDLCppppppp requirements are not exist or are not conducted.",
                 description:
-                  "furfuzirfyzuf iuzyfoz ruozc furfuzirfyzuf iuzyfoz ruozc ojfyt yth iof ojfyt yth iof",
+                  "ttttttttttttttttt ruozc furfuzirfyzuf iuzyfoz ruozc ojfyt yth iof ojfyt yth iof",
                 owner: "sisi 3",
                 controls: [
                   {
-                    id: "2",
+                    id: "1",
                     description:
                       "Duties 212and areas of responsibility are separated, in order to reduce opportunities for unauthorized modification...",
                     majorProcess: "Technical",
                     subProcess: "Access control",
+                    type:"detectif",
                     testScript:
                       "1. Obtain the access management policy,1.1. Ensure that the policy is validated, signed 2. Obtain HR list of departures during the.......",
                     owner: "titi",
@@ -111,11 +110,12 @@ function AddMatrix({ userRole }) {
                 owner: "TEST",
                 controls: [
                   {
-                    id: "4",
+                    id: "8",
                     description:
                       "Duties and areas of responsibility are separated, in order to reduce opportunities for unauthorized modification...",
                     majorProcess: "Technical",
                     subProcess: "Access control",
+                    type:"correctif",
                     testScript:
                       "1. Obtain the access management policy,1.1. Ensure that the policy is validated, signed 2. Obtain HR list of departures during the.......",
                     owner: "mimi",
@@ -129,18 +129,19 @@ function AddMatrix({ userRole }) {
             name: "OS",
             risks: [
               {
-                id: "5",
+                id: "6",
                 nom: " requirements are not exist or are not conducted.",
                 description:
                   "furfuzirfyzuf iuzyfoz ruozc furfuzirfyzuf iuzyfoz ruozc ojfyt yth iof ojfyt yth iof",
                 owner: "sisi 3",
                 controls: [
                   {
-                    id: "2",
+                    id: "9",
                     description:
                       "Duties  of responsibility are separated, in order to reduce opportunities for unauthorized modification...",
                     majorProcess: "Technical",
                     subProcess: "Access control",
+                    type:"detectif",
                     testScript:
                       "1. Obtain the access management policy,1.1. Ensure that the policy is validated, signed 2. Obtain HR list of departures during the.......",
                     owner: "AAA",
@@ -150,11 +151,6 @@ function AddMatrix({ userRole }) {
             ],
           },
 
-          {
-            id: "l2",
-            name: "APP",
-            risks: [],
-          },
         ],
         owner: "",
       },

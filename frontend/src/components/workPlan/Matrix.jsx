@@ -113,7 +113,7 @@ function Matrix({ data, userRole, onRowClick }) {
         });
       });
     });
-  
+    console.log("Données transformées:", result); // Ajouter un log pour déboguer
     return result;
   };
 
@@ -143,14 +143,14 @@ const mergeData = (newData, existingData) => {
 };
 
 // Charger les données depuis localStorage au montage du composant
-useEffect(() => {
-  const savedData = localStorage.getItem("flattenedData");
-  if (savedData) {
-    const parsedData = JSON.parse(savedData);
-    setFlattenedData(parsedData); // Mettre à jour flattenedData avec les données sauvegardées
-    console.log("savedData", parsedData); // Vérifier les données chargées
-  }
-}, []);
+// useEffect(() => {
+//   const savedData = localStorage.getItem("flattenedData");
+//   if (savedData) {
+//     const parsedData = JSON.parse(savedData);
+//     setFlattenedData(parsedData); // Mettre à jour flattenedData avec les données sauvegardées
+//     console.log("savedData", parsedData); // Vérifier les données chargées
+//   }
+// }, []);
 
 // Mettre à jour flattenedData lorsque data change
 useEffect(() => {
@@ -172,14 +172,7 @@ useEffect(() => {
     localStorage.setItem("flattenedData", JSON.stringify(flattenedData));
   }
 }, [flattenedData]);
-
-
-
-
-
-
  
-
   const [selectedRisk, setSelectedRisk] = useState({});
   const [selectedApp, setSelectedApp] = useState({});
 
@@ -390,10 +383,22 @@ useEffect(() => {
       width: 150,
       editable: false,
     },
-
     // Risques
-    {
-      field: "riskCheckbox",
+
+    // {
+    //      field: "riskCheckbox",
+    //   headerName: "Select Risk",
+    //   width: 150,
+    //   renderCell: (params) => (
+    //     <Checkbox
+    //       className="riskCheckbox"
+    //       checked={!!selectedRisk[params.row.id]}
+    //       onChange={handleRiskCheckboxChange(params.row.id)}
+    //     />
+    //   ),
+    //    },
+    ...((userRole === 'manager' || userRole === 'admin')
+    ? [{  field: "riskCheckbox",
       headerName: "Select Risk",
       width: 150,
       renderCell: (params) => (
@@ -402,16 +407,27 @@ useEffect(() => {
           checked={!!selectedRisk[params.row.id]}
           onChange={handleRiskCheckboxChange(params.row.id)}
         />
-      ),
-    },
+      ),}]
+    : []),
+
+    
     { field: "riskCode", headerName: "Risk Code", width: 150, editable: false },
     { field: "riskName", headerName: "Risk Name", width: 150, editable: false },
-    {
-      field: "riskDescription",
+    // {
+    //   field: "riskDescription",
+    //   headerName: "Risk Description",
+    //   width: 350,
+    //   editable: false,
+    // },
+    ...((userRole === 'manager' || userRole === 'admin')
+    ? [{ field: "riskDescription",
       headerName: "Risk Description",
       width: 200,
-      editable: false,
-    },
+      editable: false}]
+    : [{ field: "riskDescription",
+      headerName: "Risk Description",
+      width: 350,
+      editable: false}]),
     {
       field: "riskOwner",
       headerName: "Risk Owner",
@@ -420,8 +436,21 @@ useEffect(() => {
     },
 
     // Contrôles
-    {
-      field: "controlCheckbox",
+    // {
+    //   field: "controlCheckbox",
+    //   headerName: "Select Control",
+    //   width: 150,
+    //   renderCell: (params) => (
+    //     <Checkbox
+    //       className="controlCheckbox"
+    //       checked={!!selectedControl[params.row.id]}
+    //       onChange={handleControlCheckboxChange(params.row.id)}
+    //     />
+    //   ),
+    // },
+
+    ...((userRole === 'manager' || userRole === 'admin')
+    ? [{ field: "controlCheckbox",
       headerName: "Select Control",
       width: 150,
       renderCell: (params) => (
@@ -430,8 +459,8 @@ useEffect(() => {
           checked={!!selectedControl[params.row.id]}
           onChange={handleControlCheckboxChange(params.row.id)}
         />
-      ),
-    },
+      ),}]
+    : []),
     {
       field: "controlCode",
       headerName: "Control Code",

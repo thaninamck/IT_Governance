@@ -9,7 +9,7 @@ export const BreadcrumbProvider = ({ children }) => {
 
   // Mapping des noms d'URL vers des labels plus lisibles
   const customLabels = {
-    'gestionmission': 'Mes Missions ',
+    'tablemission': 'Mes Missions ',
     
   };
 

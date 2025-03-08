@@ -12,6 +12,7 @@ import {
   Select,
   MenuItem as MuiMenuItem,
   FormControl,
+  Typography,
 } from "@mui/material";
 import StatusMission from "./StatusMission";
 import { useNavigate } from "react-router-dom";
@@ -174,38 +175,44 @@ function Table({
         // Ajoute une condition spécifique en fonction du champ
         if (colConfig.field === "status") {
           return (
-            <FormControl sx={{ width: "100%" }}>
-              <Select
-                value={params.row.status}
-                onChange={(e) => handleStatusChange(e, params.row.id)}
-                displayEmpty
-                renderValue={(selected) => {
-                  const color = statusColors[selected] || "gray"; // Détermine la couleur du statut sélectionné
-                  return (
-                    <span style={{ color: color }}>
-                      {selected || "Choisir un statut"}
-                    </span>
-                  );
-                }}
-                sx={{
-                  fontSize: "14px",
-                  height: "40px",
-                  backgroundColor: "#fff",
-                  borderRadius: "4px",
-                }}
-              >
-                {statusOptions.map((status, color) => (
-                  <MuiMenuItem
-                    key={status}
-                    value={status}
-                    style={{ color: statusColors[status] || "gray" }}
-                  >
-                    {status}
-                  </MuiMenuItem>
-                ))}
-              </Select>
-            </FormControl>
+            // <FormControl sx={{ width: "100%" }}>
+            //   <Select
+            //     value={params.row.status}
+            //     onChange={(e) => handleStatusChange(e, params.row.id)}
+            //     disabled // Désactive le Select
+            //     displayEmpty
+            //     renderValue={(selected) => {
+            //       const color = statusColors[selected] || "gray"; // Détermine la couleur du statut sélectionné
+            //       return (
+            //         <span style={{ color: color }}>
+            //           {selected || "Choisir un statut"}
+            //         </span>
+            //       );
+            //     }}
+            //     sx={{
+            //       fontSize: "14px",
+            //       height: "40px",
+            //       backgroundColor: "#fff",
+            //       borderRadius: "4px",
+            //     }}
+            //   >
+            //     {statusOptions.map((status, color) => (
+            //       <MuiMenuItem
+            //         key={status}
+            //         value={status}
+            //         style={{ color: statusColors[status] || "gray" }}
+            //       >
+            //         {status}
+            //       </MuiMenuItem>
+            //     ))}
+            //   </Select>
+            // </FormControl>
+
+            <Typography sx={{ color: statusColors[params.row.status] || "gray" }}>
+  {params.row.status || "Aucun statut"}
+</Typography>
           );
+
         }
         if (colConfig.field === "dateField") {
           // Formater la date en "DEC 27, 2024"

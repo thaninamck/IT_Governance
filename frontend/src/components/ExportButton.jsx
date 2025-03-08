@@ -72,6 +72,7 @@ function ExportButton({ rowsData, headers, fileName }) {
   return (
     <div>
       <Button
+      variant="outlined"
         onClick={handleClick}
         className="border-none px-3 py-1 bg-[var(--blue-icons)] text-white rounded flex items-center"
       >

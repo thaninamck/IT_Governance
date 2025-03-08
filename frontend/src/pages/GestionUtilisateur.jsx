@@ -14,6 +14,7 @@ import DecisionPopUp from '../components/PopUps/DecisionPopUp';
 import emailjs from 'emailjs-com';
 import RestartAltIcon from '@mui/icons-material/RestartAlt';
 import { PermissionRoleContext } from '../Context/permissionRoleContext';
+import { Snackbar } from '@mui/material';
 
 function GestionUtilisateur() {
 
@@ -42,7 +43,13 @@ function GestionUtilisateur() {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [selectedApp, setSelectedApp] = useState(null);
   const [isDeletePopupOpen, setIsDeletePopupOpen] = useState(false);
+  const [ResetShow, setResetShow] = useState(false);
   const [selectedAppId, setSelectedAppId] = useState(null);
+
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+const [snackbarMessage, setSnackbarMessage] = useState("");
+const [snackbarSeverity, setSnackbarSeverity] = useState("success"); // "success", "error", "warning", "info"
+
    // Accédez à userRole et setUserRole via le contexte
    const { userRole, setUserRole } = useContext(PermissionRoleContext);
   
@@ -103,45 +110,72 @@ const generateRandomPassword = () => {
   return password;
 };
 
-const handleResetRow = async (selectedRow) => {
-  const newPassword = generateRandomPassword();
-  const userEmail = selectedRow.email;
-
-  // Paramètres pour l'envoi d'email via EmailJS
-  const templateParams = {
-    to_email: userEmail,
-    new_password: newPassword,
-  };
-
-  try {
-    // Envoyer l'email via EmailJS
-    await emailjs.send(
-      'service_ft79mie', // Remplacez par votre Service ID
-      'template_f4ojiam', // Remplacez par votre Template ID
-      templateParams,
-      'oAXuwpg74dQwm0C_s' // Remplacez par votre User ID
-    );
-
-    console.log('Email envoyé avec succès !');
-
-    // Mettre à jour l'état de l'application si nécessaire
-    setFilteredRows((prevRows) =>
-      prevRows.map((row) =>
-        row.id === selectedRow.id ? { ...row, password: newPassword } : row
-      )
-    );
-
-    alert('Un nouveau mot de passe a été envoyé à votre adresse email.');
-  } catch (error) {
-    console.error('Erreur lors de l\'envoi de l\'email :', error);
-    alert('Une erreur est survenue lors de l\'envoi de l\'email.');
+const handleResetRow =  (selectedRow) => {
+  setSelectedAppId(selectedRow.id);
+   setResetShow(true);
+   console.log(selectedRow)
   }
-};
+
+  const handleResetConfirm = async () => {
+    if (selectedAppId !== null) {
+      const selectedUser = filteredRows.find((row) => row.id === selectedAppId);
+      if (!selectedUser) return;
+  
+      const newPassword = generateRandomPassword();
+      const userEmail = selectedUser.email;
+  
+      try {
+        await emailjs.send(
+          'service_ft79mie',
+          'template_f4ojiam',
+          { to_email: userEmail, new_password: newPassword },
+          'oAXuwpg74dQwm0C_s'
+        );
+  
+        setFilteredRows(prevRows =>
+          prevRows.map(row =>
+            row.id === selectedAppId ? { ...row, password: newPassword } : row
+          )
+        );
+
+      setSnackbarMessage("Un nouveau mot de passe a été envoyé à l'adresse email.");
+      setSnackbarSeverity("success");
+  
+       // alert('Un nouveau mot de passe a été envoyé à l\'adresse email.');
+        
+       // setTimeout(() => setSelectedAppId(null), 500); // Évite d'effacer trop tôt
+  
+      } catch (error) {
+        console.error('Erreur lors de l\'envoi de l\'email :', error);
+       // alert('Une erreur est survenue.');
+       setSnackbarMessage("Une erreur est survenue lors de l'envoi de l'email.");
+      setSnackbarSeverity("error");
+      }
+  
+      setSnackbarOpen(true);
+      setResetShow(false);
+      setSelectedAppId(null);
+    }
+  };
+  
 const rowActions = [
   { icon: <PersonOutlineRounded sx={{ marginRight: "8px" }} />, label: "Voir Profile", onClick: handleEditRow },
   { icon: <SquarePen className='mr-2' />, label: "Modifier", onClick: (selectedRow) => handleEditRow(selectedRow) },
-  { icon: <RestartAltIcon className='mr-2' />, label: "Réinitialiser", onClick: (selectedRow) => handleResetRow(selectedRow)  },
-  { icon: <ErrorOutlineIcon style={{ color: 'var(--alert-red)', marginRight: "8px" }} />, label: "Supprimer utilisateur", onClick: (selectedRow) => handleDeleteRow(selectedRow) },
+  { 
+    icon: <RestartAltIcon className='mr-2' />, 
+    label: "Réinitialiser", 
+    onClick: (selectedRow) => { 
+     
+        handleResetRow(selectedRow); 
+      
+    },
+    disabled: (selectedRow) =>{
+      return(
+        !selectedRow||!["Active"].includes(selectedRow.status)
+      )
+    } 
+  },
+   { icon: <ErrorOutlineIcon style={{ color: 'var(--alert-red)', marginRight: "8px" }} />, label: "Supprimer utilisateur", onClick: (selectedRow) => handleDeleteRow(selectedRow) },
 ];
 
 
@@ -184,9 +218,22 @@ const rowActions = [
         <div className="flex justify-end items-center pr-10 mb-6">
           <ExportButton rowsData={filteredRows} headers={columnsConfig2.map(col => col.headerName)} fileName={`List_Utilisateurs_${new Date().getMonth() + 1}_${new Date().getFullYear()}`} />
         </div>
-
+        <Snackbar
+  open={snackbarOpen}
+  autoHideDuration={6000}
+  onClose={() => setSnackbarOpen(false)}
+  anchorOrigin={{ vertical: "center", horizontal: "center" }}
+  message={snackbarMessage}
+  ContentProps={{
+    sx: {
+      backgroundColor: snackbarSeverity === "success" ? "green" : "red",
+      color: "white",
+    },
+  }}
+/>
         {/* Table d'affichage des utilisateurs */}
         <div className={`flex-1 overflow-x-auto overflow-y-auto h-[400px]  ${isDeletePopupOpen ? 'blur-sm' : ''}`}>
+       
           <Table
             key={JSON.stringify(filteredRows)}
             columnsConfig={columnsConfig2}
@@ -208,7 +255,9 @@ const rowActions = [
      
             {isEditModalOpen && <AddUserForm title={'Modifier un utilisateur'} isOpen={isEditModalOpen} onClose={() => setIsEditModalOpen(false)} initialValues={selectedApp || {}} onUserCreated={handleUpdateApp} />}
             {isDeletePopupOpen &&  <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1"> <DecisionPopUp name={filteredRows.find(row => row.id === selectedAppId)?.username || 'ce utilisateur'} text="Êtes-vous sûr(e) de vouloir supprimer l'utilisateur " handleConfirm={confirmDeleteApp} handleDeny={() => setIsDeletePopupOpen(false)} /> </div>}
-        
+            {ResetShow &&  <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1"> <DecisionPopUp name={filteredRows.find(row => row.id === selectedAppId)?.username || 'ce utilisateur'} text="Êtes-vous sûr(e) de vouloir réinisialiser le mot de passe " handleConfirm={handleResetConfirm } handleDeny={() => setResetShow(false)} /> </div>}
+            
+
       
     </div>
   );

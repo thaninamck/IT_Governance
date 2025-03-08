@@ -2,7 +2,7 @@ import React from 'react';
 import { Button } from "@mui/material";
 import * as XLSX from 'xlsx';
 
-const ImportExcelButton = () => {
+const ImportExcelButton = ({onDataImported} ) => {
   // Fonction pour traiter le fichier sélectionné
   const handleFileChange = (event) => {
     const file = event.target.files[0]; // Récupère le fichier sélectionné
@@ -20,6 +20,11 @@ const ImportExcelButton = () => {
         // Convertit la feuille en JSON
         const jsonData = XLSX.utils.sheet_to_json(sheet, { header: 1 });
         console.log("Données Excel :", jsonData);
+
+        // Appeler la fonction de rappel avec les données importées
+        if (onDataImported) {
+          onDataImported(jsonData);
+        }
       };
 
       reader.readAsArrayBuffer(file);

@@ -3,6 +3,7 @@ import InputForm from './InputForm';
 import './FormStyle.css';
 import Button from '../Button';
 import emailjs from 'emailjs-com';
+import SelectInput from './SelectInput';
 
 function AddUserForm({ title, isOpen, onClose, initialValues, onUserCreated }) {
   if (!isOpen) return null;
@@ -170,6 +171,18 @@ function AddUserForm({ title, isOpen, onClose, initialValues, onUserCreated }) {
             onChange={e => setUserData({ ...userData, grade: e.target.value })}
           />
         </div>
+        <SelectInput
+        label="Status"
+        options={[
+          { label: "Active", value: "Active" },
+          { label: "Bloqué", value: "Bloqué" },
+        ]}
+        value={userData.status}
+        onChange={e => setUserData({ ...userData, status: e.target.value })}
+        width="200px"
+        required={true}
+        multiSelect={false}
+      />
 
         <Button btnName={loading ?" Création en cours...": "Créer"} type="submit"  disabled={loading}/>
       </form>
