@@ -34,6 +34,12 @@ class MissionRepository
         return Mission::find($id);
     }
 
+    public function hasRelatedData(Mission $mission): bool
+    {
+        return $mission->executions()->exists() ||
+        $mission->remediations()->exists();
+
+    }
     public function deleteMission(int $id): ?string
     {
         $mission=Mission::find($id);
