@@ -11,35 +11,24 @@ use App\Http\Controllers\Api\V1\UserController;
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\ClientController;
 use App\Http\Controllers\Api\V1\LogController;
-
+use App\Http\Controllers\Api\V1\MissionController;
 
 /*Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');*/
 
+Route::middleware(['auth:sanctum', AdminMiddleware::class])
+    ->prefix('v1')
+    ->group(function () {
+        Route::controller(MissionController::class)->group(function () {
+            Route::get('/getmissions', 'index');
+            Route::post('/createmissions', 'store');
+            Route::put('/updatemissionID/{id}', 'updateMission');
+            Route::delete('/deletemissionID/{id}', 'deleteMission');
+            Route::post('/insertmissions', 'storeMultiple');
 
-
-// Route::prefix('v1')->controller(ClientController::class)->group(function() {
-//     Route::post('/createclient', 'store');
-    
-// });
-// Route::prefix('v1')->controller(ClientController::class)->group(function() {
-//     Route::get('/getclients', 'index');
-    
-// });
-
-// Route::prefix('v1')->controller(ClientController::class)->group(function() {
-//     Route::delete('/deleteclientID/{id}', 'deleteClient');
-    
-// });
-// Route::prefix('v1')->controller(ClientController::class)->group(function() {
-//     Route::put('/updateclientID/{id}', 'updateClient');
-    
-// });
-// Route::prefix('v1')->controller(ClientController::class)->group(function() {
-//     Route::post('/insertclients', 'storeMultiple');
-    
-// });
+    });
+});
 
 Route::middleware(['auth:sanctum', AdminMiddleware::class])
     ->prefix('v1')
