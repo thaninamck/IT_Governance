@@ -8,6 +8,8 @@ use App\Http\Middleware\ForcePasswordChange;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\V1\UserController;
+use App\Http\Controllers\Api\V1\ControlController;
+
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\LogController;
 use App\Http\Controllers\Api\V1\RiskController;
@@ -34,12 +36,27 @@ Route::middleware(['auth:sanctum', AdminMiddleware::class])
             Route::post('/insert-users', 'storeMultiple');
         });
 
+        
+            
         Route::get('/logs', [LogController::class, 'getUserActivityLogs']);
+
+
+
+
+
+        Route::controller(ControlController::class)->group(function () {
+            Route::get('/controls', 'index');
+            Route::patch('/update-control/{id}', 'update');
+            Route::post('/insert-control', 'store');
+            Route::post('/insert-controls', 'multipleStore');
+            Route::patch('/archive-control/{id}', 'archiveControl');
+            Route::patch('/restore-control/{id}', 'restoreControl');
 
    
         Route::controller(RiskController::class)->group(function () {
             Route::get('/risks', 'index');
             Route::patch('/update-risk/{id}', 'updateRisk');
+
         });
     });
 
@@ -50,4 +67,3 @@ Route::post('/check-email', [AuthController::class, 'checkEmailExists']);
 Route::post('/store-reset-code', [AuthController::class, 'storeResetCode']);
 Route::post('/verify-reset-code', [AuthController::class, 'verifyResetCode']);
 Route::post('/reset-password', [AuthController::class, 'resetPassword']);
-

@@ -13,6 +13,8 @@ return new class extends Migration
     {
         Schema::create('sub_processes', function (Blueprint $table) {
             $table->id();
+            $table->string('code', 255);
+
             $table->string('name', 255);
             $table->timestamps();
         });
