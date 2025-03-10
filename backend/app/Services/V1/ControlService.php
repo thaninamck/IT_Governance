@@ -216,5 +216,11 @@ public function restoreControl($id)
     return $this->controlRepository->restore($id);
 }
 
-
+public function deleteControl($id){
+    $control=$this->controlRepository->getControlById($id);
+    Log::debug("controle", context: [$control]);
+    if (!($this->controlRepository->hasRelatedData($control))) {
+       return  $this->controlRepository->deleteControl($control);
+    }
+}
 }

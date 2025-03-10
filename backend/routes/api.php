@@ -48,3 +48,5 @@ Route::post('/check-email', [AuthController::class, 'checkEmailExists']);
 Route::post('/store-reset-code', [AuthController::class, 'storeResetCode']);
 Route::post('/verify-reset-code', [AuthController::class, 'verifyResetCode']);
 Route::post('/reset-password', [AuthController::class, 'resetPassword']);
+
+Route::delete('/delete-control/{id}', [ControlController::class,'deleteControl']);

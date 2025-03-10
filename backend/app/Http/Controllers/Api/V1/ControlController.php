@@ -195,4 +195,11 @@ class ControlController extends BaseController
     }
 }
 
+
+public function deleteControl($id){
+    if(!$this->controlService->deleteControl($id)){
+        return $this->sendError("Erreur lors de la suppression du contrôle", []);
+    }
+    return $this->sendResponse(["controle supprimé avec succées" ],"controle supprimé ");
+}
 }

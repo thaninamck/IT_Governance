@@ -17,4 +17,10 @@ class RiskRepository
     return $risk->update($data);
 }
 
+public function hasRelatedData(Risk $risk){
+    return $risk->coverage()->exists() ;
+}
+public function deleteRisk(Risk $risk){
+    return $risk->delete();
+}
 }

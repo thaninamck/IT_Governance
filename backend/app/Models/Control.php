@@ -30,4 +30,22 @@ class Control extends Model
     {
         return $this->hasMany(StepTestScript::class);
     }
+
+    public function executions(){
+        return $this->hasMany(Execution::class);
+    }
+    public function remediations(){
+        return $this->hasMany(Remediation::class);
+    }
+
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::deleting(function ($control) {
+            $control->steps()->delete(); 
+            $control->sources()->detach(); 
+        });
+    }
 }
