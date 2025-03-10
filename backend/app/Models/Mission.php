@@ -6,6 +6,8 @@ use App\Models\statuses;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+
 class Mission extends Model
 { use HasFactory;
     protected $fillable = [
@@ -26,5 +28,19 @@ class Mission extends Model
     // Relation avec le modèle Status
     public function status() {
         return $this->belongsTo(Status::class, 'status_id');
+    }
+
+    public function participations(): HasMany
+    {
+        return $this->hasMany(Participation::class);
+    }
+    public function executions(): HasMany
+    {
+        return $this->hasMany(Execution::class);
+    }
+
+    public function remediations(): HasMany
+    {
+        return $this->hasMany(Remediation::class);
     }
 }

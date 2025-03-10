@@ -34,6 +34,12 @@ class MissionRepository
         return Mission::find($id);
     }
 
+    public function hasRelatedData(Mission $mission): bool
+    {
+        return $mission->executions()->exists() ||
+        $mission->remediations()->exists();
+
+    }
     public function deleteMission(int $id): ?string
     {
         $mission=Mission::find($id);
@@ -55,4 +61,93 @@ class MissionRepository
         }
         return collect($createdMissions);
     }
+
+    public function closeMission(int $id):?Mission
+    {
+        $mission=Mission::find($id);
+
+        if(!$mission){
+            return null;
+        }
+        
+         // Mettre à jour le statut de la mission
+         $mission->status_id = 8;
+         $mission->save();
+
+        return $mission;
+    }
+
+    public function archiveMission(int $id):?Mission
+    {
+        $mission=Mission::find($id);
+
+        if(!$mission){
+            return null;
+        }
+        
+         // Mettre à jour le statut de la mission
+         $mission->status_id = 1;
+         $mission->save();
+
+        return $mission;
+    }
+
+    public function getArchivedMissions()
+    {
+        return Mission::where('status_id',1)->get();
+    }
+
+    public function cancelMission(int $id):?Mission
+    {
+        $mission=Mission::find($id);
+
+        if(!$mission){
+            return null;
+        }
+        
+         // Mettre à jour le statut de la mission
+         $mission->status_id = 6;
+         $mission->save();
+
+        return $mission;
+    }
+
+    public function stopMission(int $id):?Mission
+    {
+        $mission=Mission::find($id);
+
+        if(!$mission){
+            return null;
+        }
+        
+         // Mettre à jour le statut de la mission
+         $mission->status_id = 10;
+         $mission->save();
+
+        return $mission;
+    }
+
+
+
+public function resumeMission(int $id, int $previousStatusId): ?Mission
+{
+    $mission = Mission::find($id);
+
+    if (!$mission) {
+        return null;
+    }
+
+    // Vérifier si la mission est en pause
+    if ($mission->status_id !== 10) {
+        throw new \Exception("La mission n'est pas en pause.");
+    }
+
+    // Restaurer le statut précédent
+    $mission->status_id = $previousStatusId;
+    $mission->save();
+
+    return $mission;
+}
+
+
 }
