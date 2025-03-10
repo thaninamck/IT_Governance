@@ -27,6 +27,32 @@ class MissionService
         return $this->missionRepository->createMission($data);
     }
 
+    public function closeMission(int $id):Mission
+    {
+        return $this->missionRepository->closeMission($id);
+    }
+    public function archiveMission(int $id):Mission
+    {
+        return $this->missionRepository->archiveMission($id);
+    }
+    public function cancelMission(int $id):Mission
+    {
+        return $this->missionRepository->cancelMission($id);
+    }
+    public function stopMission(int $id):Mission
+    {
+        return $this->missionRepository->stopMission($id);
+    }
+    public function resumeMission(int $id, int $previousStatusId): ?Mission
+{
+    return $this->missionRepository->resumeMission($id, $previousStatusId);
+}
+
+    public function getArchivedMissions()
+{
+    return $this->missionRepository->getArchivedMissions();
+}
+
     public function updateMission($id, array $data): ?Mission
     {
         return $this->missionRepository->updateMission($id, $data);
