@@ -8,6 +8,8 @@ use App\Http\Middleware\ForcePasswordChange;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\V1\UserController;
+use App\Http\Controllers\Api\V1\ControlController;
+
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\LogController;
 
@@ -32,6 +34,8 @@ Route::middleware(['auth:sanctum', AdminMiddleware::class])
             Route::post('/insert-users', 'storeMultiple');
         });
 
+        
+            
         Route::get('/logs', [LogController::class, 'getUserActivityLogs']);
     });
 
@@ -43,3 +47,9 @@ Route::post('/store-reset-code', [AuthController::class, 'storeResetCode']);
 Route::post('/verify-reset-code', [AuthController::class, 'verifyResetCode']);
 Route::post('/reset-password', [AuthController::class, 'resetPassword']);
 
+    Route::get('/controls', [ControlController::class, 'index']); 
+    Route::patch('/update-control/{id}', [ControlController::class,'update']);
+    Route::post('/insert-control', [ControlController::class,'store']);
+    Route::post('/insert-controls', [ControlController::class,'multipleStore']);
+    Route::patch('/archive-control/{id}', [ControlController::class,'archiveControl']);
+    Route::patch('/restore-control/{id}', [ControlController::class,'restoreControl']);

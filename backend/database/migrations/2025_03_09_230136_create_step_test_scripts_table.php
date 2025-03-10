@@ -11,11 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('sub_major_processes', function (Blueprint $table) {
+        Schema::create('step_test_scripts', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('major_process_id')->constrained('major_processes');
-            $table->foreignId('sub_process_id')->constrained('sub_processes');
-
+            $table->text('text');
+            $table->foreignId('control_id')->constrained('controls','id');
             $table->timestamps();
         });
     }
@@ -25,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('sub_major_processes');
+        Schema::dropIfExists('step_test_scripts');
     }
 };

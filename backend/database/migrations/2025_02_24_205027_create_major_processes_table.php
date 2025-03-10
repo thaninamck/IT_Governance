@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('major_processes', function (Blueprint $table) {
             $table->id();
             
-            $table->integer('code');
+            $table->string('code');
             $table->string('description', 255);
             $table->timestamps();
         });

@@ -41,7 +41,7 @@ class StatusFactory extends Factory
             'partially applied',
         ];
 
-        // Combinez les deux listes
+        
         $allStatuses = array_merge($missionStatuses, $executionStatuses);
 
         return [
