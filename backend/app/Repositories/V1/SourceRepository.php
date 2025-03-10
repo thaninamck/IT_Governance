@@ -1,8 +1,15 @@
 <?php
 
 namespace App\Repositories\V1;
-
+use App\Models\Source;
 class SourceRepository
 {
-    // Implémentez vos méthodes ici
+    public function firstOrCreate(array $data)
+{
+    return Source::firstOrCreate(
+        ['id' => $data['id']],
+        ['name' => $data['name'] ?? 'Source inconnue']
+    );
+}
+
 }

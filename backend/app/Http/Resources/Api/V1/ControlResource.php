@@ -14,6 +14,16 @@ class ControlResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        return parent::toArray($request);
+           return['id' => $this->id,
+            'code' => $this->code,
+            'description' => $this->description,
+            'type' => $this->type ? [$this->type->id, $this->type->name] : null,
+            'majorProcess' => $this->majorProcess->description ?? null,
+            'majorProcessCode' => $this->majorProcess->code ?? null,
+            'subProcess' => $this->subProcess->name ?? null,
+
+            'subProcessCode' => $this->subProcess->code ?? null,
+            'sources' => $this->sources->map(fn($source) => [$source->id, $source->name])->toArray(),
+            'testScript' => $this->test_script,];
     }
 }
