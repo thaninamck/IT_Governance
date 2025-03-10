@@ -32,5 +32,10 @@ public function getRiskById($id)
         return $risk->refresh(); 
     }
     
-
+    public function deleteRisk($id){
+        $risk=$this->riskRepository->getRiskById($id);
+        if (!($this->riskRepository->hasRelatedData($risk))) {
+           return  $this->riskRepository->deleteRisk($risk);
+        }
+    }
 }

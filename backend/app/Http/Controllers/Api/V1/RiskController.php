@@ -75,8 +75,10 @@ class RiskController extends BaseController
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Risk $risk)
-    {
-        //
+    public function deleteRisk($id){
+        if(!$this->riskService->deleteRisk($id)){
+            return $this->sendError("Erreur lors de la suppression du risque", []);
+        }
+        return $this->sendResponse(["risque supprimé avec succées" ],"risque supprimé ");
     }
 }

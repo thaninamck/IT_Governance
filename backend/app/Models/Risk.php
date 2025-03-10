@@ -9,4 +9,7 @@ class Risk extends Model
 {
     use HasFactory;
     protected $fillable = ['name','code','description'];
+    public function coverage(){
+        return $this->hasMany(CntrlRiskCov::class);
+    }
 }

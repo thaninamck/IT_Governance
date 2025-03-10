@@ -10,7 +10,7 @@ class RiskRepository
     }
 
     public function getRiskById($riskId){
-        return Risk::find($riskId);
+        return Risk::Where('id',$riskId)->first();
     }
     public function updateRisk(Risk $risk, array $data)
 {

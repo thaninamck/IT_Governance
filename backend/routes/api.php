@@ -33,13 +33,16 @@ Route::middleware(['auth:sanctum', AdminMiddleware::class])
             Route::post('/insert-controls', 'multipleStore');
             Route::patch('/archive-control/{id}', 'archiveControl');
             Route::patch('/restore-control/{id}', 'restoreControl');
+            Route::delete('/delete-control/{id}', 'deleteControl'); // Ajout ici
         });
 
         Route::controller(RiskController::class)->group(function () {
             Route::get('/risks', 'index');
             Route::patch('/update-risk/{id}', 'updateRisk');
+            Route::delete('/delete-risk/{id}', 'deleteRisk'); // Ajout ici
         });
     });
+
 
 Route::post('/login', [AuthController::class, 'login'])->middleware(CheckPasswordReset::class);
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
@@ -48,5 +51,3 @@ Route::post('/check-email', [AuthController::class, 'checkEmailExists']);
 Route::post('/store-reset-code', [AuthController::class, 'storeResetCode']);
 Route::post('/verify-reset-code', [AuthController::class, 'verifyResetCode']);
 Route::post('/reset-password', [AuthController::class, 'resetPassword']);
-
-Route::delete('/delete-control/{id}', [ControlController::class,'deleteControl']);
