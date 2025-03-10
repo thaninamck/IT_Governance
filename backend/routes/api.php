@@ -26,6 +26,13 @@ Route::middleware(['auth:sanctum', AdminMiddleware::class])
             Route::put('/updatemissionID/{id}', 'updateMission');
             Route::delete('/deletemissionID/{id}', 'deleteMission');
             Route::post('/insertmissions', 'storeMultiple');
+            Route::put('/closemission/{id}', 'closeMission');
+            Route::put('/archivemission/{id}', 'archiveMission');
+            Route::put('/cancelmission/{id}', 'cancelMission');
+            Route::put('/stopmission/{id}', 'stopMission');
+            Route::put('/resumemission/{id}', 'resumeMission');
+            Route::get('/archivedmissions', 'getArchivedMissions');
+
 
     });
 });
