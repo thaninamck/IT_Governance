@@ -1,8 +1,26 @@
 <?php
 
 namespace App\Repositories\V1;
-
+use App\Models\Risk;
 class RiskRepository
 {
-    // Implémentez vos méthodes ici
+    public function getAllRisks()
+    {
+        return Risk::all();
+    }
+
+    public function getRiskById($riskId){
+        return Risk::Where('id',$riskId)->first();
+    }
+    public function updateRisk(Risk $risk, array $data)
+{
+    return $risk->update($data);
+}
+
+public function hasRelatedData(Risk $risk){
+    return $risk->coverage()->exists() ;
+}
+public function deleteRisk(Risk $risk){
+    return $risk->delete();
+}
 }

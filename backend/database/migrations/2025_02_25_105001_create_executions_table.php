@@ -20,7 +20,7 @@ return new class extends Migration {
             $table->boolean('effectiveness')->default(false);
             $table->boolean('design')->default(false);
             $table->foreignId('user_id')->constrained('users');
-            $table->foreignId('cntrl_id')->constrained('controls');
+            $table->foreignId('control_id')->constrained('controls');
             $table->foreignId('status_id')->constrained('statuses');
             $table->foreignId('mission_id')->constrained('missions');
 

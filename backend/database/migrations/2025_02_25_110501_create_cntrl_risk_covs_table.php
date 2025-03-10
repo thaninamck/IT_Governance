@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('risk_id')->constrained('risks');
             $table->foreignId('layer_id')->constrained('layers');
-            $table->foreignId('control_id')->constrained('controls');
+            $table->foreignId('execution_id')->constrained('executions');
             $table->string('risk_owner', 255)->nullable();
             $table->string('risk_modification', 255)->nullable();
 
