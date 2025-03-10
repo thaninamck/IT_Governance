@@ -14,6 +14,12 @@ class MissionResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        return parent::toArray($request);
+        return [
+            'statusId' => $this->status_id,
+            'missionName' => $this->mission_name,
+            'clientId' => $this->client_id,
+            'startDate' => $this->start_date,
+            'endDate' => $this->end_date,
+        ];
     }
 }

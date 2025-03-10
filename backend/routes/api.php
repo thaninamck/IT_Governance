@@ -7,14 +7,49 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\V1\UserController;
 use App\Http\Controllers\Api\V1\ControlController;
 use App\Http\Controllers\Api\V1\AuthController;
+use App\Http\Controllers\Api\V1\ClientController;
 use App\Http\Controllers\Api\V1\LogController;
 use App\Http\Controllers\Api\V1\RiskController;
+
+Route::prefix('v1')->controller(ClientController::class)->group(function() {
+    Route::post('/createclient', 'store');
+    
+});
+Route::prefix('v1')->controller(ClientController::class)->group(function() {
+    Route::get('/getclients', 'index');
+    
+});
+
+Route::prefix('v1')->controller(ClientController::class)->group(function() {
+    Route::delete('/deleteclientID/{id}', 'deleteClient');
+    
+});
+Route::prefix('v1')->controller(ClientController::class)->group(function() {
+    Route::put('/updateclientID/{id}', 'updateClient');
+    
+});
+// Route::prefix('v1')->controller(ClientController::class)->group(function() {
+//     Route::post('/insertclients', 'storeMultiple');
+    
+// });
+
+// Route::middleware(['auth:sanctum', AdminMiddleware::class])
+//     ->prefix('v1')
+//     ->group(function () {
+//         Route::controller(ClientController::class)->group(function () {
+//             Route::get('/getclients', 'index');
+//             Route::post('/createclient', 'store');
+//             Route::put('/updateclientID/{id}', 'updateClient');
+//             Route::delete('/deleteclientID/{id}', 'deleteClient');
+//             Route::post('/insertclients', 'storeMultiple');
+//         });
+//     });
 
 Route::middleware(['auth:sanctum', AdminMiddleware::class])
     ->prefix('v1')
     ->group(function () {
         Route::controller(UserController::class)->group(function () {
-            Route::get('/users', 'index');
+           Route::get('/users', 'index');
             Route::post('/insert-user', 'store');
             Route::post('/reset-user/{id}', 'resetUser');
             Route::patch('/update-user/{id}', 'updateUser');
@@ -51,3 +86,4 @@ Route::post('/check-email', [AuthController::class, 'checkEmailExists']);
 Route::post('/store-reset-code', [AuthController::class, 'storeResetCode']);
 Route::post('/verify-reset-code', [AuthController::class, 'verifyResetCode']);
 Route::post('/reset-password', [AuthController::class, 'resetPassword']);
+
