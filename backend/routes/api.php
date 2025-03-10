@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\V1\UserController;
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\LogController;
+use App\Http\Controllers\Api\V1\RiskController;
+
 
 
 /*Route::get('/user', function (Request $request) {
@@ -33,6 +35,12 @@ Route::middleware(['auth:sanctum', AdminMiddleware::class])
         });
 
         Route::get('/logs', [LogController::class, 'getUserActivityLogs']);
+
+   
+        Route::controller(RiskController::class)->group(function () {
+            Route::get('/risks', 'index');
+            Route::patch('/update-risk/{id}', 'updateRisk');
+        });
     });
 
 Route::post('/login', action: [AuthController::class, 'login'])->middleware(CheckPasswordReset::class);
