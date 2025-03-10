@@ -9,15 +9,11 @@ use App\Http\Controllers\Api\V1\ControlController;
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\ClientController;
 use App\Http\Controllers\Api\V1\LogController;
-use App\Http\Middleware\AdminMiddleware;
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Api\V1\UserController;
-use App\Http\Controllers\Api\V1\ControlController;
-use App\Http\Controllers\Api\V1\AuthController;
-use App\Http\Controllers\Api\V1\LogController;
+
+
 use App\Http\Controllers\Api\V1\RiskController;
 use App\Http\Controllers\Api\V1\MissionController;
-use App\Http\Controllers\Api\V1\ClientController;
+
 
 Route::middleware(['auth:sanctum', AdminMiddleware::class])
     ->prefix('v1')
