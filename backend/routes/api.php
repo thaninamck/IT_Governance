@@ -37,6 +37,18 @@ Route::middleware(['auth:sanctum', AdminMiddleware::class])
         
             
         Route::get('/logs', [LogController::class, 'getUserActivityLogs']);
+
+
+
+
+        Route::controller(ControlController::class)->group(function () {
+            Route::get('/controls', 'index');
+            Route::patch('/update-control/{id}', 'update');
+            Route::post('/insert-control', 'store');
+            Route::post('/insert-controls', 'multipleStore');
+            Route::patch('/archive-control/{id}', 'archiveControl');
+            Route::patch('/restore-control/{id}', 'restoreControl');
+        });
     });
 
 Route::post('/login', action: [AuthController::class, 'login'])->middleware(CheckPasswordReset::class);
@@ -46,10 +58,3 @@ Route::post('/check-email', [AuthController::class, 'checkEmailExists']);
 Route::post('/store-reset-code', [AuthController::class, 'storeResetCode']);
 Route::post('/verify-reset-code', [AuthController::class, 'verifyResetCode']);
 Route::post('/reset-password', [AuthController::class, 'resetPassword']);
-
-    Route::get('/controls', [ControlController::class, 'index']); 
-    Route::patch('/update-control/{id}', [ControlController::class,'update']);
-    Route::post('/insert-control', [ControlController::class,'store']);
-    Route::post('/insert-controls', [ControlController::class,'multipleStore']);
-    Route::patch('/archive-control/{id}', [ControlController::class,'archiveControl']);
-    Route::patch('/restore-control/{id}', [ControlController::class,'restoreControl']);
