@@ -2,25 +2,13 @@
 
 use App\Http\Middleware\AdminMiddleware;
 use App\Http\Middleware\ApiAuthenticate;
-
 use App\Http\Middleware\CheckPasswordReset;
-use App\Http\Middleware\ForcePasswordChange;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\V1\UserController;
 use App\Http\Controllers\Api\V1\ControlController;
-
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\LogController;
 use App\Http\Controllers\Api\V1\RiskController;
-
-
-
-/*Route::get('/user', function (Request $request) {
-    return $request->user();
-})->middleware('auth:sanctum');*/
-
-
 
 Route::middleware(['auth:sanctum', AdminMiddleware::class])
     ->prefix('v1')
@@ -36,13 +24,7 @@ Route::middleware(['auth:sanctum', AdminMiddleware::class])
             Route::post('/insert-users', 'storeMultiple');
         });
 
-        
-            
         Route::get('/logs', [LogController::class, 'getUserActivityLogs']);
-
-
-
-
 
         Route::controller(ControlController::class)->group(function () {
             Route::get('/controls', 'index');
@@ -51,16 +33,15 @@ Route::middleware(['auth:sanctum', AdminMiddleware::class])
             Route::post('/insert-controls', 'multipleStore');
             Route::patch('/archive-control/{id}', 'archiveControl');
             Route::patch('/restore-control/{id}', 'restoreControl');
+        });
 
-   
         Route::controller(RiskController::class)->group(function () {
             Route::get('/risks', 'index');
             Route::patch('/update-risk/{id}', 'updateRisk');
-
         });
     });
 
-Route::post('/login', action: [AuthController::class, 'login'])->middleware(CheckPasswordReset::class);
+Route::post('/login', [AuthController::class, 'login'])->middleware(CheckPasswordReset::class);
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
 Route::post('/changePassword', [AuthController::class, 'forceUpdatePassword'])->middleware('auth:sanctum');
 Route::post('/check-email', [AuthController::class, 'checkEmailExists']);
