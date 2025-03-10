@@ -12,6 +12,8 @@ use App\Http\Controllers\Api\V1\ControlController;
 
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\LogController;
+use App\Http\Controllers\Api\V1\RiskController;
+
 
 
 /*Route::get('/user', function (Request $request) {
@@ -41,6 +43,7 @@ Route::middleware(['auth:sanctum', AdminMiddleware::class])
 
 
 
+
         Route::controller(ControlController::class)->group(function () {
             Route::get('/controls', 'index');
             Route::patch('/update-control/{id}', 'update');
@@ -48,6 +51,12 @@ Route::middleware(['auth:sanctum', AdminMiddleware::class])
             Route::post('/insert-controls', 'multipleStore');
             Route::patch('/archive-control/{id}', 'archiveControl');
             Route::patch('/restore-control/{id}', 'restoreControl');
+
+   
+        Route::controller(RiskController::class)->group(function () {
+            Route::get('/risks', 'index');
+            Route::patch('/update-risk/{id}', 'updateRisk');
+
         });
     });
 
