@@ -15,11 +15,25 @@ class MissionResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'statusId' => $this->status_id,
+            'id' => $this->id,
+            'clientName' => $this->client->commercial_name,
             'missionName' => $this->mission_name,
-            'clientId' => $this->client_id,
+            'manager' => $this->participations
+                ->where('profile_id', 3)
+                ->map(function ($participation) {
+                    return ($participation->user->first_name ?? 'N/A') . ' ' . ($participation->user->last_name ?? '');
+                })->first(),
+
+
             'startDate' => $this->start_date,
             'endDate' => $this->end_date,
+            'auditStartDate' => $this->audit_start_date,
+            'auditEndDate' => $this->audit_end_date,
+            'status' => $this->status->status_name,
+            'clientName' => $this->client->commercial_name,
+            // 'statusId' => $this->status_id,
+            // 'clientId' => $this->client_id,
+
         ];
     }
 }

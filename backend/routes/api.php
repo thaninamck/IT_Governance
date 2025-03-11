@@ -17,11 +17,17 @@ use App\Http\Controllers\Api\V1\MissionController;
     return $request->user();
 })->middleware('auth:sanctum');*/
 
+Route::prefix('v1')->group(function () { 
+    Route::controller(MissionController::class)->group(function () {
+        Route::get('/getmissions', 'index');
+    });
+});
+
 Route::middleware(['auth:sanctum', AdminMiddleware::class])
     ->prefix('v1')
     ->group(function () {
         Route::controller(MissionController::class)->group(function () {
-            Route::get('/getmissions', 'index');
+           // Route::get('/getmissions', 'index');
             Route::post('/createmissions', 'store');
             Route::put('/updatemissionID/{id}', 'updateMission');
             Route::delete('/deletemissionID/{id}', 'deleteMission');
@@ -48,6 +54,11 @@ Route::middleware(['auth:sanctum', AdminMiddleware::class])
             Route::post('/insertclients', 'storeMultiple');
         });
     });
+
+
+
+ 
+    
 
 Route::middleware(['auth:sanctum', AdminMiddleware::class])
     ->prefix('v1')
