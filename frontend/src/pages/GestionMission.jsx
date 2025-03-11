@@ -24,6 +24,9 @@ import { Snackbar } from "@mui/material";
 import AdminActionsPanel from "./AdminActionsPanel";
 import { PermissionRoleContext } from "../Context/permissionRoleContext";
 import ImportCsvButton from "../components/ImportXcelButton";
+import api from "../Api";
+
+
 
 function GestionMission() {
 
@@ -48,6 +51,37 @@ function GestionMission() {
     { field: "actions", headerName: "Actions", width: 80 },
   ];
   const [rowsData2, setRowsData2] = useState([]);
+
+  // Fonction pour récupérer la liste des clients depuis le backend
+  const fetchClients = async () => {
+    try {
+        // Envoi d'une requête GET pour obtenir la liste des clients
+        const response = await api.get('/getmissions');
+        // Mise à jour de l'état avec les données reçues
+        console.log("data from back",response.data)
+
+        setRowsData2(
+          response.data.map(mission => ({
+            id: mission.id,
+            client: mission.clientName, // Vérifie que ce champ existe dans la réponse
+            mission: mission.missionName, // Vérifie aussi celui-ci
+            manager: mission.manager, // Assure-toi que le backend envoie ce champ
+            dateField: mission.startDate,
+            dateField1: mission.endDate,
+            auditStartDate: mission.auditStartDate,
+            auditEndDate: mission.auditEndDate,
+            statusMission: mission.status,
+          }))
+        );
+
+    } catch (error) {
+        console.error('Erreur lors de la récupération des clients:', error);
+    }
+};
+ // Effet pour charger la liste des clients au montage du composant
+ useEffect(() => {
+  fetchClients();
+}, []);
 
   // Fonction pour gérer les données importées
   const handleDataImported = (importedData) => {
@@ -196,6 +230,10 @@ function GestionMission() {
   const [isDeletePopupOpen, setIsDeletePopupOpen] = useState(false);
   const [selectedMissionId, setSelectedMissionId] = useState(null);
 
+  useEffect(() => {
+    setFilteredRows(rowsData2);
+  }, [rowsData2]);
+
   // Fonction pour ouvrir et fermer la modale d'ajout de mission
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
@@ -222,7 +260,7 @@ function GestionMission() {
 const handleArchiverRow = (selectedRow) => {
   // Mettre à jour le statut de la mission en "archiver"
   const updatedRows = filteredRows.map((row) =>
-    row.id === selectedRow.id ? { ...row, statusMission: "archiver" } : row
+    row.id === selectedRow.id ? { ...row, statusMission: "archivée" } : row
   );
 
   // Mettre à jour l'état des lignes filtrées
@@ -267,7 +305,7 @@ const handleCloturerRow = (selectedRow) => {
 
   // Si l'utilisateur est admin, exécuter l'action immédiatement
   const updatedRows = filteredRows.map((row) =>
-    row.id === selectedRow.id ? { ...row, statusMission: "terminer" } : row
+    row.id === selectedRow.id ? { ...row, statusMission: "clôturée" } : row
   );
   setFilteredRows(updatedRows);
 
@@ -280,7 +318,7 @@ const handleCloturerRow = (selectedRow) => {
   // Mettre à jour le statut de la mission
   const updatedRows = filteredRows.map((row) =>
     row.id === selectedRow.id
-      ? { ...row, statusMission: selectedRow.type === "cloturer" ? "terminer" : "annulée" }
+      ? { ...row, statusMission: selectedRow.type === "cloturer" ? "clôturée" : "annulée" }
       : row
   );
   setFilteredRows(updatedRows);
@@ -330,8 +368,8 @@ const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [activeView, setActiveView] = useState("active"); // "active" ou "archived"
   const missionsToDisplay =
   activeView === "active"
-    ? filteredRows.filter((mission) => mission.statusMission !== "archiver")
-    : filteredRows.filter((mission) => mission.statusMission === "archiver");
+    ? filteredRows.filter((mission) => mission.statusMission !== "archivée")
+    : filteredRows.filter((mission) => mission.statusMission === "archivée");
 
   
 const handlePauseRow = (selectedRow) => {
@@ -467,14 +505,14 @@ const missionEndDate = new Date(selectedRow.dateField1).toISOString().split("T")
       ? [
           {
             icon: <ArchiveRoundedIcon sx={{ marginRight: "5px" }} />,
-            label: "Archiver",
+            label: "archivée",
             onClick: (selectedRow) => {
-              handleArchiverRow(selectedRow);
+              handleommRow(selectedRow);
             },
             disabled: (selectedRow) => {
               return (
                 !selectedRow ||
-                !["terminer", "en_retard"].includes(selectedRow.statusMission)
+                !["clôturée", "en_retard"].includes(selectedRow.statusMission)
               );
             },
           },
@@ -651,7 +689,7 @@ const missionEndDate = new Date(selectedRow.dateField1).toISOString().split("T")
             headerBackground="var(--blue-menu)"
             // rowActions={rowActions}
             rowActions={rowActions.filter((action) =>
-              activeView === "archived" ? action.label !== "Archiver" : true
+              activeView === "archived" ? action.label !== "archivée" : true
             )}
           />
         )}
