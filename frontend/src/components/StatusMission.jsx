@@ -26,12 +26,12 @@ function StatusMission({ status }) {
             color: "var(--alert-red)",
         },
         
-        terminer: {
+        clôturée: {
             label: "Clôturée",
             icon: <CheckCircleIcon  />, // Vert
             color: "var(--success-green)",
         },
-        archiver: {
+        archivée: {
             label: "Archivée",
             icon: <ArchiveRoundedIcon />, // Rouge
             color: "#6b7280",
