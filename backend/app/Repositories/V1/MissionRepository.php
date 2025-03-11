@@ -6,10 +6,19 @@ use App\Models\Mission;
 
 class MissionRepository
 {
+    // public function getAllMissions()
+    // {
+    //     return Mission::with(['client', 'status', 'participations' => function ($query) {
+    //         $query->where('profile_id', 3);
+    //     }])->get();
+    // }
+
     public function getAllMissions()
     {
-        return Mission::all();
+        return Mission::with(['client', 'status', 'participations.user'])->get();
     }
+     
+
 
     public function createMission(array $data):Mission
     {
