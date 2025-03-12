@@ -386,37 +386,45 @@ function Table({
         }}
       />
        <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose}>
-        {rowActions.map((action, index) => {
-          const selectedRow = rows.find((row) => row.id === selectedRowId);
-          const isDisabled = action.disabled && action.disabled(selectedRow);
+  {(rowActions || []).map((action, index) => {
+    // Utilisez une valeur par défaut pour `rows` si elle est undefined
+    const rowsSafe = rows || [];
+    // const selectedRow = rowsSafe.find((row) => row.id === selectedRowId) || {};
+    const selectedRow = Array.isArray(rowsSafe) ? rowsSafe.find((row) => row.id === selectedRowId) || {} : {};
 
-          return (
-            <MenuItem
-              key={index}
-              onClick={() => handleRowAction(action, selectedRowId)}
-              disabled={isDisabled} // Désactiver l'élément du menu si nécessaire
-              sx={{
-                "&.css-1rju2q6-MuiButtonBase-root-MuiMenuItem-root": {
-                  display: "flex",
-                  alignItems: "center",
-                  opacity: isDisabled ? 0.5 : 1, // Réduire l'opacité si désactivé
-                  cursor: isDisabled ? "not-allowed" : "pointer", // Changer le curseur si désactivé
-                },
-              }}
-            >
-              {/*action.icon*/}
-              {typeof action.icon === "function"
-          ? action.icon(selectedRow) // Appeler la fonction label avec selectedRow
-          : action.icon}
-          
-              {typeof action.label === "function"
-          ? action.label(selectedRow) // Appeler la fonction label avec selectedRow
-          : action.label}
+    const isDisabled = action.disabled && action.disabled(selectedRow);
 
-            </MenuItem>
-          );
-        })}
-      </Menu>
+    return (
+      <MenuItem
+        key={index}
+        onClick={() => handleRowAction(action, selectedRowId)}
+        disabled={isDisabled} // Désactiver l'élément du menu si nécessaire
+        sx={{
+          "&.css-1rju2q6-MuiButtonBase-root-MuiMenuItem-root": {
+            display: "flex",
+            alignItems: "center",
+            opacity: isDisabled ? 0.5 : 1, // Réduire l'opacité si désactivé
+            cursor: isDisabled ? "not-allowed" : "pointer", // Changer le curseur si désactivé
+          },
+        }}
+      >
+        {/* Afficher l'icône */}
+        {action.icon && (
+          typeof action.icon === "function"
+            ? action.icon(selectedRow) // Appeler la fonction icon avec selectedRow
+            : action.icon
+        )}
+
+        {/* Afficher le label */}
+        {action.label && (
+          typeof action.label === "function"
+            ? action.label(selectedRow) // Appeler la fonction label avec selectedRow
+            : action.label
+        )}
+      </MenuItem>
+    );
+  })}
+</Menu>
     </Paper>
   );
 }

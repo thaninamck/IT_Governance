@@ -38,26 +38,44 @@ Route::middleware(['auth:sanctum', AdminMiddleware::class])
             Route::put('/stopmission/{id}', 'stopMission');
             Route::put('/resumemission/{id}', 'resumeMission');
             Route::get('/archivedmissions', 'getArchivedMissions');
-
-
-    });
-});
-
-Route::middleware(['auth:sanctum', AdminMiddleware::class])
-    ->prefix('v1')
-    ->group(function () {
-        Route::controller(ClientController::class)->group(function () {
-            Route::get('/getclients', 'index');
-            Route::post('/createclient', 'store');
-            Route::put('/updateclientID/{id}', 'updateClient');
-            Route::delete('/deleteclientID/{id}', 'deleteClient');
-            Route::post('/insertclients', 'storeMultiple');
         });
     });
 
+Route::prefix('v1')->controller(ClientController::class)->group(function() {
+    Route::post('/createclient', 'store');
+    
+});
+Route::prefix('v1')->controller(ClientController::class)->group(function() {
+    Route::get('/getclients', 'index');
+    
+});
+
+Route::prefix('v1')->controller(ClientController::class)->group(function() {
+    Route::delete('/deleteclientID/{id}', 'deleteClient');
+    
+});
+Route::prefix('v1')->controller(ClientController::class)->group(function() {
+    Route::put('/updateclientID/{id}', 'updateClient');
+    
+});
+// Route::prefix('v1')->controller(ClientController::class)->group(function() {
+//     Route::post('/insertclients', 'storeMultiple');
+    
+// });
+
+// Route::middleware(['auth:sanctum', AdminMiddleware::class])
+//     ->prefix('v1')
+//     ->group(function () {
+//         Route::controller(ClientController::class)->group(function () {
+//             Route::get('/getclients', 'index');
+//             Route::post('/createclient', 'store');
+//             Route::put('/updateclientID/{id}', 'updateClient');
+//             Route::delete('/deleteclientID/{id}', 'deleteClient');
+//             Route::post('/insertclients', 'storeMultiple');
+//         });
+//     });
 
 
- 
     
 
 Route::middleware(['auth:sanctum', AdminMiddleware::class])
@@ -84,5 +102,3 @@ Route::post('/check-email', [AuthController::class, 'checkEmailExists']);
 Route::post('/store-reset-code', [AuthController::class, 'storeResetCode']);
 Route::post('/verify-reset-code', [AuthController::class, 'verifyResetCode']);
 Route::post('/reset-password', [AuthController::class, 'resetPassword']);
-
-

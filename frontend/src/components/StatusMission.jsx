@@ -8,6 +8,7 @@ import CancelIcon from '@mui/icons-material/Cancel';
 import ArchiveRoundedIcon from '@mui/icons-material/ArchiveRounded';
 
 function StatusMission({ status }) {
+    console.log("Statut reçu:", status);
     // Configuration des statuts
     const statusConfig = {
         non_commencee: {
@@ -27,7 +28,7 @@ function StatusMission({ status }) {
         },
         
         clôturée: {
-            label: "Clôturée",
+            label: "clôturée",
             icon: <CheckCircleIcon  />, // Vert
             color: "var(--success-green)",
         },
@@ -48,7 +49,12 @@ function StatusMission({ status }) {
         },
     };
 
-    const currentStatus = statusConfig[status];
+   // const currentStatus = statusConfig[status];
+   const normalizedStatus = status?.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, ""); 
+//     console.log("Statut normalisé:", normalizedStatus);
+
+    const currentStatus = statusConfig[normalizedStatus];
+
 
     if (!currentStatus) {
         return <div>Statut inconnu</div>; // Gérer les cas de statut invalide

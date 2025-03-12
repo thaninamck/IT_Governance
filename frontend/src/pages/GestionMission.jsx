@@ -25,6 +25,7 @@ import AdminActionsPanel from "./AdminActionsPanel";
 import { PermissionRoleContext } from "../Context/permissionRoleContext";
 import ImportCsvButton from "../components/ImportXcelButton";
 import api from "../Api";
+import StatusMission from "../components/StatusMission";
 
 
 
@@ -32,11 +33,11 @@ function GestionMission() {
 
   // Colonnes de la table
   const columnsConfig2 = [
-    { field: "client", headerName: "Client", width: 170 },
-    { field: "mission", headerName: "Mission", width: 170 },
+    { field: "clientName", headerName: "Client", width: 170, },
+    { field: "missionName", headerName: "Mission", width: 170 },
     { field: "manager", headerName: "Manager", width: 200 },
-    { field: "dateField", headerName: "Date de début", width: 150 },
-    { field: "dateField1", headerName: "Date fin", width: 150 },
+    { field: "startDate", headerName: "Date de début", width: 150 },
+    { field: "endDate", headerName: "Date fin", width: 150 },
     {
       field: "auditPeriod",
       headerName: "Période auditée",
@@ -47,40 +48,33 @@ function GestionMission() {
         return `De ${startDate} à ${endDate}`;
       },
     },
-    { field: "statusMission", headerName: "Status", width: 220 },
+    {
+      field: "status",
+      headerName: "Status",
+      width: 220,
+      customRenderCell: (params) => <StatusMission status={params.value} />,
+    },
+    
     { field: "actions", headerName: "Actions", width: 80 },
   ];
   const [rowsData2, setRowsData2] = useState([]);
 
   // Fonction pour récupérer la liste des clients depuis le backend
-  const fetchClients = async () => {
+  const fetchMissions = async () => {
     try {
         // Envoi d'une requête GET pour obtenir la liste des clients
         const response = await api.get('/getmissions');
         // Mise à jour de l'état avec les données reçues
         console.log("data from back",response.data)
 
-        setRowsData2(
-          response.data.map(mission => ({
-            id: mission.id,
-            client: mission.clientName, // Vérifie que ce champ existe dans la réponse
-            mission: mission.missionName, // Vérifie aussi celui-ci
-            manager: mission.manager, // Assure-toi que le backend envoie ce champ
-            dateField: mission.startDate,
-            dateField1: mission.endDate,
-            auditStartDate: mission.auditStartDate,
-            auditEndDate: mission.auditEndDate,
-            statusMission: mission.status,
-          }))
-        );
-
+        setRowsData2(response.data)
     } catch (error) {
         console.error('Erreur lors de la récupération des clients:', error);
     }
 };
  // Effet pour charger la liste des clients au montage du composant
  useEffect(() => {
-  fetchClients();
+  fetchMissions();
 }, []);
 
   // Fonction pour gérer les données importées
@@ -247,15 +241,36 @@ function GestionMission() {
   const handleSearchResults = (results) => setFilteredRows(results);
 
   // Ajout d'une nouvelle mission
-  const handleMissionCreation = (newMission) => {
-    setFilteredRows((prevRows) => [
-      ...prevRows,
-      { id: prevRows.length + 1, ...newMission },
-    ]);
-    setIsMissionCreated(true);
+  const handleMissionCreation = async (newMission) => {
+
+    console.log("new mission", newMission)
+    try{
+      // Envoi d'une requête POST avec les données du nouveau client
+      const response = await api.post('/createmissions', newMission);
+      const createdMission = response.data.mission; // Extraire la mission créée
+
+      console.log("Mission créée :", createdMission);
+
+         
+   // Mettre à jour directement les données affichées
+    // Mettre à jour directement les états
+    setRowsData2((prevRows) => {
+      const updatedRows = [...prevRows, createdMission];
+      setFilteredRows(updatedRows); // Assurer la mise à jour immédiate
+      return updatedRows;
+    });
     setIsModalOpen(false);
+    }catch(error){
+      console.error('Erreur lors de la création d une mission:', error);
+    }
   };
 
+  useEffect(() => {
+    const updatedRows = updateMissionStatuses(rowsData2);
+    setFilteredRows(updatedRows);
+  }, [rowsData2]); // Ajout de rowsData2 comme dépendance
+
+  
    // Fonction pour archiver une mission
 const handleArchiverRow = (selectedRow) => {
   // Mettre à jour le statut de la mission en "archiver"
@@ -424,23 +439,43 @@ const missionEndDate = new Date(selectedRow.dateField1).toISOString().split("T")
 
 
   // Modification d'une mission
-  const handleEditRow = (selectedRow) => {
-    // const missionToEdit = filteredRows.find(row => row.id === rowId);
-    setSelectedMission(selectedRow);
+   // Fonction de modification d'une mission
+   const handleEditRow = (selectedRow) => {
+    console.log('data edit',selectedRow)
+    const transformedMission = {
+      id: selectedRow.id,
+      mission_name: selectedRow.missionName,
+      client_id: selectedRow.clientId,
+      client_name: selectedRow.clientName,
+      manager_id: selectedRow.managerID,
+      manager_name: selectedRow.manager,
+      start_date: selectedRow.startDate,
+      end_date: selectedRow.endDate,
+      audit_start_date: selectedRow.auditStartDate,
+      audit_end_date: selectedRow.auditEndDate,
+    };
+    console.log("Transformed Mission:", transformedMission);
+    setSelectedMission(transformedMission);
     setIsEditModalOpen(true);
-    console.log(selectedRow);
   };
 
   // Mise à jour des missions après modification
-  const handleUpdateMission = (updatedMission) => {
+  const handleUpdateMission =async (updatedMission) => {
+    console.log('befor update',updatedMission)
+    try{
+      const response = await api.put(`/updatemissionID/${updatedMission.id}`, updatedMission);
+           console.log('update response',response)
     setFilteredRows((prevRows) =>
       prevRows.map((row) =>
-        row.id === updatedMission.id ? updatedMission : row
+        row.id === updatedMission.id ? response.data : row
       )
     );
     setIsEditModalOpen(false);
     setSelectedMission(null);
-  };
+  }catch(error){
+    console.error('Erreur lors de la mise à jour du client:', error);
+  }
+};
 
   // Suppression d'une mission
   const handleDeleteRow = (selectedRow) => {
@@ -450,12 +485,15 @@ const missionEndDate = new Date(selectedRow.dateField1).toISOString().split("T")
   };
 
   // Confirmation de la suppression
-  const confirmDeleteMission = () => {
-    if (selectedMissionId !== null) {
+  const confirmDeleteMission = async () => {
+    try{
+      await api.delete(`/deletemissionID/${selectedMissionId}`);
       setFilteredRows((prevRows) =>
         prevRows.filter((row) => row.id !== selectedMissionId)
       );
-    }
+    }catch (error) {
+      console.error('Erreur lors de la suppression du client:', error);
+  }
     setIsDeletePopupOpen(false);
     setSelectedMissionId(null);
   };
@@ -746,7 +784,7 @@ const missionEndDate = new Date(selectedRow.dateField1).toISOString().split("T")
           <DecisionPopUp
             name={
               filteredRows.find((row) => row.id === selectedMissionId)
-                ?.mission || "cette mission"
+                ?.missionName || "cette mission"
             }
             text="Êtes-vous sûr(e) de vouloir supprimer la mission "
             handleConfirm={confirmDeleteMission}
