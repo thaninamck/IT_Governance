@@ -51,9 +51,11 @@ class MissionController extends BaseController
             $rules = [
                 'mission_name' => 'required|string|max:255',
                 'client_id' => 'required|integer|exists:clients,id', // Vérifie que le client existe
-                'start_date' => 'required|date',
-                'end_date' => 'nullable|date|after:start_date', // end_date doit être après start_date
                 'manager_id' => 'required|integer|exists:users,id', // Vérifie que le manager existe
+                'audit_start_date' => 'required|date',
+                'audit_end_date' => 'required|date|after:audit_start_date',
+                'start_date' => 'required|date|after:audit_end_date',
+                'end_date' => 'required|date|after:start_date', // end_date doit être après start_date
             ];
 
             // Validation des données
@@ -107,8 +109,10 @@ class MissionController extends BaseController
                 'status_id' => 'sometimes|integer',
                 'mission_name' => 'sometimes|string|max:255',
                 'client_id' => 'sometimes|integer|exists:clients,id',
-                'start_date' => 'sometimes|date',
-                'end_date' => 'sometimes|date|after:start_date',
+                'audit_start_date' => 'sometimes|date',
+                'audit_end_date' => 'sometimes|date|after:audit_start_date',
+                'start_date' => 'sometimes|date|after:audit_end_date',
+                'end_date' => 'sometimes|date|after:start_date', // end_date doit être après start_date
                 'manager_id' => 'sometimes|integer|exists:users,id',
             ];
 
@@ -139,6 +143,8 @@ class MissionController extends BaseController
                 );
                 $this->participationService->updateParticipation($participation->id, $participantData);
             }
+            // Récupérer la mission avec les relations après mise à jour
+        $mission = Mission::with(['client', 'status', 'participations.user'])->find($mission->id);
             $this->logService->logUserAction(
                 auth()->user()->email ?? 'Unknown',
                 'Admin',

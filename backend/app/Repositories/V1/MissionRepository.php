@@ -27,15 +27,30 @@ class MissionRepository
 
     public function updateMission($id,array $data): ?Mission
     {
-        $mission=Mission::find($id);
+         // Récupérer la mission avec les relations
+         $mission = Mission::with(['client', 'status', 'participations.user'])->find($id);
 
-        if(!$mission){
-            return null;
-        }
-        
-        $mission->update($data);
-
-        return $mission;
+         if (!$mission) {
+             return null;
+         }
+ 
+         // Mettre à jour les champs de la mission
+         $mission->update($data);
+ 
+         // Si vous avez besoin de mettre à jour des relations, vous pouvez le faire ici
+         // Par exemple, si vous avez des données pour 'client' ou 'status' dans $data
+         if (isset($data['client'])) {
+             $mission->client()->update($data['client']);
+         }
+ 
+         if (isset($data['status'])) {
+             $mission->status()->update($data['status']);
+         }
+ 
+         // Recharger la mission avec les relations mises à jour pour retourner l'objet complet
+         $mission->load(['client', 'status', 'participations.user']);
+ 
+         return $mission;
     }
 
     public function findMissionById(int $id)

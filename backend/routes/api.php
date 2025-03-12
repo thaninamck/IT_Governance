@@ -28,9 +28,9 @@ Route::middleware(['auth:sanctum', AdminMiddleware::class])
     ->group(function () {
         Route::controller(MissionController::class)->group(function () {
            // Route::get('/getmissions', 'index');
-            Route::post('/createmissions', 'store');
-            Route::put('/updatemissionID/{id}', 'updateMission');
-            Route::delete('/deletemissionID/{id}', 'deleteMission');
+           // Route::post('/createmissions', 'store');
+           // Route::put('/updatemissionID/{id}', 'updateMission');
+           // Route::delete('/deletemissionID/{id}', 'deleteMission');
             Route::post('/insertmissions', 'storeMultiple');
             Route::put('/closemission/{id}', 'closeMission');
             Route::put('/archivemission/{id}', 'archiveMission');
@@ -40,7 +40,20 @@ Route::middleware(['auth:sanctum', AdminMiddleware::class])
             Route::get('/archivedmissions', 'getArchivedMissions');
         });
     });
+    Route::prefix('v1')->controller(MissionController::class)->group(function() {
+        Route::delete('/deletemissionID/{id}', 'deleteMission');
+        
+    });
 
+    Route::prefix('v1')->controller(MissionController::class)->group(function() {
+        Route::put('/updatemissionID/{id}', 'updateMission');
+        
+    });
+
+    Route::prefix('v1')->controller(MissionController::class)->group(function() {
+        Route::post('/createmissions', 'store');
+        
+    });
 Route::prefix('v1')->controller(ClientController::class)->group(function() {
     Route::post('/createclient', 'store');
     

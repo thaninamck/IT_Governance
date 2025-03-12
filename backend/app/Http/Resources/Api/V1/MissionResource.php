@@ -21,7 +21,14 @@ class MissionResource extends JsonResource
             'manager' => $this->participations
                 ->where('profile_id', 3)
                 ->map(function ($participation) {
-                    return ($participation->user->first_name ?? 'N/A') . ' ' . ($participation->user->last_name ?? '');
+                    return (
+                        $participation->user->first_name ?? 'N/A') . ' ' . ($participation->user->last_name ?? '');
+                })->first(),
+            'managerID' => $this->participations
+                ->where('profile_id', 3)
+                ->map(function ($participation) {
+                    return (
+                        $participation->user->id);
                 })->first(),
 
 
@@ -32,7 +39,7 @@ class MissionResource extends JsonResource
             'status' => $this->status->status_name,
             'clientName' => $this->client->commercial_name,
             // 'statusId' => $this->status_id,
-            // 'clientId' => $this->client_id,
+            'clientId' => $this->client_id,
 
         ];
     }
