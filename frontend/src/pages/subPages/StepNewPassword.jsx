@@ -9,6 +9,8 @@ function StepNewPassword({infos}) {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [passwordStrength, setPasswordStrength] = useState("");
+    const [errorMessage, setErrorMessage] = useState(""); // Gérer l'affichage des erreurs
+  
   const navigate = useNavigate();
 const firstconnection=infos.firstconnection;
 
@@ -32,18 +34,23 @@ const firstconnection=infos.firstconnection;
 
   const firstLoginChangePassword = async () => {
     if (!password || !confirmPassword) {
-      alert("Veuillez remplir tous les champs.");
+      setErrorMessage("Veuillez remplir tous les champs.")
       return;
     }
 
     if (password !== confirmPassword) {
-      alert("Les mots de passe ne correspondent pas.");
+      toast.error("Les mots de passe ne correspondent pas.")
+      //setErrorMessage("Les mots de passe ne correspondent pas.")
+      
       return;
     }
 
     const strength = checkPasswordStrength(password);
     if (strength === "faible") {
-      alert("Le mot de passe est trop faible. Il doit contenir au moins 12 caractères, une majuscule, une minuscule et un chiffre.");
+      toast.error("Le mot de passe est trop faible. Il doit contenir au moins 12 caractères, une majuscule, une minuscule et un chiffre.", {
+        autoClose: 8000, 
+      });
+      
       return;
     }
 
@@ -52,8 +59,9 @@ const firstconnection=infos.firstconnection;
         new_password: password,
         new_password_confirmation: confirmPassword
       };
-      await changePassword(data); // Appeler la fonction de changement de mot de passe du contexte
-      navigate("/login"); // Rediriger vers la connexion après succès
+      await changePassword(data); 
+      toast.success("Mot de passe changé avec succès !");
+      navigate("/login"); 
     } catch (err) {
       alert(err); // Affiche l’erreur retournée
     }
@@ -62,18 +70,22 @@ const firstconnection=infos.firstconnection;
 
   const ForgotPasswordChange= async () => {
     if (!password || !confirmPassword) {
-      alert("Veuillez remplir tous les champs.");
+      setErrorMessage("veuillez remplir tous les champs")
       return;
     }
 
     if (password !== confirmPassword) {
-      alert("Les mots de passe ne correspondent pas.");
+      //toast.error("Les mots de passe ne correspondent pas.")
+
+      setErrorMessage("Les mots de passe ne correspondent pas !")
       return;
     }
 
     const strength = checkPasswordStrength(password);
     if (strength === "faible") {
-      alert("Le mot de passe est trop faible. Il doit contenir au moins 12 caractères, une majuscule, une minuscule et un chiffre.");
+      toast.error("Le mot de passe est trop faible. Il doit contenir au moins 12 caractères, une majuscule, une minuscule et un chiffre.")
+
+     
       return;
     }
 
@@ -86,9 +98,10 @@ const firstconnection=infos.firstconnection;
       };
       console.log(data)
       await forgotPasswordChange(data); // Appeler la fonction de changement de mot de passe du contexte
+      toast.success("Mot de passe changé avec succès veuillez vous reconnecter avec le nouveau mot de passe!");
       navigate("/login"); // Rediriger vers la connexion après succès
     } catch (err) {
-      alert(err); // Affiche l’erreur retournée
+      toast.error(err);
     }
   };
 
@@ -122,16 +135,18 @@ const firstconnection=infos.firstconnection;
           value={confirmPassword}
           onChange={(e) => setConfirmPassword(e.target.value)} 
         />
+        {errorMessage && <p className="text-red-500 mt-2">{errorMessage}</p>}
 
         <button
           className="w-[41%] mt-4 border-none bg-[var(--blue-menu)] hover:bg-[var(--blue-conf)] text-white font-semibold py-2 px-6 rounded-lg transition duration-300 ease-in-out text-sm md:text-base lg:text-lg"
           onClick={firstconnection?firstLoginChangePassword:ForgotPasswordChange}
           disabled={loading}
         >
-          {loading ? "Changement en cours..." : "Changer le mot de passe"}
+          {loading ? "Changement en cours..." : "changer mon mot de passe"}
         </button>
 
         {error && <p className="text-red-500 mt-2">{error}</p>}
+
       </div>
     </div>
   );

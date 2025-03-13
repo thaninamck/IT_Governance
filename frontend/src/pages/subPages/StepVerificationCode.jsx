@@ -34,6 +34,7 @@ function StepVerificationCode({ onNext, onBack, verificationCode, email, expirat
       const response = await verifyCode(body);
   
       if (response.success) {
+        toast.success("Code validé avec success!");
         onNext(); 
       } else {
         setErrorMessage(response.error || "Code incorrect. Réessayez.");
