@@ -2,86 +2,42 @@ import React, { useState } from "react";
 import LockResetIcon from "@mui/icons-material/LockReset";
 import InputForm from "../../components/Forms/InputForm";
 import emailjs from "emailjs-com";
-
-function StepEmailForm({ onNext , onSetExpirationTime }) {
+function StepEmailForm({ onNext, onSetExpirationTime, loading, errorMessage }) {
   const [email, setEmail] = useState("");
-  const [loading, setLoading] = useState(false);
-
-  const generateCode = () => {
-    // Génère un code de 4 chiffres
-    return Math.floor(1000 + Math.random() * 9000);
-  };
-
-  const sendVerificationCode = async () => {
-    setLoading(true);
-    const code = generateCode();
-    const expirationTime = Date.now() + 2 * 60 * 1000; // Expiration dans 5 min
-
-    const templateParams = {
-      to_email: email,
-      from_name: "vs code",
-      message: `Votre code de vérification est : ${code}. Il expire dans 5 minutes.`,
-    };
-
-    try {
-      await emailjs.send(
-        "service_mcpkn9g", // Remplacez par votre Service ID
-        "template_f4ojiam", // Remplacez par votre Template ID
-        templateParams,
-        "oAXuwpg74dQwm0C_s" // Remplacez par votre User ID
-      );
-
-      alert("Code de vérification envoyé avec succès !");
-      console.log(code)
-      onSetExpirationTime(expirationTime); // Définit l'heure d'expiration
-      onNext(code, email); // Passe le code et l'e-mail à ForgotPw
-
-    } catch (error) {
-        console.error("Erreur lors de l'envoi de l'e-mail:", error);
-        alert(`Erreur lors de l'envoi de l'e-mail : ${error.text || error.message}`);
-    }
-     finally {
-      setLoading(false);
-    }
-  };
 
   return (
-    <>
-      <div className="mx-6">
-        <div className="bg-white rounded-lg shadow-lg px-12 flex flex-col items-center gap-8 py-12">
-          <LockResetIcon
-            sx={{ color: "var(--blue-conf)", fontSize: "4rem" }}
-            aria-label="Icône de réinitialisation de mot de passe"
-          />
+    <div className="mx-6">
+      <div className="bg-white rounded-lg shadow-lg px-12 flex flex-col items-center gap-8 py-12">
+        <h1 className="text-lg md:text-xl lg:text-2xl font-semibold text-[var(--blue-menu)] text-center">
+          Mot de passe oublié ?
+        </h1>
 
-          <h1 className="text-lg md:text-xl lg:text-2xl font-semibold text-[var(--blue-menu)] text-center">
-            Mot de passe oublié ?
-          </h1>
+        <p className="text-gray-600 text-center">
+          Entrez votre adresse email pour recevoir un code de vérification.
+        </p>
 
-          <p className="text-gray-600 text-center">
-            Entrez votre adresse email pour recevoir un code de vérification.
-          </p>
+        <InputForm
+          type="email"
+          label="Email"
+          placeholder="Votre adresse email"
+          width="450px"
+          flexDirection="flex-col"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
 
-          <InputForm
-            type="email"
-            label="Email"
-            placeholder="Votre adresse email"
-            width="450px"
-            flexDirection="flex-col"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
+        {/* Affichage du message d'erreur en rouge */}
+        {errorMessage && <p className="text-red-500 text-sm">{errorMessage}</p>}
 
-          <button
-            className="w-[41%] border-none bg-[var(--blue-conf)] hover:bg-[var(--blue-menu)] text-white font-semibold py-2 px-6 rounded-lg transition duration-300 ease-in-out text-sm md:text-base lg:text-lg"
-            onClick={sendVerificationCode}
-            disabled={loading}
-          >
-            {loading ? "Envoi en cours..." : "Envoyer le code"}
-          </button>
-        </div>
+        <button
+          className="w-[41%] border-none bg-[var(--blue-conf)] hover:bg-[var(--blue-menu)] text-white font-semibold py-2 px-6 rounded-lg transition duration-300 ease-in-out text-sm md:text-base lg:text-lg"
+          onClick={() => onNext(email)}
+          disabled={loading}
+        >
+          {loading ? "Envoi en cours..." : "Envoyer le code"}
+        </button>
       </div>
-    </>
+    </div>
   );
 }
 

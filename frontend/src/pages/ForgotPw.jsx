@@ -4,25 +4,51 @@ import StepEmailForm from "./subPages/StepEmailForm";
 import StepVerificationCode from "./subPages/StepVerificationCode";
 import StepNewPassword from "./subPages/StepNewPassword";
 import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
+import useAuth from "../Hooks/useAuth"; // Import du hook useAuth
 
 function ForgotPw() {
   const navigate = useNavigate();
   const [step, setStep] = useState(1);
   const [verificationCode, setVerificationCode] = useState("");
   const [email, setEmail] = useState("");
-  const [expirationTime, setExpirationTime] = useState(null); // Stocke l'heure d'expiration
+  const [expirationTime, setExpirationTime] = useState(null);
+  const [errorMessage, setErrorMessage] = useState(""); // État pour gérer les erreurs
 
+  const { checkEmail, loading } = useAuth(); // Récupérer la fonction `checkEmail`
+
+  // Fonction pour vérifier l'email et passer à l'étape suivante
+  const handleCheckEmail = async (email) => {
+    setErrorMessage(""); // Réinitialiser l'erreur avant la requête
+    try {
+      const body = { email };
+      const response = await checkEmail(body);
+
+      if (response.success) {
+        setEmail(email);
+        setStep(2);
+      } else {
+        setErrorMessage(response.error || "Email non trouvé. Veuillez réessayer.");
+      }
+    } catch (error) {
+      setErrorMessage("Une erreur s'est produite. Veuillez réessayer.");
+      console.error("Erreur :", error);
+    }
+  };
+
+  const handleSetExpirationTime = (time) => {
+    setExpirationTime(time);
+  };
+
+  // Gestion des étapes du formulaire
   const renderStepContent = () => {
     switch (step) {
       case 1:
         return (
           <StepEmailForm
-            onNext={(code, email) => {
-              setVerificationCode(code);
-              setEmail(email);
-              setStep(2);
-            }}
-            onSetExpirationTime={setExpirationTime} // Ajout de la fonction
+            onNext={handleCheckEmail}
+            onSetExpirationTime={handleSetExpirationTime}
+            loading={loading}
+            errorMessage={errorMessage} // Passer l'erreur à l'étape 1
           />
         );
       case 2:
@@ -32,7 +58,7 @@ function ForgotPw() {
             email={email}
             expirationTime={expirationTime}
             onNext={() => setStep(3)}
-            onBack={() => setStep(1)} // Permet de renvoyer un code si expiré
+            onBack={() => setStep(1)}
           />
         );
       case 3:
@@ -47,8 +73,9 @@ function ForgotPw() {
       <div onClick={() => navigate("/")}>
         <img src="./mazars_logo.png" alt="Mazars Logo" className="w-28 md:w-36 lg:w-44" />
       </div>
-       {/* Bouton retour */}
-       <div
+
+      {/* Bouton retour */}
+      <div
         className="absolute top-36 left-14 cursor-pointer flex items-center"
         onClick={() => (step > 1 ? setStep(step - 1) : navigate("/login"))}
       >

@@ -1,29 +1,32 @@
 import React, { useEffect, useState } from "react";
 import OTPInput from "../../components/OTPInput";
-
 function StepVerificationCode({ onNext, onBack, verificationCode, email, expirationTime }) {
-  const [timeLeft, setTimeLeft] = useState(expirationTime - Date.now()); // Temps restant en ms
+  const [otp, setOtp] = useState("");
+  const [timeLeft, setTimeLeft] = useState(expirationTime ? expirationTime - Date.now() : 0);
+  const [errorMessage, setErrorMessage] = useState(""); // Gérer l'affichage des erreurs
 
   useEffect(() => {
+    if (!expirationTime) return;
+
     const interval = setInterval(() => {
-      setTimeLeft(expirationTime - Date.now());
+      const remainingTime = expirationTime - Date.now();
+      setTimeLeft(remainingTime > 0 ? remainingTime : 0);
     }, 1000);
 
     return () => clearInterval(interval);
   }, [expirationTime]);
 
-  const handleOTPSubmit = (otpCode) => {
+  const handleOTPSubmit = () => {
     if (timeLeft <= 0) {
-      alert("Code expiré, veuillez demander un nouveau code.");
+      setErrorMessage("Code expiré, veuillez demander un nouveau code.");
       return;
     }
-    console.log("Code OTP saisi :", otpCode);
-    console.log("Code VERF :", verificationCode);
-    if (Number(otpCode) === Number(verificationCode)) {
-      alert("Code correct !");
+
+    if (Number(otp) === Number(verificationCode)) {
+      setErrorMessage(""); // Réinitialiser l'erreur
       onNext();
     } else {
-      alert("Code incorrect. Réessayez.");
+      setErrorMessage("Code incorrect. Réessayez.");
     }
   };
 
@@ -33,8 +36,9 @@ function StepVerificationCode({ onNext, onBack, verificationCode, email, expirat
   return (
     <div className="mx-6">
       <div className="bg-white rounded-lg shadow-lg p-16 flex flex-col items-center">
-       
-        <OTPInput length={4} onOTPSubmit={handleOTPSubmit} email={email} />
+        <OTPInput length={4} value={otp} onChange={setOtp} onOTPSubmit={handleOTPSubmit} email={email} />
+
+        {errorMessage && <p className="text-red-500 text-sm mt-2">{errorMessage}</p>}
 
         {timeLeft > 0 ? (
           <p className="text-red-500 text-sm mt-2">
@@ -42,7 +46,7 @@ function StepVerificationCode({ onNext, onBack, verificationCode, email, expirat
           </p>
         ) : (
           <button
-            onClick={onBack} // Retour à l'étape email pour renvoyer un code
+            onClick={onBack}
             className="text-[var(--blue-menu)] text-sm mt-2 border-none hover:underline"
           >
             Code expiré ? Demander un nouveau code

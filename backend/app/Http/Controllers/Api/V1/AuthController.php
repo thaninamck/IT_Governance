@@ -134,7 +134,7 @@ public function logout(Request $request)
         $validator = Validator::make($request->all(), $rules);
 
         if ($validator->fails()) {
-            return $this->sendError("Validation of data failed", $validator->errors(), 422);
+            return $this->sendError("Aucun utilisateur trouvé avec cette addresse veuillez introduire une addresse valide", $validator->errors(), 422);
         }
         $result = [
             'success' => true,

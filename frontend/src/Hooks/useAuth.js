@@ -1,22 +1,30 @@
-import { useContext } from "react";
-import { AuthContext } from "../Context/AuthContext";
-import useAuthApi from "../Hooks/useAuthApi"; // ✅ Utilisation du hook
+import { useState } from "react";
+import { authApi } from "../Api"; // Importer l'instance Axios
 
 const useAuth = () => {
-  const { token, loginUser, logout, loading, error } = useContext(AuthContext);
-  const authApi = useAuthApi(); // ✅ Récupère `authApi` avec le token inclus
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
-  // 🔹 Changement de mot de passe
-  const changePassword = async (data) => {
+  const checkEmail = async (body) => {
+    setLoading(true);
+    setError(null);
     try {
-      const response = await authApi.post("/changePassword", data);
-      return response.data.message;
+      const response = await authApi.post("/check-email", body);
+      return { success: true, data: response.data }; // Retourne un objet structuré
     } catch (error) {
-      return "Erreur lors du changement de mot de passe";
+      const errorMessage = error.response?.data?.message || "Échec de vérification de l'email.";
+      setError(errorMessage);
+      return { success: false, error: errorMessage }; // Retourne l'erreur au lieu de la jeter
+    } finally {
+      setLoading(false);
     }
   };
 
-  return { token, loginUser, logout, changePassword, loading, error };
+  return {
+    checkEmail,
+    loading,
+    error,
+  };
 };
 
 export default useAuth;

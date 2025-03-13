@@ -82,17 +82,25 @@ useEffect(() => {
     }
   };
 
-  // 🔹 Intercepteur pour ajouter le token aux requêtes
-  authApi.interceptors.request.use((config) => {
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`; // Ajouter le token à l'en-tête
-      console.log("Token found",token);
-    }else{
-      
-      console.log("No token found");
-    }
-    return config;
-  });
+ // Liste des endpoints à exclure de l'authentification
+const publicEndpoints = [
+  "/check-email",
+  "/store-reset-code",
+  "/verify-reset-code",
+  "/reset-password",
+];
+
+// Intercepteur pour ajouter le token sauf pour les routes publiques
+authApi.interceptors.request.use((config) => {
+  if (token && !publicEndpoints.includes(config.url)) {
+    config.headers.Authorization = `Bearer ${token}`; // Ajouter le token
+    console.log("Token added to request:", token);
+  } else {
+    console.log("No token added for this request:", config.url);
+  }
+  return config;
+});
+
 
   return (
     <AuthContext.Provider
