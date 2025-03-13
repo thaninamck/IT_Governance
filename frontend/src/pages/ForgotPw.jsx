@@ -17,14 +17,19 @@ function ForgotPw() {
   const { checkEmail, loading } = useAuth(); // Récupérer la fonction `checkEmail`
 
   // Fonction pour vérifier l'email et passer à l'étape suivante
-  const handleCheckEmail = async (email) => {
-    setErrorMessage(""); // Réinitialiser l'erreur avant la requête
+  const handleCheckEmail = async (code, email) => { // Ajout de `code`
+    setErrorMessage(""); 
     try {
       const body = { email };
       const response = await checkEmail(body);
-
+  
       if (response.success) {
         setEmail(email);
+        setVerificationCode(code); // Stocke le code généré
+       const data= {
+          "email": email,
+          "code": code
+      }
         setStep(2);
       } else {
         setErrorMessage(response.error || "Email non trouvé. Veuillez réessayer.");
@@ -34,6 +39,7 @@ function ForgotPw() {
       console.error("Erreur :", error);
     }
   };
+  
 
   const handleSetExpirationTime = (time) => {
     setExpirationTime(time);

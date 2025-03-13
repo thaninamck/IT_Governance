@@ -2,8 +2,48 @@ import React, { useState } from "react";
 import LockResetIcon from "@mui/icons-material/LockReset";
 import InputForm from "../../components/Forms/InputForm";
 import emailjs from "emailjs-com";
+
 function StepEmailForm({ onNext, onSetExpirationTime, loading, errorMessage }) {
   const [email, setEmail] = useState("");
+
+  const generateCode = () => {
+    return Math.floor(1000 + Math.random() * 9000); // Code à 4 chiffres
+  };
+
+  const sendVerificationCode = async () => {
+    if (!email) {
+      alert("Veuillez entrer une adresse email valide.");
+      return;
+    }
+
+    const code = generateCode();
+    const expirationTime = Date.now() + 5 * 60 * 1000; // Expire dans 5 min
+
+    const templateParams = {
+      to_email: email,
+      from_name: "Forvis Mazars en Algérie-[no-reply]",
+      message: `Votre code de vérification est : ${code}. Il expire dans 5 minutes.`,
+    };
+
+    try {
+      await emailjs.send(
+        "service_mcpkn9g", // Remplacez par votre Service ID
+        "template_f4ojiam", // Remplacez par votre Template ID
+        templateParams,
+        "oAXuwpg74dQwm0C_s" // Remplacez par votre User ID
+      );
+
+      alert("Code de vérification envoyé avec succès !");
+      console.log("Code envoyé :", code);
+      
+      onSetExpirationTime(expirationTime); // Définit l'heure d'expiration
+      onNext(code, email); // Passe le code et l'e-mail à l'étape suivante
+
+    } catch (error) {
+      console.error("Erreur lors de l'envoi de l'e-mail:", error);
+      alert(`Erreur lors de l'envoi de l'e-mail : ${error.text || error.message}`);
+    }
+  };
 
   return (
     <div className="mx-6">
@@ -26,12 +66,11 @@ function StepEmailForm({ onNext, onSetExpirationTime, loading, errorMessage }) {
           onChange={(e) => setEmail(e.target.value)}
         />
 
-        {/* Affichage du message d'erreur en rouge */}
         {errorMessage && <p className="text-red-500 text-sm">{errorMessage}</p>}
 
         <button
           className="w-[41%] border-none bg-[var(--blue-conf)] hover:bg-[var(--blue-menu)] text-white font-semibold py-2 px-6 rounded-lg transition duration-300 ease-in-out text-sm md:text-base lg:text-lg"
-          onClick={() => onNext(email)}
+          onClick={sendVerificationCode}
           disabled={loading}
         >
           {loading ? "Envoi en cours..." : "Envoyer le code"}
