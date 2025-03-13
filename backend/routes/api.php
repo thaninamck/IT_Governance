@@ -57,6 +57,20 @@ Route::prefix('v1')->group(function () {
         Route::post('/createctrltype', 'store');
     });
 });
+
+Route::prefix('v1')->group(function () { 
+    Route::controller(LogController::class)->group(function () {
+        Route::get('/logs', 'getUserActivityLogs');
+    });
+});
+
+
+
+
+
+
+
+
 Route::prefix('v1')->group(function () { 
     Route::controller(MissionController::class)->group(function () {
         Route::get('/getmissions', 'index');
@@ -145,7 +159,7 @@ Route::middleware(['auth:sanctum', AdminMiddleware::class])
             Route::post('/insert-users', 'storeMultiple');
         });
 
-        Route::get('/logs', [LogController::class, 'getUserActivityLogs']);
+       // Route::get('/logs', [LogController::class, 'getUserActivityLogs']);
     });
 
 Route::post('/login', action: [AuthController::class, 'login'])->middleware(CheckPasswordReset::class);
