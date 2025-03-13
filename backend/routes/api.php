@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Middleware\AdminMiddleware;
+
 use App\Http\Middleware\ApiAuthenticate;
 use App\Http\Middleware\CheckPasswordReset;
 use Illuminate\Support\Facades\Route;

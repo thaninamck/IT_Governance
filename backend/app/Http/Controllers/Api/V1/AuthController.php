@@ -11,89 +11,84 @@ use App\Models\Setting;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
-
+use App\Services\RecaptchaService;
 use Illuminate\Support\Facades\Validator;
 class AuthController extends BaseController
 {
+
+    protected $recaptchaService;
+
+    public function __construct(RecaptchaService $recaptchaService)
+    {
+        $this->recaptchaService = $recaptchaService;
+    }
     public function login(Request $request)
-    {
-        try {
-            $settings = Setting::pluck('value', 'key')->toArray();
+{
+    try {
+        $settings = Setting::pluck('value', 'key')->toArray();
 
-            $rules = [
-                'email' => 'required|email',
-                'password' => 'required',
-                //'captchaValue' => 'required'
-            ];
+        $rules = [
+            'email' => 'required|email',
+            'password' => 'required',
+           // 'captchaValue' => 'required'
+        ];
 
-            if (isset($settings['password_min_length'])) {
-                $rules['password'] .= '|min:' . $settings['password_min_length'];
-            }
-
-            if (isset($settings['password_max_length'])) {
-                $rules['password'] .= '|max:' . $settings['password_max_length'];
-            }
-
-            $validator = Validator::make($request->all(), $rules);
-
-            if ($validator->fails()) {
-                return $this->sendError("Validation of data failed", $validator->errors());
-            }
-
-            /*
-             $recaptchaSecret = env('RECAPTCHA_SECRET');
-             $recaptchaResponse = $request->input('captchaValue');
-
-             $verify = Http::withoutVerifying()->asForm()->post('https://www.google.com/recaptcha/api/siteverify', [
-                 'secret' => $recaptchaSecret,
-                 'response' => $recaptchaResponse,
-                 'remoteip' => $request->ip(),
-             ]);
-             
-
-             $recaptchaData = $verify->json();
-             \Log::info('reCAPTCHA Response:', $recaptchaData);
-             if (!$recaptchaData['success']) {
-                 return $this->sendError("Recaptcha verification failed", ["recaptcha" => ["Invalid reCAPTCHA response"]]);
-             }*/
-
-            $user = User::where('email', $request->email)->first();
-            if (!$user || !Hash::check($request->password, $user->password)) {
-                return $this->sendError("Incorrect data", ["password" => ["No user found with the specified data"]]);
-            }
-
-            $user->update(["last_activity" => now()]);
-
-            
-            $token = $user->createToken($user->first_name)->plainTextToken;
-
-
-            return $this->sendResponse([
-                'token' => $token,
-                'user' => new UserResource($user),
-                'must_change_password' => $user->must_change_password
-            ], 'Logged in succesfully!');
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Server error',
-                'error' => $e->getMessage()
-            ], 500);
+        if (isset($settings['password_min_length'])) {
+            $rules['password'] .= '|min:' . $settings['password_min_length'];
         }
+
+        if (isset($settings['password_max_length'])) {
+            $rules['password'] .= '|max:' . $settings['password_max_length'];
+        }
+
+        $validator = Validator::make($request->all(), $rules);
+
+        if ($validator->fails()) {
+            return $this->sendError("Validation of data failed", $validator->errors());
+        }
+
+       // $recaptchaData = $this->recaptchaService->verify($request);
+       // if (!$recaptchaData) {
+           // return $this->sendError("Recaptcha verification failed", ["recaptcha" => ["Invalid reCAPTCHA response"]]);
+       // }
+
+        $user = User::where('email', $request->email)->first();
+        if (!$user || !Hash::check($request->password, $user->password)) {
+            return $this->sendError("Incorrect data", ["password" => ["No user found with the specified data"]]);
+        }
+
+        $user->update(["last_activity" => now()]);
+
+        // 🔹 Générer un token d'accès (Access Token)
+        $accessToken = $user->createToken($user->first_name)->plainTextToken;
+
+        return $this->sendResponse([
+            'token' => $accessToken, 
+            'user' => new UserResource($user),
+            'must_change_password' => $user->must_change_password
+        ], 'Logged in successfully!');
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Server error',
+            'error' => $e->getMessage()
+        ], 500);
     }
+}
 
 
 
 
-    public function logout(Request $request)
-    {
-        $user = $request->user();
 
+public function logout(Request $request)
+{
+    $user = $request->user();
+    
+    $request->user()->tokens()->delete();
 
+    return $this->sendResponse('Logged out successfully', 'Logged out successfully');
+}
 
-        $user->tokens()->delete();
-        return $this->sendResponse('logged out', 'Logged out succesfully');
-    }
 
 
 

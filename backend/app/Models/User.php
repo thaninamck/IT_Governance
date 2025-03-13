@@ -26,7 +26,7 @@ class User extends Authenticatable
         'grade',
         'is_active',
         'last_activity',
-       
+       'must_change_password',
         'role', 
     ];
 

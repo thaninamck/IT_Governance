@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import api from '../Api';
+import {api }from '../Api';
 
 // Hook personnalisé pour la gestion des clients
 const useClient = () => {
