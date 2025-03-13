@@ -37,16 +37,16 @@ const sendVerificationCode = async () => {
 
     // Une fois stocké, envoie l'email
     const templateParams = {
-      to_email: email,
-      from_name: "vs code",
-      message: `Votre code de vérification est : ${code}. Il expire dans 2 minutes.`,
+      email: email,
+      from_name: "Forvis Mazars - Plateforme GRCenter",
+      passcode: code
     };
 
     await emailjs.send(
-      "service_mcpkn9g", // Service ID
-      "template_f4ojiam", // Template ID
+      "service_qm58mng", // Service ID
+      "template_5r4hycr", // Template ID
       templateParams,
-      "oAXuwpg74dQwm0C_s" // User ID
+      "jhF4FXcRjk6PSE78R" 
     );
 
     onSetExpirationTime(expirationTime); // Définit l'heure d'expiration
@@ -61,7 +61,7 @@ const sendVerificationCode = async () => {
 
   return (
     <div className="mx-6">
-      <div className="bg-white rounded-lg shadow-lg px-12 flex flex-col items-center gap-8 py-12">
+      <div className="bg-white rounded-lg shadow-lg px-12 flex flex-col items-center w-1/2 justify-self-center gap-8 py-12">
         <h1 className="text-lg md:text-xl lg:text-2xl font-semibold text-[var(--blue-menu)] text-center">
           Mot de passe oublié ?
         </h1>

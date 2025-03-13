@@ -89,10 +89,10 @@ function ForgotPw() {
 
       {/* Bouton retour */}
       <div
-        className="absolute top-36 left-14 cursor-pointer flex items-center"
+        className="absolute top-36 left-14 cursor-pointer flex  items-center"
         onClick={() => (step > 1 ? setStep(step - 1) : navigate("/login"))}
       >
-        <KeyboardBackspaceIcon className="text-gray-600" />
+        <KeyboardBackspaceIcon className="text-gray-600 " />
         <span className="text-gray-600 text-sm hover:underline ml-1">Retour</span>
       </div>
 

@@ -50,7 +50,7 @@ function StepVerificationCode({ onNext, onBack, verificationCode, email, expirat
 
   return (
     <div className="mx-6">
-      <div className="bg-white rounded-lg shadow-lg p-16 flex flex-col items-center">
+      <div className="bg-white rounded-lg shadow-lg p-4 flex flex-col w-1/2 justify-self-center items-center">
       <OTPInput length={4} onChange={(code) => setOtp(code)} onOTPSubmit={handleOTPSubmit} email={email} />
 
         {errorMessage && <p className="text-red-500 text-sm mt-2">{errorMessage}</p>}
