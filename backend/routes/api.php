@@ -10,13 +10,53 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\V1\UserController;
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\ClientController;
+use App\Http\Controllers\Api\V1\LayerController;
 use App\Http\Controllers\Api\V1\LogController;
 use App\Http\Controllers\Api\V1\MissionController;
+use App\Http\Controllers\Api\V1\SourceController;
+use App\Http\Controllers\Api\V1\TypeController;
+use App\Models\Layer;
 
 /*Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');*/
 
+
+Route::prefix('v1')->group(function () { 
+    Route::controller(LayerController::class)->group(function () {
+        Route::get('/getlayers', 'index');
+    });
+});
+
+Route::prefix('v1')->group(function () { 
+    Route::controller(LayerController::class)->group(function () {
+        Route::post('/createlayer', 'store');
+    });
+});
+
+Route::prefix('v1')->group(function () { 
+    Route::controller(SourceController::class)->group(function () {
+        Route::get('/getsources', 'index');
+    });
+});
+
+Route::prefix('v1')->group(function () { 
+    Route::controller(SourceController::class)->group(function () {
+        Route::post('/createsource', 'store');
+    });
+});
+
+Route::prefix('v1')->group(function () { 
+    Route::controller(TypeController::class)->group(function () {
+        Route::get('/getctrltypes', 'index');
+    });
+});
+
+Route::prefix('v1')->group(function () { 
+    Route::controller(TypeController::class)->group(function () {
+        Route::post('/createctrltype', 'store');
+    });
+});
 Route::prefix('v1')->group(function () { 
     Route::controller(MissionController::class)->group(function () {
         Route::get('/getmissions', 'index');
