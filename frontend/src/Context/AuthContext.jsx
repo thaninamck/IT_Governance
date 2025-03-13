@@ -52,7 +52,21 @@ useEffect(() => {
     }
   };
 
-  // 🔹 Changer le mot de passe
+  
+  const forgotPasswordChange = async (data) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await authApi.post("/reset-password", data); // Envoyer une requête pour changer le mot de passe
+      return response.data.message;
+    } catch (error) {
+      setError("Erreur lors du changement de mot de passe.");
+      throw error.response?.data?.message || "Erreur inconnue";
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const changePassword = async (data) => {
     setLoading(true);
     setError(null);
@@ -82,7 +96,6 @@ useEffect(() => {
     }
   };
 
- // Liste des endpoints à exclure de l'authentification
 const publicEndpoints = [
   "/check-email",
   "/store-reset-code",
@@ -90,10 +103,9 @@ const publicEndpoints = [
   "/reset-password",
 ];
 
-// Intercepteur pour ajouter le token sauf pour les routes publiques
 authApi.interceptors.request.use((config) => {
   if (token && !publicEndpoints.includes(config.url)) {
-    config.headers.Authorization = `Bearer ${token}`; // Ajouter le token
+    config.headers.Authorization = `Bearer ${token}`; 
     console.log("Token added to request:", token);
   } else {
     console.log("No token added for this request:", config.url);
@@ -113,6 +125,7 @@ authApi.interceptors.request.use((config) => {
         fetchUser,
         loading,
         error,
+        forgotPasswordChange
       }}
     >
       {children}

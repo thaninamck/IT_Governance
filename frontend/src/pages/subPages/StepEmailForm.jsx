@@ -4,18 +4,21 @@ import InputForm from "../../components/Forms/InputForm";
 import emailjs from "emailjs-com";
 import useAuth from "../../Hooks/useAuth"; // Import du hook useAuth
 
-function StepEmailForm({ onNext, onSetExpirationTime, loading, errorMessage }) {
+function StepEmailForm({ onNext, onSetExpirationTime, errorMessage }) {
   const [email, setEmail] = useState("");
-
+const [interanlerrorMessage, setInternalErrorMessage] = useState(""); // État pour gérer les erreurs
   const generateCode = () => {
     return Math.floor(1000 + Math.random() * 9000); // Code à 4 chiffres
   };
 
-  const { storeVerificationCode } = useAuth(); // Import de la fonction
+  const { storeVerificationCode,loading } = useAuth(); // Import de la fonction
 
 const sendVerificationCode = async () => {
+  if(!email){
+    setInternalErrorMessage("Veuillez remplir le champ email");
+    return;}
   const code = generateCode();
-  const expirationTime = Date.now() + 2 * 60 * 1000; // Expiration dans 2 min
+  const expirationTime = Date.now() + 5 * 60 * 1000; // Expiration dans 2 min
 
   const data = {
     email: email,
@@ -28,7 +31,7 @@ const sendVerificationCode = async () => {
     const response = await storeVerificationCode(data);
 
     if (!response.success) {
-      alert("Erreur lors du stockage du code : " + response.error);
+      setInternalErrorMessage("Erreur lors de la génération du code veuillez ressayer")
       return; // Arrêter ici si le stockage échoue
     }
 
@@ -46,13 +49,12 @@ const sendVerificationCode = async () => {
       "oAXuwpg74dQwm0C_s" // User ID
     );
 
-    alert("Code de vérification envoyé avec succès !");
     onSetExpirationTime(expirationTime); // Définit l'heure d'expiration
     onNext(code, email); // Passe le code et l'e-mail à ForgotPw
 
   } catch (error) {
     console.error("Erreur :", error);
-    alert("Une erreur est survenue. Veuillez réessayer.");
+    setInternalErrorMessage("Une erreur est survenue veuillez ressayer")
   }
 };
 
@@ -79,9 +81,10 @@ const sendVerificationCode = async () => {
         />
 
         {errorMessage && <p className="text-red-500 text-sm">{errorMessage}</p>}
+        {interanlerrorMessage && <p className="text-red-500 text-sm">{interanlerrorMessage}</p>}
 
         <button
-          className="w-[41%] border-none bg-[var(--blue-conf)] hover:bg-[var(--blue-menu)] text-white font-semibold py-2 px-6 rounded-lg transition duration-300 ease-in-out text-sm md:text-base lg:text-lg"
+          className="w-[41%] border-none bg-[var(--blue-menu)] hover:bg-[var(--blue-conf)] text-white font-semibold py-2 px-6 rounded-lg transition duration-300 ease-in-out text-sm md:text-base lg:text-lg"
           onClick={sendVerificationCode}
           disabled={loading}
         >

@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from "react";
 import OTPInput from "../../components/OTPInput";
+import useAuth from "../../Hooks/useAuth";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 function StepVerificationCode({ onNext, onBack, verificationCode, email, expirationTime }) {
   const [otp, setOtp] = useState("");
   const [timeLeft, setTimeLeft] = useState(expirationTime ? expirationTime - Date.now() : 0);
   const [errorMessage, setErrorMessage] = useState(""); // Gérer l'affichage des erreurs
-
+  const { verifyCode, loading } = useAuth();
   useEffect(() => {
     if (!expirationTime) return;
 
@@ -16,19 +19,30 @@ function StepVerificationCode({ onNext, onBack, verificationCode, email, expirat
     return () => clearInterval(interval);
   }, [expirationTime]);
 
-  const handleOTPSubmit = () => {
+  const handleOTPSubmit = async () => {
     if (timeLeft <= 0) {
       setErrorMessage("Code expiré, veuillez demander un nouveau code.");
       return;
     }
-
-    if (Number(otp) === Number(verificationCode)) {
-      setErrorMessage(""); // Réinitialiser l'erreur
-      onNext();
-    } else {
-      setErrorMessage("Code incorrect. Réessayez.");
+  
+    try {
+      setErrorMessage(""); // Réinitialiser les erreurs avant la requête
+  const body={
+    email,code:otp
+  }
+  console.log(body);
+      const response = await verifyCode(body);
+  
+      if (response.success) {
+        onNext(); 
+      } else {
+        setErrorMessage(response.error || "Code incorrect. Réessayez.");
+      }
+    } catch (error) {
+      setErrorMessage("Une erreur s'est produite. Veuillez réessayer.");
     }
   };
+  
 
   const minutes = Math.floor(timeLeft / 60000);
   const seconds = Math.floor((timeLeft % 60000) / 1000);
@@ -36,7 +50,7 @@ function StepVerificationCode({ onNext, onBack, verificationCode, email, expirat
   return (
     <div className="mx-6">
       <div className="bg-white rounded-lg shadow-lg p-16 flex flex-col items-center">
-        <OTPInput length={4} value={otp} onChange={setOtp} onOTPSubmit={handleOTPSubmit} email={email} />
+      <OTPInput length={4} onChange={(code) => setOtp(code)} onOTPSubmit={handleOTPSubmit} email={email} />
 
         {errorMessage && <p className="text-red-500 text-sm mt-2">{errorMessage}</p>}
 

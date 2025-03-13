@@ -5,7 +5,8 @@ import StepVerificationCode from "./subPages/StepVerificationCode";
 import StepNewPassword from "./subPages/StepNewPassword";
 import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
 import useAuth from "../Hooks/useAuth"; // Import du hook useAuth
-
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 function ForgotPw() {
   const navigate = useNavigate();
   const [step, setStep] = useState(1);
@@ -13,6 +14,7 @@ function ForgotPw() {
   const [email, setEmail] = useState("");
   const [expirationTime, setExpirationTime] = useState(null);
   const [errorMessage, setErrorMessage] = useState(""); // État pour gérer les erreurs
+  const [otp, setOtp] = useState("");
 
   const { checkEmail, loading } = useAuth(); // Récupérer la fonction `checkEmail`
 
@@ -61,12 +63,19 @@ function ForgotPw() {
             verificationCode={verificationCode}
             email={email}
             expirationTime={expirationTime}
-            onNext={() => setStep(3)}
+            onNext={() => {
+              
+              setStep(3);
+            }}
             onBack={() => setStep(1)}
           />
         );
       case 3:
-        return <StepNewPassword onBack={() => setStep(2)} />;
+        const infos={
+          firstconnection:false,
+          email:email
+        }
+        return <StepNewPassword infos={infos} onBack={() => setStep(2)} />;
       default:
         return <StepEmailForm onNext={() => setStep(2)} />;
     }

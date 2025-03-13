@@ -3,15 +3,17 @@ import InputForm from "../../components/Forms/InputForm";
 import PasswordIcon from '@mui/icons-material/Password';
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../Context/AuthContext"; // Importer le contexte
-
-function StepNewPassword() {
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+function StepNewPassword({infos}) {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [passwordStrength, setPasswordStrength] = useState("");
   const navigate = useNavigate();
+const firstconnection=infos.firstconnection;
 
   // Utiliser le contexte d'authentification
-  const { changePassword, loading, error } = useAuth();
+  const { changePassword, loading, error,forgotPasswordChange } = useAuth();
 
   const checkPasswordStrength = (password) => {
     const hasUpperCase = /[A-Z]/.test(password);
@@ -28,7 +30,7 @@ function StepNewPassword() {
     }
   };
 
-  const handleChangePassword = async () => {
+  const firstLoginChangePassword = async () => {
     if (!password || !confirmPassword) {
       alert("Veuillez remplir tous les champs.");
       return;
@@ -57,10 +59,43 @@ function StepNewPassword() {
     }
   };
 
+
+  const ForgotPasswordChange= async () => {
+    if (!password || !confirmPassword) {
+      alert("Veuillez remplir tous les champs.");
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      alert("Les mots de passe ne correspondent pas.");
+      return;
+    }
+
+    const strength = checkPasswordStrength(password);
+    if (strength === "faible") {
+      alert("Le mot de passe est trop faible. Il doit contenir au moins 12 caractères, une majuscule, une minuscule et un chiffre.");
+      return;
+    }
+
+    try {
+      const data = {
+        email:infos.email,
+        new_password: password,
+        new_password_confirmation:password
+        
+      };
+      console.log(data)
+      await forgotPasswordChange(data); // Appeler la fonction de changement de mot de passe du contexte
+      navigate("/login"); // Rediriger vers la connexion après succès
+    } catch (err) {
+      alert(err); // Affiche l’erreur retournée
+    }
+  };
+
   return (
     <div className='mx-6'>
       <div className="bg-white rounded-lg shadow-lg px-12 flex flex-col items-center gap-4 py-6">
-        <PasswordIcon sx={{ color: 'var(--blue-conf)', fontSize: '4rem' }} />
+        <PasswordIcon sx={{ color: 'var(--blue-menu)', fontSize: '4rem' }} />
         <h1 className="text-lg md:text-xl lg:text-2xl font-semibold text-[var(--blue-menu)] text-center">
           Nouveau mot de passe
         </h1>
@@ -89,8 +124,8 @@ function StepNewPassword() {
         />
 
         <button
-          className="w-[41%] mt-4 border-none bg-[var(--blue-conf)] hover:bg-[var(--blue-menu)] text-white font-semibold py-2 px-6 rounded-lg transition duration-300 ease-in-out text-sm md:text-base lg:text-lg"
-          onClick={handleChangePassword}
+          className="w-[41%] mt-4 border-none bg-[var(--blue-menu)] hover:bg-[var(--blue-conf)] text-white font-semibold py-2 px-6 rounded-lg transition duration-300 ease-in-out text-sm md:text-base lg:text-lg"
+          onClick={firstconnection?firstLoginChangePassword:ForgotPasswordChange}
           disabled={loading}
         >
           {loading ? "Changement en cours..." : "Changer le mot de passe"}

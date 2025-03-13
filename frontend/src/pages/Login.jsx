@@ -3,7 +3,8 @@ import { useNavigate } from "react-router-dom";
 import SignUpForm from "../components/Forms/SignUpForm";
 import whiteLogo from "../../public/whiteLogo.png";
 import { useAuth } from "../Context/AuthContext"; // Importer le contexte
-
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 const Login = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");

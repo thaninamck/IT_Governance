@@ -36,12 +36,27 @@ const useAuth = () => {
     }
   };
 
+  const verifyCode = async (body) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await authApi.post("/verify-reset-code", body);
+      return { success: true, data: response.data };
+    } catch (error) {
+      const errorMessage = error.response?.data?.message || "Code invalide.";
+      setError(errorMessage);
+      return { success: false, error: errorMessage };
+    } finally {
+      setLoading(false);
+    }
+  };
   
   return {
     checkEmail,
     loading,
     error,
     storeVerificationCode,
+    verifyCode
   };
 };
 
