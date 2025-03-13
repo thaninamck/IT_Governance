@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import LockResetIcon from "@mui/icons-material/LockReset";
 import InputForm from "../../components/Forms/InputForm";
 import emailjs from "emailjs-com";
+import useAuth from "../../Hooks/useAuth"; // Import du hook useAuth
 
 function StepEmailForm({ onNext, onSetExpirationTime, loading, errorMessage }) {
   const [email, setEmail] = useState("");
@@ -10,40 +11,51 @@ function StepEmailForm({ onNext, onSetExpirationTime, loading, errorMessage }) {
     return Math.floor(1000 + Math.random() * 9000); // Code à 4 chiffres
   };
 
-  const sendVerificationCode = async () => {
-    if (!email) {
-      alert("Veuillez entrer une adresse email valide.");
-      return;
+  const { storeVerificationCode } = useAuth(); // Import de la fonction
+
+const sendVerificationCode = async () => {
+  const code = generateCode();
+  const expirationTime = Date.now() + 2 * 60 * 1000; // Expiration dans 2 min
+
+  const data = {
+    email: email,
+    code: code,
+  };
+
+  try {
+    // D'abord, envoie le code au backend
+    console.log(data);
+    const response = await storeVerificationCode(data);
+
+    if (!response.success) {
+      alert("Erreur lors du stockage du code : " + response.error);
+      return; // Arrêter ici si le stockage échoue
     }
 
-    const code = generateCode();
-    const expirationTime = Date.now() + 5 * 60 * 1000; // Expire dans 5 min
-
+    // Une fois stocké, envoie l'email
     const templateParams = {
       to_email: email,
-      from_name: "Forvis Mazars en Algérie-[no-reply]",
-      message: `Votre code de vérification est : ${code}. Il expire dans 5 minutes.`,
+      from_name: "vs code",
+      message: `Votre code de vérification est : ${code}. Il expire dans 2 minutes.`,
     };
 
-    try {
-      await emailjs.send(
-        "service_mcpkn9g", // Remplacez par votre Service ID
-        "template_f4ojiam", // Remplacez par votre Template ID
-        templateParams,
-        "oAXuwpg74dQwm0C_s" // Remplacez par votre User ID
-      );
+    await emailjs.send(
+      "service_mcpkn9g", // Service ID
+      "template_f4ojiam", // Template ID
+      templateParams,
+      "oAXuwpg74dQwm0C_s" // User ID
+    );
 
-      alert("Code de vérification envoyé avec succès !");
-      console.log("Code envoyé :", code);
-      
-      onSetExpirationTime(expirationTime); // Définit l'heure d'expiration
-      onNext(code, email); // Passe le code et l'e-mail à l'étape suivante
+    alert("Code de vérification envoyé avec succès !");
+    onSetExpirationTime(expirationTime); // Définit l'heure d'expiration
+    onNext(code, email); // Passe le code et l'e-mail à ForgotPw
 
-    } catch (error) {
-      console.error("Erreur lors de l'envoi de l'e-mail:", error);
-      alert(`Erreur lors de l'envoi de l'e-mail : ${error.text || error.message}`);
-    }
-  };
+  } catch (error) {
+    console.error("Erreur :", error);
+    alert("Une erreur est survenue. Veuillez réessayer.");
+  }
+};
+
 
   return (
     <div className="mx-6">

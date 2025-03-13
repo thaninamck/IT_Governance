@@ -26,11 +26,9 @@ function ForgotPw() {
       if (response.success) {
         setEmail(email);
         setVerificationCode(code); // Stocke le code généré
-       const data= {
-          "email": email,
-          "code": code
-      }
-        setStep(2);
+        const data = { email, code };
+          setStep(2);
+        
       } else {
         setErrorMessage(response.error || "Email non trouvé. Veuillez réessayer.");
       }

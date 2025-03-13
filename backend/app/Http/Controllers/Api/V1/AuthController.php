@@ -151,7 +151,7 @@ public function logout(Request $request)
             // Validation des entrées
             $request->validate([
                 'email' => 'required|email|exists:users,email',
-                'code' => 'required|string|size:4', // `size:4` au lieu de `min:4|max:4`
+                'code' => 'required|digits:4', 
             ]);
     
             DB::beginTransaction(); // Démarrer une transaction
