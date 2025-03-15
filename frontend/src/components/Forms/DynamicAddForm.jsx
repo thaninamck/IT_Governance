@@ -1,59 +1,34 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import InputForm from './InputForm';
-import Button from '../Button';
 import AddButton from '../AddButton';
 import SelectInput from './SelectInput';
-import api from '../../Api';
+import { Snackbar, Alert } from '@mui/material';
+import Button from '../Button';
+import useSettings from '../../Hooks/useSettings';
 
-function DynamicAddForm({ title, label, placeholder, onAdd ,fetchEndpoint, createEndpoint,labelKey = 'name',itemKey}) {
-  const [selectedValue, setSelectedValue] = useState('');
-  const [inputValue, setInputValue] = useState('');
-  const [showForm, setShowForm] = useState(false);
-  const [error, setError] = useState('');
-  const [items, setItems] = useState([]);
-
-  // Charger les layers depuis le backend
-  const fetchLayers = async () => {
-    try {
-      const response = await api.get(fetchEndpoint); // Assurez-vous que l'URL est correcte
-      setItems(response.data.map(item => ({
-        label: item[labelKey],
-        value: item.id.toString(),
-      })));
-    } catch (error) {
-      console.error('Erreur lors de la récupération des layers:', error);
-    }
-  };
-
-  useEffect(() => {
-    fetchLayers();
-  }, [fetchEndpoint]);
-
-  // Ajouter un layer
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!inputValue.trim()) return;
-
-    const itemExists = items.some(item => item.label.toLowerCase() === inputValue.toLowerCase());
-    if (itemExists) {
-      setError("Cet élément existe déjà. Veuillez choisir un autre nom.");
-      return;
-    }
-
-    try {
-      const response = await api.post(createEndpoint, { name: inputValue });
-      console.log(response)
-      const newItem = { label: response.data[itemKey][labelKey], value: response.data[itemKey].id.toString() };
-
-      setItems([...items, newItem]);
-      setInputValue('');
-      setError('');
-      onAdd(newItem); // Notifier le parent
-    } catch (error) {
-      console.error('Erreur lors de l’ajout :', error);
-      setError("Une erreur est survenue lors de l'ajout.");
-    }
-  };
+function DynamicAddForm({ title, label, placeholder, onAdd, fetchEndpoint, createEndpoint, deleteEndpoint, labelKey = 'name', itemKey }) {
+  const {
+    selectedValue,
+    setSelectedValue,
+    inputValue,
+    setInputValue,
+    showForm,
+    setShowForm,
+    error,
+    items,
+    deleteConfirmationOpen,
+    handleSubmit,
+    handleDeleteClick,
+    confirmDelete,
+    cancelDelete,
+  } = useSettings({
+    fetchEndpoint,
+    createEndpoint,
+    deleteEndpoint,
+    labelKey,
+    itemKey,
+    onAdd,
+  });
 
   return (
     <div className='border-b border-gray-300 p-4'>
@@ -67,6 +42,8 @@ function DynamicAddForm({ title, label, placeholder, onAdd ,fetchEndpoint, creat
             onChange={(e) => setSelectedValue(e.target.value)}
             width="200px"
             customStyle="font-bold"
+            isDelete={true}
+            onDelete={handleDeleteClick}
           />
           <AddButton title={`Ajouter ${label}`} onClick={() => setShowForm(true)} />
         </div>
@@ -103,6 +80,29 @@ function DynamicAddForm({ title, label, placeholder, onAdd ,fetchEndpoint, creat
           </div>
         )}
       </div>
+
+      <Snackbar
+        open={deleteConfirmationOpen}
+        autoHideDuration={6000}
+        onClose={cancelDelete}
+      >
+        <Alert
+          severity="warning"
+          onClose={cancelDelete}
+          action={
+            <>
+              <button className='bg-[--blue-conf] text-white border-none p-1 mr-3' onClick={confirmDelete}>
+                Confirmer
+              </button>
+              <button className=' border-[var(--alert-red)] px-2 py-1' onClick={cancelDelete}>
+                Annuler
+              </button>
+            </>
+          }
+        >
+          Êtes-vous sûr de vouloir supprimer cet élément ?
+        </Alert>
+      </Snackbar>
     </div>
   );
 }

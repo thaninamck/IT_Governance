@@ -23,6 +23,7 @@ function Parametrage() {
         placeholder="Nom de la couche"
         fetchEndpoint="/getlayers" // Endpoint pour récupérer les couches
         createEndpoint="/createlayer" // Endpoint pour ajouter une couche
+        deleteEndpoint="/deletelayer"
         labelKey='layerName'
         itemKey='layer'
         onAdd={(newItem) => console.log("Nouvelle couche ajoutée:", newItem)}
@@ -34,6 +35,7 @@ function Parametrage() {
   placeholder="Nom de la Source" 
   fetchEndpoint="/getsources"
   createEndpoint="/createsource"
+  deleteEndpoint="/deletesource"
   labelKey='sourceName'
   itemKey='source'
   onAdd={(newItem) => console.log("Nouvelle source ajoutée:", newItem)} 
@@ -44,6 +46,7 @@ function Parametrage() {
   placeholder="Nom du Type" 
   fetchEndpoint="/getctrltypes"
   createEndpoint="/createctrltype"
+  deleteEndpoint="/deletetype"
   labelKey='typeName'
   itemKey='type'
   onAdd={(newItem) => console.log("Nouveau type ajoutée:", newItem)} 
