@@ -11,6 +11,20 @@ const useSettings = ({ fetchEndpoint, createEndpoint, deleteEndpoint, labelKey =
   const [deleteConfirmationOpen, setDeleteConfirmationOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState(null);
 
+  // Fonction pour récupérer les logs
+  const [logs, setLogs] = useState([]);
+  const [filteredLogs, setFilteredLogs] = useState([]);
+
+  const fetchLogs = async () => {
+    try {
+      const response = await api.get('/logs'); // Appel API
+      setLogs(response.data); // Stockage des logs
+      setFilteredLogs(response.data); // Remplissage des données affichées
+    } catch (error) {
+      console.error('Erreur lors de la récupération des logs:', error);
+    }
+  };
+
   const fetchLayers = async () => {
     try {
       const response = await api.get(fetchEndpoint);
@@ -88,6 +102,9 @@ const useSettings = ({ fetchEndpoint, createEndpoint, deleteEndpoint, labelKey =
     handleDeleteClick,
     confirmDelete,
     cancelDelete,
+    logs,
+    filteredLogs,
+    fetchLogs, 
   };
 };
 
