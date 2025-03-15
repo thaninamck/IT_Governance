@@ -30,6 +30,6 @@ class LayerRepository
         $name=$layer->name;
         $layer->delete();
 
-        return $layer;
+        return $name;
     }
 }

@@ -30,6 +30,6 @@ class SourceRepository
         $name=$source->name;
         $source->delete();
 
-        return $source;
+        return $name;
     }
 }

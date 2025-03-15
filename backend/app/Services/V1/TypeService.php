@@ -17,6 +17,12 @@ class TypeService
     }
     public function createType(string $name):Type
     {
+        // Vérifier si une couche avec le même nom existe déjà (en ignorant la casse)
+        $existingType = Type::whereRaw('LOWER(name) = ?', [strtolower($name)])->first();
+
+        if ($existingType) {
+            throw new \Exception("Un type avec le même nom existe déjà.");
+        }
         return $this->typeRepository->createType($name);
     }
     public function deleteType(int $id) :?string

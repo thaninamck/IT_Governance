@@ -35,6 +35,12 @@ Route::prefix('v1')->group(function () {
 });
 
 Route::prefix('v1')->group(function () { 
+    Route::controller(LayerController::class)->group(function () {
+        Route::delete('/deletelayer/{id}', 'deleteLayer');
+    });
+});
+
+Route::prefix('v1')->group(function () { 
     Route::controller(SourceController::class)->group(function () {
         Route::get('/getsources', 'index');
     });
@@ -43,6 +49,11 @@ Route::prefix('v1')->group(function () {
 Route::prefix('v1')->group(function () { 
     Route::controller(SourceController::class)->group(function () {
         Route::post('/createsource', 'store');
+    });
+});
+Route::prefix('v1')->group(function () { 
+    Route::controller(SourceController::class)->group(function () {
+        Route::delete('/deletesource/{id}', 'deleteSource');
     });
 });
 
@@ -55,6 +66,11 @@ Route::prefix('v1')->group(function () {
 Route::prefix('v1')->group(function () { 
     Route::controller(TypeController::class)->group(function () {
         Route::post('/createctrltype', 'store');
+    });
+});
+Route::prefix('v1')->group(function () { 
+    Route::controller(TypeController::class)->group(function () {
+        Route::delete('/deletetype/{id}', 'deleteType');
     });
 });
 

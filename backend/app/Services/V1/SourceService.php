@@ -17,6 +17,12 @@ class SourceService
     }
     public function createSource(string $name):Source
     {
+        // Vérifier si une csource avec le même nom existe déjà (en ignorant la casse)
+        $existingSource = Source::whereRaw('LOWER(name) = ?', [strtolower($name)])->first();
+
+        if ($existingSource) {
+            throw new \Exception("Une source avec le même nom existe déjà.");
+        }
         return $this->sourceRepository->createSource($name);
     }
     public function deleteSource(int $id) :?string

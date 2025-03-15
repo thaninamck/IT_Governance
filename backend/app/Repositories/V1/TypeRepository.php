@@ -23,13 +23,13 @@ class TypeRepository
 
     public function deleteType(int $id): ?string
     {
-        $ $type=Type::find($id);
-        if(!$ $type){
+        $type=Type::find($id);
+        if(!$type){
             return null;
         }
         $name= $type->name;
         $type->delete();
 
-        return $type;
+        return $name;
     }
 }
