@@ -60,6 +60,7 @@ function Matrix({ data, userRole, onRowClick }) {
     ],
   };
 
+  const [controlModified,stControlModified]=useState(false);
   const [flattenedData, setFlattenedData] = useState([]);
   const transformData = (data) => {
     const result = [];
@@ -101,6 +102,7 @@ function Matrix({ data, userRole, onRowClick }) {
                 riskOwner: riskOwner,
                 controlCode: control.id,
                 controlDescription: control.description,
+                controlModified:controlModified,
                 majorProcess: control.majorProcess,
                 subProcess: control.subProcess,
                 type: control.type,
