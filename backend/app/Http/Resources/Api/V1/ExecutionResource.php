@@ -41,6 +41,9 @@ class ExecutionResource extends JsonResource
             'layerName' => $this->layer_name,
             'systemId' => $this->system_id,
             'systemName' => $this->system_name,
+            'systemOwner' => $this->system_owner_full_name,
+            'systemOwnerEmail' => $this->system_owner_email,
+
             'userId' => $this->user_id,
             'userFullName' => $this->user_full_name,
         ];

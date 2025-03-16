@@ -8,24 +8,25 @@ use Illuminate\Support\Facades\DB;
 class ExecutionRepository
 {
 
-    public function createExecution(array $executionData){
+    public function createExecution(array $executionData)
+    {
         $statusId = Status::where('status_name', 'en attente')->value('id');
 
-            return Execution::create([
-                'control_id' => $executionData['controlId'],
-                'cntrl_modification' => $executionData['controlDescription'],
-                'control_owner' => $executionData['controlOwner'],
-                'user_id' => $executionData['controlTester'],
-                'mission_id' => $executionData['missionId'],
-              'status_id' => $statusId,
-            ]);
-        
+        return Execution::create([
+            'control_id' => $executionData['controlId'],
+            'cntrl_modification' => $executionData['controlDescription'],
+            'control_owner' => $executionData['controlOwner'],
+            'user_id' => $executionData['controlTester'],
+            'mission_id' => $executionData['missionId'],
+            'status_id' => $statusId,
+        ]);
+
     }
 
 
-public function getExecutionsByMission($missionId)
-{
-    return DB::select("
+    public function getExecutionsByMission($missionId)
+    {
+        return DB::select("
         SELECT 
             e.id AS execution_id, 
             e.cntrl_modification AS execution_modification,
@@ -38,23 +39,31 @@ public function getExecutionsByMission($missionId)
             st.status_name,
             st.id AS status_id,
             m.id AS mission_id, 
-            m.mission_name,
+            mission_name,
+
             c.id AS control_id, 
             c.description AS control_description,
-            c.code AS control_code,
+        c.code AS control_code,
             cov.id AS coverage_id,
             cov.risk_id AS coverage_risk_id,
             cov.layer_id AS coverage_layer_id,
+
             r.id AS risk_id,
             r.name AS risk_name,
             r.code AS risk_code,
             r.description AS risk_description,
+
             l.id AS layer_id,
             l.name AS layer_name,
+
             s.id AS system_id,
             s.name AS system_name,
+            o.full_name AS system_owner_full_name,
+            o.email AS system_owner_email,
+            
             u.id AS user_id,
             CONCAT(u.first_name, ' ', u.last_name) AS user_full_name
+
         FROM public.executions e
         JOIN public.missions m ON m.id = e.mission_id
         JOIN public.controls c ON c.id = e.control_id
@@ -64,8 +73,10 @@ public function getExecutionsByMission($missionId)
         JOIN public.systems s ON l.system_id = s.id
         JOIN public.users u ON e.user_id = u.id
         JOIN public.statuses st ON e.status_id = st.id
-        WHERE m.id = ?", [$missionId]
-    );
-}
+        JOIN public.owners o ON s.owner_id = o.id
+        WHERE m.id = ?",
+            [$missionId]
+        );
+    }
 
 }
