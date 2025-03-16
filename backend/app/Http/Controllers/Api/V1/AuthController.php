@@ -11,10 +11,17 @@ use App\Models\Setting;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
-
+use App\Services\RecaptchaService;
 use Illuminate\Support\Facades\Validator;
 class AuthController extends BaseController
 {
+
+    protected $recaptchaService;
+
+    public function __construct(RecaptchaService $recaptchaService)
+    {
+        $this->recaptchaService = $recaptchaService;
+    }
     public function login(Request $request)
     {
         try {
@@ -23,7 +30,7 @@ class AuthController extends BaseController
             $rules = [
                 'email' => 'required|email',
                 'password' => 'required',
-                //'captchaValue' => 'required'
+                // 'captchaValue' => 'required'
             ];
 
             if (isset($settings['password_min_length'])) {
@@ -40,22 +47,10 @@ class AuthController extends BaseController
                 return $this->sendError("Validation of data failed", $validator->errors());
             }
 
-            /*
-             $recaptchaSecret = env('RECAPTCHA_SECRET');
-             $recaptchaResponse = $request->input('captchaValue');
-
-             $verify = Http::withoutVerifying()->asForm()->post('https://www.google.com/recaptcha/api/siteverify', [
-                 'secret' => $recaptchaSecret,
-                 'response' => $recaptchaResponse,
-                 'remoteip' => $request->ip(),
-             ]);
-             
-
-             $recaptchaData = $verify->json();
-             \Log::info('reCAPTCHA Response:', $recaptchaData);
-             if (!$recaptchaData['success']) {
-                 return $this->sendError("Recaptcha verification failed", ["recaptcha" => ["Invalid reCAPTCHA response"]]);
-             }*/
+            // $recaptchaData = $this->recaptchaService->verify($request);
+            // if (!$recaptchaData) {
+            // return $this->sendError("Recaptcha verification failed", ["recaptcha" => ["Invalid reCAPTCHA response"]]);
+            // }
 
             $user = User::where('email', $request->email)->first();
             if (!$user || !Hash::check($request->password, $user->password)) {
@@ -64,15 +59,14 @@ class AuthController extends BaseController
 
             $user->update(["last_activity" => now()]);
 
-            
-            $token = $user->createToken($user->first_name)->plainTextToken;
-
+            // 🔹 Générer un token d'accès (Access Token)
+            $accessToken = $user->createToken($user->first_name)->plainTextToken;
 
             return $this->sendResponse([
-                'token' => $token,
+                'token' => $accessToken,
                 'user' => new UserResource($user),
                 'must_change_password' => $user->must_change_password
-            ], 'Logged in succesfully!');
+            ], 'Logged in successfully!');
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
@@ -85,15 +79,16 @@ class AuthController extends BaseController
 
 
 
+
     public function logout(Request $request)
     {
         $user = $request->user();
 
+        $request->user()->tokens()->delete();
 
-
-        $user->tokens()->delete();
-        return $this->sendResponse('logged out', 'Logged out succesfully');
+        return $this->sendResponse('Logged out successfully', 'Logged out successfully');
     }
+
 
 
 
@@ -139,7 +134,7 @@ class AuthController extends BaseController
         $validator = Validator::make($request->all(), $rules);
 
         if ($validator->fails()) {
-            return $this->sendError("Validation of data failed", $validator->errors(), 422);
+            return $this->sendError("Aucun utilisateur trouvé avec cette addresse veuillez introduire une addresse valide", $validator->errors(), 422);
         }
         $result = [
             'success' => true,
@@ -156,30 +151,30 @@ class AuthController extends BaseController
             // Validation des entrées
             $request->validate([
                 'email' => 'required|email|exists:users,email',
-                'code' => 'required|string|size:4', // `size:4` au lieu de `min:4|max:4`
+                'code' => 'required|digits:4',
             ]);
-    
+
             DB::beginTransaction(); // Démarrer une transaction
-    
+
             // Supprimer d'anciens codes pour cet email
             DB::table('password_reset_tokens')->where('email', $request->email)->delete();
-    
+
             // Insérer le nouveau code
             DB::table('password_reset_tokens')->insert([
                 'email' => $request->email,
                 'token' => $request->code,
                 'created_at' => Carbon::now(),
             ]);
-    
+
             DB::commit(); // Valider la transaction
-    
+
             return $this->sendResponse(['Reset code stored successfully.'], 'Reset code stored successfully.');
         } catch (\Throwable $th) {
             DB::rollBack(); // Annuler la transaction en cas d'erreur
             return $this->sendError('An error occurred while storing the reset code.', ['error' => $th->getMessage()], 500);
         }
     }
-    
+
 
 
 
@@ -187,7 +182,7 @@ class AuthController extends BaseController
     {
         $request->validate([
             'email' => 'required|email|exists:users,email',
-            'code' => 'required|string|min:4|max:4',
+            'code' => 'required|digits:4',
         ]);
 
         $exists = DB::table('password_reset_tokens')
@@ -197,8 +192,10 @@ class AuthController extends BaseController
             ->exists();
 
         if (!$exists) {
-            return $this->sendError('Invalid or expired code', []);
+            return $this->sendError('Code expiré ou invalide', []);
         }
+        // Supprimer le code après utilisation
+        DB::table('password_reset_tokens')->where('email', $request->email)->delete();
 
         return $this->sendResponse(['Code verified successfully.'], 'Code verified successfully.');
     }
@@ -207,43 +204,33 @@ class AuthController extends BaseController
 
     public function resetPassword(Request $request)
     {
-        
-            $rules = [
-                'email' => 'required|email|exists:users,email',
-            'code' => 'required|string|min:4|max:4',
-                'new_password' => [
-                    'required',
-                    'string',
-                    'min:12',
-                    'confirmed',
-                    'regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%_*?&])[A-Za-z\d@$!%_*?&]{12,}$/'
-                ],
-            ];
-    
-            // Validation des données
-            $validator = Validator::make($request->all(), $rules);
-    
-            if ($validator->fails()) {
-                return $this->sendError("Validation of data failed", $validator->errors(), 422);
-            }
 
-        // Vérifier si le code est correct
-        $exists = DB::table('password_reset_tokens')
-            ->where('email', $request->email)
-            ->where('token', $request->code)
-            ->exists();
+        $rules = [
+            'email' => 'required|email|exists:users,email',
+            
+            'new_password' => [
+                'required',
+                'string',
+                'min:12',
+                'confirmed',
+                'regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%_*?&])[A-Za-z\d@$!%_*?&]{12,}$/'
+            ],
+        ];
 
-        if (!$exists) {
-            return $this->sendError('Invalid reset code', []);
+        // Validation des données
+        $validator = Validator::make($request->all(), $rules);
+
+        if ($validator->fails()) {
+            return $this->sendError("Validation of data failed", $validator->errors(), 422);
         }
+
+       
 
         $user = User::where('email', $request->email)->first();
         $user->update([
             'password' => Hash::make($request->new_password),
         ]);
 
-        // Supprimer le code après utilisation
-        DB::table('password_reset_tokens')->where('email', $request->email)->delete();
 
         return $this->sendResponse(['Password reset successfully. Please log in again.'], 'Password reset successfully. Please log in again.');
     }

@@ -4,8 +4,8 @@ import SideBar from '../components/sideBar/SideBar';
 import HeaderBis from '../components/Header/HeaderBis';
 import DashboardWelcome from '../components/DashboardWelcome';
 
-
 function AdminHomePage() {
+
   return (
     <div className="flex ">
     {/* Barre latérale fixe */}

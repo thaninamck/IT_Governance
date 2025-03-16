@@ -2,13 +2,20 @@ import React, { useState } from "react";
 import InputForm from "../../components/Forms/InputForm";
 import PasswordIcon from '@mui/icons-material/Password';
 import { useNavigate } from "react-router-dom";
-
-function StepNewPassword({ onBack, email }) {
+import { useAuth } from "../../Context/AuthContext"; // Importer le contexte
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+function StepNewPassword({infos}) {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [loading, setLoading] = useState(false);
   const [passwordStrength, setPasswordStrength] = useState("");
+    const [errorMessage, setErrorMessage] = useState(""); // Gérer l'affichage des erreurs
+  
   const navigate = useNavigate();
+const firstconnection=infos.firstconnection;
+
+  // Utiliser le contexte d'authentification
+  const { changePassword, loading, error,forgotPasswordChange } = useAuth();
 
   const checkPasswordStrength = (password) => {
     const hasUpperCase = /[A-Z]/.test(password);
@@ -25,125 +32,123 @@ function StepNewPassword({ onBack, email }) {
     }
   };
 
-  const handleChangePassword = async () => {
+  const firstLoginChangePassword = async () => {
     if (!password || !confirmPassword) {
-      alert("Veuillez remplir tous les champs.");
+      setErrorMessage("Veuillez remplir tous les champs.")
       return;
     }
 
     if (password !== confirmPassword) {
-      alert("Les mots de passe ne correspondent pas.");
+      toast.error("Les mots de passe ne correspondent pas.")
+      //setErrorMessage("Les mots de passe ne correspondent pas.")
+      
       return;
     }
 
     const strength = checkPasswordStrength(password);
     if (strength === "faible") {
-      alert("Le mot de passe est trop faible. Il doit contenir au moins 12 caractères, une majuscule, une minuscule et un chiffre.");
+      toast.error("Le mot de passe est trop faible. Il doit contenir au moins 12 caractères, une majuscule, une minuscule et un chiffre.", {
+        autoClose: 8000, 
+      });
+      
       return;
     }
 
-    setLoading(true);
-
-    // try {
-    //   const response = await fetch("http://localhost:8000/api/reset-password", {
-    //     method: "POST",
-    //     headers: {
-    //       "Content-Type": "application/json",
-    //     },
-    //     body: JSON.stringify({
-    //       email,
-    //       newPassword: password,
-    //     }),
-    //   });
-
-    //   const data = await response.json();
-
-    //   if (response.ok) {
-    //     alert("Mot de passe changé avec succès !");
-    //     navigate("/login"); // Rediriger vers la page de connexion
-    //   } else {
-    //     alert(data.message || "Erreur lors du changement de mot de passe.");
-    //   }
-    // } catch (error) {
-    //   console.error("Erreur:", error);
-    //   alert("Une erreur est survenue. Veuillez réessayer.");
-    // } finally {
-    //   setLoading(false);
-    // }
+    try {
+      const data = {
+        new_password: password,
+        new_password_confirmation: confirmPassword
+      };
+      await changePassword(data); 
+      toast.success("Mot de passe changé avec succès !");
+      navigate("/login"); 
+    } catch (err) {
+      alert(err); // Affiche l’erreur retournée
+    }
   };
 
-  const getPasswordStrengthColor = () => {
-    switch (passwordStrength) {
-      case "faible":
-        return "red";
-      case "moyen":
-        return "orange";
-      case "excellent":
-        return "green";
-      default:
-        return "gray";
+
+  const ForgotPasswordChange= async () => {
+    if (!password || !confirmPassword) {
+      setErrorMessage("veuillez remplir tous les champs")
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      //toast.error("Les mots de passe ne correspondent pas.")
+
+      setErrorMessage("Les mots de passe ne correspondent pas !")
+      return;
+    }
+
+    const strength = checkPasswordStrength(password);
+    if (strength === "faible") {
+      toast.error("Le mot de passe est trop faible. Il doit contenir au moins 12 caractères, une majuscule, une minuscule et un chiffre.")
+
+     
+      return;
+    }
+
+    try {
+      const data = {
+        email:infos.email,
+        new_password: password,
+        new_password_confirmation:password
+        
+      };
+      console.log(data)
+      await forgotPasswordChange(data); // Appeler la fonction de changement de mot de passe du contexte
+      toast.success("Mot de passe changé avec succès veuillez vous reconnecter avec le nouveau mot de passe!");
+      navigate("/login"); // Rediriger vers la connexion après succès
+    } catch (err) {
+      toast.error(err);
     }
   };
 
   return (
-    <>
-      <div className='mx-6'>
-        <div className="bg-white rounded-lg shadow-lg px-12 flex flex-col items-center gap-4 py-6">
-          <PasswordIcon 
-            sx={{ color: 'var(--blue-conf)', fontSize: '4rem' }}
-            aria-label="Icône de réinitialisation de mot de passe"
-          />
-          <h1 className="text-lg md:text-xl lg:text-2xl font-semibold text-[var(--blue-menu)] text-center">
-            Nouveau mot de passe
-          </h1>
-          <p className="text-gray-600 text-center">Définissez votre nouveau mot de passe.</p>
+    <div className='mx-6'>
+      <div className="bg-white rounded-lg shadow-lg p-4 flex flex-col items-center w-1/2 justify-self-center gap-4 ">
+        <PasswordIcon sx={{ color: 'var(--blue-menu)', fontSize: '4rem' }} />
+        <h1 className="text-lg md:text-xl lg:text-2xl font-semibold text-[var(--blue-menu)] text-center">
+          Nouveau mot de passe
+        </h1>
+        <p className="text-gray-600 text-center">Définissez votre nouveau mot de passe.</p>
 
-          <InputForm 
-            type="password" 
-            label="Nouveau mot de passe" 
-            placeholder="Mot de passe" 
-            width="450px"
-            flexDirection="flex-col"
-            value={password} 
-            onChange={(e) => {
-              setPassword(e.target.value);
-              setPasswordStrength(checkPasswordStrength(e.target.value));
-            }} 
-          />
-          <div className="w-full max-w-[450px]">
-            <div className="h-2 bg-gray-200 rounded-full">
-              <div
-                className={`h-2 rounded-full`}
-                style={{
-                  width: passwordStrength === "faible" ? "33%" : passwordStrength === "moyen" ? "66%" : "100%",
-                  backgroundColor: getPasswordStrengthColor(),
-                }}
-              ></div>
-            </div>
-            <p className="text-sm mt-1">
-              <span style={{ color: getPasswordStrengthColor() }}>{passwordStrength}</span>
-            </p>
-          </div>
-          <InputForm 
-            type="password" 
-            label="Confirmer" 
-            placeholder="Confirmez le mot de passe"
-            width="450px"
-            flexDirection="flex-col"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)} 
-          />
+        <InputForm 
+          type="password" 
+          label="Nouveau mot de passe" 
+          placeholder="Mot de passe" 
+          width="450px"
+          flexDirection="flex-col"
+          value={password} 
+          onChange={(e) => {
+            setPassword(e.target.value);
+            setPasswordStrength(checkPasswordStrength(e.target.value));
+          }} 
+        />
+        <InputForm 
+          type="password" 
+          label="Confirmer" 
+          placeholder="Confirmez le mot de passe"
+          width="450px"
+          flexDirection="flex-col"
+          value={confirmPassword}
+          onChange={(e) => setConfirmPassword(e.target.value)} 
+        />
+        {errorMessage && <p className="text-red-500 mt-2">{errorMessage}</p>}
 
-          <button
-            className="w-[41%] mt-4 border-none bg-[var(--blue-conf)] hover:bg-[var(--blue-menu)] text-white font-semibold py-2 px-6 rounded-lg transition duration-300 ease-in-out text-sm md:text-base lg:text-lg"
-            onClick={handleChangePassword}
-            disabled={loading}
-          >
-            {loading ? "Changement en cours..." : "Changer le mot de passe"}
-          </button>
-        </div>
+        <button
+          className="w-[41%] mt-4 border-none bg-[var(--blue-menu)] hover:bg-[var(--blue-conf)] text-white font-medium py-2 px-6 rounded-lg transition duration-300 ease-in-out text-sm md:text-base lg:text-lg"
+          onClick={firstconnection?firstLoginChangePassword:ForgotPasswordChange}
+          disabled={loading}
+        >
+          {loading ? "Changement en cours..." : "Valider"}
+        </button>
+
+        {error && <p className="text-red-500 mt-2">{error}</p>}
+
       </div>
-    </>
+    </div>
   );
 }
 

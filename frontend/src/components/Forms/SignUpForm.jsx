@@ -2,26 +2,24 @@ import React, { useState } from "react";
 import { useNavigate } from 'react-router-dom';
 import InputForm from './InputForm';
 import './FormStyle.css';
-import Button from '../Button';
 import ReCAPTCHA from "react-google-recaptcha";
-
-function SignUpForm({ title, username, password, onUsernameChange, onPasswordChange, onSubmit }) {
+import SpinButton from '../SpinButton';
+function SignUpForm({ title, username, password, onUsernameChange, onPasswordChange, onCaptchaChange, onSubmit, errorMessage,loading }) {
   const navigate = useNavigate();
-  const [captchaValue, setCaptchaValue] = useState(null);
-  const [captchaError, setCaptchaError] = useState(false);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    setCaptchaError(!captchaValue);
-    if (!captchaValue) return;
 
-    console.log("Form Data:", { username, password, captchaValue });
+    console.log("submitting form");
+
+    onSubmit(e);
+    
   };
 
   return (
-    <form className="appForm_container_login flex flex-col items-center space-y-4" onSubmit={onSubmit}>
+    <form className="appForm_container_login flex flex-col items-center space-y-4" onSubmit={handleSubmit}>
       {/* Titre dynamique */}
-       <img src="/logo.png" alt="logo" className="h-44" />
+      <img src="/logo.png" alt="logo" className="h-44" />
 
       {/* Formulaire */}
       <InputForm
@@ -33,6 +31,7 @@ function SignUpForm({ title, username, password, onUsernameChange, onPasswordCha
         value={username}
         onChange={onUsernameChange}
       />
+
       <InputForm
         type="password"
         label=""
@@ -43,13 +42,12 @@ function SignUpForm({ title, username, password, onUsernameChange, onPasswordCha
         onChange={onPasswordChange}
       />
 
-<div className="flex justify-center">
-        <ReCAPTCHA size="normal" sitekey="6LfzaOwqAAAAAGyx4zcdwN8kT5AH6Ov891S4nS0P" onChange={setCaptchaValue} />
+      <div className="flex justify-center">
+      <ReCAPTCHA size="normal" sitekey="6LfzaOwqAAAAAGyx4zcdwN8kT5AH6Ov891S4nS0P" onChange={onCaptchaChange} />
       </div>
-      
-      {captchaError && <h5 className="mt-2 text-xs text-red-600">Veuillez compléter le reCAPTCHA !</h5>}
-      
-     
+
+      {/* Message d'erreur global */}
+      {typeof errorMessage === "string" && errorMessage && <p className="text-red-500">{errorMessage}</p>}
       {/* Lien "Mot de passe oublié ?" */}
       <div
         className="flex items-center justify-center cursor-pointer"
@@ -61,7 +59,7 @@ function SignUpForm({ title, username, password, onUsernameChange, onPasswordCha
       </div>
 
       {/* Bouton Connexion */}
-      <Button btnName="Connexion" type="submit" />
+     <SpinButton isLoading={loading}>Connexion</SpinButton>
     </form>
   );
 }

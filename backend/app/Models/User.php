@@ -26,7 +26,7 @@ class User extends Authenticatable
         'grade',
         'is_active',
         'last_activity',
-       
+       'must_change_password',
         'role', 
     ];
 
@@ -65,5 +65,6 @@ class User extends Authenticatable
     return $this->belongsToMany(Notification::class, 'notification_users')
                 ->withTimestamps();
 }
+
 
 }

@@ -1,8 +1,13 @@
 <?php
 
+use App\Http\Controllers\Api\V1\ExecutionController;
 use App\Http\Middleware\AdminMiddleware;
+
 use App\Http\Middleware\ApiAuthenticate;
 use App\Http\Middleware\CheckPasswordReset;
+use App\Http\Middleware\ManagerMiddleware;
+use App\Http\Middleware\SupervisorMiddleware;
+use App\Http\Middleware\TesterMiddleware;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\V1\UserController;
 use App\Http\Controllers\Api\V1\ControlController;
@@ -77,6 +82,35 @@ Route::middleware(['auth:sanctum', AdminMiddleware::class])
 
 
 
+
+    Route::middleware(['auth:sanctum', ManagerMiddleware::class, AdminMiddleware::class])
+    ->prefix('v1')
+    ->group(function () {
+        // ExecutionController Routes
+        Route::controller(ExecutionController::class)->group(function () {
+            Route::post('/insert-executions', 'createExecutions');
+            Route::get('/missions/{mission}/executions', 'getExecutionsByMission');
+        });
+
+        // MissionController Routes
+        Route::controller(MissionController::class)->group(function () {
+            Route::get('/missions/{mission}/members', 'getMembersByMission');
+        });
+    });
+
+
+    Route::middleware(['auth:sanctum', SupervisorMiddleware::class, ManagerMiddleware::class, AdminMiddleware::class])
+    ->prefix('v1')
+    ->group(function () {
+        //
+    });
+
+    Route::middleware(['auth:sanctum', TesterMiddleware::class, AdminMiddleware::class, SupervisorMiddleware::class])
+    ->prefix('v1')
+    ->group(function () {
+        //
+    });
+
 Route::post('/login', [AuthController::class, 'login'])->middleware(CheckPasswordReset::class);
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
 Route::post('/changePassword', [AuthController::class, 'forceUpdatePassword'])->middleware('auth:sanctum');
@@ -84,4 +118,8 @@ Route::post('/check-email', [AuthController::class, 'checkEmailExists']);
 Route::post('/store-reset-code', [AuthController::class, 'storeResetCode']);
 Route::post('/verify-reset-code', [AuthController::class, 'verifyResetCode']);
 Route::post('/reset-password', [AuthController::class, 'resetPassword']);
+
+// Route::post('/insert-executions', [ExecutionController::class, 'createExecutions'])->middleware(ManagerMiddleware::class,'auth:sanctum');
+//Route::get('/missions/{mission}/executions', [ExecutionController::class, 'getExecutionsByMission'])->middleware(ManagerMiddleware::class,'auth:sanctum');
+//Route::get('/missions/{mission}/members', [MissionController::class, 'getMembersByMission']);
 

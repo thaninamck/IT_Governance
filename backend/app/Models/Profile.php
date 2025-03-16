@@ -8,4 +8,6 @@ class Profile extends Model
 {
     use HasFactory;
     protected $fillable=['profile_name'];
+    
+
 }

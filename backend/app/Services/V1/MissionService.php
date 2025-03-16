@@ -20,6 +20,37 @@ class MissionService
     {
         return $this->missionRepository->getAllMissions();
     }
+    public function getMembersByMission($missionId)
+{
+    $mission = $this->missionRepository->getMembersByMission($missionId);
+
+    if (!$mission) {
+        return null; // ou lancer une exception
+    }
+
+    return [
+        'id' => $mission->id,
+        'mission_name' => $mission->mission_name,
+        'start_date' => $mission->start_date,
+        'end_date' => $mission->end_date,
+        'client_id' => $mission->client_id,
+        'status_id' => $mission->status_id,
+        'members' => $mission->participations->map(function ($participation) {
+            return [
+                'id' => $participation->user->id,
+                'first_name' => $participation->user->first_name,
+                'last_name' => $participation->user->last_name,
+                'email' => $participation->user->email,
+                'profile' => [
+                    'id' => $participation->profile->id,
+                    'profile_name' => $participation->profile->profile_name
+                ]
+            ];
+        })->toArray()
+    ];
+}
+
+
 
     public function createMission(array $data): Mission
     {

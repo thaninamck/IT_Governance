@@ -97,7 +97,7 @@ const Workplan = () => {
   };
 
   // Fonction pour ajouter un risque dans une couche spécifique de l'application courante
-  const addRiskToLayer = (idLayer, riskID, riskName, riskDescription) => {
+  const addRiskToLayer = (idLayer, riskID, riskName, riskDescription,riskCode) => {
     if (!application) return; // Vérifie qu'une application existe
 
     setApplication((prevApp) => ({
@@ -110,7 +110,7 @@ const Workplan = () => {
                         ? layer.risks // Ne rien ajouter si le risque existe déjà
                         : [
                             ...layer.risks,
-                            { id: riskID, nom: riskName, description: riskDescription, owner: "", controls: [] }
+                            { id: riskID, nom: riskName,code:riskCode ,description: riskDescription, owner: "", controls: [] }
                         ],
                 }
                 : layer
@@ -119,7 +119,7 @@ const Workplan = () => {
 };
 
 
-  const addControlToRisk = (idLayer, idRisk, cntrlID, cntrlDescription, majorProcess, subProcess,  testScript,type) => {
+  const addControlToRisk = (idLayer, idRisk, cntrlID, cntrlDescription, majorProcess, subProcess,  testScript,type,code) => {
     if (!application) return; // Vérifie qu'une application existe
 
     setApplication((prevApp) => ({
@@ -143,7 +143,7 @@ const Workplan = () => {
                                             subProcess, 
                                             type,
                                             testScript,
-                                            
+                                            code,
 
                                             owner: "" 
                                         }
@@ -183,7 +183,7 @@ const Workplan = () => {
   const onRiskDragStart = (event, items) => {
     console.log(items);
     event.dataTransfer.setData("application/json", JSON.stringify(items));
-    console.log("risks dragged here");
+    console.log("risks dragged here",items);
   };
 
   const handleAddAppClick = () => {
@@ -219,7 +219,6 @@ const Workplan = () => {
       console.warn("Dropped data is not an array of risks");
       return;
     }
-  
     risksData.forEach((riskData, index) => {
       const isRisk = riskData && "idRisk" in riskData;
       if (!isRisk) {
@@ -232,7 +231,7 @@ const Workplan = () => {
         return;
       }
   
-      addRiskToLayer(layerId, riskData.idRisk, riskData.nom, riskData.description);
+      addRiskToLayer(layerId, riskData.idRisk, riskData.nom, riskData.description,riskData.code);
       const x = event.clientX;
       const y = event.clientY + index * 50; // Adjust position for each risk
   
@@ -321,7 +320,8 @@ const Workplan = () => {
         controlData.majorProcess,
         controlData.subProcess,
         controlData.testScript,
-        controlData.type
+        controlData.type,
+        controlData.code
       );
     });
   };
@@ -489,7 +489,7 @@ const Workplan = () => {
 
       <div className="bg-white  min-h-screen p-2 text-center">
         
-        <Matrix data={dataStructure}></Matrix>
+        <Matrix  data={dataStructure}></Matrix>
       </div>
     </main>
   );

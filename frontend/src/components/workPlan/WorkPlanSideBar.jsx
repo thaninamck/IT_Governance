@@ -16,18 +16,18 @@ const applications = [
 ];
 
 const risks = [
-  { idRisk: "1", description: "furfuzirfyzuf iuzyfoz ruozc furfuzirfyzuf iuzyfoz ruozc ojfyt yth iof ojfyt yth iof ",nom:"SDLC requirements are not exist or are not conducted." },
-  { idRisk: "2", description: "furfuzirfyzuf iuzyfoz ruozc ojfyt yth iof furfuzirfyzuf iuzyfoz ruozc ojfyt yth iof furfuzirfyzuf iuzyfoz ruozc ojfyt yth iof",nom:"SDLC requirements are not exist or are not conducted." },
-  { idRisk: "3", description: "furfuzirfyzuf iuzyfoz ruozc ojfyt yth iof furfuzirfyzuf iuzyfoz ruozc ojfyt yth iof furfuzirfyzuf iuzyfoz ruozc ojfyt yth iof" ,nom:"SDLC requirements are not exist or are not conducted."},
-  { idRisk: "4", description: "furfuzirfyzuf iuzyfoz ruozc ojfyt yth iof furfuzirfyzuf iuzyfoz ruozc ojfyt yth iof furfuzirfyzuf iuzyfoz ruozc ojfyt yth iof" ,nom:"SDLC requirements are not exist or are not conducted."},
+  { idRisk: "1", description: "alala ",nom:"alalal" ,code:"R12"},
+  { idRisk: "2", description: "furfuzirfyzuf iuzyfoz ruozc ojfyt yth iof furfuzirfyzuf iuzyfoz ruozc ojfyt yth iof furfuzirfyzuf iuzyfoz ruozc ojfyt yth iof",nom:"SDLC requirements are not exist or are not conducted.",code:"R12" },
+  { idRisk: "3", description: "furfuzirfyzuf iuzyfoz ruozc ojfyt yth iof furfuzirfyzuf iuzyfoz ruozc ojfyt yth iof furfuzirfyzuf iuzyfoz ruozc ojfyt yth iof" ,nom:"SDLC requirements are not exist or are not conducted.",code:"R12"},
+  { idRisk: "4", description: "furfuzirfyzuf iuzyfoz ruozc ojfyt yth iof furfuzirfyzuf iuzyfoz ruozc ojfyt yth iof furfuzirfyzuf iuzyfoz ruozc ojfyt yth iof" ,nom:"SDLC requirements are not exist or are not conducted.",code:"R12"},
 
 ];
 
 const controls = [
-  { idCntrl: "4", description: "Duties and areas of responsibility are separated, in order to reduce opportunities for unauthorized modification... ..." ,majorProcess:"Technical",subProcess:"Acess control",type:"préventif",testScript:"1. Obtain the access management policy,1.1. Ensure that the policy is validated, signed 2. Obtain HR list of departures during the......."},
-  { idCntrl: "5", description: "Duties and areas of responsibility are separated, in order to reduce opportunities for unauthorized modification... ...",majorProcess:"Technical",subProcess:"Acess control",type:"détectif",testScript:"1. Obtain the access management policy,1.1. Ensure that the policy is validated, signed 2. Obtain HR list of departures during the......." },
-  { idCntrl: "6", description: "Duties and areas of responsibility are separated, in order to reduce opportunities for unauthorized modification... ..." ,majorProcess:"Technical",subProcess:"Acess control",type:"correctif",testScript:"1. Obtain the access management policy,1.1. Ensure that the policy is validated, signed 2. Obtain HR list of departures during the......." },
-  { idCntrl: "7", description: "Duties and areas of responsibility are separated, in order to reduce opportunities for unauthorized modification... ..." ,majorProcess:"Technical",subProcess:"Acess control",type:"préventif",testScript:"1. Obtain the access management policy,1.1. Ensure that the policy is validated, signed 2. Obtain HR list of departures during the......." },
+  { idCntrl: "1", description: "Duties and areas of responsibility are separated, in order to reduce opportunities for unauthorized modification... ..." ,majorProcess:"Technical",subProcess:"Acess control",type:"préventif",testScript:"1. Obtain the access management policy,1.1. Ensure that the policy is validated, signed 2. Obtain HR list of departures during the.......",code:"C12"},
+  { idCntrl: "2", description: "Duties and areas of responsibility are separated, in order to reduce opportunities for unauthorized modification... ...",majorProcess:"Technical",subProcess:"Acess control",type:"détectif",testScript:"1. Obtain the access management policy,1.1. Ensure that the policy is validated, signed 2. Obtain HR list of departures during the.......",code:"C12" },
+  { idCntrl: "3", description: "Duties and areas of responsibility are separated, in order to reduce opportunities for unauthorized modification... ..." ,majorProcess:"Technical",subProcess:"Acess control",type:"correctif",testScript:"1. Obtain the access management policy,1.1. Ensure that the policy is validated, signed 2. Obtain HR list of departures during the.......",code:"C12" },
+  { idCntrl: "4", description: "Duties and areas of responsibility are separated, in order to reduce opportunities for unauthorized modification... ..." ,majorProcess:"Technical",subProcess:"Acess control",type:"préventif",testScript:"1. Obtain the access management policy,1.1. Ensure that the policy is validated, signed 2. Obtain HR list of departures during the.......",code:"C12" },
 
 ];
 
