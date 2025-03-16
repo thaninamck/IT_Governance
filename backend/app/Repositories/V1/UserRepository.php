@@ -15,20 +15,21 @@ class UserRepository
         return User::create($data);
     }
 
-    public function resetUser(int $id): ?User
-    {
-        $user = User::find($id);
+    public function resetUser(int $id, string $password): ?User
+{
+    $user = User::find($id);
 
-        if (!$user) {
-            return null;
-        }
-
-        $user->must_change_password = true;
-        $user->save();
-
-        return $user;
+    if (!$user) {
+        return null;
     }
 
+    // 🔹 Mettre à jour le mot de passe (hashé)
+    $user->password = $password;
+    $user->must_change_password = true;
+    $user->save();
+
+    return $user;
+}
     public function blockUser(int $id): ?User
     {
         $user = User::find($id);

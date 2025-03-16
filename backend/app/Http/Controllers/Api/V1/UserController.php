@@ -107,29 +107,42 @@ class UserController extends BaseController
     }
 
 
-    public function resetUser($id): JsonResponse
-    {
-        try {
-            $response = $this->userService->resetUser($id);
 
-            if ($response) {
-                $this->logService->logUserAction(
-                    auth()->user()->email ?? 'Unknown',
-                    'Admin',
-                    "Réinitialisation d'un utilisateur: {$response['email']}",
-                    " "
-                );
-                return $this->sendResponse([
-                    'message' => 'User reset successfully',
+public function resetUser(Request $request, $id): JsonResponse
+{
+    try {
+        // 🔹 Validation des données
+        $validator = Validator::make($request->all(), [
+            'new_password' => 'required|string',
+        ]);
 
-                ], "User reset successfully");
-            } else {
-                return $this->sendError("User not found or cannot be reset", [], 404);
-            }
-        } catch (\Exception $e) {
-            return $this->sendError("An error occurred", ['error' => $e->getMessage()], 500);
+        if ($validator->fails()) {
+            return $this->sendError("Validation error", $validator->errors(), 422);
         }
+
+        $newPassword = $request->input('new_password');
+
+        // 🔹 Appel du service avec le mot de passe validé
+        $response = $this->userService->resetUser($id, $newPassword);
+
+        if ($response) {
+            $this->logService->logUserAction(
+                auth()->user()->email ?? 'Unknown',
+                'Admin',
+                "Réinitialisation d'un utilisateur: {$response['email']}",
+                " "
+            );
+            return $this->sendResponse([
+                'message' => 'User reset successfully',
+            ], "User reset successfully");
+        } else {
+            return $this->sendError("User not found or cannot be reset", [], 404);
+        }
+    } catch (\Exception $e) {
+        return $this->sendError("An error occurred", ['error' => $e->getMessage()], 500);
     }
+}
+
 
 
 

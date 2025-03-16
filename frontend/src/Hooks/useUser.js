@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import { api } from "../Api"; // Importer l'instance Axios pour les requêtes authentifiées
 import { useAuth } from "../Context/AuthContext"; // Importer le contexte d'authentification
 import { toast } from "react-toastify";
+import emailjs from 'emailjs-com';
+
 const useUser = () => {
   const { token, user } = useAuth(); // Récupérer le token et les informations de l'utilisateur
   const [filteredRows, setFilteredRows] = useState([]);
@@ -9,7 +11,11 @@ const useUser = () => {
   const [error, setError] = useState(null); // État pour gérer les erreurs
   const [selectedAppId, setSelectedAppId] = useState(null);
   const [isDeletePopupOpen, setIsDeletePopupOpen] = useState(false);
+  const [ResetShow, setResetShow] = useState(false);
 
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+const [snackbarMessage, setSnackbarMessage] = useState("");
+const [snackbarSeverity, setSnackbarSeverity] = useState("success"); // "success", "error", "warning", "info"
   const fetchUsers = async () => {
     setLoading(true);
     setError(null);
@@ -69,6 +75,64 @@ const confirmDeleteApp = async () => {
 
 
   
+const generateRandomPassword = () => {
+  const length = 10;
+  const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+  let password = "";
+  for (let i = 0; i < length; i++) {
+    password += charset.charAt(Math.floor(Math.random() * charset.length));
+  }
+  return password;
+};
+
+const handleResetRow =  (selectedRow) => {
+  setSelectedAppId(selectedRow.id);
+   setResetShow(true);
+   console.log(selectedRow)
+  }
+
+  const handleResetConfirm = async () => {
+    if (selectedAppId !== null) {
+      const selectedUser = filteredRows.find((row) => row.id === selectedAppId);
+      if (!selectedUser) return;
+  
+      const newPassword = generateRandomPassword();
+      const userEmail = selectedUser.email;
+  
+      try {
+        setLoading(true);
+        setError(null);
+  
+        // 🔹 Appel API pour mettre à jour le mot de passe
+        await api.post(`/reset-user/${selectedAppId}`, { new_password: newPassword });
+        //await api.post(`/reset-user/${selectedAppId}`);
+        // 🔹 Envoi du mail avec le nouveau mot de passe
+        await emailjs.send(
+          'service_ft79mie',
+          'template_f4ojiam',
+          { to_email: userEmail, new_password: newPassword },
+          'oAXuwpg74dQwm0C_s'
+        );
+  
+        setFilteredRows(prevRows =>
+          prevRows.map(row =>
+            row.id === selectedAppId ? { ...row, password: newPassword } : row
+          )
+        );
+  
+        toast.success("Mot de passe réinitialisé avec succès !");
+      } catch (error) {
+        console.error("Erreur lors de la réinitialisation :", error);
+        toast.error("Échec de la réinitialisation du mot de passe.");
+      } finally {
+        setLoading(false);
+        setSnackbarOpen(true);
+        setResetShow(false);
+        setSelectedAppId(null);
+      }
+    }
+  };
+  
 
  
 
@@ -85,7 +149,16 @@ const confirmDeleteApp = async () => {
     isDeletePopupOpen,
     setIsDeletePopupOpen,
     confirmDeleteApp,
-    
+    ResetShow,
+    setResetShow,
+    snackbarMessage,
+    setSnackbarMessage,
+    snackbarOpen,
+    setSnackbarOpen,
+    snackbarSeverity,
+    setSnackbarSeverity,
+    handleResetRow,
+    handleResetConfirm,
     filteredRows,
     setFilteredRows,
     loading,

@@ -12,7 +12,6 @@ import { SquarePen } from 'lucide-react';
 import ExportButton from '../components/ExportButton';
 import PopUp from '../components/PopUps/PopUp';
 import DecisionPopUp from '../components/PopUps/DecisionPopUp';
-import emailjs from 'emailjs-com';
 import RestartAltIcon from '@mui/icons-material/RestartAlt';
 import { PermissionRoleContext } from '../Context/permissionRoleContext';
 import { Snackbar } from '@mui/material';
@@ -20,7 +19,8 @@ import useUser from '../Hooks/useUser';
 function GestionUtilisateur() {
 const {filteredRows,setFilteredRows,loading,
   handleDeleteRow,selectedAppId,setSelectedAppId
-  ,isDeletePopupOpen,setIsDeletePopupOpen,confirmDeleteApp}=useUser();
+  ,isDeletePopupOpen,setIsDeletePopupOpen,confirmDeleteApp,
+snackbarMessage,setSnackbarMessage,snackbarOpen,setSnackbarOpen,snackbarSeverity,setSnackbarSeverity,ResetShow,setResetShow,handleResetRow,handleResetConfirm}=useUser();
     // Configuration des colonnes de la table
   const columnsConfig2 = [
     //{ field: 'utilisateur', headerName: 'Utilisateur', width: 180, editable: false },
@@ -44,11 +44,7 @@ const {filteredRows,setFilteredRows,loading,
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [selectedApp, setSelectedApp] = useState(null);
-  const [ResetShow, setResetShow] = useState(false);
 
-  const [snackbarOpen, setSnackbarOpen] = useState(false);
-const [snackbarMessage, setSnackbarMessage] = useState("");
-const [snackbarSeverity, setSnackbarSeverity] = useState("success"); // "success", "error", "warning", "info"
 
    // Accédez à userRole et setUserRole via le contexte
    const { userRole, setUserRole } = useContext(PermissionRoleContext);
@@ -96,63 +92,7 @@ const confirmDeleteApp = () => {
    setSelectedAppId(null);
 };*/
 
-const generateRandomPassword = () => {
-  const length = 10;
-  const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-  let password = "";
-  for (let i = 0; i < length; i++) {
-    password += charset.charAt(Math.floor(Math.random() * charset.length));
-  }
-  return password;
-};
 
-const handleResetRow =  (selectedRow) => {
-  setSelectedAppId(selectedRow.id);
-   setResetShow(true);
-   console.log(selectedRow)
-  }
-
-  const handleResetConfirm = async () => {
-    if (selectedAppId !== null) {
-      const selectedUser = filteredRows.find((row) => row.id === selectedAppId);
-      if (!selectedUser) return;
-  
-      const newPassword = generateRandomPassword();
-      const userEmail = selectedUser.email;
-  
-      try {
-        await emailjs.send(
-          'service_ft79mie',
-          'template_f4ojiam',
-          { to_email: userEmail, new_password: newPassword },
-          'oAXuwpg74dQwm0C_s'
-        );
-  
-        setFilteredRows(prevRows =>
-          prevRows.map(row =>
-            row.id === selectedAppId ? { ...row, password: newPassword } : row
-          )
-        );
-
-      setSnackbarMessage("Un nouveau mot de passe a été envoyé à l'adresse email.");
-      setSnackbarSeverity("success");
-  
-       // alert('Un nouveau mot de passe a été envoyé à l\'adresse email.');
-        
-       // setTimeout(() => setSelectedAppId(null), 500); // Évite d'effacer trop tôt
-  
-      } catch (error) {
-        console.error('Erreur lors de l\'envoi de l\'email :', error);
-       // alert('Une erreur est survenue.');
-       setSnackbarMessage("Une erreur est survenue lors de l'envoi de l'email.");
-      setSnackbarSeverity("error");
-      }
-  
-      setSnackbarOpen(true);
-      setResetShow(false);
-      setSelectedAppId(null);
-    }
-  };
   
 const rowActions = [
   { icon: <PersonOutlineRounded sx={{ marginRight: "8px" }} />, label: "Voir Profile", onClick: handleEditRow },

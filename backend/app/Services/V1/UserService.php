@@ -25,9 +25,10 @@ class UserService
         return $this->userRepository->createUser($data);
     }
 
-    public function resetUser($id)
+    public function resetUser($id, $password)
 {
-    $user = $this->userRepository->resetUser($id);
+    // 🔹 Appeler le repo avec l'ID et le nouveau mot de passe
+    $user = $this->userRepository->resetUser($id, $password);
 
     if ($user) {
         return ['email' => $user->email]; 
@@ -35,6 +36,7 @@ class UserService
 
     return null;
 }
+
 
     public function blockUser($id)
     {
