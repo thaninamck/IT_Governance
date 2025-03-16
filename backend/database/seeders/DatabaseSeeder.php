@@ -5,6 +5,8 @@ use App\Models\Setting;
 
 use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use Database\Factories\LayerFactory;
+use Database\Factories\SystemFactory;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -26,6 +28,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
 
             SourceSeeder::class,
+SystemSeeder::class,
 
             RiskSeeder::class,
 

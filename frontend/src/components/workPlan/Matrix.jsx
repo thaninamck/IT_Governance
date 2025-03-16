@@ -60,7 +60,9 @@ function Matrix({ data, userRole, onRowClick }) {
     ],
   };
 
-  const [controlModified,stControlModified]=useState(false);
+  const [controlModified,setControlModified]=useState(false);
+  const [riskModified,setRiskModified]=useState(false);
+
   const [flattenedData, setFlattenedData] = useState([]);
   const transformData = (data) => {
     const result = [];
@@ -79,7 +81,8 @@ function Matrix({ data, userRole, onRowClick }) {
         const layerName = layer.name;
   
         layer.risks.forEach((risk) => {
-          const riskCode = risk.id;
+          const riskId=risk.id;
+          const riskCode = risk.code;
           const riskName = risk.nom;
           const riskDescription = risk.description;
           const riskOwner = risk.owner;
@@ -94,13 +97,17 @@ function Matrix({ data, userRole, onRowClick }) {
               result.push({
                 id: uniqueId,
                 application: appName,
+                layerId:layer.id,
                 applicationLayer: layerName,
                 applicationOwner: appOwner,
-                riskCode: riskCode,
+                riskId: riskId,
+                riskCode:riskCode,
                 riskName: riskName,
                 riskDescription: riskDescription,
+                riskModified:riskModified,
                 riskOwner: riskOwner,
-                controlCode: control.id,
+                controlId: control.id,
+                controlCode:control.code,
                 controlDescription: control.description,
                 controlModified:controlModified,
                 majorProcess: control.majorProcess,
@@ -145,14 +152,14 @@ const mergeData = (newData, existingData) => {
 };
 
 // Charger les données depuis localStorage au montage du composant
-// useEffect(() => {
-//   const savedData = localStorage.getItem("flattenedData");
-//   if (savedData) {
-//     const parsedData = JSON.parse(savedData);
-//     setFlattenedData(parsedData); // Mettre à jour flattenedData avec les données sauvegardées
-//     console.log("savedData", parsedData); // Vérifier les données chargées
-//   }
-// }, []);
+ useEffect(() => {
+   const savedData = localStorage.getItem("flattenedData");
+  if (savedData) {
+     const parsedData = JSON.parse(savedData);
+    setFlattenedData(parsedData); // Mettre à jour flattenedData avec les données sauvegardées
+     console.log("savedData", parsedData); // Vérifier les données chargées
+   }
+ }, []);
 
 // Mettre à jour flattenedData lorsque data change
 useEffect(() => {
@@ -288,10 +295,27 @@ useEffect(() => {
   const navigate = useNavigate();
 
   const handleSave = () => {
-    console.log("sending data to backend", flattenedData);
-    localStorage.removeItem("flattenedData");
-    navigate("/tablemission/DSP")//pour l'instant on redirige vers la page d'accueil
-  };
+    console.log("flatteneddata", flattenedData);
+
+    const dataToSend = {
+        executions: flattenedData.map(item => ({
+            layerId: item.layerId,
+            riskId: item.riskId,
+            riskDescription: item.riskDescription,
+            riskModified: item.riskModified,
+            riskOwner: item.riskOwner,
+            controlId: item.controlId,
+            controlDescription: item.controlDescription,
+            controlModified: item.controlModified,
+            controlOwner: item.controlOwner,
+            controlTester: item.controlTester
+        }))
+    };
+
+    console.log("dataToSend", dataToSend);
+    // localStorage.removeItem("flattenedData");
+};
+
 
   // Gestion des cases à cocher pour les contrôles
   const handleControlCheckboxChange = (id) => (event) => {
@@ -355,8 +379,10 @@ useEffect(() => {
     // Mettre à jour le tableau de données avec la nouvelle valeur
     setFlattenedData((prevData) => {
       const updatedData = prevData.map((row) => {
+        console.log("field",field);
         if (row.id === id) {
           row[field] = value; // Mettre à jour la cellule
+         
         }
         return row;
       });
@@ -429,7 +455,7 @@ useEffect(() => {
     : [{ field: "riskDescription",
       headerName: "Risk Description",
       width: 350,
-      editable: false}]),
+      editable: true}]),
     {
       field: "riskOwner",
       headerName: "Risk Owner",
@@ -546,22 +572,7 @@ useEffect(() => {
 
   const [editMessage, setEditMessage] = useState("");
 
-  //recherche function
-  //   const [searchResults, setSearchResults] = useState(flattenedData);
-
-  //   const searchableColumns = columns.filter((col) => col.field);
-
-
-  //   const handleSearchResults = (results) => {
-  //     setSearchResults(results);
-  //   };
-
-  // //assurer que searchResults est toujours synchronisé avec flattenedData quand data change 
-  //     useEffect(() => {
-  //       setSearchResults(flattenedData);
-  //       console.log("Flattened data updated:", flattenedData);
-  //     }, [flattenedData]);
-
+  
   const handleRowClick = (params) => {
     if (onRowClick) {
       onRowClick(params.row);
@@ -572,14 +583,10 @@ useEffect(() => {
   return (
     <>
       <div className="flex  items-center justify-start mb-6">
-        {/* <SearchBar
-  columnsConfig={searchableColumns}
-  initialRows={flattenedData}
-  onSearch={handleSearchResults}
-/> */}
+        
 
       </div>
-      {(userRole === 'admin' || userRole === 'manager') &&
+      {(true) &&
         <div className="flex items-center gap-4 justify-end my-5 mr-4 space-x-4"
           style={{ display: (userRole === 'admin' || userRole === 'manager') ? 'none' : 'flex' }}>
           {/* Label */}
@@ -723,6 +730,15 @@ useEffect(() => {
                             if (row.id === id) {
                               console.log("le row est trouvé", field);
                               row[field] = newValue; // Mettre à jour la cellule
+                              switch (field) {
+                                case 'controlDescription':
+                                  row['controlModified']=true
+                                  break;
+                               
+                                case 'riskDescription':
+                                row['riskModified']=true
+                                  break;
+                               }
                             }
                             return row;
                           });

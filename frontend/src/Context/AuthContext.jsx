@@ -10,12 +10,12 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(false); // État pour le chargement
   const [error, setError] = useState(null); // État pour les erreurs
   const navigate = useNavigate();
-useEffect(() => {
+/*useEffect(() => {
   
   if(!token||!user){
   navigate('/login');}
 }
-,[token,user]);
+,[token,user]);*/
   // 🔹 Connexion
   const loginUser = async (credentials) => {
     setLoading(true);

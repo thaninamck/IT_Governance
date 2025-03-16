@@ -11,6 +11,17 @@ class MissionRepository
         return Mission::all();
     }
 
+    public function getMembersByMission($missionId)
+{
+    $mission = Mission::with(['participations.user', 'participations.profile'])->find($missionId);
+
+   
+    
+
+    return $mission;
+}
+
+
     public function createMission(array $data):Mission
     {
         return Mission::create($data);

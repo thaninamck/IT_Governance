@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\V1\ExecutionController;
 use App\Http\Middleware\AdminMiddleware;
 
 use App\Http\Middleware\ApiAuthenticate;
@@ -86,3 +87,7 @@ Route::post('/store-reset-code', [AuthController::class, 'storeResetCode']);
 Route::post('/verify-reset-code', [AuthController::class, 'verifyResetCode']);
 Route::post('/reset-password', [AuthController::class, 'resetPassword']);
 
+
+Route::post('/insert-executions', [ExecutionController::class, 'createExecutions']);
+Route::get('/missions/{missionId}/executions', [ExecutionController::class, 'getExecutionsByMission']);
+Route::get('/missions/{missionId}/members', [MissionController::class, 'getMembersByMission']);
