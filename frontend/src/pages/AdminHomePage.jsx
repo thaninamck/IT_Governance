@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import SideBar from '../components/sideBar/SideBar';
 import HeaderBis from '../components/Header/HeaderBis';
 import DashboardWelcome from '../components/DashboardWelcome';
-import useAuth from '../Context/AuthContext'
+import {useAuth} from '../Context/AuthContext'
 
 function AdminHomePage() {
   const { verifyCode, loading } = useAuth();

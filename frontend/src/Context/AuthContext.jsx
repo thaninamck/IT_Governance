@@ -1,6 +1,6 @@
 import { createContext, useContext, useState,useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { authApi } from "../Api"; // Importer l'instance Axios pour les requêtes authentifiées
+import { authApi,api } from "../Api"; // Importer l'instance Axios pour les requêtes authentifiées
 
 const AuthContext = createContext(null);
 
@@ -113,6 +113,15 @@ authApi.interceptors.request.use((config) => {
   return config;
 });
 
+api.interceptors.request.use((config) => {
+  if (token && !publicEndpoints.includes(config.url)) {
+    config.headers.Authorization = `Bearer ${token}`; 
+    console.log("Token ajouté a request:", token);
+  } else {
+    console.log("No token added for this request:", config.url);
+  }
+  return config;
+});
 
   return (
     <AuthContext.Provider

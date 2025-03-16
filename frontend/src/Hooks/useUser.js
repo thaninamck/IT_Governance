@@ -1,77 +1,101 @@
 import { useState, useEffect } from "react";
-import { authApi } from "../Api"; // Importer l'instance Axios pour les requêtes authentifiées
+import { api } from "../Api"; // Importer l'instance Axios pour les requêtes authentifiées
 import { useAuth } from "../Context/AuthContext"; // Importer le contexte d'authentification
-
-const useClient = () => {
+import { toast } from "react-toastify";
+const useUser = () => {
   const { token, user } = useAuth(); // Récupérer le token et les informations de l'utilisateur
-  const [clients, setClients] = useState([]); // État pour stocker la liste des clients
+  const [filteredRows, setFilteredRows] = useState([]);
   const [loading, setLoading] = useState(false); // État pour gérer le chargement
   const [error, setError] = useState(null); // État pour gérer les erreurs
+  const [selectedAppId, setSelectedAppId] = useState(null);
+  const [isDeletePopupOpen, setIsDeletePopupOpen] = useState(false);
 
-  // 🔹 Récupérer la liste des clients
-  const fetchClients = async () => {
+  const fetchUsers = async () => {
     setLoading(true);
     setError(null);
     try {
-      const response = await authApi.get("/clients"); // Endpoint pour récupérer les clients
-      setClients(response.data); // Mettre à jour la liste des clients
+      const response = await api.get("/users"); // Récupération des utilisateurs depuis l'API
+      
+      // Transformation des données
+      const transformedUsers = response.data.map(user => ({
+          id: user.id,
+          nom: user.firstName, // Concaténation du nom et du prénom
+          prenom: user.firstName,
+          grade: user.grade,
+          email: user.email,
+          contact: user.phoneNumber,
+          dateField: user.createdAt.split('T')[0], // Extraction de la date sans l'heure
+          dateField1: user.lastActivity.split(' ')[0], // Extraction de la date de la dernière activité
+          status: user.isActive ? "Active" : "Bloqué"
+      }));
+
+      setFilteredRows(transformedUsers); // Mise à jour des utilisateurs dans le state
     } catch (error) {
-      setError("Erreur lors de la récupération des clients.");
-      throw error;
+      setError("Erreur lors de la récupération des utilisateurs.");
+      console.error(error);
     } finally {
       setLoading(false);
     }
-  };
+};
 
-  // 🔹 Ajouter un nouveau client
-  const addClient = async (newClient) => {
+
+const handleDeleteRow = async (selectedRow) => {
+  setSelectedAppId(selectedRow.id);
+  setIsDeletePopupOpen(true);
+};
+
+const confirmDeleteApp = async () => {
+  if (!selectedAppId) return;
+
+  try {
     setLoading(true);
     setError(null);
-    try {
-      const response = await authApi.post("/clients", newClient); // Endpoint pour ajouter un client
-      setClients((prevClients) => [...prevClients, response.data]); // Mettre à jour la liste des clients
-    } catch (error) {
-      setError("Erreur lors de l'ajout du client.");
-      throw error;
-    } finally {
-      setLoading(false);
-    }
-  };
+    await api.delete(`/user/${selectedAppId}`); // Assure-toi que l'endpoint est bien `/users/` et non `/user/`
+    setFilteredRows(prevRows => prevRows.filter(row => row.id !== selectedAppId));
+    console.log(`Utilisateur ${selectedAppId} supprimé avec succès.`);
+    toast.success("Utilisateur  supprimé avec succès")
+    
+  } catch (error) {
+    setError("Erreur lors de la suppression de l'utilisateur.");
+    console.error("Erreur lors de la suppression :", error);
+    toast.error("Utilisateur ne peut pas etre supprimé ")
 
-  // 🔹 Supprimer un client
-  const deleteClient = async (clientId) => {
-    setLoading(true);
-    setError(null);
-    try {
-      await authApi.delete(`/clients/${clientId}`); // Endpoint pour supprimer un client
-      setClients((prevClients) => prevClients.filter((client) => client.id !== clientId)); // Mettre à jour la liste des clients
-    } catch (error) {
-      setError("Erreur lors de la suppression du client.");
-      throw error;
-    } finally {
-      setLoading(false);
-    }
-  };
+  } finally {
+    setIsDeletePopupOpen(false);
+    setSelectedAppId(null);
+    setLoading(false);
+  }
+};
+
+
+  
+
+ 
 
   // 🔹 Charger les clients au montage du composant
   useEffect(() => {
-    if (token) {
-      fetchClients(); // Récupérer les clients si l'utilisateur est connecté
-    }
+    //if (token) {
+      fetchUsers(); // Récupérer les clients si l'utilisateur est connecté
+    //}
   }, [token]);
 
   return {
-    clients,
-    fetchClients,
-    addClient,
-    deleteClient,
+    selectedAppId,
+    setSelectedAppId,
+    isDeletePopupOpen,
+    setIsDeletePopupOpen,
+    confirmDeleteApp,
+    
+    filteredRows,
+    setFilteredRows,
     loading,
     error,
-    user, // Retourner les informations de l'utilisateur connecté
+    handleDeleteRow,
+    user, 
   };
 };
 
-export default useClient;
+export default useUser;
 
 /*const { clients, fetchClients, addClient, deleteClient, loading, error, user } = useClient();
 

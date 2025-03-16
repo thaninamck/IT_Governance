@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { authApi } from "../Api"; // Importer l'instance Axios
+import { toast } from "react-toastify";
 
 const useAuth = () => {
   const [loading, setLoading] = useState(false);

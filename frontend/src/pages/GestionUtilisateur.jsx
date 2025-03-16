@@ -2,6 +2,7 @@ import React, { useContext, useState } from 'react';
 import SideBar from '../components/sideBar/SideBar';
 import HeaderBis from '../components/Header/HeaderBis';
 import Table from '../components/Table';
+import Spinner from "../components/Spinner";
 
 import SearchBar from '../components/SearchBar';
 import HeaderWithAction from '../components/Header/HeaderWithAction';
@@ -15,17 +16,19 @@ import emailjs from 'emailjs-com';
 import RestartAltIcon from '@mui/icons-material/RestartAlt';
 import { PermissionRoleContext } from '../Context/permissionRoleContext';
 import { Snackbar } from '@mui/material';
-
+import useUser from '../Hooks/useUser';
 function GestionUtilisateur() {
-
+const {filteredRows,setFilteredRows,loading,
+  handleDeleteRow,selectedAppId,setSelectedAppId
+  ,isDeletePopupOpen,setIsDeletePopupOpen,confirmDeleteApp}=useUser();
     // Configuration des colonnes de la table
   const columnsConfig2 = [
-    { field: 'username', headerName: 'Nom utilisateur', width: 180, editable: false },
+    //{ field: 'utilisateur', headerName: 'Utilisateur', width: 180, editable: false },
     { field: 'nom', headerName: 'Nom', width: 160, editable: true },
     { field: 'prenom', headerName: 'Prénom', width: 150,editable: true  },
     { field: 'grade', headerName: 'Grade', width: 180 },
     { field: 'email', headerName: 'Email', width: 260, expandable: true, maxInitialLength: 20 },
-    { field: 'contact', headerName: 'Contact', width: 120 },
+    { field: 'contact', headerName: 'Contact', width: 200 },
     { field: 'dateField', headerName: 'Dernière Activité', width: 150 },
     { field: 'dateField1', headerName: "Date d'ajout", width: 130 },
     { field: 'status', headerName: 'Status', width: 140 },
@@ -39,12 +42,9 @@ function GestionUtilisateur() {
   ];
   // État pour gérer l'affichage du modal d'ajout d'utilisateur
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [filteredRows, setFilteredRows] = useState(rowsData2);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [selectedApp, setSelectedApp] = useState(null);
-  const [isDeletePopupOpen, setIsDeletePopupOpen] = useState(false);
   const [ResetShow, setResetShow] = useState(false);
-  const [selectedAppId, setSelectedAppId] = useState(null);
 
   const [snackbarOpen, setSnackbarOpen] = useState(false);
 const [snackbarMessage, setSnackbarMessage] = useState("");
@@ -84,13 +84,9 @@ const handleUpdateApp = (updatedApp) => {
    setSelectedApp(null);
 };
 
-// Suppression d'une mission
-const handleDeleteRow = (selectedRow) => {
-   setSelectedAppId(selectedRow.id);
-   setIsDeletePopupOpen(true);
-   console.log(selectedRow)
-};
 
+
+/*
 // Confirmation de la suppression
 const confirmDeleteApp = () => {
    if (selectedAppId !== null) {
@@ -98,7 +94,7 @@ const confirmDeleteApp = () => {
    }
    setIsDeletePopupOpen(false);
    setSelectedAppId(null);
-};
+};*/
 
 const generateRandomPassword = () => {
   const length = 10;
@@ -211,7 +207,7 @@ const rowActions = [
 
         {/* Barre de recherche */}
         <div className="flex justify-center mb-6">
-          <SearchBar columnsConfig={columnsConfig2} initialRows={rowsData2} onSearch={handleSearchResults} />
+          <SearchBar columnsConfig={columnsConfig2} initialRows={filteredRows} onSearch={handleSearchResults} />
         </div>
 
         {/* Bouton d'exportation */}
@@ -233,7 +229,7 @@ const rowActions = [
 />
         {/* Table d'affichage des utilisateurs */}
         <div className={`flex-1 overflow-x-auto overflow-y-auto h-[400px]  ${isDeletePopupOpen ? 'blur-sm' : ''}`}>
-       
+        {loading &&( <Spinner color="var(--blue-menu)" />)}
           <Table
             key={JSON.stringify(filteredRows)}
             columnsConfig={columnsConfig2}
@@ -254,8 +250,8 @@ const rowActions = [
       <AddUserForm title={'Ajouter un nouveau utilisateur'} isOpen={isModalOpen} onClose={closeModal} onUserCreated={handleUserCreation} />
      
             {isEditModalOpen && <AddUserForm title={'Modifier un utilisateur'} isOpen={isEditModalOpen} onClose={() => setIsEditModalOpen(false)} initialValues={selectedApp || {}} onUserCreated={handleUpdateApp} />}
-            {isDeletePopupOpen &&  <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1"> <DecisionPopUp name={filteredRows.find(row => row.id === selectedAppId)?.username || 'ce utilisateur'} text="Êtes-vous sûr(e) de vouloir supprimer l'utilisateur " handleConfirm={confirmDeleteApp} handleDeny={() => setIsDeletePopupOpen(false)} /> </div>}
-            {ResetShow &&  <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1"> <DecisionPopUp name={filteredRows.find(row => row.id === selectedAppId)?.username || 'ce utilisateur'} text="Êtes-vous sûr(e) de vouloir réinisialiser le mot de passe " handleConfirm={handleResetConfirm } handleDeny={() => setResetShow(false)} /> </div>}
+            {isDeletePopupOpen &&  <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1"> <DecisionPopUp loading={loading} name={filteredRows.find(row => row.id === selectedAppId)?.username || 'cet utilisateur'} text="Êtes-vous sûr(e) de vouloir supprimer l'utilisateur " handleConfirm={confirmDeleteApp} handleDeny={() => setIsDeletePopupOpen(false)} /> </div>}
+            {ResetShow &&  <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1"> <DecisionPopUp loading={loading} name={filteredRows.find(row => row.id === selectedAppId)?.username || 'ce utilisateur'} text="Êtes-vous sûr(e) de vouloir réinisialiser le mot de passe " handleConfirm={handleResetConfirm } handleDeny={() => setResetShow(false)} /> </div>}
             
 
       
