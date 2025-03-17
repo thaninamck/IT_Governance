@@ -8,7 +8,7 @@ import CancelIcon from '@mui/icons-material/Cancel';
 import ArchiveRoundedIcon from '@mui/icons-material/ArchiveRounded';
 
 function StatusMission({ status }) {
-    console.log("Statut reçu:", status);
+   // console.log("Statut reçu:", status);
     // Configuration des statuts
     const statusConfig = {
         non_commencee: {
@@ -42,21 +42,36 @@ function StatusMission({ status }) {
             icon: <CancelIcon  />, // Rouge
             color: "#E53935",
         },
-        temporaire: {
+        en_attente: {
             label: "En standby ",
             icon: <PauseCircleIcon   />, // Rouge
-            color: "var(--blue-hover)",
+            color: "#cccccc",
+        },
+        en_attente_archivage: {
+            label: "en attente d'archivage ",
+            icon: <AccessTimeFilledIcon  />, 
+            color: "#cccccc",
+        },
+        en_attente_annulation: {
+            label: "en attente d'annulation ",
+            icon: <AccessTimeFilledIcon  />, 
+            color: "#cccccc",
+        },
+        en_attente_de_clôture: {
+            label: "en attente de clôture ",
+            icon: <AccessTimeFilledIcon  />, 
+            color: "#cccccc",
         },
     };
 
-   // const currentStatus = statusConfig[status];
-   const normalizedStatus = status?.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, ""); 
-//     console.log("Statut normalisé:", normalizedStatus);
+  
 
-    const currentStatus = statusConfig[normalizedStatus];
+    const currentStatus = statusConfig[status];
+    
 
 
     if (!currentStatus) {
+        
         return <div>Statut inconnu</div>; // Gérer les cas de statut invalide
     }
 
@@ -73,7 +88,7 @@ function StatusMission({ status }) {
                 color: 'white',
                 fontWeight: "bold",
                 fontSize:'12px',
-                width:"170px",
+                width:"180px",
                 height:'35px',
                /* marginTop:"7px"*/
             }}
