@@ -1,90 +1,85 @@
 import React, { useState } from "react";
-import LockResetIcon from "@mui/icons-material/LockReset";
 import InputForm from "../../components/Forms/InputForm";
 import emailjs from "emailjs-com";
 import useAuth from "../../Hooks/useAuth"; // Import du hook useAuth
 
 function StepEmailForm({ onNext, onSetExpirationTime, errorMessage }) {
   const [email, setEmail] = useState("");
-const [interanlerrorMessage, setInternalErrorMessage] = useState(""); // État pour gérer les erreurs
-  const generateCode = () => {
-    return Math.floor(1000 + Math.random() * 9000); // Code à 4 chiffres
-  };
+  const [internalErrorMessage, setInternalErrorMessage] = useState(""); // État pour gérer les erreurs
 
-  const { storeVerificationCode,loading } = useAuth(); // Import de la fonction
+  const generateCode = () => Math.floor(1000 + Math.random() * 9000); // Code à 4 chiffres
 
-const sendVerificationCode = async () => {
-  if(!email){
-    setInternalErrorMessage("Veuillez remplir le champ email");
-    return;}
-  const code = generateCode();
-  const expirationTime = Date.now() + 5 * 60 * 1000; // Expiration dans 2 min
+  const { storeVerificationCode, loading } = useAuth(); // Import de la fonction
 
-  const data = {
-    email: email,
-    code: code,
-  };
-
-  try {
-    // D'abord, envoie le code au backend
-    console.log(data);
-    const response = await storeVerificationCode(data);
-
-    if (!response.success) {
-      setInternalErrorMessage("Erreur lors de la génération du code veuillez ressayer")
-      return; // Arrêter ici si le stockage échoue
+  const sendVerificationCode = async () => {
+    if (!email) {
+      setInternalErrorMessage("Veuillez remplir le champ email");
+      return;
     }
 
-    // Une fois stocké, envoie l'email
-    const templateParams = {
-      email: email,
-      from_name: "Forvis Mazars - Plateforme GRCenter",
-      passcode: code
-    };
+    const code = generateCode();
+    const expirationTime = Date.now() + 5 * 60 * 1000; // Expiration dans 5 min
 
-    await emailjs.send(
-      "service_qm58mng", // Service ID
-      "template_5r4hycr", // Template ID
-      templateParams,
-      "jhF4FXcRjk6PSE78R" 
-    );
+    const data = { email, code };
 
-    onSetExpirationTime(expirationTime); // Définit l'heure d'expiration
-    onNext(code, email); // Passe le code et l'e-mail à ForgotPw
+    try {
+      console.log(data);
+      const response = await storeVerificationCode(data);
 
-  } catch (error) {
-    console.error("Erreur :", error);
-    setInternalErrorMessage("Une erreur est survenue veuillez ressayer")
-  }
-};
+      if (!response.success) {
+        setInternalErrorMessage("Erreur lors de la génération du code, veuillez réessayer");
+        return;
+      }
 
+      const templateParams = {
+        email,
+        from_name: "Forvis Mazars - Plateforme GRCenter",
+        passcode: code,
+      };
+
+      await emailjs.send(
+        "service_qm58mng", // Service ID
+        "template_5r4hycr", // Template ID
+        templateParams,
+        "jhF4FXcRjk6PSE78R"
+      );
+
+      onSetExpirationTime(expirationTime);
+      onNext(code, email);
+
+    } catch (error) {
+      console.error("Erreur :", error);
+      setInternalErrorMessage("Une erreur est survenue, veuillez réessayer");
+    }
+  };
 
   return (
-    <div className="mx-6">
-      <div className="bg-white rounded-lg shadow-lg px-12 flex flex-col items-center w-1/2 justify-self-center gap-8 py-12">
-        <h1 className="text-lg md:text-xl lg:text-2xl font-semibold text-[var(--blue-menu)] text-center">
+    <div className="flex justify-center mt-24  px-4">
+      <div className="bg-white rounded-lg shadow-lg px-6 sm:px-10 py-12 flex flex-col items-center w-full sm:w-3/4 md:w-2/3 lg:w-1/2 max-w-md gap-6">
+        <h1 className="text-xl md:text-2xl font-semibold text-[var(--blue-menu)] text-center">
           Mot de passe oublié ?
         </h1>
 
-        <p className="text-gray-600 text-center">
+        <p className="text-gray-600 text-center text-sm md:text-base">
           Entrez votre adresse email pour recevoir un code de vérification.
         </p>
 
-        <InputForm
-          type="email"
-          label="Email"
-          placeholder="Votre adresse email"
-          width="450px"
-          flexDirection="flex-col"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
+        <div className="w-full">
+          <InputForm
+            type="email"
+            label="Email"
+            placeholder="Votre adresse email"
+            flexDirection="flex-col"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+        </div>
 
         {errorMessage && <p className="text-red-500 text-sm">{errorMessage}</p>}
-        {interanlerrorMessage && <p className="text-red-500 text-sm">{interanlerrorMessage}</p>}
+        {internalErrorMessage && <p className="text-red-500 text-sm">{internalErrorMessage}</p>}
 
         <button
-          className="w-[41%] border-none bg-[var(--blue-menu)] hover:bg-[var(--blue-conf)] text-white font-semibold py-2 px-6 rounded-lg transition duration-300 ease-in-out text-sm md:text-base lg:text-lg"
+          className="w-full sm:w-2/3 md:w-1/2 border-none bg-[var(--blue-menu)] hover:bg-[var(--blue-conf)] text-white font-semibold py-2 px-6 rounded-lg transition duration-300 ease-in-out text-sm md:text-base"
           onClick={sendVerificationCode}
           disabled={loading}
         >
