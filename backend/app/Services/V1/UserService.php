@@ -21,7 +21,6 @@ class UserService
 
     public function createUser(array $data): User
     {
-        $data['password'] = Hash::make($data['password']);
         return $this->userRepository->createUser($data);
     }
 

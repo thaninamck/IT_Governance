@@ -24,7 +24,7 @@ Route::middleware(['auth:sanctum', AdminMiddleware::class])
             Route::get('/users', 'index');
             Route::post('/insert-user', 'store');
             Route::post('/reset-user/{id}', 'resetUser');
-            Route::patch('/update-user/{id}', 'updateUser');
+            Route::put('/update-user/{id}', 'updateUser');
             Route::patch('/block-user/{id}', 'blockUser');
             Route::patch('/unblock-user/{id}', 'unblockUser');
             Route::delete('/user/{id}', 'deleteUser');

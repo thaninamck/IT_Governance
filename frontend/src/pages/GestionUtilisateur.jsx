@@ -46,6 +46,9 @@ function GestionUtilisateur() {
     setSelectedApp,
     handleEditRow,
     handleUpdateApp,
+    handleUserCreation,
+    isModalOpen,
+    setIsModalOpen
   } = useUser();
   // Configuration des colonnes de la table
   const columnsConfig2 = [
@@ -94,8 +97,7 @@ function GestionUtilisateur() {
       status: "Active",
     },
   ];
-  // État pour gérer l'affichage du modal d'ajout d'utilisateur
-  const [isModalOpen, setIsModalOpen] = useState(false);
+
 
   // Accédez à userRole et setUserRole via le contexte
   const { userRole, setUserRole } = useContext(PermissionRoleContext);
@@ -104,8 +106,8 @@ function GestionUtilisateur() {
   const closeModal = () => setIsModalOpen(false);
 
   // Options et couleurs de statut utilisateur
-  const statusOptions = ["Active", "Bloqué"];
-  const statusColors = { Active: "green", Bloqué: "red" };
+  const statusOptions = ["Actif", "Bloqué"];
+  const statusColors = { Actif: "green", Bloqué: "red" };
 
   /*
 // Confirmation de la suppression
@@ -152,14 +154,7 @@ const confirmDeleteApp = () => {
   // Gestion de la recherche d'utilisateur
   const handleSearchResults = (results) => setFilteredRows(results);
 
-  // Gestion de l'ajout d'un nouvel utilisateur
-  const handleUserCreation = (newUser) => {
-    setFilteredRows((prevRows) => [
-      ...prevRows,
-      { id: prevRows.length + 1, ...newUser },
-    ]);
-    setIsModalOpen(false);
-  };
+ 
 
   const handleCellEditCommit = (params) => {
     console.log("Cellule éditée :", params);
@@ -224,23 +219,29 @@ const confirmDeleteApp = () => {
             isDeletePopupOpen ? "blur-sm" : ""
           }`}
         >
-          {loading && <Spinner color="var(--blue-menu)" />}
-          <Table
-            key={JSON.stringify(filteredRows)}
-            columnsConfig={columnsConfig2}
-            rowsData={filteredRows}
-            checkboxSelection={false}
-            headerBackground="var(--blue-nav)"
-            statusOptions={statusOptions}
-            statusColors={statusColors}
-            rowActions={rowActions}
-            onCellEditCommit={handleCellEditCommit}
-          />
+          {loading ? (
+  <Spinner color="var(--blue-menu)" />
+) : (
+  <Table
+    key={JSON.stringify(filteredRows)}
+    columnsConfig={columnsConfig2}
+    rowsData={filteredRows}
+    checkboxSelection={false}
+    headerBackground="var(--blue-nav)"
+    statusOptions={statusOptions}
+    statusColors={statusColors}
+    rowActions={rowActions}
+    onCellEditCommit={handleCellEditCommit}
+  />
+)}
+
+          
         </div>
       </div>
 
       {/* Modal d'ajout d'un utilisateur */}
       <AddUserForm
+      
         title={"Ajouter un nouveau utilisateur"}
         loading={loading}
         isOpen={isModalOpen}

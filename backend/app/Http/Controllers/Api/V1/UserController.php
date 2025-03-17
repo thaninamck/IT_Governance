@@ -11,6 +11,7 @@ use App\Services\LogService;
 
 use App\Http\Resources\Api\V1\UserResource;
 use Illuminate\Support\Facades\Hash;
+use Log;
 
 
 class UserController extends BaseController
@@ -55,10 +56,11 @@ class UserController extends BaseController
                 'grade' => 'nullable|string|max:255',
                 'phone_number' => 'nullable|string|max:255',
                 'email' => 'required|email|unique:users',
+                'role'=> 'sometimes|integer',
+                'is_active'=> 'sometimes',
                 'password' => [
                     'required',
-                    'min:12',
-                    'regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%_*?&])[A-Za-z\d@$!%_*?&]{12,}$/'
+                    
                 ],
             ];
 
@@ -69,12 +71,13 @@ class UserController extends BaseController
             }
 
             $userData = $validator->validated();
-            $userData['password'] = Hash::make($userData['password']);
 
             $user = $this->userService->createUser($userData);
 
-            $user->role = 0;
-            $user->is_active = false;
+            $user->phone_number = $userData['phone_number'];
+            if(!isset($userData['is_active'])){$user->is_active=$userData['is_active'];}else{ $user->is_active = true ;};
+            if(!isset($userData['role'])){$user->role=$userData['role'];}else{ $user->role = 0 ;};
+
             $user->must_change_password = true;
             $user->last_activity = now();
             $user->save();
@@ -149,13 +152,18 @@ public function resetUser(Request $request, $id): JsonResponse
 
     public function updateUser(Request $request, $id): JsonResponse
     {
+        $decodedRequest = json_decode($request->getContent(), true);
+        $request->merge($decodedRequest);
+
+        Log::info("Données après conversion :", $request->all());
+
         try {
             $rules = [
                 'first_name' => 'sometimes|string|max:255',
                 'last_name' => 'sometimes|string|max:255',
                 'email' => 'sometimes|email|unique:users,email,' . $id,
                 'grade' => 'sometimes|string|max:25',
-                'phone_number' => 'sometimes|string|max:10',
+                'phone_number' => 'sometimes|string',
                 'role' => 'sometimes|integer|in:0,1',
                 'is_active' => 'sometimes|boolean'
             ];
@@ -163,8 +171,11 @@ public function resetUser(Request $request, $id): JsonResponse
             $validator = Validator::make($request->all(), $rules);
 
             if ($validator->fails()) {
+                Log::error("Erreur de validation :", $validator->errors()->toArray());
+
                 return $this->sendError("Validation failed", $validator->errors());
             }
+            Log::info("data validated", $validator->validated());
 
             $user = $this->userService->updateUser($id, $validator->validated());
 

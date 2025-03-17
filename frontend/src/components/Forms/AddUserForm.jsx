@@ -5,9 +5,8 @@ import Button from '../Button';
 import emailjs from 'emailjs-com';
 import SelectInput from './SelectInput';
 
-function AddUserForm({ title, isOpen,loading, onClose, initialValues, onUserCreated }) {
+function AddUserForm({ title, isOpen, loading, onClose, initialValues, onUserCreated }) {
   if (!isOpen) return null;
-  
 
   const getCurrentDate = () => new Date().toISOString().split('T')[0];
 
@@ -20,20 +19,20 @@ function AddUserForm({ title, isOpen,loading, onClose, initialValues, onUserCrea
     contact: '',
     dateField: '',
     dateField1: getCurrentDate(),
-    status: 'Bloqué',
+    status: 'Actif',
+    role: 'Utilisateur normal',
     password: '',
   });
-  const [isUpdating, setIsUpdating] = useState(false);
-  // État pour gérer les erreurs de validation
-  const [error, setError] = useState('');
 
-  // Générer un mot de passe aléatoire
+  const [isUpdating, setIsUpdating] = useState(false);
+  const [error, setError] = useState('');
+  const [internalLoading, setInternalLoading] = useState(false);
+
   const generatePassword = () => {
     const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@#$%&*!';
     return Array.from({ length: 10 }, () => chars.charAt(Math.floor(Math.random() * chars.length))).join('');
   };
 
-  // Préremplir les champs si on est en mode update
   useEffect(() => {
     if (initialValues) {
       setUserData(initialValues);
@@ -43,7 +42,6 @@ function AddUserForm({ title, isOpen,loading, onClose, initialValues, onUserCrea
     }
   }, [initialValues]);
 
-  // Générer automatiquement le username
   useEffect(() => {
     if (userData.nom && userData.prenom) {
       const generatedUsername = `${userData.prenom.trim().replace(/\s+/g, '').toLowerCase()}.${userData.nom.trim().replace(/\s+/g, '').toLowerCase()}`;
@@ -51,24 +49,21 @@ function AddUserForm({ title, isOpen,loading, onClose, initialValues, onUserCrea
     }
   }, [userData.nom, userData.prenom]);
 
-   
-
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!userData.nom || !userData.prenom || !userData.username || !userData.email || !userData.contact ||!userData.grade) {
+    if (!userData.nom || !userData.prenom || !userData.email || !userData.contact || !userData.grade) {
       setError('Veuillez remplir tous les champs obligatoires.');
-      return; // Empêcher la soumission
+      return;
     }
 
     let updatedUser = { ...userData };
 
     if (!isUpdating) {
-      setLoading(true);
+      setInternalLoading(true);
       const generatedPassword = generatePassword();
       updatedUser.password = generatedPassword;
 
-      // Envoyer l'e-mail uniquement lors de la création
       const templateParams = {
         user_name: `${updatedUser.prenom} ${updatedUser.nom}`,
         user_email: updatedUser.email,
@@ -85,35 +80,31 @@ function AddUserForm({ title, isOpen,loading, onClose, initialValues, onUserCrea
         console.error('Erreur lors de l\'envoi de l\'e-mail :', error);
         alert('Une erreur est survenue lors de l\'envoi de l\'e-mail.');
         return;
-      }
-      finally {
-        setLoading(false);
+      } finally {
+        setInternalLoading(false);
       }
     }
 
-    // Appeler la fonction de création ou de mise à jour
     onUserCreated(updatedUser);
     onClose();
-    setError(''); // Réinitialiser l'erreur après une soumission réussie
+    setError('');
   };
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-md z-50">
-      <form className="appForm_container" onSubmit={handleSubmit}>
+      <form className="bg-white p-6 rounded-lg shadow-lg max-w-[90%] md:max-w-[700px] w-full relative" onSubmit={handleSubmit}>
         <button className="close-button" type="button" onClick={onClose}>&times;</button>
 
-        <p>{title}</p>
-        {error && <span className="text-red-500 text-xs  ">{error}</span>}
+        <p className="text-lg font-semibold mb-4">{title}</p>
+        {error && <span className="text-red-500 text-xs block mb-4">{error}</span>}
 
-
-        <div className="form-row">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <InputForm
             type="text"
             label="Nom"
             placeholder="Nom"
-            width="200px"
-              flexDirection="flex-col"
-              required={true}
+            flexDirection="flex-col"
+            required={true}
             value={userData.nom}
             onChange={e => setUserData({ ...userData, nom: e.target.value })}
           />
@@ -121,23 +112,17 @@ function AddUserForm({ title, isOpen,loading, onClose, initialValues, onUserCrea
             type="text"
             label="Prénom"
             placeholder="Prénom"
-            width="200px"
+            flexDirection="flex-col"
             required={true}
-              flexDirection="flex-col"
             value={userData.prenom}
             onChange={e => setUserData({ ...userData, prenom: e.target.value })}
           />
-          
-        </div>
-
-        <div className="form-row">
           <InputForm
             type="email"
             label="Email"
             placeholder="Email"
-            width="200px"
+            flexDirection="flex-col"
             required={true}
-              flexDirection="flex-col"
             value={userData.email}
             onChange={e => setUserData({ ...userData, email: e.target.value })}
           />
@@ -145,9 +130,8 @@ function AddUserForm({ title, isOpen,loading, onClose, initialValues, onUserCrea
             type="text"
             label="Contact"
             placeholder="Contact"
-            width="200px"
+            flexDirection="flex-col"
             required={true}
-              flexDirection="flex-col"
             value={userData.contact}
             onChange={e => setUserData({ ...userData, contact: e.target.value })}
           />
@@ -155,27 +139,36 @@ function AddUserForm({ title, isOpen,loading, onClose, initialValues, onUserCrea
             type="text"
             label="Grade"
             placeholder="Grade"
-            width="200px"
+            flexDirection="flex-col"
             required={true}
-              flexDirection="flex-col"
             value={userData.grade}
             onChange={e => setUserData({ ...userData, grade: e.target.value })}
           />
+          <SelectInput
+            label="Status"
+            options={[
+              { label: "Actif", value: "Actif" },
+              { label: "Bloqué", value: "Bloqué" },
+            ]}
+            value={userData.status}
+            onChange={e => setUserData({ ...userData, status: e.target.value })}
+            required={true}
+            multiSelect={false}
+          />
+          <SelectInput
+            label="Role"
+            options={[
+              { label: "Admin", value: "Admin" },
+              { label: "Utilisateur normal", value: "Utilisateur normal" },
+            ]}
+            value={userData.role}
+            onChange={e => setUserData({ ...userData, role: e.target.value })}
+            required={true}
+            multiSelect={false}
+          />
         </div>
-        <SelectInput
-        label="Status"
-        options={[
-          { label: "Active", value: "Active" },
-          { label: "Bloqué", value: "Bloqué" },
-        ]}
-        value={userData.status}
-        onChange={e => setUserData({ ...userData, status: e.target.value })}
-        width="200px"
-        required={true}
-        multiSelect={false}
-      />
 
-        <Button btnName={loading ?" Mise à jour...": "Mettre à jour"} type="submit"  disabled={loading}/>
+        <Button btnName={loading ? "Enregistrement..." : "Enregistrer"} type="submit" disabled={loading} className="mt-6" />
       </form>
     </div>
   );

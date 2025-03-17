@@ -13,7 +13,11 @@ export const AuthProvider = ({ children }) => {
 useEffect(() => {
   
   if(!token||!user){
-  navigate('/login');}
+    const tokenrestored=sessionStorage.getItem("token");
+  setToken(tokenrestored)
+  
+  //navigate('/login');
+  }
 }
 ,[token,user]);
   // 🔹 Connexion
@@ -23,6 +27,7 @@ useEffect(() => {
     try {
       const response = await authApi.post("/login", credentials);
       if (response.data?.token) {
+        sessionStorage.setItem("token",response.data.token)
         setToken(response.data.token); // Stocker le token dans le contexte
         setUser(response.data.user || null); // Stocker les informations de l'utilisateur
         console.log(response.data.user );
@@ -116,7 +121,13 @@ authApi.interceptors.request.use((config) => {
 api.interceptors.request.use((config) => {
   if (token && !publicEndpoints.includes(config.url)) {
     config.headers.Authorization = `Bearer ${token}`; 
-    console.log("Token ajouté a request:", token);
+    console.log("Token ajouté a request:",config.url, token);
+    console.log("📡 Requête envoyée :", {
+      url: config.url,
+      method: config.method,
+      headers: config.headers,
+      data: config.data,
+    });
   } else {
     console.log("No token added for this request:", config.url);
   }

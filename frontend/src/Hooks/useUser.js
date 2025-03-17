@@ -15,6 +15,8 @@ const useUser = () => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [selectedApp, setSelectedApp] = useState(null);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
+    // État pour gérer l'affichage du modal d'ajout d'utilisateur
+    const [isModalOpen, setIsModalOpen] = useState(false);
 const [snackbarMessage, setSnackbarMessage] = useState("");
 const [snackbarSeverity, setSnackbarSeverity] = useState("success"); // "success", "error", "warning", "info"
   const fetchUsers = async () => {
@@ -27,13 +29,15 @@ const [snackbarSeverity, setSnackbarSeverity] = useState("success"); // "success
       const transformedUsers = response.data.map(user => ({
           id: user.id,
           nom: user.firstName, // Concaténation du nom et du prénom
-          prenom: user.firstName,
+          prenom: user.lastName,
           grade: user.grade,
           email: user.email,
           contact: user.phoneNumber,
           dateField: user.createdAt.split('T')[0], // Extraction de la date sans l'heure
           dateField1: user.lastActivity.split(' ')[0], // Extraction de la date de la dernière activité
-          status: user.isActive ? "Active" : "Bloqué"
+          status: user.isActive ? "Actif" : "Bloqué",
+          role: user.role === 1 ? "Admin" : "Utilisateur normal",
+
       }));
 
       setFilteredRows(transformedUsers); // Mise à jour des utilisateurs dans le state
@@ -144,40 +148,90 @@ const handleEditRow = (selectedRow) => {
 
 const handleUpdateApp = async (updatedApp) => {
   if (!updatedApp || !updatedApp.id) return;
+  
   const formattedApp = {
     first_name: updatedApp.prenom,
     last_name: updatedApp.nom,
     grade: updatedApp.grade,
     phone_number: updatedApp.contact,
     email: updatedApp.email,
-    is_active: updatedApp.status === "Active",
+    role: updatedApp.role === "Admin" ? 1 : 0,
+    is_active: updatedApp.status === "Actif" ? true : false,
   };
+
+  console.log("user to update", formattedApp);
+  
   try {
     setLoading(true);
     setError(null);
 
     // 🔹 Appel API pour mettre à jour l'utilisateur
-    await api.patch(`/update-user/${updatedApp.id}`, formattedApp);
+    const response = await api.put(`/update-user/${updatedApp.id}`, formattedApp);
 
-    // 🔹 Mise à jour du state local après la modification
-    setFilteredRows(prevRows =>
-      prevRows.map(row =>
-        row.id === updatedApp.id ? { ...row, ...updatedApp } : row
-      )
-    );
+    // Vérifier si la requête a réussi (status 200 ou 204)
+    if (response.status === 200 || response.status === 204) {
+      // 🔹 Mise à jour du state local après la modification
+      setFilteredRows(prevRows =>
+        prevRows.map(row =>
+          row.id === updatedApp.id ? { ...row, ...updatedApp } : row
+        )
+      );
 
-    toast.success("Utilisateur mis à jour avec succès !");
+      toast.success("Utilisateur mis à jour avec succès !");
+      
+      // 🔹 Fermer la modal après succès
+      setIsEditModalOpen(false);
+      setSelectedApp(null);
+    }
+
   } catch (error) {
     console.error("Erreur lors de la mise à jour :", error);
     toast.error("Échec de la mise à jour de l'utilisateur.");
   } finally {
     setLoading(false);
-    setIsEditModalOpen(false);
-    setSelectedApp(null);
   }
 };
 
- 
+
+  // Gestion de l'ajout d'un nouvel utilisateur
+  const handleUserCreation = async (newUser) => {
+    const formattedUser = {
+      first_name: newUser.prenom,
+      last_name: newUser.nom,
+      grade: newUser.grade,
+      phone_number: newUser.contact,
+      email: newUser.email,
+      password: newUser.password,
+      is_active:newUser.status  === "Actif" ? true : false,
+      role: newUser.role === "Admin" ? 1 : 0, 
+    };
+
+    try {
+      setLoading(true);
+      setError(null);
+      const response = await api.post("/insert-user", formattedUser);
+      setFilteredRows((prevRows) => [...prevRows, { id: response.data.user.id, ...newUser }]);
+      toast.success("Utilisateur ajouté avec succès !");
+    } catch (error) {
+      console.log("Erreur lors de l'ajout :", error);
+    
+      if (error.response && error.response.status === 422) {
+        const errors = error.response.data?.data;
+        if (errors?.email) {
+          toast.error("Cet email est déjà utilisé par un autre utilisateur.");
+        } else {
+          toast.error("Une erreur de validation est survenue.");
+        }
+      } else {
+        toast.error("Échec de l'ajout de l'utilisateur.");
+      }
+    }
+     finally {
+      setLoading(false);
+      setIsModalOpen(false);
+    }
+  };
+  
 
   // 🔹 Charger les clients au montage du composant
   useEffect(() => {
@@ -213,6 +267,9 @@ const handleUpdateApp = async (updatedApp) => {
     setSelectedApp,
     handleEditRow,
     handleUpdateApp,
+    handleUserCreation,
+    isModalOpen,
+    setIsModalOpen,
     user, 
   };
 };
