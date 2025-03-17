@@ -54,7 +54,7 @@ function StepEmailForm({ onNext, onSetExpirationTime, errorMessage }) {
   };
 
   return (
-    <div className="flex justify-center mt-24  px-4">
+    <div className="flex justify-center mt-24  ">
       <div className="bg-white rounded-lg shadow-lg px-6 sm:px-10 py-12 flex flex-col items-center w-full sm:w-3/4 md:w-2/3 lg:w-1/2 max-w-md gap-6">
         <h1 className="text-xl md:text-2xl font-semibold text-[var(--blue-menu)] text-center">
           Mot de passe oublié ?
