@@ -1,4 +1,4 @@
-import React, { useState,useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import SideBar from "../components/sideBar/SideBar";
 import HeaderBis from "../components/Header/HeaderBis";
 import Table from "../components/Table";
@@ -52,7 +52,10 @@ function GestionMission() {
       field: "status",
       headerName: "Status",
       width: 220,
-      customRenderCell: (params) => <StatusMission status={params.value} />,
+      customRenderCell: (params) => {
+        //console.log("Valeur du statut:", params.row.status);
+        return <StatusMission status={params.row.status} />;
+      },
     },
     
     { field: "actions", headerName: "Actions", width: 80 },
@@ -62,158 +65,46 @@ function GestionMission() {
   // Fonction pour récupérer la liste des clients depuis le backend
   const fetchMissions = async () => {
     try {
-        // Envoi d'une requête GET pour obtenir la liste des clients
-        const response = await api.get('/getmissions');
-        // Mise à jour de l'état avec les données reçues
-        console.log("data from back",response.data)
+      // Envoi d'une requête GET pour obtenir la liste des clients
+      const response = await api.get('/getmissions');
+      // Mise à jour de l'état avec les données reçues
+      console.log("data from back", response.data)
 
-        setRowsData2(response.data)
+      setRowsData2(response.data)
     } catch (error) {
-        console.error('Erreur lors de la récupération des clients:', error);
+      console.error('Erreur lors de la récupération des clients:', error);
     }
-};
- // Effet pour charger la liste des clients au montage du composant
- useEffect(() => {
-  fetchMissions();
-}, []);
+  };
+  // Effet pour charger la liste des clients au montage du composant
+  useEffect(() => {
+    fetchMissions();
+  }, []);
 
   // Fonction pour gérer les données importées
   const handleDataImported = (importedData) => {
     // Ignorer la première ligne (en-tête)
     const dataWithoutHeader = importedData.slice(1);
-  
+
     // Convertir les données importées en format compatible avec rowsData2
     const newRows = dataWithoutHeader.map((row, index) => ({
       id: row[0], // Générer un ID unique
       client: row[3],
       mission: row[2],
       manager: row[4],
-      dateField: row[5],
-      dateField1: row[6],
+      startDate: row[5],
+      endDate: row[6],
       auditStartDate: row[7],
       auditEndDate: row[8],
-      statusMission: getAutomaticStatus(row[5], row[6]), // Calculer le statut automatique
+      status: getAutomaticStatus(row[5], row[6]), 
+      // statusMission: getAutomaticStatus(row[5], row[6]), // Calculer le statut automatique
     }));
-  
+
     // Mettre à jour rowsData2 avec les nouvelles données
     setRowsData2((prevRows) => [...prevRows, ...newRows]);
-  
+
     // Mettre à jour filteredRows avec les nouvelles données
     setFilteredRows((prevRows) => [...prevRows, ...newRows]);
   };
-  // Données des missions
- // const rowsData2 = [
-    // {
-    //   id: 1,
-    //   statusMission: "en_cours",
-    //   mission: "DSP",
-    //   client: "Djeezy",
-    //   manager: "Houda Elmaouhab",
-    //   dateField: "2025-01-27",
-    //   dateField1: "2025-2-7",
-    //   auditStartDate: "2024-01-01", // Date de début de la période auditée
-    //   auditEndDate: "2024-12-31",   // Date de fin de la période auditée
-    // },
-    // {
-    //   id: 2,
-    //   statusMission: "terminer",
-    //   mission: "DSP1",
-    //   client: "Oredoo",
-    //   manager: "Sara Lounes",
-    //   dateField: "2024-11-27",
-    //   dateField1: "2025-02-25",
-    //   auditStartDate: "2024-02-01", // Date de début de la période auditée
-    //   auditEndDate: "2024-11-30",   // Date de fin de la période auditée
-    // },
-    // {
-    //   id: 3,
-    //   statusMission: "non_commencee",
-    //   mission: "DSP2",
-    //   client: "Oredoo",
-    //   manager: "Sara Lounes",
-    //   dateField: "2025-06-27",
-    //   dateField1: "2025-12-27",
-    //   auditStartDate: "2024-02-01", // Date de début de la période auditée
-    //   auditEndDate: "2024-11-30",   // Date de fin de la période auditée
-    // },
-    // {
-    //   id: 4,
-    //   statusMission: "en_retard",
-    //   mission: "DSP3",
-    //   client: "Oredoo",
-    //   manager: "Sara Lounes",
-    //   dateField: "2025-01-27",
-    //   dateField1: "2025-02-27",
-    //   auditStartDate: "2024-02-01", // Date de début de la période auditée
-    //   auditEndDate: "2024-11-30",   // Date de fin de la période auditée
-    // },
-    // {
-    //   id: 5,
-    //   statusMission: "archiver",
-    //   mission: "DSP4",
-    //   client: "Oredoo",
-    //   manager: "Sara Lounes",
-    //   dateField: "2025-06-27",
-    //   dateField1: "2025-12-27",
-    //   auditStartDate: "2024-02-01", // Date de début de la période auditée
-    //   auditEndDate: "2024-11-30",   // Date de fin de la période auditée
-    // },
-    // {
-    //   id: 6,
-    //   statusMission: "annulée",
-    //   mission: "DSP5",
-    //   client: "Oredoo",
-    //   manager: "Sara Lounes",
-    //   dateField: "2025-06-27",
-    //   dateField1: "2025-12-27",
-    //   auditStartDate: "2024-02-01", // Date de début de la période auditée
-    //   auditEndDate: "2024-11-30",   // Date de fin de la période auditée
-    // },
-    // {
-    //   id: 7,
-    //   statusMission: "temporaire",
-    //   mission: "DSP6",
-    //   client: "Oredoo",
-    //   manager: "Sara Lounes",
-    //   dateField: "2025-06-27",
-    //   dateField1: "2025-12-27",
-    //   auditStartDate: "2024-02-01", // Date de début de la période auditée
-    //   auditEndDate: "2024-11-30",   // Date de fin de la période auditée
-    // },
-    // ... autres missions
- // ];
-
-  // Fonction pour déterminer le statut automatique
-  const getAutomaticStatus = (startDate, endDate) => {
-    const currentDate = new Date();
-    const start = new Date(startDate);
-    const end = new Date(endDate);
-
-    if (currentDate < start) {
-      return "non_commencee";
-    } else if (currentDate >= start && currentDate <= end) {
-      return "en_cours";
-    } else if (currentDate > end) {
-      return "en_retard";
-    }
-    return "Statut inconnu";
-  };
-
- 
-
-  // Mettre à jour les statuts des missions
-  const updateMissionStatuses = (missions) => {
-    return missions.map((mission) => ({
-      ...mission,
-      statusMission: getAutomaticStatus(mission.dateField, mission.dateField1),
-    }));
-  };
-
-  // Utiliser useEffect pour mettre à jour les statuts lors du chargement du composant
-  useEffect(() => {
-    const updatedRows = updateMissionStatuses(rowsData2);
-    setFilteredRows(updatedRows);
-  }, []); // Exécuter une seule fois au montage du composant
 
   // États pour gérer les modales et les missions
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -235,8 +126,6 @@ function GestionMission() {
   // Ferme le popup de confirmation
   const handlePopupClose = () => setIsMissionCreated(false);
 
- 
-
   // Mise à jour des missions après une recherche
   const handleSearchResults = (results) => setFilteredRows(results);
 
@@ -244,204 +133,282 @@ function GestionMission() {
   const handleMissionCreation = async (newMission) => {
 
     console.log("new mission", newMission)
-    try{
+    try {
       // Envoi d'une requête POST avec les données du nouveau client
       const response = await api.post('/createmissions', newMission);
       const createdMission = response.data.mission; // Extraire la mission créée
-
       console.log("Mission créée :", createdMission);
-
-         
-   // Mettre à jour directement les données affichées
-    // Mettre à jour directement les états
-    setRowsData2((prevRows) => {
-      const updatedRows = [...prevRows, createdMission];
-      setFilteredRows(updatedRows); // Assurer la mise à jour immédiate
-      return updatedRows;
-    });
-    setIsModalOpen(false);
-    }catch(error){
+      // Mettre à jour directement les données affichées
+      setRowsData2((prevRows) => {
+        const updatedRows = [...prevRows, createdMission];
+        setFilteredRows(updatedRows); // Assurer la mise à jour immédiate
+        return updatedRows;
+      });
+      setIsModalOpen(false);
+    } catch (error) {
       console.error('Erreur lors de la création d une mission:', error);
     }
   };
 
-  useEffect(() => {
-    const updatedRows = updateMissionStatuses(rowsData2);
-    setFilteredRows(updatedRows);
-  }, [rowsData2]); // Ajout de rowsData2 comme dépendance
+// Fonction pour archiver une mission
+const handleArchiverRow = async (selectedRow) => {
+  console.log(selectedRow.id);
+  try {
+    // Appeler l'API pour archiver la mission
+    const response = await api.put(`/archivemission/${selectedRow.id}`);
+    console.log("archive", response.data);
+    // Actualiser les données en rappelant fetchMissions
+    await fetchMissions();
 
-  
-   // Fonction pour archiver une mission
-const handleArchiverRow = (selectedRow) => {
-  // Mettre à jour le statut de la mission en "archiver"
-  const updatedRows = filteredRows.map((row) =>
-    row.id === selectedRow.id ? { ...row, statusMission: "archivée" } : row
-  );
-
-  // Mettre à jour l'état des lignes filtrées
-  setFilteredRows(updatedRows);
-
-  console.log("Mission archivée :", selectedRow);
-};
-
-// const handleCloturerRow = (selectedRow) => {
-
-//   // Si l'utilisateur est admin, exécuter l'action immédiatement
-//   // Mettre à jour le statut de la mission en "archiver"
-//   const updatedRows = filteredRows.map((row) =>
-//     row.id === selectedRow.id ? { ...row, statusMission: "terminer" } : row
-//   );
-
-//   // Mettre à jour l'état des lignes filtrées
-//   setFilteredRows(updatedRows);
-
-//   console.log("Mission cloturée :", selectedRow);
-// };
-
-const handleCloturerRow = (selectedRow) => {
-  if (userRole !== "admin") {
-    // Si l'utilisateur n'est pas admin, ajouter l'action en attente
-    setPendingActions((prevActions) => [
-      ...prevActions,
-      {
-        id:selectedRow.id, // Utiliser un timestamp comme ID unique
-        type: "cloturer",
-        row: selectedRow,
-        requestedBy: userRole,
-        timestamp: new Date(),
-      },
-    ]);
-
-    // Afficher une notification à l'utilisateur
-    setSnackbarMessage("Votre demande de clôture est en attente de validation.");
-    setSnackbarOpen(true);
-    return;
+    console.log("Mission archivée avec succès:", selectedRow);
+  } catch (error) {
+    console.error("Erreur lors de l'archivage de la mission:", error);
+    // Afficher un message d'erreur à l'utilisateur
+    alert("Erreur lors de l'archivage de la mission. Veuillez réessayer.");
   }
-
-  // Si l'utilisateur est admin, exécuter l'action immédiatement
-  const updatedRows = filteredRows.map((row) =>
-    row.id === selectedRow.id ? { ...row, statusMission: "clôturée" } : row
-  );
-  setFilteredRows(updatedRows);
-
-  console.log("Mission clôturée :", selectedRow);
 };
 
+  const handleCloturerRow = async (selectedRow) => {
+    if (userRole !== "admin") {
+      // Si l'utilisateur n'est pas admin, ajouter l'action en attente
+      setPendingActions((prevActions) => [
+        ...prevActions,
+        {
+          id: selectedRow.id, // Utiliser un timestamp comme ID unique
+          type: "cloturer",
+          row: selectedRow,
+          requestedBy: userRole,
+          timestamp: new Date(),
+        },
+      ]);
 
- // Valider une action
- const handleValidateAction = (selectedRow) => {
-  // Mettre à jour le statut de la mission
-  const updatedRows = filteredRows.map((row) =>
-    row.id === selectedRow.id
-      ? { ...row, statusMission: selectedRow.type === "cloturer" ? "clôturée" : "annulée" }
-      : row
-  );
-  setFilteredRows(updatedRows);
+      // Afficher une notification à l'utilisateur
+      setSnackbarMessage("Votre demande de clôture est en attente de validation.");
+      setSnackbarOpen(true);
+      return;
+    }
+ // Si l'utilisateur est admin, exécuter l'action immédiatement
+    try {
+      // Appeler l'API pour archiver la mission
+      const response = await api.put(`/closemission/${selectedRow.id}`);
+      console.log("close", response.data);
+      // Actualiser les données en rappelant fetchMissions
+      await fetchMissions();
+      console.log("Mission cloturée avec succès:", selectedRow);
+    } catch (error) {
+      console.error("Erreur lors de la cloture de la mission:", error);
+      // Afficher un message d'erreur à l'utilisateur
+      alert("Erreur lors de l'archivage de la mission. Veuillez réessayer.");
+    }
+    console.log("Mission clôturée :", selectedRow);
+  };
 
-  // Supprimer l'action de la liste des actions en attente
-  setPendingActions((prevActions) =>
-    prevActions.filter((a) => a.id !== selectedRow.id)
-  );
 
-  console.log("Action validée :", selectedRow);
-};
+  // Valider une action
+  const handleValidateAction = (selectedRow) => {
+    // Mettre à jour le statut de la mission
+    const updatedRows = filteredRows.map((row) =>
+      row.id === selectedRow.id
+        ? { ...row, statusMission: selectedRow.type === "cloturer" ? "clôturée" : "annulée" }
+        : row
+    );
+    setFilteredRows(updatedRows);
 
-const handleRejectAction = (selectedRow) => {
-  // Supprimer l'action de la liste des actions en attente
-  setPendingActions((prevActions) =>
-    prevActions.filter((a) => a.id !== selectedRow.id)
-  );
+    // Supprimer l'action de la liste des actions en attente
+    setPendingActions((prevActions) =>
+      prevActions.filter((a) => a.id !== selectedRow.id)
+    );
 
-  console.log("Action rejetée :", selectedRow);
-};
+    console.log("Action validée :", selectedRow);
+  };
 
-const handleCancelRow = (selectedRow) => {
-  // Mettre à jour le statut de la mission en "archiver"
-  const updatedRows = filteredRows.map((row) =>
-    row.id === selectedRow.id ? { ...row, statusMission: "annulée" } : row
-  );
+  const handleRejectAction = (selectedRow) => {
+    // Supprimer l'action de la liste des actions en attente
+    setPendingActions((prevActions) =>
+      prevActions.filter((a) => a.id !== selectedRow.id)
+    );
 
-  // Mettre à jour l'état des lignes filtrées
-  setFilteredRows(updatedRows);
+    console.log("Action rejetée :", selectedRow);
+  };
 
-  console.log("Mission annulée :", selectedRow);
-};
+  const handleCancelRow = async (selectedRow) => {
+    try{
+      const reponse =await api.put(`/cancelmission/${selectedRow.id}`)
+      // Actualiser les données en rappelant fetchMissions
+    await fetchMissions();
+    console.log("Mission annulée avec succès:", selectedRow);
+  } catch (error) {
+    console.error("Erreur lors de l'annulation de la mission:", error);
+    // Afficher un message d'erreur à l'utilisateur
+    alert("Erreur lors de l'annulation de la mission. Veuillez réessayer.");
+  }
+  };
 
-const [previousStatus, setPreviousStatus] = useState({});
-const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [previousStatus, setPreviousStatus] = useState({});
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   //stocker les actions en attente de validation par un administrateur.
   const [pendingActions, setPendingActions] = useState([]);
   // const userRole = "manager"; // Remplacez par la logique pour obtenir le rôle de l'utilisateur
 
- // Accédez à userRole et setUserRole via le contexte
- const { userRole, setUserRole } = useContext(PermissionRoleContext);
+  // Accédez à userRole et setUserRole via le contexte
+  const { userRole, setUserRole } = useContext(PermissionRoleContext);
 
- // Utilisez userRole dans votre composant
- console.log("Rôle de l'utilisateur :", userRole);
+  // Utilisez userRole dans votre composant
+  console.log("Rôle de l'utilisateur :", userRole);
 
   const [activeView, setActiveView] = useState("active"); // "active" ou "archived"
   const missionsToDisplay =
-  activeView === "active"
-    ? filteredRows.filter((mission) => mission.statusMission !== "archivée")
-    : filteredRows.filter((mission) => mission.statusMission === "archivée");
-
-  
-const handlePauseRow = (selectedRow) => {
-  if (selectedRow.statusMission === "temporaire") {
-    // Calculer la nouvelle date de début (date actuelle)
-    const newStartDate = new Date().toISOString().split("T")[0]; // Format YYYY-MM-DD
-const missionEndDate = new Date(selectedRow.dateField1).toISOString().split("T")[0]; // Convertir en format YYYY-MM-DD
+    activeView === "active"
+      ? filteredRows.filter((mission) => mission.status !== "archivée")
+      : filteredRows.filter((mission) => mission.status === "archivée");
 
 
-    console.log("Nouvelle date de début :", newStartDate);
-    console.log("Date de fin de la mission :", selectedRow.dateField1);
-
-    // Vérifier si la nouvelle date de début est supérieure à la date de fin
-    if (newStartDate > missionEndDate) {
-      // Afficher une alerte ou un message d'erreur
-      console.log("La mission ne peut pas être reprise car la date de début serait supérieure à la date de fin.");
-       setSnackbarMessage("La mission ne peut pas être reprise car la date de début serait supérieure à la date de fin.");
-      setSnackbarOpen(true); // Afficher la notification
-      return; // Ne pas mettre à jour la mission
-    }
-
-    // Si la date de début est valide, reprendre la mission
-    const updatedRows = filteredRows.map((row) =>
-      row.id === selectedRow.id
-        ? {
-            ...row,
-            statusMission: previousStatus[selectedRow.id], // Restaurer l'état précédent
-            dateField: newStartDate, // Mettre à jour la date de début avec la date actuelle
+      const handlePauseRow = async (selectedRow) => {
+        try {
+          if (selectedRow.status === "en_attente") {
+            // Calculer la nouvelle date de début (date actuelle)
+            const newStartDate = new Date().toISOString().split("T")[0]; // Format YYYY-MM-DD
+      
+            // Appeler l'API pour reprendre la mission
+            const response = await api.put(`/resumemission/${selectedRow.id}`, {
+             
+              previous_status_id: previousStatus[selectedRow.id], // Statut précédent stocké localement
+              new_start_date: newStartDate,
+            });
+            console.log('reprnde',response.data)
+      
+            // Mettre à jour l'état local
+            setFilteredRows((prevRows) =>
+              prevRows.map((row) =>
+                row.id === selectedRow.id ? { ...row, status: response.data.status_id } : row
+              )
+            );
+      
+            console.log('rr',response.data.status)
+            // Supprimer l'état précédent de la mémoire
+            setPreviousStatus((prev) => {
+              const newStatus = { ...prev };
+              delete newStatus[selectedRow.id];
+              return newStatus;
+            });
+          } else {
+            // Si la mission n'est pas en pause, la mettre en pause
+      
+            // Appeler l'API pour mettre la mission en pause
+            const response = await api.put(`/stopmission/${selectedRow.id}`);
+            console.log('pause',response.data)
+      
+            // Stocker le statut précédent localement
+            setPreviousStatus((prev) => ({
+              ...prev,
+              [selectedRow.id]: response.data.previous_status_id,
+            }));
+      
+            console.log('prev status',previousStatus)
+            // Mettre à jour l'état local
+            setFilteredRows((prevRows) =>
+              prevRows.map((row) =>
+                row.id === selectedRow.id ? { ...row, status: "en_attente" } : row
+              )
+            );
           }
-        : row
-    );
-    setFilteredRows(updatedRows);
+        } catch (error) {
+          // Gérer les erreurs
+          console.error("Erreur lors de la gestion de la mission :", error);
+      
+          // Afficher un message d'erreur à l'utilisateur
+          setSnackbarMessage(
+            error.response?.data?.message || "Une erreur s'est produite lors de la gestion de la mission."
+          );
+          setSnackbarOpen(true);
+        }
+      };
 
-    // Supprimer l'état précédent de la mémoire
-    setPreviousStatus((prev) => {
-      const newStatus = { ...prev };
-      delete newStatus[selectedRow.id];
-      return newStatus;
-    });
-  } else {
-    // Si la mission n'est pas en pause, la mettre en pause
-    setPreviousStatus((prev) => ({
-      ...prev,
-      [selectedRow.id]: selectedRow.statusMission, // Stocker l'état actuel
-    }));
-    const updatedRows = filteredRows.map((row) =>
-      row.id === selectedRow.id ? { ...row, statusMission: "temporaire" } : row
-    );
-    setFilteredRows(updatedRows);
-  }
-};
+//   const handlePauseRow = async (selectedRow) => {
+//     if (selectedRow.status === "en_attente") {
+//       // Calculer la nouvelle date de début (date actuelle)
+//       const newStartDate = new Date().toISOString().split("T")[0]; // Format YYYY-MM-DD
+
+//       const response = await api.put(`/resumemission/${selectedRow.id}`, {
+//         previous_status_id: previousStatus[selectedRow.id], // Statut précédent stocké localement
+//         new_start_date: newStartDate,
+//     });
+
+//     // Mettre à jour l'état local
+//     setFilteredRows((prevRows) =>
+//       prevRows.map((row) =>
+//           row.id === selectedRow.id ? { ...row, status: response.data.status_id } : row
+//       )
+//   );
+//  } else {
+// //       const missionEndDate = new Date(selectedRow.dateField1).toISOString().split("T")[0]; // Convertir en format YYYY-MM-DD
+
+
+// //       console.log("Nouvelle date de début :", newStartDate);
+// //       console.log("Date de fin de la mission :", selectedRow.dateField1);
+
+// //       // Vérifier si la nouvelle date de début est supérieure à la date de fin
+// //       if (newStartDate > missionEndDate) {
+// //         // Afficher une alerte ou un message d'erreur
+// //         console.log("La mission ne peut pas être reprise car la date de début serait supérieure à la date de fin.");
+// //         setSnackbarMessage("La mission ne peut pas être reprise car la date de début serait supérieure à la date de fin.");
+// //         setSnackbarOpen(true); // Afficher la notification
+// //         return; // Ne pas mettre à jour la mission
+// //       }
+
+// //       // Si la date de début est valide, reprendre la mission
+// //       const updatedRows = filteredRows.map((row) =>
+// //         row.id === selectedRow.id
+// //           ? {
+// //             ...row,
+// //             statusMission: previousStatus[selectedRow.id], // Restaurer l'état précédent
+// //             dateField: newStartDate, // Mettre à jour la date de début avec la date actuelle
+// //           }
+// //           : row
+// //       );
+// //       setFilteredRows(updatedRows);
+
+// //       // Supprimer l'état précédent de la mémoire
+// //       setPreviousStatus((prev) => {
+// //         const newStatus = { ...prev };
+// //         delete newStatus[selectedRow.id];
+// //         return newStatus;
+// //       });
+// //     } else {
+//       // Si la mission n'est pas en pause, la mettre en pause
+
+//       // Mettre la mission en pause
+//       const response = await api.put(`/stopmission/${selectedRow.id}`);
+//       // Stocker le statut précédent localement
+//       setPreviousStatus((prev) => ({
+//         ...prev,
+//         [selectedRow.id]: response.data.previous_status_id,
+//     }));
+//      // Mettre à jour l'état local
+//      setFilteredRows((prevRows) =>
+//       prevRows.map((row) =>
+//           row.id === selectedRow.id ? { ...row, status: "en_attente" } : row
+//       )
+//   );
+// }
+
+//       // setPreviousStatus((prev) => ({
+//       //   ...prev,
+//       //   [selectedRow.id]: selectedRow.statusMission, // Stocker l'état actuel
+//       // }));
+//       // const updatedRows = filteredRows.map((row) =>
+//       //   row.id === selectedRow.id ? { ...row, statusMission: "en_attente" } : row
+//       // );
+//       // setFilteredRows(updatedRows);
+//     }
+//   };
 
 
   // Modification d'une mission
-   // Fonction de modification d'une mission
-   const handleEditRow = (selectedRow) => {
-    console.log('data edit',selectedRow)
+  // Fonction de modification d'une mission
+  const handleEditRow = (selectedRow) => {
+    console.log('data edit', selectedRow)
     const transformedMission = {
       id: selectedRow.id,
       mission_name: selectedRow.missionName,
@@ -460,22 +427,22 @@ const missionEndDate = new Date(selectedRow.dateField1).toISOString().split("T")
   };
 
   // Mise à jour des missions après modification
-  const handleUpdateMission =async (updatedMission) => {
-    console.log('befor update',updatedMission)
-    try{
+  const handleUpdateMission = async (updatedMission) => {
+    console.log('befor update', updatedMission)
+    try {
       const response = await api.put(`/updatemissionID/${updatedMission.id}`, updatedMission);
-           console.log('update response',response)
-    setFilteredRows((prevRows) =>
-      prevRows.map((row) =>
-        row.id === updatedMission.id ? response.data : row
-      )
-    );
-    setIsEditModalOpen(false);
-    setSelectedMission(null);
-  }catch(error){
-    console.error('Erreur lors de la mise à jour du client:', error);
-  }
-};
+      console.log('update response', response)
+      setFilteredRows((prevRows) =>
+        prevRows.map((row) =>
+          row.id === updatedMission.id ? response.data : row
+        )
+      );
+      setIsEditModalOpen(false);
+      setSelectedMission(null);
+    } catch (error) {
+      console.error('Erreur lors de la mise à jour du client:', error);
+    }
+  };
 
   // Suppression d'une mission
   const handleDeleteRow = (selectedRow) => {
@@ -486,28 +453,28 @@ const missionEndDate = new Date(selectedRow.dateField1).toISOString().split("T")
 
   // Confirmation de la suppression
   const confirmDeleteMission = async () => {
-    try{
+    try {
       await api.delete(`/deletemissionID/${selectedMissionId}`);
       setFilteredRows((prevRows) =>
         prevRows.filter((row) => row.id !== selectedMissionId)
       );
-    }catch (error) {
+    } catch (error) {
       console.error('Erreur lors de la suppression du client:', error);
-  }
+    }
     setIsDeletePopupOpen(false);
     setSelectedMissionId(null);
   };
   const { setBreadcrumbs } = useBreadcrumb();
   const navigate = useNavigate(); // Hook pour la navigation
 
-   // Fonction pour récupérer le lien d'une mission
-   //const getRowLink = (row) => `/tablemission/${row.mission}`;
-  
+  // Fonction pour récupérer le lien d'une mission
+  //const getRowLink = (row) => `/tablemission/${row.mission}`;
+
 
   const handleRowClick = (rowData) => {
     // Naviguer vers la page de détails avec l'ID du contrôle dans l'URL
-    navigate(`/missions/${rowData.mission}`, { state: { missionData: rowData }} );
-   // navigate('/controle', { state: { controleData: rowData } });
+    navigate(`/missions/${rowData.mission}`, { state: { missionData: rowData } });
+    // navigate('/controle', { state: { controleData: rowData } });
     console.log('Détails du contrôle sélectionné:', rowData);
   };
 
@@ -541,22 +508,22 @@ const missionEndDate = new Date(selectedRow.dateField1).toISOString().split("T")
   const rowActions = [
     ...(userRole === "admin"
       ? [
-          {
-            icon: <ArchiveRoundedIcon sx={{ marginRight: "5px" }} />,
-            label: "archivée",
-            onClick: (selectedRow) => {
-              handleommRow(selectedRow);
-            },
-            disabled: (selectedRow) => {
-              return (
-                !selectedRow ||
-                !["clôturée", "en_retard"].includes(selectedRow.statusMission)
-              );
-            },
+        {
+          icon: <ArchiveRoundedIcon sx={{ marginRight: "5px" }} />,
+          label: "archivée",
+          onClick: (selectedRow) => {
+            handleArchiverRow(selectedRow);
           },
-        ]
+          disabled: (selectedRow) => {
+            return (
+              !selectedRow ||
+              !["clôturée", "en_retard",].includes(selectedRow.status)
+            );
+          },
+        },
+      ]
       : []),
-  
+
     {
       icon: <LockOpenRoundedIcon sx={{ marginRight: "5px" }} />,
       label: "Clôturée",
@@ -565,59 +532,59 @@ const missionEndDate = new Date(selectedRow.dateField1).toISOString().split("T")
       },
       disabled: (selectedRow) => {
         return (
-          !selectedRow || !["en_cours", "en_retard"].includes(selectedRow.statusMission)
+          !selectedRow || !["en_cours", "en_retard"].includes(selectedRow.status)
         );
       },
     },
-  
+
     ...(userRole === "admin"
       ? [
-          {
-            icon: <HighlightOffRoundedIcon sx={{ marginRight: "5px" }} />,
-            label: "Annulée",
-            onClick: (selectedRow) => {
-              handleCancelRow(selectedRow);
-            },
-            disabled: (selectedRow) => {
-              return (
-                !selectedRow ||
-                !["non_commencee", "en_cours", "temporaire"].includes(
-                  selectedRow.statusMission
-                )
-              );
-            },
+        {
+          icon: <HighlightOffRoundedIcon sx={{ marginRight: "5px" }} />,
+          label: "Annulée",
+          onClick: (selectedRow) => {
+            handleCancelRow(selectedRow);
           },
-        ]
+          disabled: (selectedRow) => {
+            return (
+              !selectedRow ||
+              !["non_commencee", "en_cours", "en_attente"].includes(
+                selectedRow.status
+              )
+            );
+          },
+        },
+      ]
       : []),
-  
+
     ...(userRole === "admin"
       ? [
-          {
-            icon: (selectedRow) => {
-              return selectedRow?.statusMission === "temporaire" ? (
-                <PlayCircleOutlineRoundedIcon sx={{ marginRight: "5px" }} />
-              ) : (
-                <PauseCircleOutlineRoundedIcon sx={{ marginRight: "5px" }} />
-              );
-            },
-            label: (selectedRow) => {
-              return selectedRow?.statusMission === "temporaire"
-                ? "Reprendre"
-                : "Pause";
-            },
-            onClick: (selectedRow) => {
-              handlePauseRow(selectedRow);
-            },
-            disabled: (selectedRow) => {
-              return (
-                !selectedRow ||
-                !["en_cours", "temporaire"].includes(selectedRow.statusMission)
-              );
-            },
+        {
+          icon: (selectedRow) => {
+            return selectedRow?.status === "en_attente" ? (
+              <PlayCircleOutlineRoundedIcon sx={{ marginRight: "5px" }} />
+            ) : (
+              <PauseCircleOutlineRoundedIcon sx={{ marginRight: "5px" }} />
+            );
           },
-        ]
+          label: (selectedRow) => {
+            return selectedRow?.status === "en_attente"
+              ? "Reprendre"
+              : "Pause";
+          },
+          onClick: (selectedRow) => {
+            handlePauseRow(selectedRow);
+          },
+          disabled: (selectedRow) => {
+            return (
+              !selectedRow ||
+              !["en_cours", "en_attente",].includes(selectedRow.status)
+            );
+          },
+        },
+      ]
       : []),
-  
+
     {
       icon: <SquarePen className="mr-2" />,
       label: "Modifier",
@@ -625,23 +592,23 @@ const missionEndDate = new Date(selectedRow.dateField1).toISOString().split("T")
         handleEditRow(selectedRow);
       },
     },
-  
+
     ...(userRole === "admin"
       ? [
-          {
-            icon: (
-              <DeleteOutlineRoundedIcon
-                sx={{ color: "var(--alert-red)", marginRight: "5px" }}
-              />
-            ),
-            label: "Supprimer mission",
-            onClick: (selectedRow) => {
-              handleDeleteRow(selectedRow);
-            },
+        {
+          icon: (
+            <DeleteOutlineRoundedIcon
+              sx={{ color: "var(--alert-red)", marginRight: "5px" }}
+            />
+          ),
+          label: "Supprimer mission",
+          onClick: (selectedRow) => {
+            handleDeleteRow(selectedRow);
           },
-        ]
+        },
+      ]
       : []),
-  
+
     {
       icon: (
         <VisibilityIcon sx={{ color: "var(--font-gray)", marginRight: "5px" }} />
@@ -670,7 +637,7 @@ const missionEndDate = new Date(selectedRow.dateField1).toISOString().split("T")
           />
         </div>
         <div className="flex justify-end items-center gap-4 pr-10 mb-6">
-        <ImportCsvButton  onDataImported={handleDataImported} />
+          <ImportCsvButton onDataImported={handleDataImported} />
           <ExportButton
             rowsData={filteredRows}
             headers={columnsConfig2.map((col) => col.headerName)}
@@ -678,66 +645,63 @@ const missionEndDate = new Date(selectedRow.dateField1).toISOString().split("T")
           />
         </div>
 
- {/* Boutons pour basculer entre les vues */}
- { userRole==='admin' &&
- <div className="flex border-b-2 border-gray-300 mb-3 ml-8 ">
-        <button
-          className={`px-4 py-2 ${
-            activeView === "active"
-              ? "rounded-l rounded-r-none border-none bg-gray-200 text-gray-700 "
-              : "rounded-none text-[var(--subfont-gray)] border-none "
-          } `}
-          onClick={() => setActiveView("active")}
-        >
-          Missions Actives
-        </button>
-        <button
-          className={`px-4 py-2 ${
-            activeView === "archived"
-              ? " rounded-r rounded-l-none  border-none bg-gray-200 text-gray-700"
-              : "rounded-none text-[var(--subfont-gray)] border-none"
-          } `}
-          onClick={() => setActiveView("archived")}
-        >
-          Missions Archivées
-        </button>
-      </div> }
+        {/* Boutons pour basculer entre les vues */}
+        {userRole === 'admin' &&
+          <div className="flex border-b-2 border-gray-300 mb-3 ml-8 ">
+            <button
+              className={`px-4 py-2 ${activeView === "active"
+                  ? "rounded-l rounded-r-none border-none bg-gray-200 text-gray-700 "
+                  : "rounded-none text-[var(--subfont-gray)] border-none "
+                } `}
+              onClick={() => setActiveView("active")}
+            >
+              Missions Actives
+            </button>
+            <button
+              className={`px-4 py-2 ${activeView === "archived"
+                  ? " rounded-r rounded-l-none  border-none bg-gray-200 text-gray-700"
+                  : "rounded-none text-[var(--subfont-gray)] border-none"
+                } `}
+              onClick={() => setActiveView("archived")}
+            >
+              Missions Archivées
+            </button>
+          </div>}
 
         <div
-          className={`flex-1 overflow-x-auto overflow-y-auto h-[400px] transition-all ${
-            isDeletePopupOpen ? "blur-sm" : ""
-          }`}
+          className={`flex-1 overflow-x-auto overflow-y-auto h-[400px] transition-all ${isDeletePopupOpen ? "blur-sm" : ""
+            }`}
         >
-          {missionsToDisplay.length === 0 ?(
+          {missionsToDisplay.length === 0 ? (
             <p className="text-center text-subfont-gray mt-20">
-            Aucune mission pour le moment. Vous pouvez charger un
-            fichier Excel ?
-          </p>
-          ):(
-          <Table
-            key={JSON.stringify(missionsToDisplay)}
-            
-            columnsConfig={columnsConfig2}
-            // rowsData={filteredRows}
-            rowsData={missionsToDisplay}
-            checkboxSelection={false}
-            // getRowLink={getRowLink}
-            onRowClick={handleRowClick}
-            headerTextBackground={"white"}
-            headerBackground="var(--blue-menu)"
-            // rowActions={rowActions}
-            rowActions={rowActions.filter((action) =>
-              activeView === "archived" ? action.label !== "archivée" : true
-            )}
-          />
-        )}
-           {/* <AdminActionsPanel
+              Aucune mission pour le moment. Vous pouvez charger un
+              fichier Excel ?
+            </p>
+          ) : (
+            <Table
+              key={JSON.stringify(missionsToDisplay)}
+
+              columnsConfig={columnsConfig2}
+              // rowsData={filteredRows}
+              rowsData={missionsToDisplay}
+              checkboxSelection={false}
+              // getRowLink={getRowLink}
+              onRowClick={handleRowClick}
+              headerTextBackground={"white"}
+              headerBackground="var(--blue-menu)"
+              // rowActions={rowActions}
+              rowActions={rowActions.filter((action) =>
+                activeView === "archived" ? action.label !== "archivée" : true
+              )}
+            />
+          )}
+          {/* <AdminActionsPanel
         pendingActions={pendingActions}
         onValidateAction={handleValidateAction}
         onRejectAction={handleRejectAction}
       /> */}
         </div>
-       
+
       </div>
       {/*  <AddRisqueForm
       title="Créer un nouveau risque"
@@ -745,7 +709,7 @@ const missionEndDate = new Date(selectedRow.dateField1).toISOString().split("T")
       onClose={closeModal}
       onRisqueCreated={handleMissionCreation}
     />*/}
-     {/* <AddControleForm
+      {/* <AddControleForm
       title="Créer un nouveau risque"
       isOpen={isModalOpen}
       onClose={closeModal}
@@ -758,7 +722,7 @@ const missionEndDate = new Date(selectedRow.dateField1).toISOString().split("T")
         onMissionCreated={handleMissionCreation}
       />
 
-<Snackbar
+      <Snackbar
         open={snackbarOpen}
         autoHideDuration={6000}
         onClose={() => setSnackbarOpen(false)}
