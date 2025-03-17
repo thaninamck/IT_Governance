@@ -12,7 +12,8 @@ const useUser = () => {
   const [selectedAppId, setSelectedAppId] = useState(null);
   const [isDeletePopupOpen, setIsDeletePopupOpen] = useState(false);
   const [ResetShow, setResetShow] = useState(false);
-
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [selectedApp, setSelectedApp] = useState(null);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
 const [snackbarMessage, setSnackbarMessage] = useState("");
 const [snackbarSeverity, setSnackbarSeverity] = useState("success"); // "success", "error", "warning", "info"
@@ -133,6 +134,48 @@ const handleResetRow =  (selectedRow) => {
     }
   };
   
+// Modification d'une mission
+const handleEditRow = (selectedRow) => {
+  // const missionToEdit = filteredRows.find(row => row.id === rowId);
+  setSelectedApp({ ...selectedRow }); // S'assurer que l'objet est bien copié
+   setIsEditModalOpen(true);
+   console.log("test",selectedRow)
+};
+
+const handleUpdateApp = async (updatedApp) => {
+  if (!updatedApp || !updatedApp.id) return;
+  const formattedApp = {
+    first_name: updatedApp.prenom,
+    last_name: updatedApp.nom,
+    grade: updatedApp.grade,
+    phone_number: updatedApp.contact,
+    email: updatedApp.email,
+    is_active: updatedApp.status === "Active",
+  };
+  try {
+    setLoading(true);
+    setError(null);
+
+    // 🔹 Appel API pour mettre à jour l'utilisateur
+    await api.patch(`/update-user/${updatedApp.id}`, formattedApp);
+
+    // 🔹 Mise à jour du state local après la modification
+    setFilteredRows(prevRows =>
+      prevRows.map(row =>
+        row.id === updatedApp.id ? { ...row, ...updatedApp } : row
+      )
+    );
+
+    toast.success("Utilisateur mis à jour avec succès !");
+  } catch (error) {
+    console.error("Erreur lors de la mise à jour :", error);
+    toast.error("Échec de la mise à jour de l'utilisateur.");
+  } finally {
+    setLoading(false);
+    setIsEditModalOpen(false);
+    setSelectedApp(null);
+  }
+};
 
  
 
@@ -164,6 +207,12 @@ const handleResetRow =  (selectedRow) => {
     loading,
     error,
     handleDeleteRow,
+    isEditModalOpen,
+    selectedApp,
+    setIsEditModalOpen,
+    setSelectedApp,
+    handleEditRow,
+    handleUpdateApp,
     user, 
   };
 };

@@ -5,9 +5,9 @@ import Button from '../Button';
 import emailjs from 'emailjs-com';
 import SelectInput from './SelectInput';
 
-function AddUserForm({ title, isOpen, onClose, initialValues, onUserCreated }) {
+function AddUserForm({ title, isOpen,loading, onClose, initialValues, onUserCreated }) {
   if (!isOpen) return null;
-  const [loading, setLoading] = useState(false);
+  
 
   const getCurrentDate = () => new Date().toISOString().split('T')[0];
 
@@ -127,16 +127,7 @@ function AddUserForm({ title, isOpen, onClose, initialValues, onUserCreated }) {
             value={userData.prenom}
             onChange={e => setUserData({ ...userData, prenom: e.target.value })}
           />
-          <InputForm
-            type="text"
-            label="Nom d'utilisateur"
-            placeholder="Nom d'utilisateur"
-            width="200px"
-            required={true}
-              flexDirection="flex-col"
-            value={userData.username}
-            readOnly // Correction ici
-          />
+          
         </div>
 
         <div className="form-row">
@@ -184,7 +175,7 @@ function AddUserForm({ title, isOpen, onClose, initialValues, onUserCreated }) {
         multiSelect={false}
       />
 
-        <Button btnName={loading ?" Création en cours...": "Créer"} type="submit"  disabled={loading}/>
+        <Button btnName={loading ?" Mise à jour...": "Mettre à jour"} type="submit"  disabled={loading}/>
       </form>
     </div>
   );
