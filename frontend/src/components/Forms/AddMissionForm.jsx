@@ -147,8 +147,11 @@ function AddMissionForm({ title, isOpen, onClose, initialValues, onMissionCreate
       return;
     }
 
-    // Vérifier si la date de début est dans le passé
-    if (!validateStartDate(missionData.start_date)) return;
+     // Si c'est une création (pas de initialValues), vérifier la date de début
+  if (!initialValues && !validateStartDate(missionData.start_date)) {
+    return;
+  }
+     
 
     // Vérifier la validité des dates d'audit
     if (!validateDates(missionData.audit_start_date, missionData.audit_end_date)) return;
