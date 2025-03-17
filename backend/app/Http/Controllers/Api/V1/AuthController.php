@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 use App\Services\RecaptchaService;
 use Illuminate\Support\Facades\Validator;
+use Log;
 class AuthController extends BaseController
 {
 
@@ -82,6 +83,8 @@ class AuthController extends BaseController
 
     public function logout(Request $request)
     {
+        Log::info('Token reçu:', ['token' => request()->header('Authorization')]);
+
         $user = $request->user();
 
         $request->user()->tokens()->delete();

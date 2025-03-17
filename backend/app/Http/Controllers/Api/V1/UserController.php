@@ -123,7 +123,7 @@ public function resetUser(Request $request, $id): JsonResponse
             return $this->sendError("Validation error", $validator->errors(), 422);
         }
 
-        $newPassword = $request->input('new_password');
+        $newPassword = Hash::make($request->input('new_password'));
 
         // 🔹 Appel du service avec le mot de passe validé
         $response = $this->userService->resetUser($id, $newPassword);
