@@ -67,7 +67,7 @@ class MissionController extends BaseController
 
             // Données validées
             $missionData = $validator->validated();
-            $missionData['status_id'] = 9; // Définir le statut par défaut
+            $missionData['status_id'] = 16; // Définir le statut par défaut
 
             // Création de la mission
             $mission = $this->missionService->createMission($missionData);
@@ -387,13 +387,38 @@ public function cancelMission($id): JsonResponse
         return $this->sendError("An error occurred", ["error" => $e->getMessage()], 500);
     }
 }
+// public function stopMission($id): JsonResponse
+// {
+//     try {
+//         // Fermer la mission
+//         $mission = $this->missionService->stopMission($id);
+
+//         if (!$mission) {
+//             return $this->sendError("Mission not found", [], 404);
+//         }
+
+//         // Log de l'action
+//         $this->logService->logUserAction(
+//             auth()->user()->email ?? 'Unknown',
+//             'Admin',
+//             "stop de la mission : {$mission->mission_name}",
+//             ""
+//         );
+
+//         // Réponse JSON
+//         return $this->sendResponse(new MissionResource($mission), "Mission archived successfully");
+//     } catch (\Exception $e) {
+//         return $this->sendError("An error occurred", ["error" => $e->getMessage()], 500);
+//     }
+// }
+
 public function stopMission($id): JsonResponse
 {
     try {
-        // Fermer la mission
-        $mission = $this->missionService->stopMission($id);
+        // Mettre la mission en pause
+        $result = $this->missionService->stopMission($id);
 
-        if (!$mission) {
+        if (!$result['mission']) {
             return $this->sendError("Mission not found", [], 404);
         }
 
@@ -401,29 +426,65 @@ public function stopMission($id): JsonResponse
         $this->logService->logUserAction(
             auth()->user()->email ?? 'Unknown',
             'Admin',
-            "stop de la mission : {$mission->mission_name}",
+            "Mise en pause de la mission : {$result['mission']->mission_name}",
             ""
         );
 
-        // Réponse JSON
-        return $this->sendResponse(new MissionResource($mission), "Mission archived successfully");
+        // Réponse JSON avec le statut précédent
+        return $this->sendResponse([
+            'mission' => new MissionResource($result['mission']),
+            'previous_status_id' => $result['previous_status_id'],
+        ], "Mission paused successfully");
     } catch (\Exception $e) {
         return $this->sendError("An error occurred", ["error" => $e->getMessage()], 500);
     }
 }
 
+// public function resumeMission(Request $request, $id): JsonResponse
+// {
+//     try {
+//         // Récupérer le statut précédent depuis la requête
+//         $previousStatusId = $request->input('previous_status_id');
+
+//         if (!$previousStatusId) {
+//             return $this->sendError("Previous status ID is required", [], 400);
+//         }
+
+//         // Reprendre la mission
+//         $mission = $this->missionService->resumeMission($id, $previousStatusId);
+
+//         if (!$mission) {
+//             return $this->sendError("Mission not found", [], 404);
+//         }
+
+//         // Log de l'action
+//         $this->logService->logUserAction(
+//             auth()->user()->email ?? 'Unknown',
+//             'Admin',
+//             "Reprise de la mission : {$mission->mission_name}",
+//             ""
+//         );
+
+//         // Réponse JSON
+//         return $this->sendResponse(new MissionResource($mission), "Mission resumed successfully");
+//     } catch (\Exception $e) {
+//         return $this->sendError("An error occurred", ["error" => $e->getMessage()], 500);
+//     }
+// }
+
 public function resumeMission(Request $request, $id): JsonResponse
 {
     try {
-        // Récupérer le statut précédent depuis la requête
+        // Récupérer le statut précédent et la nouvelle date de début depuis la requête
         $previousStatusId = $request->input('previous_status_id');
+        $newStartDate = $request->input('new_start_date');
 
-        if (!$previousStatusId) {
-            return $this->sendError("Previous status ID is required", [], 400);
+        if (!$previousStatusId || !$newStartDate) {
+            return $this->sendError("Previous status ID and new start date are required", [], 400);
         }
 
         // Reprendre la mission
-        $mission = $this->missionService->resumeMission($id, $previousStatusId);
+        $mission = $this->missionService->resumeMission($id, $previousStatusId, $newStartDate);
 
         if (!$mission) {
             return $this->sendError("Mission not found", [], 404);

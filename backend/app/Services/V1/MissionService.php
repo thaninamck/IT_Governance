@@ -23,7 +23,7 @@ class MissionService
 
     public function createMission(array $data): Mission
     {
-        $data['status_id'] = 9;
+        $data['status_id'] = 16;
         return $this->missionRepository->createMission($data);
     }
 
@@ -39,13 +39,14 @@ class MissionService
     {
         return $this->missionRepository->cancelMission($id);
     }
-    public function stopMission(int $id):Mission
+    public function stopMission(int $id): array
     {
         return $this->missionRepository->stopMission($id);
     }
-    public function resumeMission(int $id, int $previousStatusId): ?Mission
+    
+    public function resumeMission(int $id, int $previousStatusId, string $newStartDate): ?Mission
 {
-    return $this->missionRepository->resumeMission($id, $previousStatusId);
+    return $this->missionRepository->resumeMission($id, $previousStatusId, $newStartDate );
 }
 
     public function getArchivedMissions()

@@ -32,13 +32,33 @@ Route::middleware(['auth:sanctum', AdminMiddleware::class])
            // Route::put('/updatemissionID/{id}', 'updateMission');
            // Route::delete('/deletemissionID/{id}', 'deleteMission');
             Route::post('/insertmissions', 'storeMultiple');
-            Route::put('/closemission/{id}', 'closeMission');
-            Route::put('/archivemission/{id}', 'archiveMission');
-            Route::put('/cancelmission/{id}', 'cancelMission');
-            Route::put('/stopmission/{id}', 'stopMission');
-            Route::put('/resumemission/{id}', 'resumeMission');
+            // Route::put('/closemission/{id}', 'closeMission');
+           // Route::put('/archivemission/{id}', 'archiveMission');
+            // Route::put('/cancelmission/{id}', 'cancelMission');
+            // Route::put('/stopmission/{id}', 'stopMission');
+           // Route::put('/resumemission/{id}', 'resumeMission');
             Route::get('/archivedmissions', 'getArchivedMissions');
         });
+    });
+    Route::prefix('v1')->controller(MissionController::class)->group(function() {
+        Route::put('/resumemission/{id}', 'resumeMission');
+        
+    });
+    Route::prefix('v1')->controller(MissionController::class)->group(function() {
+        Route::put('/stopmission/{id}', 'stopMission');
+        
+    });
+    Route::prefix('v1')->controller(MissionController::class)->group(function() {
+        Route::put('/cancelmission/{id}', 'cancelMission');
+        
+    });
+    Route::prefix('v1')->controller(MissionController::class)->group(function() {
+        Route::put('/closemission/{id}', 'closeMission');
+        
+    });
+    Route::prefix('v1')->controller(MissionController::class)->group(function() {
+        Route::put('/archivemission/{id}', 'archiveMission');
+        
     });
     Route::prefix('v1')->controller(MissionController::class)->group(function() {
         Route::delete('/deletemissionID/{id}', 'deleteMission');
