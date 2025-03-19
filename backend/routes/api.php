@@ -14,7 +14,7 @@ use App\Http\Controllers\Api\V1\ControlController;
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\ClientController;
 use App\Http\Controllers\Api\V1\LogController;
-
+use App\Http\Controllers\Api\V1\NotificationController;
 
 use App\Http\Controllers\Api\V1\RiskController;
 use App\Http\Controllers\Api\V1\MissionController;
@@ -28,7 +28,7 @@ Route::middleware(['auth:sanctum', AdminMiddleware::class])
             Route::get('/users', 'index');
             Route::post('/insert-user', 'store');
             Route::post('/reset-user/{id}', 'resetUser');
-            Route::patch('/update-user/{id}', 'updateUser');
+            Route::put('/update-user/{id}', 'updateUser');
             Route::patch('/block-user/{id}', 'blockUser');
             Route::patch('/unblock-user/{id}', 'unblockUser');
             Route::delete('/user/{id}', 'deleteUser');
@@ -119,7 +119,14 @@ Route::post('/store-reset-code', [AuthController::class, 'storeResetCode']);
 Route::post('/verify-reset-code', [AuthController::class, 'verifyResetCode']);
 Route::post('/reset-password', [AuthController::class, 'resetPassword']);
 
+
+Route::post('/notifications/simulate', [NotificationController::class, 'simulate'])->middleware('auth:sanctum');
+Route::get('/notifications', [NotificationController::class, 'index'])->middleware('auth:sanctum');
+
+Route::post('/notifications/{id}/read', [NotificationController::class, 'markNotificationAsRead'])->middleware('auth:sanctum');
+
 // Route::post('/insert-executions', [ExecutionController::class, 'createExecutions'])->middleware(ManagerMiddleware::class,'auth:sanctum');
 //Route::get('/missions/{mission}/executions', [ExecutionController::class, 'getExecutionsByMission'])->middleware(ManagerMiddleware::class,'auth:sanctum');
 //Route::get('/missions/{mission}/members', [MissionController::class, 'getMembersByMission']);
+
 

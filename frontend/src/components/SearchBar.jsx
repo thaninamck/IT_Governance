@@ -42,7 +42,7 @@ function SearchBar({ columnsConfig, initialRows, onSearch }) {
   };
 
   return (
-    <div className="py-6 w-full max-w-5xl">
+    <div className="py-6 w-full max-w-screen-sm">
       {/* Barre de recherche */}
       <div className="flex items-center space-x-2 bg-white shadow rounded-full px-4 py-2">
         <Search className="text-gray-400" />

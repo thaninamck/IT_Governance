@@ -1,90 +1,278 @@
 import { useState, useEffect } from "react";
-import { authApi } from "../Api"; // Importer l'instance Axios pour les requêtes authentifiées
+import { api } from "../Api"; // Importer l'instance Axios pour les requêtes authentifiées
 import { useAuth } from "../Context/AuthContext"; // Importer le contexte d'authentification
+import { toast } from "react-toastify";
+import emailjs from "emailjs-com";
 
-const useClient = () => {
+const useUser = () => {
   const { token, user } = useAuth(); // Récupérer le token et les informations de l'utilisateur
-  const [clients, setClients] = useState([]); // État pour stocker la liste des clients
+  const [filteredRows, setFilteredRows] = useState([]);
   const [loading, setLoading] = useState(false); // État pour gérer le chargement
   const [error, setError] = useState(null); // État pour gérer les erreurs
-
-  // 🔹 Récupérer la liste des clients
-  const fetchClients = async () => {
+  const [selectedAppId, setSelectedAppId] = useState(null);
+  const [isDeletePopupOpen, setIsDeletePopupOpen] = useState(false);
+  const [ResetShow, setResetShow] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [selectedApp, setSelectedApp] = useState(null);
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  // État pour gérer l'affichage du modal d'ajout d'utilisateur
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [snackbarSeverity, setSnackbarSeverity] = useState("success"); // "success", "error", "warning", "info"
+  const fetchUsers = async () => {
     setLoading(true);
     setError(null);
     try {
-      const response = await authApi.get("/clients"); // Endpoint pour récupérer les clients
-      setClients(response.data); // Mettre à jour la liste des clients
+      const response = await api.get("/users"); // Récupération des utilisateurs depuis l'API
+
+      // Transformation des données
+      const transformedUsers = response.data.map((user) => ({
+        id: user.id,
+        nom: user.firstName, // Concaténation du nom et du prénom
+        prenom: user.lastName,
+        grade: user.grade,
+        email: user.email,
+        contact: user.phoneNumber,
+        dateField: user.createdAt.split("T")[0], // Extraction de la date sans l'heure
+        dateField1: user.lastActivity.split(" ")[0], // Extraction de la date de la dernière activité
+        status: user.isActive ? "Actif" : "Bloqué",
+        role: user.role === 1 ? "Admin" : "Utilisateur normal",
+      }));
+
+      setFilteredRows(transformedUsers); // Mise à jour des utilisateurs dans le state
     } catch (error) {
-      setError("Erreur lors de la récupération des clients.");
-      throw error;
+      setError("Erreur lors de la récupération des utilisateurs.");
+      console.error(error);
     } finally {
       setLoading(false);
     }
   };
 
-  // 🔹 Ajouter un nouveau client
-  const addClient = async (newClient) => {
-    setLoading(true);
-    setError(null);
+  const handleDeleteRow = async (selectedRow) => {
+    setSelectedAppId(selectedRow.id);
+    setIsDeletePopupOpen(true);
+  };
+
+  const confirmDeleteApp = async () => {
+    if (!selectedAppId) return;
+
     try {
-      const response = await authApi.post("/clients", newClient); // Endpoint pour ajouter un client
-      setClients((prevClients) => [...prevClients, response.data]); // Mettre à jour la liste des clients
+      setLoading(true);
+      setError(null);
+      await api.delete(`/user/${selectedAppId}`); // Assure-toi que l'endpoint est bien `/users/` et non `/user/`
+      setFilteredRows((prevRows) =>
+        prevRows.filter((row) => row.id !== selectedAppId)
+      );
+      console.log(`Utilisateur ${selectedAppId} supprimé avec succès.`);
+      toast.success("Utilisateur  supprimé avec succès");
     } catch (error) {
-      setError("Erreur lors de l'ajout du client.");
-      throw error;
+      setError("Erreur lors de la suppression de l'utilisateur.");
+      console.error("Erreur lors de la suppression :", error);
+      toast.error("Utilisateur ne peut pas etre supprimé ");
+    } finally {
+      setIsDeletePopupOpen(false);
+      setSelectedAppId(null);
+      setLoading(false);
+    }
+  };
+
+  const generateRandomPassword = () => {
+    const length = 10;
+    const charset =
+      "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    let password = "";
+    for (let i = 0; i < length; i++) {
+      password += charset.charAt(Math.floor(Math.random() * charset.length));
+    }
+    return password;
+  };
+
+  const handleResetRow = (selectedRow) => {
+    setSelectedAppId(selectedRow.id);
+    setResetShow(true);
+    console.log(selectedRow);
+  };
+
+  const handleResetConfirm = async () => {
+    if (selectedAppId !== null) {
+      const selectedUser = filteredRows.find((row) => row.id === selectedAppId);
+      if (!selectedUser) return;
+
+      const newPassword = generateRandomPassword();
+      const userEmail = selectedUser.email;
+
+      try {
+        setLoading(true);
+        setError(null);
+
+        // 🔹 Appel API pour mettre à jour le mot de passe
+        await api.post(`/reset-user/${selectedAppId}`, {
+          new_password: newPassword,
+        });
+        //await api.post(`/reset-user/${selectedAppId}`);
+        // 🔹 Envoi du mail avec le nouveau mot de passe
+        await emailjs.send(
+          "service_ft79mie",
+          "template_f4ojiam",
+          { to_email: userEmail, new_password: newPassword },
+          "oAXuwpg74dQwm0C_s"
+        );
+
+        setFilteredRows((prevRows) =>
+          prevRows.map((row) =>
+            row.id === selectedAppId ? { ...row, password: newPassword } : row
+          )
+        );
+
+        toast.success("Mot de passe réinitialisé avec succès !");
+      } catch (error) {
+        console.error("Erreur lors de la réinitialisation :", error);
+        toast.error("Échec de la réinitialisation du mot de passe.");
+      } finally {
+        setLoading(false);
+        setSnackbarOpen(true);
+        setResetShow(false);
+        setSelectedAppId(null);
+      }
+    }
+  };
+
+  // Modification d'une mission
+  const handleEditRow = (selectedRow) => {
+    // const missionToEdit = filteredRows.find(row => row.id === rowId);
+    setSelectedApp({ ...selectedRow }); // S'assurer que l'objet est bien copié
+    setIsEditModalOpen(true);
+    console.log("test", selectedRow);
+  };
+
+  const handleUpdateApp = async (updatedApp) => {
+    if (!updatedApp || !updatedApp.id) return;
+
+    const formattedApp = {
+      first_name: updatedApp.prenom,
+      last_name: updatedApp.nom,
+      grade: updatedApp.grade,
+      phone_number: updatedApp.contact,
+      email: updatedApp.email,
+      role: updatedApp.role === "Admin" ? 1 : 0,
+      is_active: updatedApp.status === "Actif" ? true : false,
+    };
+
+    console.log("user to update", formattedApp);
+
+    try {
+      setLoading(true);
+      setError(null);
+
+      // 🔹 Appel API pour mettre à jour l'utilisateur
+      const response = await api.put(
+        `/update-user/${updatedApp.id}`,
+        formattedApp
+      );
+
+      // Vérifier si la requête a réussi (status 200 ou 204)
+      if (response.status === 200 || response.status === 204) {
+        // 🔹 Mise à jour du state local après la modification
+        setFilteredRows((prevRows) =>
+          prevRows.map((row) =>
+            row.id === updatedApp.id ? { ...row, ...updatedApp } : row
+          )
+        );
+
+        toast.success("Utilisateur mis à jour avec succès !");
+
+        // 🔹 Fermer la modal après succès
+        setIsEditModalOpen(false);
+        setSelectedApp(null);
+      }
+    } catch (error) {
+      console.error("Erreur lors de la mise à jour :", error);
+      toast.error("Échec de la mise à jour de l'utilisateur.");
     } finally {
       setLoading(false);
     }
   };
 
-  // 🔹 Supprimer un client
-  const deleteClient = async (clientId) => {
-    setLoading(true);
-    setError(null);
+  // Gestion de l'ajout d'un nouvel utilisateur
+  const handleUserCreation = async (newUser) => {
+    const formattedUser = {
+      first_name: newUser.prenom,
+      last_name: newUser.nom,
+      grade: newUser.grade,
+      phone_number: newUser.contact,
+      email: newUser.email,
+      password: newUser.password,
+      is_active: newUser.status === "Actif" ? true : false,
+      role: newUser.role === "Admin" ? 1 : 0,
+    };
+
     try {
-      await authApi.delete(`/clients/${clientId}`); // Endpoint pour supprimer un client
-      setClients((prevClients) => prevClients.filter((client) => client.id !== clientId)); // Mettre à jour la liste des clients
+      setLoading(true);
+      setError(null);
+      const response = await api.post("/insert-user", formattedUser);
+      setFilteredRows((prevRows) => [
+        ...prevRows,
+        { id: response.data.user.id, ...newUser },
+      ]);
+      toast.success("Utilisateur ajouté avec succès !");
     } catch (error) {
-      setError("Erreur lors de la suppression du client.");
-      throw error;
+      console.log("Erreur lors de l'ajout :", error);
+
+      if (error.response && error.response.status === 422) {
+        const errors = error.response.data?.data;
+        if (errors?.email) {
+          toast.error("Cet email est déjà utilisé par un autre utilisateur.");
+        } else {
+          toast.error("Une erreur de validation est survenue.");
+        }
+      } else {
+        toast.error("Échec de l'ajout de l'utilisateur.");
+      }
     } finally {
       setLoading(false);
+      setIsModalOpen(false);
     }
   };
 
   // 🔹 Charger les clients au montage du composant
   useEffect(() => {
-    if (token) {
-      fetchClients(); // Récupérer les clients si l'utilisateur est connecté
-    }
+    //if (token) {
+    fetchUsers(); // Récupérer les clients si l'utilisateur est connecté
+    //}
   }, [token]);
 
   return {
-    clients,
-    fetchClients,
-    addClient,
-    deleteClient,
+    selectedAppId,
+    setSelectedAppId,
+    isDeletePopupOpen,
+    setIsDeletePopupOpen,
+    confirmDeleteApp,
+    ResetShow,
+    setResetShow,
+    snackbarMessage,
+    setSnackbarMessage,
+    snackbarOpen,
+    setSnackbarOpen,
+    snackbarSeverity,
+    setSnackbarSeverity,
+    handleResetRow,
+    handleResetConfirm,
+    filteredRows,
+    setFilteredRows,
     loading,
     error,
-    user, // Retourner les informations de l'utilisateur connecté
+    handleDeleteRow,
+    isEditModalOpen,
+    selectedApp,
+    setIsEditModalOpen,
+    setSelectedApp,
+    handleEditRow,
+    handleUpdateApp,
+    handleUserCreation,
+    isModalOpen,
+    setIsModalOpen,
+    user,
   };
 };
 
-export default useClient;
-
-/*const { clients, fetchClients, addClient, deleteClient, loading, error, user } = useClient();
-
-  // 🔹 Exemple : Ajouter un nouveau client
-  const handleAddClient = async () => {
-    const newClient = {
-      name: "Nouveau Client",
-      email: "client@example.com",
-    };
-    try {
-      await addClient(newClient);
-      console.log("Client ajouté avec succès !");
-    } catch (error) {
-      console.error("Erreur :", error);
-    }
-  };*/
+export default useUser;

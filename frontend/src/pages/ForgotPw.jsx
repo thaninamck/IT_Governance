@@ -84,7 +84,7 @@ function ForgotPw() {
   return (
     <div className="bg-gray-50 px-4 h-screen">
       <div onClick={() => navigate("/")}>
-        <img src="./mazars_logo.png" alt="Mazars Logo" className="w-28 md:w-36 lg:w-44" />
+        <img src="./mazars_logo.png" alt="Mazars Logo" className="w-28 " />
       </div>
 
       {/* Bouton retour */}

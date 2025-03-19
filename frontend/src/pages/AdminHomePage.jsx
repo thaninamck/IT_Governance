@@ -4,6 +4,9 @@ import SideBar from '../components/sideBar/SideBar';
 import HeaderBis from '../components/Header/HeaderBis';
 import DashboardWelcome from '../components/DashboardWelcome';
 
+import {useAuth} from '../Context/AuthContext'
+
+
 function AdminHomePage() {
 
   return (

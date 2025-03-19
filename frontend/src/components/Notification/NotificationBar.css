@@ -51,6 +51,7 @@
 .notificationBar__item {
     display: flex;
     align-items: center;
+    
     padding: 10px;
     border-bottom: 1px solid var( --status-gray);
     position: relative;

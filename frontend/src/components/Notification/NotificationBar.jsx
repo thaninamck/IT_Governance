@@ -1,90 +1,20 @@
-import React, { useState } from "react";
+import React from "react";
 import "./NotificationBar.css";
-import icons from '../../assets/Icons'; // Importing icons from the icons.js file
+import icons from "../../assets/Icons";
+import useNotification from "../../Hooks/useNotification";
+import { Bell } from "lucide-react";
+import Spinner from "../Spinner";
 
 const NotificationBar = () => {
-  const [notifications, setNotifications] = useState([
-    {
-      id: 1,
-      sender: "SS",
-      message: "Un contrôle vous a été affecté : contrôle 5.2, mission DSP.",
-      date: "Aujourd'hui à 9:42 AM",
-      isRead: false,
-    },
-    {
-      id: 2,
-      sender: "SS",
-      message: "Vous avez été affecté(e) à la mission DSP. Veuillez consulter les détails.",
-      date: "15 DEC à 14:42 AM",
-      isRead: false,
-    },
-    {
-      id: 3,
-      sender: "SL",
-      message: "Sara Lounes a ajouté une remarque concernant le contrôle 5.3 de la mission DSP.",
-      date: "13 DEC à 11:32 AM",
-      isRead: true,
-    },
-    {
-      id: 4,
-      sender: "SS",
-      message: "Un contrôle vous a été affecté : contrôle 2.4, mission DSP.",
-      date: "11 DEC à 9:42 AM",
-      isRead: true,
-    },
-    {
-      id: 5,
-      sender: "SL",
-      message: "Sara Lounes a ajouté une remarque concernant le contrôle 5.3 de la mission DSP.",
-      date: "11 DEC à 9:42 AM",
-      isRead: true,
-    },
-    {
-      id: 6,
-      sender: "SL",
-      message: "Sara Lounes a ajouté une remarque concernant le contrôle 5.3 de la mission DSP.",
-      date: "11 DEC à 9:42 AM",
-      isRead: true,
-    },
-    {
-      id: 7,
-      sender: "SL",
-      message: "Sara Lounes a ajouté une remarque concernant le contrôle 5.3 de la mission DSP.",
-      date: "11 DEC à 9:42 AM",
-      isRead: true,
-    },
-    {
-      id: 8,
-      sender: "SL",
-      message: "Sara Lounes a ajouté une remarque concernant le contrôle 5.3 de la mission DSP.",
-      date: "11 DEC à 9:42 AM",
-      isRead: true,
-    },
-  ]);
-
-  // État pour stocker le filtre sélectionné (Tout ou Non lues)
-  const [filter, setFilter] = useState("all");
-
-  // Filtrer les notifications en fonction du filtre sélectionné
-  const filteredNotifications = filter === "unread"
-    ? notifications.filter((notif) => !notif.isRead) // Afficher uniquement les non lues
-    : notifications; // Afficher toutes les notifications
-
-  // Fonction pour marquer la notification comme lue
-  const markAsRead = (id) => {
-    setNotifications((prevNotifications) =>
-      prevNotifications.map((notif) =>
-        notif.id === id ? { ...notif, isRead: true } : notif
-      )
-    );
-  };
-
-  // Fonction pour marquer toutes les notifications comme lues
-  const markAllAsRead = () => {
-    setNotifications((prevNotifications) =>
-      prevNotifications.map((notif) => ({ ...notif, isRead: true }))
-    );
-  };
+  const {
+    filter,
+    setFilter,
+    filteredNotifications,
+    markAsRead,
+    markAllAsRead,
+    loading,
+    error,
+  } = useNotification();
 
   return (
     <div className="notificationBar">
@@ -92,20 +22,32 @@ const NotificationBar = () => {
       <div className="notificationBar__header">
         <div className="notificationBar__actions">
           <h3>NOTIFICATIONS</h3>
-          <select className="notificationBar__filter" onChange={(e) => setFilter(e.target.value)}>
+          <select
+            className="notificationBar__filter"
+            onChange={(e) => setFilter(e.target.value)}
+          >
             <option value="all">Tout</option>
             <option value="unread">Non lues</option>
           </select>
         </div>
         <span className="notificationBar__markAll" onClick={markAllAsRead}>
-          Marquer tout comme lu <icons.checkCircle sx={{ width: "18px", marginLeft: "10px" }} />
+          Marquer tout comme lu{" "}
+          <icons.checkCircle sx={{ width: "18px", marginLeft: "10px" }} />
         </span>
       </div>
 
-      {/* Liste des notifications filtrées */}
+      {/* Contenu des notifications */}
       <div className="notificationBar__list">
-        {filteredNotifications.length === 0 ? (
-          <p className="notificationBar__empty">Aucune notification à afficher</p>
+        {/* Affichage du spinner en cas de chargement */}
+        {loading ? (
+  <div className="fixed inset-0 flex items-center justify-center bg-white/70">
+            
+            <Spinner color="var(--blue-menu)" />
+          </div>
+        ) : filteredNotifications.length === 0 ? (
+          <p className="notificationBar__empty">
+            Aucune notification à afficher
+          </p>
         ) : (
           filteredNotifications.map((notif) => {
             let boldText = "";
@@ -125,17 +67,23 @@ const NotificationBar = () => {
             return (
               <div
                 key={notif.id}
-                className={`notificationBar__item ${!notif.isRead ? "unread" : ""}`}
-                onClick={() => markAsRead(notif.id)} // Marquer comme lu au clic
+                className={`notificationBar__item ${
+                  !notif.isRead ? "unread" : ""
+                }`}
+                onClick={() => markAsRead(notif.id)}
               >
-                <div className="notificationBar__initials">{notif.sender}</div>
+                <div className="notificationBar__icon mr-7">
+                  <Bell size={20} />
+                </div>
                 <div className="notificationBar__details">
                   <p className="notificationBar__message">
                     <strong>{boldText}</strong> {normalText}
                   </p>
                   <p className="notificationBar__date">{notif.date}</p>
                 </div>
-                {!notif.isRead && <div className="notificationBar__unreadDot"></div>}
+                {!notif.isRead && (
+                  <div className="notificationBar__unreadDot"></div>
+                )}
               </div>
             );
           })
