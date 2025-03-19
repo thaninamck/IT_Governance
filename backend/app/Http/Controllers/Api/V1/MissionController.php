@@ -94,21 +94,7 @@ class MissionController extends BaseController
                 ],
                 'mission'
             );*/
-                /*
-                coté front end apres :
-                const getNotificationUrl = (notification) => {
-                    switch (notification.url_data?.type) {
-                        case "mission":
-                            return `/missions/${notification.url_data.id}`;
-                        case "task":
-                            return `/tasks/${notification.url_data.id}`;
-                        default:
-                            return "/";
-                    }
-                };
-
-
-*/             
+                            
             // Log de l'action
             $this->logService->logUserAction(
                 auth()->user()->email ?? 'Unknown',

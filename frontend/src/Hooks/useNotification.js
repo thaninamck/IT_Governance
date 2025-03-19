@@ -1,0 +1,192 @@
+import { useState, useEffect } from "react";
+import { authApi } from "../Api"; // Instance Axios
+import { useAuth } from "../Context/AuthContext"; // Contexte d'authentification
+import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
+
+const useUser = () => {
+  const navigate = useNavigate(); // Hook pour la navigation
+
+  const { token, user } = useAuth();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [notifications, setNotifications] = useState([]);
+
+ // Fonction pour récupérer l'URL selon le type de notification
+const getNotificationUrl = (notification) => {
+  switch (notification.url?.type) {
+    case "mission":
+      return `/missions/${notification.url.id}`;
+    case "meeting":
+      return `/meetings/${notification.url.id}`;
+    default:
+      return "/";
+  }
+};
+
+// Fonction pour formater les notifications
+const transformNotifications = (data) => {
+  return data.map((notif) => ({
+    id: notif.id, // UUID
+    sender: "SS", // Statique (tu peux changer si besoin)
+    message: notif.message, // Message récupéré
+    date: notif.created_at,
+    url: getNotificationUrl(notif), // Générer l'URL selon le type
+    isRead: notif.read_at !== null, // true si la notification a été lue
+  }));
+};
+
+  // Fonction pour récupérer les notifications depuis l'API
+  const fetchNotifications = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await authApi.get("/notifications"); // Récupération des notifications
+      const formattedNotifications = transformNotifications(response.data);
+      setNotifications(formattedNotifications);
+    } catch (error) {
+      setError("Erreur lors de la récupération des notifications.");
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const MarkNotificationAsRead = async (id) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await authApi.post(`/notifications/${id}/read`);
+      return response.status;
+    } catch (error) {
+      setError("Erreur lors de la récupération des notifications.");
+      console.error(error);
+      return error.response ? error.response.status : 500; // Retourne le statut de l'erreur ou 500 si inconnu
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchNotifications();
+  }, []);
+
+  const markAsRead = async (id) => {
+    const status = await MarkNotificationAsRead(id); // Appelle l'API pour marquer comme lu
+
+    if (status === 200) { // Vérifie si la requête a réussi
+        setNotifications((prevNotifications) =>
+            prevNotifications.map((notif) =>
+                notif.id === id ? { ...notif, isRead: true } : notif
+            )
+        );
+
+        // Trouver la notification correspondante
+        const notif = notifications.find((n) => n.id === id);
+        if (notif?.url) {
+            navigate(notif.url); // Rediriger si une URL existe
+        }
+    } else {
+        toast.error(`Erreur lors de la mise à jour : ${status}`);
+    }
+};
+
+
+  // Fonction pour marquer toutes les notifications comme lues
+  const markAllAsRead = () => {
+    setNotifications((prevNotifications) =>
+      prevNotifications.map((notif) => ({ ...notif, isRead: true }))
+    );
+  };
+
+  // État pour stocker le filtre sélectionné (Tout ou Non lues)
+  const [filter, setFilter] = useState("all");
+
+  // Filtrer les notifications en fonction du filtre sélectionné
+  const filteredNotifications =
+    filter === "unread"
+      ? notifications.filter((notif) => !notif.isRead) // Afficher uniquement les non lues
+      : notifications; // Afficher toutes les notifications
+
+  return {
+    filter,
+    setFilter,
+    filteredNotifications,
+    setNotifications,
+    markAsRead,
+    markAllAsRead,
+    loading,
+    error,
+    notifications,
+    user,
+  };
+};
+
+export default useUser;
+/*
+ const [notificationss, setNotificationss] = useState([
+    {
+      id: 1,
+      sender: "SS",
+      message: "Un contrôle vous a été affecté : contrôle 5.2, mission DSP.",
+      date: "Aujourd'hui à 9:42 AM",
+      isRead: false,
+    },
+    {
+      id: 2,
+      sender: "SS",
+      message:
+        "Vous avez été affecté(e) à la mission DSP. Veuillez consulter les détails.",
+      date: "15 DEC à 14:42 AM",
+      isRead: false,
+    },
+    {
+      id: 3,
+      sender: "SL",
+      message:
+        "Sara Lounes a ajouté une remarque concernant le contrôle 5.3 de la mission DSP.",
+      date: "13 DEC à 11:32 AM",
+      isRead: true,
+    },
+    {
+      id: 4,
+      sender: "SS",
+      message: "Un contrôle vous a été affecté : contrôle 2.4, mission DSP.",
+      date: "11 DEC à 9:42 AM",
+      isRead: true,
+    },
+    {
+      id: 5,
+      sender: "SL",
+      message:
+        "Sara Lounes a ajouté une remarque concernant le contrôle 5.3 de la mission DSP.",
+      date: "11 DEC à 9:42 AM",
+      isRead: true,
+    },
+    {
+      id: 6,
+      sender: "SL",
+      message:
+        "Sara Lounes a ajouté une remarque concernant le contrôle 5.3 de la mission DSP.",
+      date: "11 DEC à 9:42 AM",
+      isRead: true,
+    },
+    {
+      id: 7,
+      sender: "SL",
+      message:
+        "Sara Lounes a ajouté une remarque concernant le contrôle 5.3 de la mission DSP.",
+      date: "11 DEC à 9:42 AM",
+      isRead: true,
+    },
+    {
+      id: 8,
+      sender: "SL",
+      message:
+        "Sara Lounes a ajouté une remarque concernant le contrôle 5.3 de la mission DSP.",
+      date: "11 DEC à 9:42 AM",
+      isRead: true,
+    },
+  ]);
+
+*/
