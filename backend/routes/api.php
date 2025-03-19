@@ -122,6 +122,7 @@ Route::post('/reset-password', [AuthController::class, 'resetPassword']);
 
 Route::post('/notifications/simulate', [NotificationController::class, 'simulate'])->middleware('auth:sanctum');
 Route::get('/notifications', [NotificationController::class, 'index'])->middleware('auth:sanctum');
+Route::post('/notifications/read-all', [NotificationController::class, 'markAllAsRead'])->middleware('auth:sanctum');
 
 Route::post('/notifications/{id}/read', [NotificationController::class, 'markNotificationAsRead'])->middleware('auth:sanctum');
 

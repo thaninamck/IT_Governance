@@ -19,10 +19,10 @@ class MissionController extends BaseController
     protected $missionService;
     protected $logService;
     protected $participationService;
-    protected  $notificationService;
+    protected $notificationService;
 
-    
-    public function __construct(MissionService $missionService, LogService $logService, ParticipationService $participationService,NotificationService $notificationService)
+
+    public function __construct(MissionService $missionService, LogService $logService, ParticipationService $participationService, NotificationService $notificationService)
     {
         $this->missionService = $missionService;
         $this->logService = $logService;
@@ -82,19 +82,17 @@ class MissionController extends BaseController
 
             // Création de la participation du manager
             $this->participationService->createParticipation($participantData);
+
+            /*do this 
             
-           /*do this 
-           
            $this->notificationService->sendNotification(
-                $missionData['manager_id'],
-                "Vous avez été affecté à la mission '{$mission->mission_name}' comme manager.",
-                [
-                    'type' => 'mission',
-                    'id' => $mission->id
-                ],
-                'mission'
-            );*/
-                            
+     $missionData['manager_id'],
+     "Vous avez été affecté à la mission '{$mission->mission_name}' comme manager.",
+     json_encode(['type' => 'mission', 'id' => $mission->id]), // Convertir en JSON
+     'mission'
+ );
+ */
+
             // Log de l'action
             $this->logService->logUserAction(
                 auth()->user()->email ?? 'Unknown',
@@ -162,7 +160,7 @@ class MissionController extends BaseController
             );
             return $this->sendResponse(new MissionResource($mission), "mission updated successfully");
         } catch (\Exception $e) {
-            return  $this->sendError("An error occurred", $e->getMessage(), 500);
+            return $this->sendError("An error occurred", $e->getMessage(), 500);
         }
     }
 
@@ -235,241 +233,241 @@ class MissionController extends BaseController
 
 
     public function storeMultiple(Request $request): JsonResponse
-{
-    $validMissions = $request->input('missions', []);
+    {
+        $validMissions = $request->input('missions', []);
 
-    try {
-        if (!empty($validMissions)) {
-            $insertedMissions = [];
+        try {
+            if (!empty($validMissions)) {
+                $insertedMissions = [];
 
-            // Valider et créer chaque mission
-            foreach ($validMissions as $missionData) {
-                // Règles de validation pour chaque mission
-                $rules = [
-                    'mission_name' => 'required|string|max:255',
-                    'client_id' => 'required|integer|exists:clients,id',
-                    'start_date' => 'required|date',
-                    'end_date' => 'nullable|date|after:start_date',
-                    'manager_id' => 'required|integer|exists:users,id', // Vérifie que le manager existe
-                ];
+                // Valider et créer chaque mission
+                foreach ($validMissions as $missionData) {
+                    // Règles de validation pour chaque mission
+                    $rules = [
+                        'mission_name' => 'required|string|max:255',
+                        'client_id' => 'required|integer|exists:clients,id',
+                        'start_date' => 'required|date',
+                        'end_date' => 'nullable|date|after:start_date',
+                        'manager_id' => 'required|integer|exists:users,id', // Vérifie que le manager existe
+                    ];
 
-                // Validation des données de la mission
-                $validator = Validator::make($missionData, $rules);
+                    // Validation des données de la mission
+                    $validator = Validator::make($missionData, $rules);
 
-                if ($validator->fails()) {
-                    return $this->sendError("Validation failed for a mission", $validator->errors(), 422);
+                    if ($validator->fails()) {
+                        return $this->sendError("Validation failed for a mission", $validator->errors(), 422);
+                    }
+
+                    // Données validées
+                    $validatedData = $validator->validated();
+                    $validatedData['status_id'] = 9; // Définir le statut par défaut
+
+                    // Création de la mission
+                    $mission = $this->missionService->createMission($validatedData);
+
+                    // Données pour la participation du manager
+                    $participantData = [
+                        'user_id' => $validatedData['manager_id'], // Utiliser le manager_id validé
+                        'mission_id' => $mission->id,
+                        'profile_id' => 3, // ID du profil "manager"
+                    ];
+
+                    // Création de la participation du manager
+                    $this->participationService->createParticipation($participantData);
+
+                    // Ajouter la mission créée à la liste
+                    $insertedMissions[] = $mission;
                 }
 
-                // Données validées
-                $validatedData = $validator->validated();
-                $validatedData['status_id'] = 9; // Définir le statut par défaut
+                // Log de l'action
+                $this->logService->logUserAction(
+                    auth()->user()->email ?? 'Unknown',
+                    'Admin',
+                    "Insertion des missions",
+                    ""
+                );
 
-                // Création de la mission
-                $mission = $this->missionService->createMission($validatedData);
+                // Réponse JSON
+                return $this->sendResponse([
+                    'success' => true,
+                    'message' => 'missions inserted successfully',
+                    'inserted_missions' => MissionResource::collection($insertedMissions),
+                ], "missions were inserted successfully");
+            }
 
-                // Données pour la participation du manager
-                $participantData = [
-                    'user_id' => $validatedData['manager_id'], // Utiliser le manager_id validé
-                    'mission_id' => $mission->id,
-                    'profile_id' => 3, // ID du profil "manager"
-                ];
+            return $this->sendError("No missions to insert", [], 422);
+        } catch (\Exception $e) {
+            // Attraper les erreurs et les envoyer avec un message détaillé
+            return $this->sendError("Server error: " . $e->getMessage(), [], 500);
+        }
+    }
 
-                // Création de la participation du manager
-                $this->participationService->createParticipation($participantData);
+    public function closeMission($id): JsonResponse
+    {
+        try {
+            // Fermer la mission
+            $mission = $this->missionService->closeMission($id);
 
-                // Ajouter la mission créée à la liste
-                $insertedMissions[] = $mission;
+            if (!$mission) {
+                return $this->sendError("Mission not found", [], 404);
             }
 
             // Log de l'action
             $this->logService->logUserAction(
                 auth()->user()->email ?? 'Unknown',
                 'Admin',
-                "Insertion des missions",
+                "Cloture de la mission : {$mission->mission_name}",
                 ""
             );
 
             // Réponse JSON
-            return $this->sendResponse([
-                'success' => true,
-                'message' => 'missions inserted successfully',
-                'inserted_missions' => MissionResource::collection($insertedMissions),
-            ], "missions were inserted successfully");
+            return $this->sendResponse(new MissionResource($mission), "Mission closed successfully");
+        } catch (\Exception $e) {
+            return $this->sendError("An error occurred", ["error" => $e->getMessage()], 500);
         }
-
-        return $this->sendError("No missions to insert", [], 422);
-    } catch (\Exception $e) {
-        // Attraper les erreurs et les envoyer avec un message détaillé
-        return $this->sendError("Server error: " . $e->getMessage(), [], 500);
     }
-}
 
-public function closeMission($id): JsonResponse
-{
-    try {
-        // Fermer la mission
-        $mission = $this->missionService->closeMission($id);
+    public function archiveMission($id): JsonResponse
+    {
+        try {
+            // Fermer la mission
+            $mission = $this->missionService->archiveMission($id);
 
-        if (!$mission) {
-            return $this->sendError("Mission not found", [], 404);
+            if (!$mission) {
+                return $this->sendError("Mission not found", [], 404);
+            }
+
+            // Log de l'action
+            $this->logService->logUserAction(
+                auth()->user()->email ?? 'Unknown',
+                'Admin',
+                "archivé de la mission : {$mission->mission_name}",
+                ""
+            );
+
+            // Réponse JSON
+            return $this->sendResponse(new MissionResource($mission), "Mission archived successfully");
+        } catch (\Exception $e) {
+            return $this->sendError("An error occurred", ["error" => $e->getMessage()], 500);
         }
-
-        // Log de l'action
-        $this->logService->logUserAction(
-            auth()->user()->email ?? 'Unknown',
-            'Admin',
-            "Cloture de la mission : {$mission->mission_name}",
-            ""
-        );
-
-        // Réponse JSON
-        return $this->sendResponse(new MissionResource($mission), "Mission closed successfully");
-    } catch (\Exception $e) {
-        return $this->sendError("An error occurred", ["error" => $e->getMessage()], 500);
     }
-}
 
-public function archiveMission($id): JsonResponse
-{
-    try {
-        // Fermer la mission
-        $mission = $this->missionService->archiveMission($id);
+    public function getArchivedMissions(): JsonResponse
+    {
+        try {
+            // Récupérer les missions archivées
+            $missions = $this->missionService->getArchivedMissions();
 
-        if (!$mission) {
-            return $this->sendError("Mission not found", [], 404);
+            if ($missions->isEmpty()) {
+                return $this->sendError("No archived missions found", []);
+            }
+
+            // Réponse JSON
+            return $this->sendResponse(MissionResource::collection($missions), "Archived missions retrieved successfully");
+        } catch (\Exception $e) {
+            return $this->sendError("An error occurred", ["error" => $e->getMessage()], 500);
         }
-
-        // Log de l'action
-        $this->logService->logUserAction(
-            auth()->user()->email ?? 'Unknown',
-            'Admin',
-            "archivé de la mission : {$mission->mission_name}",
-            ""
-        );
-
-        // Réponse JSON
-        return $this->sendResponse(new MissionResource($mission), "Mission archived successfully");
-    } catch (\Exception $e) {
-        return $this->sendError("An error occurred", ["error" => $e->getMessage()], 500);
     }
-}
 
-public function getArchivedMissions(): JsonResponse
-{
-    try {
-        // Récupérer les missions archivées
-        $missions = $this->missionService->getArchivedMissions();
 
-        if ($missions->isEmpty()) {
-            return $this->sendError("No archived missions found", []);
+    public function cancelMission($id): JsonResponse
+    {
+        try {
+            // Fermer la mission
+            $mission = $this->missionService->cancelMission($id);
+
+            if (!$mission) {
+                return $this->sendError("Mission not found", [], 404);
+            }
+
+            // Log de l'action
+            $this->logService->logUserAction(
+                auth()->user()->email ?? 'Unknown',
+                'Admin',
+                "annulé  la mission : {$mission->mission_name}",
+                ""
+            );
+
+            // Réponse JSON
+            return $this->sendResponse(new MissionResource($mission), "Mission archived successfully");
+        } catch (\Exception $e) {
+            return $this->sendError("An error occurred", ["error" => $e->getMessage()], 500);
         }
-
-        // Réponse JSON
-        return $this->sendResponse(MissionResource::collection($missions), "Archived missions retrieved successfully");
-    } catch (\Exception $e) {
-        return $this->sendError("An error occurred", ["error" => $e->getMessage()], 500);
     }
-}
+    public function stopMission($id): JsonResponse
+    {
+        try {
+            // Fermer la mission
+            $mission = $this->missionService->stopMission($id);
 
+            if (!$mission) {
+                return $this->sendError("Mission not found", [], 404);
+            }
 
-public function cancelMission($id): JsonResponse
-{
-    try {
-        // Fermer la mission
-        $mission = $this->missionService->cancelMission($id);
+            // Log de l'action
+            $this->logService->logUserAction(
+                auth()->user()->email ?? 'Unknown',
+                'Admin',
+                "stop de la mission : {$mission->mission_name}",
+                ""
+            );
 
-        if (!$mission) {
-            return $this->sendError("Mission not found", [], 404);
+            // Réponse JSON
+            return $this->sendResponse(new MissionResource($mission), "Mission archived successfully");
+        } catch (\Exception $e) {
+            return $this->sendError("An error occurred", ["error" => $e->getMessage()], 500);
         }
-
-        // Log de l'action
-        $this->logService->logUserAction(
-            auth()->user()->email ?? 'Unknown',
-            'Admin',
-            "annulé  la mission : {$mission->mission_name}",
-            ""
-        );
-
-        // Réponse JSON
-        return $this->sendResponse(new MissionResource($mission), "Mission archived successfully");
-    } catch (\Exception $e) {
-        return $this->sendError("An error occurred", ["error" => $e->getMessage()], 500);
     }
-}
-public function stopMission($id): JsonResponse
-{
-    try {
-        // Fermer la mission
-        $mission = $this->missionService->stopMission($id);
 
-        if (!$mission) {
-            return $this->sendError("Mission not found", [], 404);
+    public function resumeMission(Request $request, $id): JsonResponse
+    {
+        try {
+            // Récupérer le statut précédent depuis la requête
+            $previousStatusId = $request->input('previous_status_id');
+
+            if (!$previousStatusId) {
+                return $this->sendError("Previous status ID is required", [], 400);
+            }
+
+            // Reprendre la mission
+            $mission = $this->missionService->resumeMission($id, $previousStatusId);
+
+            if (!$mission) {
+                return $this->sendError("Mission not found", [], 404);
+            }
+
+            // Log de l'action
+            $this->logService->logUserAction(
+                auth()->user()->email ?? 'Unknown',
+                'Admin',
+                "Reprise de la mission : {$mission->mission_name}",
+                ""
+            );
+
+            // Réponse JSON
+            return $this->sendResponse(new MissionResource($mission), "Mission resumed successfully");
+        } catch (\Exception $e) {
+            return $this->sendError("An error occurred", ["error" => $e->getMessage()], 500);
         }
-
-        // Log de l'action
-        $this->logService->logUserAction(
-            auth()->user()->email ?? 'Unknown',
-            'Admin',
-            "stop de la mission : {$mission->mission_name}",
-            ""
-        );
-
-        // Réponse JSON
-        return $this->sendResponse(new MissionResource($mission), "Mission archived successfully");
-    } catch (\Exception $e) {
-        return $this->sendError("An error occurred", ["error" => $e->getMessage()], 500);
     }
-}
-
-public function resumeMission(Request $request, $id): JsonResponse
-{
-    try {
-        // Récupérer le statut précédent depuis la requête
-        $previousStatusId = $request->input('previous_status_id');
-
-        if (!$previousStatusId) {
-            return $this->sendError("Previous status ID is required", [], 400);
-        }
-
-        // Reprendre la mission
-        $mission = $this->missionService->resumeMission($id, $previousStatusId);
-
-        if (!$mission) {
-            return $this->sendError("Mission not found", [], 404);
-        }
-
-        // Log de l'action
-        $this->logService->logUserAction(
-            auth()->user()->email ?? 'Unknown',
-            'Admin',
-            "Reprise de la mission : {$mission->mission_name}",
-            ""
-        );
-
-        // Réponse JSON
-        return $this->sendResponse(new MissionResource($mission), "Mission resumed successfully");
-    } catch (\Exception $e) {
-        return $this->sendError("An error occurred", ["error" => $e->getMessage()], 500);
-    }
-}
     /**
      * Display the specified resource.
      */
     public function getMembersByMission($missionId)
-{
-    try {
-        $members = $this->missionService->getMembersByMission($missionId);
+    {
+        try {
+            $members = $this->missionService->getMembersByMission($missionId);
 
-        if (!isset($members)) {
-            return $this->sendError('Aucun membre trouvé pour cette mission.', [], 404);
+            if (!isset($members)) {
+                return $this->sendError('Aucun membre trouvé pour cette mission.', [], 404);
+            }
+
+            return $this->sendResponse($members, 'Liste des membres récupérée avec succès.');
+
+        } catch (\Exception $e) {
+            return $this->sendError('Erreur lors de la récupération des membres.', ['error' => $e->getMessage()], 500);
         }
-
-        return $this->sendResponse($members, 'Liste des membres récupérée avec succès.');
-
-    } catch (\Exception $e) {
-        return $this->sendError('Erreur lors de la récupération des membres.', ['error' => $e->getMessage()], 500);
     }
-}
 
 
     /**

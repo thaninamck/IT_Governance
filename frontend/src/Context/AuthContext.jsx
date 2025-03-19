@@ -1,8 +1,11 @@
-import { createContext, useContext, useState, useEffect } from "react";
+import { createContext, useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { authApi, api } from "../Api"; // Importer l'instance Axios pour les requêtes authentifiées
 import { toast } from "react-toastify";
+import { useRef, useEffect } from "react";
+
 const AuthContext = createContext(null);
+const tokenRef = useRef(null);
 
 export const AuthProvider = ({ children }) => {
   const [token, setToken] = useState(null); // État pour le token
@@ -10,6 +13,9 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(false); // État pour le chargement
   const [error, setError] = useState(null); // État pour les erreurs
   const navigate = useNavigate();
+
+  
+
   useEffect(() => {
     console.log("useEffect exécuté");
   
@@ -38,44 +44,9 @@ export const AuthProvider = ({ children }) => {
         navigate("/login"); // Redirige l'utilisateur si le token a expiré
       } else {
         console.log("Token encore valide, restauration...");
+        console.log("tokenRestored",tokenRestored)
         setToken(tokenRestored);
-      }
-    } else {
-      console.warn("Aucun token trouvé, redirection vers login...");
-      setToken(null);
-      setUser(null);
-      navigate("/login");
-    }
-  }, [token]);
-  useEffect(() => {
-    console.log("useEffect exécuté");
-  
-    const tokenRestored = localStorage.getItem("token");
-    const tokenExpiry = localStorage.getItem("token_expiry");
-  
-    console.log("Token récupéré :", tokenRestored);
-    console.log("Expiration récupérée :", tokenExpiry);
-  
-    if (tokenRestored && tokenExpiry) {
-      const now = new Date().getTime();
-      console.log("Temps actuel :", now);
-      console.log("Temps d'expiration :", parseInt(tokenExpiry));
-  
-      if (isNaN(tokenExpiry)) {
-        console.error("Erreur : tokenExpiry n'est pas un nombre valide.");
-        return;
-      }
-  
-      if (now > parseInt(tokenExpiry)) {
-        console.warn("Token expiré, suppression des données...");
-        localStorage.removeItem("token");
-        localStorage.removeItem("token_expiry");
-        setToken(null);
-        setUser(null);
-        navigate("/login"); // Redirige l'utilisateur si le token a expiré
-      } else {
-        console.log("Token encore valide, restauration...");
-        setToken(tokenRestored);
+        console.log("token est ",token)
       }
     } else {
       console.warn("Aucun token trouvé, redirection vers login...");
@@ -86,6 +57,7 @@ export const AuthProvider = ({ children }) => {
   }, []);
   
   
+
   // 🔹 Connexion
   const loginUser = async (credentials) => {
     setLoading(true);
@@ -187,40 +159,36 @@ export const AuthProvider = ({ children }) => {
     "/reset-password",
   ];
 
-  useEffect(() => {
-    authApi.defaults.headers.Authorization = null; // Supprime l'ancien token
+  
 
-    const requestInterceptor = authApi.interceptors.request.use((config) => {
-      if (token && !publicEndpoints.includes(config.url)) {
-        config.headers.Authorization = `Bearer ${token}`;
-        console.log("Token ajouté à la requête:", token);
+  useEffect(() => {
+    tokenRef.current = token; // Met à jour la référence du token
+  
+    const requestInterceptorAuthApi = authApi.interceptors.request.use((config) => {
+      if (tokenRef.current && !publicEndpoints.includes(config.url)) {
+        config.headers.Authorization = `Bearer ${tokenRef.current}`;
+        console.log("🔑 [authApi] Token ajouté:", tokenRef.current);
       } else {
-        console.log("Pas de token ajouté pour cette requête:", config.url);
+        console.log("⚠️ [authApi] Pas de token pour cette requête:", config.url);
+      }
+      return config;
+    });
+  
+    const requestInterceptorApi = api.interceptors.request.use((config) => {
+      if (tokenRef.current && !publicEndpoints.includes(config.url)) {
+        config.headers.Authorization = `Bearer ${tokenRef.current}`;
+        console.log("🔑 [api] Token ajouté:", tokenRef.current);
+      } else {
+        console.log("⚠️ [api] Pas de token pour cette requête:", config.url);
       }
       return config;
     });
   
     return () => {
-      authApi.interceptors.request.eject(requestInterceptor);
+      authApi.interceptors.request.eject(requestInterceptorAuthApi);
+      api.interceptors.request.eject(requestInterceptorApi);
     };
-  }, [token]); // Recrée l’intercepteur à chaque changement de token
-  
-
-  api.interceptors.request.use((config) => {
-    if (token && !publicEndpoints.includes(config.url)) {
-      config.headers.Authorization = `Bearer ${token}`;
-      console.log("Token ajouté a request:", config.url, token);
-      console.log("📡 Requête envoyée :", {
-        url: config.url,
-        method: config.method,
-        headers: config.headers,
-        data: config.data,
-      });
-    } else {
-      console.log("No token added for this request:", config.url);
-    }
-    return config;
-  });
+  }, [token]);
 
   return (
     <AuthContext.Provider

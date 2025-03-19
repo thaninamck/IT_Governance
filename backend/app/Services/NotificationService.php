@@ -43,5 +43,16 @@ class NotificationService
     return response()->json(['message' => 'Notification non trouvée'], 404);
 }
 
+public function markAllAsRead()
+{
+    $user = Auth::user();
+    if (!$user) {
+        return response()->json(['message' => 'Utilisateur non authentifié'], 401);
+    }
+
+    $user->unreadNotifications()->update(['read_at' => now()]); // Modification directe en base de données
+    return response()->json(['message' => 'Toutes les notifications ont été marquées comme lues']);
+}
+
 
 }

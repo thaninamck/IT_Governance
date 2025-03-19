@@ -40,8 +40,7 @@ const NotificationBar = () => {
       <div className="notificationBar__list">
         {/* Affichage du spinner en cas de chargement */}
         {loading ? (
-  <div className="fixed inset-0 flex items-center justify-center bg-white/70">
-            
+          <div className="flex justify-center items-center py-4">
             <Spinner color="var(--blue-menu)" />
           </div>
         ) : filteredNotifications.length === 0 ? (
@@ -77,7 +76,8 @@ const NotificationBar = () => {
                 </div>
                 <div className="notificationBar__details">
                   <p className="notificationBar__message">
-                    <strong>{boldText}</strong> {normalText}
+                    {!notif.isRead ? <strong>{boldText}</strong> : boldText}{" "}
+                    {normalText}
                   </p>
                   <p className="notificationBar__date">{notif.date}</p>
                 </div>

@@ -68,8 +68,12 @@ const transformNotifications = (data) => {
   };
 
   useEffect(() => {
-    fetchNotifications();
-  }, []);
+    console.log("Token actuel on est dans iuseeffect:", token); // Vérifier si le token est bien défini
+    if (token) {
+      fetchNotifications();
+    }
+  }, [token]);
+  
 
   const markAsRead = async (id) => {
     const status = await MarkNotificationAsRead(id); // Appelle l'API pour marquer comme lu
@@ -93,11 +97,27 @@ const transformNotifications = (data) => {
 
 
   // Fonction pour marquer toutes les notifications comme lues
-  const markAllAsRead = () => {
-    setNotifications((prevNotifications) =>
-      prevNotifications.map((notif) => ({ ...notif, isRead: true }))
-    );
+  const markAllAsRead = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await authApi.post("/notifications/read-all"); // Endpoint pour tout marquer comme lu
+      if (response.status === 200) {
+        setNotifications((prevNotifications) =>
+          prevNotifications.map((notif) => ({ ...notif, isRead: true }))
+        );
+      } else {
+        toast.error("Erreur lors de la mise à jour des notifications.");
+      }
+    } catch (error) {
+      setError("Erreur lors de la mise à jour des notifications.");
+      toast.error("Erreur lors de la mise à jour des notifications.");
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
   };
+  
 
   // État pour stocker le filtre sélectionné (Tout ou Non lues)
   const [filter, setFilter] = useState("all");
