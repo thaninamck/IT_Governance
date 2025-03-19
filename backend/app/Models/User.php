@@ -8,6 +8,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
+
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
@@ -60,10 +62,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(Participation::class);
     }
-    public function notifications(): BelongsToMany
-{
-    return $this->belongsToMany(Notification::class, 'notification_users')
-                ->withTimestamps();
-}
+    public function notifications(): MorphMany
+    {
+        return $this->morphMany(\Illuminate\Notifications\DatabaseNotification::class, 'notifiable');
+    }
 
 }

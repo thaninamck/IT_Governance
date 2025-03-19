@@ -12,11 +12,13 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('notifications', function (Blueprint $table) {
-            $table->id();
-            $table->string('context', 255);
-            $table->string('target_url', 255)->nullable();
-            $table->boolean('is_read');
-            $table->timestamps();
+            $table->uuid('id')->primary(); // UUID pour correspondre à l'ID généré par Laravel
+            $table->morphs('notifiable');
+
+            $table->string('type'); // Type de notification (ex: "App\Notifications\CustomNotification")
+            $table->json('data'); // Stockage des données de notification (message, url, etc.)
+            $table->timestamp('read_at')->nullable(); // Indique si la notification est lue
+            $table->timestamps(); // created_at & updated_at
         });
     }
 

@@ -13,18 +13,21 @@ use App\Services\V1\ParticipationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
-
+use App\Services\NotificationService;
 class MissionController extends BaseController
 {
     protected $missionService;
     protected $logService;
     protected $participationService;
+    protected  $notificationService;
 
-    public function __construct(MissionService $missionService, LogService $logService, ParticipationService $participationService)
+    
+    public function __construct(MissionService $missionService, LogService $logService, ParticipationService $participationService,NotificationService $notificationService)
     {
         $this->missionService = $missionService;
         $this->logService = $logService;
         $this->participationService = $participationService;
+        $this->notificationService = $notificationService;
     }
 
 
@@ -79,7 +82,33 @@ class MissionController extends BaseController
 
             // Création de la participation du manager
             $this->participationService->createParticipation($participantData);
+            
+           /*do this 
+           
+           $this->notificationService->sendNotification(
+                $missionData['manager_id'],
+                "Vous avez été affecté à la mission '{$mission->mission_name}' comme manager.",
+                [
+                    'type' => 'mission',
+                    'id' => $mission->id
+                ],
+                'mission'
+            );*/
+                /*
+                coté front end apres :
+                const getNotificationUrl = (notification) => {
+                    switch (notification.url_data?.type) {
+                        case "mission":
+                            return `/missions/${notification.url_data.id}`;
+                        case "task":
+                            return `/tasks/${notification.url_data.id}`;
+                        default:
+                            return "/";
+                    }
+                };
 
+
+*/             
             // Log de l'action
             $this->logService->logUserAction(
                 auth()->user()->email ?? 'Unknown',

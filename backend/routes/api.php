@@ -10,7 +10,7 @@ use App\Http\Controllers\Api\V1\ControlController;
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\ClientController;
 use App\Http\Controllers\Api\V1\LogController;
-
+use App\Http\Controllers\Api\V1\NotificationController;
 
 use App\Http\Controllers\Api\V1\RiskController;
 use App\Http\Controllers\Api\V1\MissionController;
@@ -86,4 +86,7 @@ Route::post('/store-reset-code', [AuthController::class, 'storeResetCode']);
 Route::post('/verify-reset-code', [AuthController::class, 'verifyResetCode']);
 Route::post('/reset-password', [AuthController::class, 'resetPassword']);
 
+Route::post('/notifications/simulate', [NotificationController::class, 'simulate'])->middleware('auth:sanctum');
+Route::get('/notifications', [NotificationController::class, 'index'])->middleware('auth:sanctum');
 
+Route::post('/notifications/{id}/read', [NotificationController::class, 'markNotificationAsRead'])->middleware('auth:sanctum');
