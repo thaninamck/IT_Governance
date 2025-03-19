@@ -455,10 +455,22 @@ public function resumeMission(Request $request, $id): JsonResponse
     /**
      * Display the specified resource.
      */
-    public function show(Mission $mission)
-    {
-        //
+    public function getMembersByMission($missionId)
+{
+    try {
+        $members = $this->missionService->getMembersByMission($missionId);
+
+        if (!isset($members)) {
+            return $this->sendError('Aucun membre trouvé pour cette mission.', [], 404);
+        }
+
+        return $this->sendResponse($members, 'Liste des membres récupérée avec succès.');
+
+    } catch (\Exception $e) {
+        return $this->sendError('Erreur lors de la récupération des membres.', ['error' => $e->getMessage()], 500);
     }
+}
+
 
     /**
      * Update the specified resource in storage.

@@ -1,8 +1,23 @@
 <?php
 
 namespace App\Repositories\V1;
-
+use App\Models\CntrlRiskCov;
+use Log;
 class CntrlRiskCovRepository
 {
-    // Implémentez vos méthodes ici
+    public function createCoverage($data)
+    {
+        Log::info(' Data:', $data);
+
+        return CntrlRiskCov::create(
+            [
+                'risk_id' => $data['riskId'],
+                'layer_id' => $data['layerId'],
+                'execution_id' => $data['execution_id'],
+                'risk_owner' => $data['riskOwner'],
+                'risk_modification' => $data['riskDescription'],
+            ]
+
+        );
+    }
 }

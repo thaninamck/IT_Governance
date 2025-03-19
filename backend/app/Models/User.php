@@ -67,4 +67,5 @@ class User extends Authenticatable
         return $this->morphMany(\Illuminate\Notifications\DatabaseNotification::class, 'notifiable');
     }
 
+
 }

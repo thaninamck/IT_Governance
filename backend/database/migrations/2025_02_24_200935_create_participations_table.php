@@ -16,8 +16,7 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained('users');
             $table->foreignId('mission_id')->constrained('missions');
             $table->foreignId('profile_id')->constrained('profiles');
-            $table->unique(['user_id', 'mission_id', 'profile_id']);
-
+            $table->unique(['user_id', 'mission_id']);
             $table->timestamps();
         });
     }
