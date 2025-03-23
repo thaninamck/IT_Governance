@@ -18,6 +18,8 @@ class SystemResource extends JsonResource
             'name'=>$this->name,
             'description'=>$this->description,
             'ownerId'=>$this->owner_id,
+            'ownerName' => $this->owner->full_name,
+            'ownerEmail'=>$this->owner->email,
         ];
     }
 }

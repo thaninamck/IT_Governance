@@ -14,6 +14,9 @@ class OwnerResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        return parent::toArray($request);
+        return [
+            'fullName'=>$this->full_name,
+            'email'=>$this->email,
+        ];
     }
 }

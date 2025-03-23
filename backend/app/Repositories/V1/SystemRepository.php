@@ -8,7 +8,7 @@ class SystemRepository
 {
     public function getAllSystems()
     {
-        return System::all();
+        return System::with(['owner'])->get();
     }
 
     public function createSystem(array $data): System

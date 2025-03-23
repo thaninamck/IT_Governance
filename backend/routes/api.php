@@ -12,6 +12,8 @@ use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\ClientController;
 use App\Http\Controllers\Api\V1\LogController;
 use App\Http\Controllers\Api\V1\MissionController;
+use App\Http\Controllers\Api\V1\OwnerController;
+use App\Http\Controllers\Api\V1\SystemController;
 
 /*Route::get('/user', function (Request $request) {
     return $request->user();
@@ -75,3 +77,34 @@ Route::post('/verify-reset-code', [AuthController::class, 'verifyResetCode']);
 Route::post('/reset-password', [AuthController::class, 'resetPassword']);
 
 
+Route::prefix('v1')->group(function () { 
+    Route::controller(SystemController::class)->group(function () {
+        Route::get('/getsystems', 'index');
+    });
+});
+Route::prefix('v1')->group(function () { 
+    Route::controller(SystemController::class)->group(function () {
+        Route::post('/createsystem', 'store');
+    });
+});
+Route::prefix('v1')->group(function () { 
+    Route::controller(SystemController::class)->group(function () {
+        Route::put('/updatesystemId/{id}', 'updateSystem');
+    });
+});
+Route::prefix('v1')->group(function () { 
+    Route::controller(SystemController::class)->group(function () {
+        Route::delete('/deletesystemId/{id}', 'deleteSystem');
+    });
+});
+
+Route::prefix('v1')->group(function () { 
+    Route::controller(OwnerController::class)->group(function () {
+        Route::get('/getowners', 'index');
+    });
+});
+Route::prefix('v1')->group(function () { 
+    Route::controller(OwnerController::class)->group(function () {
+        Route::post('/createowner', 'store');
+    });
+});
