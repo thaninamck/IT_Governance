@@ -12,7 +12,6 @@ class CntrlRiskCovRepository
         return CntrlRiskCov::create(
             [
                 'risk_id' => $data['riskId'],
-                'layer_id' => $data['layerId'],
                 'execution_id' => $data['execution_id'],
                 'risk_owner' => $data['riskOwner'],
                 'risk_modification' => $data['riskDescription'],

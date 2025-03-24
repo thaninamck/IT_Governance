@@ -11,12 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('cntrl_risk_covs', function (Blueprint $table) {
+        Schema::create('mission_systems', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('risk_id')->constrained('risks');
-            $table->foreignId('execution_id')->constrained('executions');
-            $table->string('risk_owner', 255)->nullable();
-            $table->string('risk_modification', 255)->nullable();
+            $table->foreignId('mission_id')->constrained('missions');
+            $table->foreignId('system_id')->constrained('systems');
 
             $table->timestamps();
         });
@@ -27,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('cntrl_risk_covs');
+        Schema::dropIfExists('mission_system');
     }
 };

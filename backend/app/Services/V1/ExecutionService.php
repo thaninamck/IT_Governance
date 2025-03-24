@@ -38,7 +38,7 @@ class ExecutionService
                 $executionToInsert['controlId'] = $execution['controlId'];
                 $executionToInsert['controlTester'] = $execution['controlTester'];
                 $executionToInsert['controlOwner'] = $execution['controlOwner'];
-                $executionToInsert['missionId'] = $execution['missionId'];
+                $executionToInsert['layerId'] = $execution['layerId'];
 
                 $lastExecution = $this->executionRepository->createExecution($executionToInsert);
 
@@ -52,7 +52,6 @@ class ExecutionService
                 $coverageToInsert['riskId'] = $execution['riskId'];
                 $coverageToInsert['execution_id'] = $lastExecution->id;
                 $coverageToInsert['riskOwner'] = $execution['riskOwner'];
-                $coverageToInsert['layerId'] = $execution['layerId'];
 
                 Log::info('Coverage Data:', $coverageToInsert);
 

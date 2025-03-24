@@ -32,7 +32,6 @@ class ExecutionResource extends JsonResource
             'controlCode' => $this->control_code,
             'coverageId' => $this->coverage_id,
             'coverageRiskId' => $this->coverage_risk_id,
-            'coverageLayerId' => $this->coverage_layer_id,
             'riskId' => $this->risk_id,
             'riskName' => $this->risk_name,
             'riskCode' => $this->risk_code,

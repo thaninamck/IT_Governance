@@ -17,7 +17,7 @@ class Layer extends Model
         return $this->belongsTo(System::class);
     }
 
-    public function layers(){
-        return $this->hasMany(Layer::class);
+    public function exeutions(){
+        return $this->hasMany(Execution::class);
     }
 }

@@ -17,7 +17,7 @@ class ExecutionRepository
             'cntrl_modification' => $executionData['controlDescription'],
             'control_owner' => $executionData['controlOwner'],
             'user_id' => $executionData['controlTester'],
-            'mission_id' => $executionData['missionId'],
+            'layer_id' => $executionData['layerId'],
             'status_id' => $statusId,
         ]);
 
@@ -43,10 +43,10 @@ class ExecutionRepository
 
             c.id AS control_id, 
             c.description AS control_description,
-        c.code AS control_code,
+            c.code AS control_code,
             cov.id AS coverage_id,
             cov.risk_id AS coverage_risk_id,
-            cov.layer_id AS coverage_layer_id,
+           
 
             r.id AS risk_id,
             r.name AS risk_name,
@@ -64,13 +64,16 @@ class ExecutionRepository
             u.id AS user_id,
             CONCAT(u.first_name, ' ', u.last_name) AS user_full_name
 
-        FROM public.executions e
-        JOIN public.missions m ON m.id = e.mission_id
+        FROM public.missions m
+        JOIN public.mission_systems ms ON m.id = ms.mission_id
+
+		JOIN public.systems s on ms.system_id=s.id
+	   JOIN public.layers l ON l.system_id = s.id
+		JOIN public.executions e on e.layer_id=l.id
         JOIN public.controls c ON c.id = e.control_id
         JOIN public.cntrl_risk_covs cov ON e.id = cov.execution_id
         JOIN public.risks r ON r.id = cov.risk_id
-        JOIN public.layers l ON l.id = cov.layer_id
-        JOIN public.systems s ON l.system_id = s.id
+       
         JOIN public.users u ON e.user_id = u.id
         JOIN public.statuses st ON e.status_id = st.id
         JOIN public.owners o ON s.owner_id = o.id

@@ -6,6 +6,7 @@ use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Models\Participation;
+
 class SupervisorMiddleware
 {
     /**
@@ -21,11 +22,19 @@ class SupervisorMiddleware
         $isManager = Participation::where('user_id', $user->id)
             ->where('mission_id', $missionId)
             ->whereHas('profile', function ($query) {
+                $query->where('profile_name', 'manager');
+            })->exists();
+
+        $isSupervisor = Participation::where('user_id', $user->id)
+            ->where('mission_id', $missionId)
+            ->whereHas('profile', function ($query) {
                 $query->where('profile_name', 'superviseur');
             })->exists();
 
-        if (!$isManager) {
-            return response()->json(['error' => 'Accès refusé. Vous devez être superviseur.'], 403);
+        $isAdmin = $user->role === 1; 
+
+        if (!$isSupervisor && !$isManager && !$isAdmin) {
+            return response()->json(['error' => 'Accès refusé. Vous devez être superviseur, manager ou admin.'], 403);
         }
 
         return $next($request);

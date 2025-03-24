@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use Log;
 use Symfony\Component\HttpFoundation\Response;
 use App\Models\Participation;
+use App\Models\User;
+
 class ManagerMiddleware
 {
     /**
@@ -17,9 +19,10 @@ class ManagerMiddleware
     public function handle(Request $request, Closure $next): Response
     {
         $user = auth()->user();
-        Log::info("user uathentifié",[$user]);
+        Log::info("Utilisateur authentifié", [$user]);
+
         $missionId = $request->route('mission'); 
-        Log::info("mission id",[$missionId]);
+        Log::info("Mission ID", [$missionId]);
 
         $isManager = Participation::where('user_id', $user->id)
             ->where('mission_id', $missionId)
@@ -27,8 +30,10 @@ class ManagerMiddleware
                 $query->where('profile_name', 'manager');
             })->exists();
 
-        if (!$isManager) {
-            return response()->json(['error' => 'Accès refusé. Vous devez être manager.'], 403);
+        $isAdmin = $user->role === 1; 
+
+        if (!$isManager && !$isAdmin) { 
+            return response()->json(['error' => 'Accès refusé. Vous devez être manager ou admin.'], 403);
         }
 
         return $next($request);

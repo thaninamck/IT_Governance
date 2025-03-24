@@ -22,7 +22,7 @@ return new class extends Migration {
             $table->foreignId('user_id')->constrained('users');
             $table->foreignId('control_id')->constrained('controls');
             $table->foreignId('status_id')->constrained('statuses')->nullable();
-            $table->foreignId('mission_id')->constrained('missions');
+            $table->foreignId('layer_id')->constrained('layers');
 
             $table->timestamps();
         });

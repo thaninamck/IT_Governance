@@ -19,6 +19,7 @@ class Execution extends Model
         'control_id',
         'status_id',
         'mission_id',
+        'layer_id'
     ];
     
     public function user()
@@ -31,5 +32,8 @@ class Execution extends Model
     }
     public function coverage(){
         return $this->hasMany(CntrlRiskCov::class);
+    }
+    public function layer(){    
+        return $this->belongsTo(Layer::class);
     }
 }

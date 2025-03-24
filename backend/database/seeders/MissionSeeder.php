@@ -7,7 +7,7 @@ use App\Models\Mission;
 use App\Models\Status;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-
+use App\Models\System;
 
 class MissionSeeder extends Seeder
 {
@@ -20,6 +20,18 @@ class MissionSeeder extends Seeder
             $this->command->warn('⚠️ Il faut d’abord exécuter les autres seeders (clients et statuses).');
             return;
         }
-        Mission::factory()->count(10)->create();
+        $missions = Mission::factory(5)->create(); 
+
+        // Récupération de tous les systèmes
+        $systems = System::all();
+
+        if ($systems->count() > 0) {
+            foreach ($missions as $mission) {
+                // S'assurer de ne pas demander plus de systèmes qu'il en existe
+                $randomSystems = $systems->count() > 1 ? $systems->random(min(3, $systems->count()))->pluck('id')->toArray() : $systems->pluck('id')->toArray();
+                
+                $mission->systems()->attach($randomSystems);
+            }
+        }
     }
 }

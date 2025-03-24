@@ -83,12 +83,12 @@ Route::middleware(['auth:sanctum', AdminMiddleware::class])
 
 
 
-    Route::middleware(['auth:sanctum', ManagerMiddleware::class, AdminMiddleware::class])
+    Route::middleware(['auth:sanctum', ManagerMiddleware::class])
     ->prefix('v1')
     ->group(function () {
         // ExecutionController Routes
         Route::controller(ExecutionController::class)->group(function () {
-            Route::post('/insert-executions', 'createExecutions');
+            Route::post('/missions/{mission}/insert-executions', 'createExecutions');
             Route::get('/missions/{mission}/executions', 'getExecutionsByMission');
         });
 
@@ -99,13 +99,13 @@ Route::middleware(['auth:sanctum', AdminMiddleware::class])
     });
 
 
-    Route::middleware(['auth:sanctum', SupervisorMiddleware::class, ManagerMiddleware::class, AdminMiddleware::class])
+    Route::middleware(['auth:sanctum', SupervisorMiddleware::class])
     ->prefix('v1')
     ->group(function () {
         //
     });
 
-    Route::middleware(['auth:sanctum', TesterMiddleware::class, AdminMiddleware::class, SupervisorMiddleware::class])
+    Route::middleware(['auth:sanctum', TesterMiddleware::class])
     ->prefix('v1')
     ->group(function () {
         //

@@ -31,7 +31,7 @@ class AuthController extends BaseController
             $rules = [
                 'email' => 'required|email',
                 'password' => 'required',
-                // 'captchaValue' => 'required'
+                 //'captchaValue' => 'required'
             ];
 
             if (isset($settings['password_min_length'])) {
@@ -45,13 +45,13 @@ class AuthController extends BaseController
             $validator = Validator::make($request->all(), $rules);
 
             if ($validator->fails()) {
-                return $this->sendError("Validation of data failed", $validator->errors());
+                return $this->sendError("Validation of data failed", $validator->errors(),422);
             }
 
-            // $recaptchaData = $this->recaptchaService->verify($request);
-            // if (!$recaptchaData) {
-            // return $this->sendError("Recaptcha verification failed", ["recaptcha" => ["Invalid reCAPTCHA response"]]);
-            // }
+             //$recaptchaData = $this->recaptchaService->verify($request);
+             //if (!$recaptchaData) {
+             //return $this->sendError("Recaptcha verification failed", ["recaptcha" => ["Invalid reCAPTCHA response"]]);
+             //}
 
             $user = User::where('email', $request->email)->first();
             if (!$user || !Hash::check($request->password, $user->password)) {

@@ -6,6 +6,7 @@ use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Models\Participation;
+
 class TesterMiddleware
 {
     /**
@@ -21,11 +22,23 @@ class TesterMiddleware
         $isManager = Participation::where('user_id', $user->id)
             ->where('mission_id', $missionId)
             ->whereHas('profile', function ($query) {
-                $query->where('profile_name', 'testeur');
+                $query->where('profile_name', 'manager');
             })->exists();
 
-        if (!$isManager) {
-            return response()->json(['error' => 'Accès refusé. Vous devez être testeur.'], 403);
+        $isSupervisor = Participation::where('user_id', $user->id)
+            ->where('mission_id', $missionId)
+            ->whereHas('profile', function ($query) {
+                $query->where('profile_name', 'superviseur');
+            })->exists();
+            $isTester = Participation::where('user_id', $user->id)
+            ->where('mission_id', $missionId)
+            ->whereHas('profile', function ($query) {
+                $query->where('profile_name', 'testeur');
+            })->exists();
+        $isAdmin = $user->role === 1; 
+
+        if (!$isSupervisor && !$isManager && !$isAdmin && !$isTester) {
+            return response()->json(['error' => 'Accès refusé. Vous devez être testeur,superviseur, manager ou admin.'], 403);
         }
 
         return $next($request);

@@ -45,4 +45,9 @@ class Mission extends Model
     {
         return $this->hasMany(Remediation::class);
     }
+
+    public function systems(){
+        return $this->belongsToMany(System::class,'mission_systems','mission_id','system_id');
+
+    }
 }
