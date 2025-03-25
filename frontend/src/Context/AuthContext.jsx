@@ -5,9 +5,10 @@ import { toast } from "react-toastify";
 import { useRef, useEffect } from "react";
 
 const AuthContext = createContext(null);
-const tokenRef = useRef(null);
+
 
 export const AuthProvider = ({ children }) => {
+  const tokenRef = useRef(null);
   const [token, setToken] = useState(null); // État pour le token
   const [user, setUser] = useState(null); // État pour les informations de l'utilisateur
   const [loading, setLoading] = useState(false); // État pour le chargement
