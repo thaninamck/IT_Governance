@@ -15,13 +15,10 @@ class System extends Model
     public function layers(){
         return $this->hasMany(Layer::class);
     }
-
     public function missions(){
         return $this->belongsToMany(Mission::class, 'mission_systems', 'system_id', 'mission_id');
 
     }
-
-
     public function owner(): BelongsTo
     {
         return $this->belongsTo(Owner::class);

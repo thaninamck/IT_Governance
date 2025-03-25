@@ -18,14 +18,19 @@ use App\Http\Controllers\Api\V1\NotificationController;
 
 use App\Http\Controllers\Api\V1\RiskController;
 use App\Http\Controllers\Api\V1\MissionController;
+use App\Models\User;
 
+Route::prefix('v1')->controller(UserController::class)->group(function() {
+    Route::get('/users', 'index');
+        
+    });
 
 Route::middleware(['auth:sanctum', AdminMiddleware::class])
     ->prefix('v1')
     ->group(function () {
         // Users
         Route::controller(UserController::class)->group(function () {
-            Route::get('/users', 'index');
+          //  Route::get('/users', 'index');
             Route::post('/insert-user', 'store');
             Route::post('/reset-user/{id}', 'resetUser');
             Route::put('/update-user/{id}', 'updateUser');
