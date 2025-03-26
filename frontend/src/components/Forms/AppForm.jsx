@@ -12,11 +12,12 @@ function NewAppForm({ title , initialValues = {}, onAddApp,onClose}) {
     const [error, setError] = useState('');
 
    // États pour chaque champ avec valeurs par défaut
-   const [nomApp, setNomApp] = useState(initialValues?.nomApp || '');
+   const [name, setName] = useState(initialValues?.name || '');
    const [description, setDescription] = useState(initialValues?.description || '');
-   const [owner, setOwner] = useState(initialValues?.owner || '');
-   const [contact, setContact] = useState(initialValues?.contact || '');
-   const [selectedMulti, setSelectedMulti] = useState(initialValues?.couche || []);
+   const [full_name, setFullName] = useState(initialValues?.full_name || '');
+   const [email, setEmail] = useState(initialValues?.email || '');
+   const[owner_id,setOwnerId]= useState(initialValues?.owner_id || '');
+  // const [selectedMulti, setSelectedMulti] = useState(initialValues?.couche || []);
    
 
    const handleClose = () => {
@@ -31,11 +32,12 @@ function NewAppForm({ title , initialValues = {}, onAddApp,onClose}) {
 // Assurer que les valeurs initiales sont prises en compte uniquement au premier rendu
 useEffect(() => {
   if (isFirstRender.current) {
-    setNomApp(initialValues.nomApp || '');
+    setName(initialValues.name || '');
     setDescription(initialValues.description || '');
-    setOwner(initialValues.owner || '');
-    setContact(initialValues.contact || '');
-    setSelectedMulti(initialValues.couche || []);
+    setFullName(initialValues.full_name || '');
+    setEmail(initialValues.email || '');
+    setOwnerId(initialValues.owner_id||'');
+   // setSelectedMulti(initialValues.couche || []);
     isFirstRender.current = false; // Marquer la première mise à jour comme faite
   }
 }, [initialValues]);
@@ -44,30 +46,32 @@ const handleSubmit = (e) => {
   e.preventDefault();
 
   // Vérifier que tous les champs requis sont remplis
-  if (!nomApp || !description|| !owner || !contact || !selectedMulti ) {
-    setError('Veuillez remplir tous les champs obligatoires.');
-    return; // Empêcher la soumission
-  }
+  // if (!name|| !description|| !full_name || !email  ) {
+  //   setError('Veuillez remplir tous les champs obligatoires.');
+  //   return; // Empêcher la soumission
+  // }
   const formData = { 
-    id: initialValues?.id || Date.now(), // Garde l'ID existant si c'est une mise à jour
-    nomApp, 
+    id: initialValues?.id , // Garde l'ID existant si c'est une mise à jour
+    name, 
     description, 
-    owner, 
-    contact, 
-    couche: selectedMulti 
+    full_name, 
+    email, 
+    owner_id,
+    //couche: selectedMulti 
   };
   setError(''); // Réinitialiser les erreurs si tout est bon
 
 
   onAddApp(formData); 
 
-  setNomApp('');
+  setName('');
   setDescription('');
-  setOwner('');
-  setContact('');
-  setSelectedMulti([]);
+  setFullName('');
+  setEmail('');
+  setOwnerId('');
+ // setSelectedMulti([]);
 
-  alert(initialValues?.id ? 'Application mise à jour avec succès !' : 'Application créée avec succès !');
+  //alert(initialValues?.id ? 'Application mise à jour avec succès !' : 'Application créée avec succès !');
 };
 
 
@@ -102,8 +106,8 @@ const handleSubmit = (e) => {
           width="600px"
           flexDirection="flex-col"
           required={true}
-          value={nomApp}
-          onChange={(e) => setNomApp(e.target.value)}
+          value={name}
+          onChange={(e) => setName(e.target.value)}
         />
         <InputForm
           type="text"
@@ -124,8 +128,8 @@ const handleSubmit = (e) => {
           width="300px"
           flexDirection="flex-col"
           required={true}
-          value={owner}
-          onChange={(e) => setOwner(e.target.value)}
+          value={full_name}
+          onChange={(e) => setFullName(e.target.value)}
         />
         <InputForm
           type="email"
@@ -134,14 +138,14 @@ const handleSubmit = (e) => {
           width="300px"
          flexDirection="flex-col"
          required={true}
-          value={contact}
-          onChange={(e) => setContact(e.target.value)}
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
         />
         </div>
         </div>
         
        
-        <SelectInput
+        {/* <SelectInput
         label="Couches"
         options={options}
         value={selectedMulti}
@@ -149,7 +153,7 @@ const handleSubmit = (e) => {
         width="200px"
         required={true}
         multiSelect={true}
-      />
+      /> */}
        {/* <SelectInput
             label={'couche'}
             options={[
