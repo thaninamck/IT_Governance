@@ -269,4 +269,17 @@ private function getAutomaticStatus($startDate, $endDate)
 }
 
 
+public function getSystemsByMissionID(int $missionId)
+{
+    // Trouver la mission avec ses systèmes
+    $mission = Mission::with('systems.owner')->find($missionId);
+
+    return $mission;
+}
+public function attachSystem(int $missionId, int $systemId): void
+{
+    $mission = Mission::findOrFail($missionId);
+    $mission->systems()->attach($systemId);
+}
+
 }

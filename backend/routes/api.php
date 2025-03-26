@@ -180,8 +180,17 @@ Route::post('/reset-password', [AuthController::class, 'resetPassword']);
 
 
 
+Route::prefix('v1')->group(function () { 
+    Route::controller(MissionController::class)->group(function () {
+        Route::get('/mission/{missionid}/getsystems', 'getSystemsByMissionID');
+    });
+});
 
-
+Route::prefix('v1')->group(function () { 
+    Route::controller(SystemController::class)->group(function () {
+        Route::post('/mission/{missionid}/createsystem', 'storeSystemForMission');
+    });
+});
 Route::prefix('v1')->group(function () { 
     Route::controller(SystemController::class)->group(function () {
         Route::get('/getsystems', 'index');

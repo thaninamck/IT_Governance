@@ -41,6 +41,8 @@ class SystemRepository
         if (!$system) {
             return null;
         }
+        // Supprimer d'abord les associations dans mission_systems
+    $system->missions()->detach();
 
         $system_name=$system->name;
         $system->delete();

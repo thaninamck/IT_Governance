@@ -14,6 +14,9 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use App\Services\NotificationService;
+
+use function Laravel\Prompts\text;
+
 class MissionController extends BaseController
 {
     protected $missionService;
@@ -538,6 +541,22 @@ public function resumeMission(Request $request, $id): JsonResponse
         }
     }
 
+    public function getSystemsByMissionID($missionId):JsonResponse
+    {
+        try{
+            $systems=$this->missionService->getSystemsByMissionID($missionId);
+
+            if (!isset($systems)) {
+                return $this->sendError('Aucun system trouvé pour cette mission.', [], 404);
+            }
+
+            return $this->sendResponse($systems, 'Liste des systems récupérée avec succès.');
+
+        } catch (\Exception $e) {
+            return $this->sendError('Erreur lors de la récupération des systems.', ['error' => $e->getMessage()], 500);
+        }
+        
+    }
 
     /**
      * Update the specified resource in storage.

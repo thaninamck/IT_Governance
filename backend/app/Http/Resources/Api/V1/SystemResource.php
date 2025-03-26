@@ -15,11 +15,12 @@ class SystemResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
+            'id'=>$this->id,
             'name'=>$this->name,
             'description'=>$this->description,
             'ownerId'=>$this->owner_id,
-            'ownerName' => $this->owner->full_name,
-            'ownerEmail'=>$this->owner->email,
+            'ownerName' => $this->owner->full_name ?? 'N/A', // Ajout d'une valeur par défaut
+        'ownerContact' => $this->owner->email ?? 'N/A',  // Ajout d'une valeur par défaut
         ];
     }
 }

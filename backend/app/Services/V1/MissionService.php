@@ -50,6 +50,32 @@ class MissionService
     ];
 }
 
+public function getSystemsByMissionID($missionId)
+{
+    $mission = $this->missionRepository->getSystemsByMissionID($missionId);
+
+    if (!$mission) {
+        return null; // ou lancer une exception
+    }
+
+     
+
+    return [
+        'id' => $mission->id,
+        'mission_name' => $mission->mission_name,
+        'systems' => $mission->systems->map(function ($system) {
+            return [
+                'id' => $system->id,
+                'name' => $system->name,
+                'description' => $system->description,
+                'ownerId'=>$system->owner->id,
+                'ownerName'=>$system->owner->full_name,
+                'ownerContact' => $system->owner->email,
+            ];
+        })->toArray()
+    ];
+}
+
 
 
     public function createMission(array $data): Mission

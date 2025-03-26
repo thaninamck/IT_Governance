@@ -38,42 +38,85 @@ class SystemController extends BaseController
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request):JsonResponse
-    {
-        try{
-            $rules=[
-                'name'=>'required|string|max:255',
-                'description'=>'required|string|max:255',
-                //'owner_id'=>'required|string|max:255',
-                'full_name' => 'required|string|max:255', // Ajout du champ owner_full_name
-                'email' => 'required|email|max:255',
-            ];
-            $validator=Validator::make($request->all(),$rules);
+    // public function store(Request $request):JsonResponse
+    // {
+    //     try{
+    //         $rules=[
+    //             'name'=>'required|string|max:255',
+    //             'description'=>'required|string|max:255',
+    //             //'owner_id'=>'required|string|max:255',
+    //             'full_name' => 'required|string|max:255', // Ajout du champ owner_full_name
+    //             'email' => 'required|email|max:255',
+    //         ];
+    //         $validator=Validator::make($request->all(),$rules);
 
-            if($validator->fails()){
-                return $this->sendError("validation failed",$validator->errors(),422);
-            }
-            $systemData=$validator->validated();
+    //         if($validator->fails()){
+    //             return $this->sendError("validation failed",$validator->errors(),422);
+    //         }
+    //         $systemData=$validator->validated();
 
-            $system=$this->systemService->createSystem($systemData);
+    //         $system=$this->systemService->createSystem($systemData);
 
-            $this->logService->logUserAction(
-                auth()->user()->email ??'Unknown',
-                'Manager',
-                "Création d'un system {$system->name}",
-                "" 
-            );
-            $response=[
-                'system' =>new SystemResource($system),
-                'message'=>'system created successfully'
-            ];
-            return $this->sendResponse($response,"system created successfully",201);
+    //         $this->logService->logUserAction(
+    //             auth()->user()->email ??'Unknown',
+    //             'Manager',
+    //             "Création d'un system {$system->name}",
+    //             "" 
+    //         );
+    //         $response=[
+    //             'system' =>new SystemResource($system),
+    //             'message'=>'system created successfully'
+    //         ];
+    //         return $this->sendResponse($response,"system created successfully",201);
         
-        }catch(\Exception $e){
-            return $this->sendError("An error occured",["error"=>$e->getMessage()],500);
-        }
-    }
+    //     }catch(\Exception $e){
+    //         return $this->sendError("An error occured",["error"=>$e->getMessage()],500);
+    //     }
+    // }
 
+
+    public function storeSystemForMission(Request $request, $missionId): JsonResponse
+{
+    try {
+        $rules = [
+            'name' => 'required|string|max:255',
+            'description' => 'required|string|max:255',
+            'full_name' => 'required|string|max:255',
+            'email' => 'required|email|max:255',
+        ];
+
+        $validator = Validator::make($request->all(), $rules);
+
+        if ($validator->fails()) {
+            return $this->sendError("Validation failed", $validator->errors(), 422);
+        }
+
+        $system = $this->systemService->createSystemForMission(
+            $validator->validated(), 
+            $missionId
+        );
+
+        $this->logService->logUserAction(
+            auth()->user()->email ?? 'Unknown',
+            'Manager',
+            "Création d'un système {$system->name} pour mission ID {$missionId}",
+            ""
+        );
+
+        return $this->sendResponse(
+            new SystemResource($system),
+            "Système créé et associé à la mission avec succès",
+            201
+        );
+
+    } catch (\Exception $e) {
+        return $this->sendError(
+            "Erreur lors de la création du système",
+            ["error" => $e->getMessage()],
+            500
+        );
+    }
+}
 
     public function updateSystem(Request $request,$id):JsonResponse
     {

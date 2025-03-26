@@ -41,8 +41,6 @@ class Mission extends Model
     {
         return $this->hasMany(Execution::class);
     }
-   
-
     public function remediations(): HasMany
     {
         return $this->hasMany(Remediation::class);
