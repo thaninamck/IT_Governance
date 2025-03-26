@@ -2,7 +2,7 @@ import { useState, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { PermissionRoleContext } from "../Context/permissionRoleContext";
 import { useBreadcrumb } from "../Context/BreadcrumbContext";
-import api from "../Api";
+import {api} from "../Api";
 
 
 
@@ -212,8 +212,7 @@ const useGestionMission = () => {
   //const getRowLink = (row) => `/tablemission/${row.mission}`;
   const handleRowClick = (rowData) => {
     // Naviguer vers la page de détails avec l'ID du contrôle dans l'URL
-    navigate(`/missions/${rowData.mission}`, { state: { missionData: rowData } });
-    // navigate('/controle', { state: { controleData: rowData } });
+    navigate(`/missions/${rowData.missionName}`, { state: { missionData: rowData } });
     console.log('Détails du contrôle sélectionné:', rowData);
   };
   // Gérer la navigation vers le rapport d'une mission

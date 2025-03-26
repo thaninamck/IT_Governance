@@ -1,7 +1,7 @@
 // Importation des hooks React pour la gestion des états et des effets
 import { useState, useEffect } from 'react';
 // Importation de l'instance API pour les requêtes HTTP
-import api from '../Api';
+import {api} from '../Api';
 
 // Hook personnalisé pour la gestion des clients
 const useClient = () => {
