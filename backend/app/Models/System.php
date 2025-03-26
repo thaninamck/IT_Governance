@@ -19,9 +19,9 @@ class System extends Model
         return $this->belongsToMany(Mission::class, 'mission_systems', 'system_id', 'mission_id');
 
     }
+    
     public function owner(): BelongsTo
     {
         return $this->belongsTo(Owner::class);
     }
-
 }

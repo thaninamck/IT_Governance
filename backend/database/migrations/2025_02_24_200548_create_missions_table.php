@@ -17,7 +17,9 @@ return new class extends Migration
            
             $table->string('mission_name', 255); 
             $table->date('start_date'); 
-            $table->date('end_date')->nullable(); 
+            $table->date('end_date');
+            $table->date('audit_start_date');
+            $table->date('audit_end_date'); 
             $table->foreignId('client_id')->constrained('clients');
             $table->foreignId('status_id')->constrained('statuses');
             $table->timestamps();
