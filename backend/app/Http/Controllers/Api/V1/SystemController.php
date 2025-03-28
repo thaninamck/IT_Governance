@@ -77,13 +77,17 @@ class SystemController extends BaseController
 
     public function storeSystemForMission(Request $request, $missionId): JsonResponse
 {
+    // \Log::info('Données reçues:', $request->all()); 
     try {
         $rules = [
             'name' => 'required|string|max:255',
             'description' => 'required|string|max:255',
             'full_name' => 'required|string|max:255',
             'email' => 'required|email|max:255',
+            'layerName' => 'required|array',
+            'layerName.*' => 'string', // Chaque élément du tableau doit être une chaîne de caractères
         ];
+        
 
         $validator = Validator::make($request->all(), $rules);
 
@@ -127,6 +131,7 @@ class SystemController extends BaseController
                 //'owner_id'=>'sometimes|string|max:255',
                 'full_name' => 'sometimes|string|max:255', // Champ pour le propriétaire
                 'email' => 'sometimes|email|max:255',
+                'layerName' => 'sometimes|array',
             ];
             $validator=Validator::make($request->all(),$rules);
 

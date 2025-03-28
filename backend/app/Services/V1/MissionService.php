@@ -52,7 +52,9 @@ class MissionService
 
 public function getSystemsByMissionID($missionId)
 {
-    $mission = $this->missionRepository->getSystemsByMissionID($missionId);
+    // Chargez la mission avec les systèmes et leurs relations
+    $mission = $this->missionRepository->getSystemsByMissionID($missionId)
+    ->load(['systems.layers', 'systems.owner']);
 
     if (!$mission) {
         return null; // ou lancer une exception
@@ -71,6 +73,12 @@ public function getSystemsByMissionID($missionId)
                 'ownerId'=>$system->owner->id,
                 'ownerName'=>$system->owner->full_name,
                 'ownerContact' => $system->owner->email,
+                'layers' => $system->layers->map(function ($layer) {
+                    return [
+                        'id' => $layer->id,
+                        'name' => $layer->name
+                    ];
+                })->toArray()
             ];
         })->toArray()
     ];

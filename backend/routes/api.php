@@ -13,6 +13,7 @@ use App\Http\Controllers\Api\V1\UserController;
 use App\Http\Controllers\Api\V1\ControlController;
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\ClientController;
+use App\Http\Controllers\Api\V1\LayerController;
 use App\Http\Controllers\Api\V1\LogController;
 use App\Http\Controllers\Api\V1\NotificationController;
 use App\Http\Controllers\Api\V1\MissionController;
@@ -178,7 +179,11 @@ Route::post('/reset-password', [AuthController::class, 'resetPassword']);
 
 
 
-
+Route::prefix('v1')->group(function () { 
+    Route::controller(LayerController::class)->group(function () {
+        Route::get('/getlayers', 'index');
+    });
+});
 
 Route::prefix('v1')->group(function () { 
     Route::controller(MissionController::class)->group(function () {
