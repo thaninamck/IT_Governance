@@ -18,6 +18,7 @@ function AddScope({ title, text, text1, onToggleForm, showForm, userRole, missio
     selectedApp,
     setSelectedApp,
     showDecisionPopup,
+    setShowDecisionPopup,
     isAddingAnother,
     handleAddApp,
     handleDeleteRow,
@@ -32,41 +33,39 @@ function AddScope({ title, text, text1, onToggleForm, showForm, userRole, missio
     { field: 'ownerName', headerName: 'Owner', width: 170 },
     { field: 'ownerContact', headerName: 'Contact', width: 200 },
     {
-      field: "couche",
+      field: "layers",
       headerName: "Couche",
       width: 200,
       expandable: true,
       customRenderCell: (params) => {
-        console.log("Couche value:", params.value); // Debugging line
+       // console.log("Couche value:", params.value); // Debugging line
 
-        const coucheValues = Array.isArray(params.value) ? params.value : [];
+        const layers = Array.isArray(params.value) ? params.value : [];
+       // console.log('cc',layers)
 
 
         return (
-          <div className="flex -space-x-2">
-            {coucheValues.length > 0 ? (
-              coucheValues.map((item, index) => {
-                const words = String(item).split(" ");
-                const initials = words.length > 1
-                  ? words.map((word) => word[0]).join("").toUpperCase()
-                  : String(item).substring(0, 3).toUpperCase();
-                return (
-                  <div
-                    key={index}
-                    title={item}
-                    className="w-11 h-11 flex items-center justify-center text-xs bg-blue-100 text-blue-600 rounded-full border border-white shadow cursor-pointer"
-                  >
-                    {initials}
-                  </div>
-                );
-              })
-            ) : (
-              <span className="text-gray-400">Aucune donnée</span>
-            )}
-          </div>
-        );
-      }
-    },
+          <div className="flex flex-wrap gap-1">
+          {layers.length > 0 ? (
+            layers.map((layer, index) => (
+              <div
+                key={index}
+                title={layer.name} // Affiche le nom complet au survol
+                className="px-2 py-1 text-xs bg-blue-100 text-blue-600 rounded-full border border-white shadow cursor-pointer"
+              >
+                {layer.name} {/* Affiche le nom complet */}
+                
+                {/* OU pour les initiales seulement : */}
+                {/* {layer.name.substring(0, 3).toUpperCase()} */}
+              </div>
+            ))
+          ) : (
+            <span className="text-gray-400">Aucune donnée</span>
+          )}
+        </div>
+      );
+    }
+  },
     // Ajouter la colonne "actions" conditionnellement
     ...((userRole === 'manager' || userRole === 'admin')
       ? [{ field: 'actions', headerName: 'Action', width: 80 }]
@@ -118,7 +117,15 @@ function AddScope({ title, text, text1, onToggleForm, showForm, userRole, missio
       )}
 
       {(showForm || isAddingAnother) && (
-        <NewAppForm title={''} initialValues={selectedApp || {}} onAddApp={handleAddApp} onClose={() => setShowDecisionPopup(false)} />
+        <NewAppForm title={''} 
+        initialValues={selectedApp || {}}
+         onAddApp={handleAddApp} 
+        //  onClose={() => setShowDecisionPopup(false)} 
+        onClose={() => {
+          onToggleForm(); // Ferme le formulaire via la fonction parente
+          setSelectedApp(null);
+        }} 
+         />
       )}
 
 

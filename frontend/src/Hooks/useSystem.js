@@ -38,6 +38,7 @@ export const useSystem = (missionId, userRole, showForm, onToggleForm) => {
         setSelectedApp(null);
         onToggleForm();
       } else {
+        console.log('add  app',app)
           // Ajout d'une nouvelle application
         const response = await api.post(`/mission/${missionId}/createsystem`, app);
         setApplications(prev => [...prev, response.data]);
@@ -71,25 +72,45 @@ export const useSystem = (missionId, userRole, showForm, onToggleForm) => {
   };
 
   const handleEditRow = (selectedRow) => {
-    const transformedMission = {
+    const transformedApp = {
       id: selectedRow.id,
       name: selectedRow.name,
       description: selectedRow.description,
       owner_id: selectedRow.ownerId,
       full_name: selectedRow.ownerName,
       email: selectedRow.ownerContact,
+      //layerName: selectedRow.layers || [], // Ajout direct des layers depuis selectedRow
+    layerName: selectedRow.layers 
+      ? selectedRow.layers.map(layer => ({
+          label: layer.name || layer, // S'adapte selon que layer est un objet ou une string
+          value: layer.id || layer    // Utilise l'ID si disponible, sinon la valeur directe
+        })) 
+      : []
     };
-    setSelectedApp(transformedMission);
+    console.log(transformedApp)
+    setSelectedApp(transformedApp);
     if (!showForm) onToggleForm();
   };
+
+  // const handleDecisionResponse = (response) => {
+  //   setShowDecisionPopup(false);
+  //   if (response) {
+  //     setIsAddingAnother(true);
+  //   } else {
+  //     setIsAddingAnother(false);
+  //     onToggleForm();
+  //   }
+  // };
 
   const handleDecisionResponse = (response) => {
     setShowDecisionPopup(false);
     if (response) {
       setIsAddingAnother(true);
+      setSelectedApp(null); // <-- Ajoutez cette ligne
     } else {
       setIsAddingAnother(false);
       onToggleForm();
+      setSelectedApp(null); // <-- Ajoutez cette ligne
     }
   };
 
@@ -102,6 +123,7 @@ export const useSystem = (missionId, userRole, showForm, onToggleForm) => {
     selectedApp,
     setSelectedApp,
     showDecisionPopup,
+    setShowDecisionPopup,
     isAddingAnother,
     handleAddApp,
     handleDeleteRow,
