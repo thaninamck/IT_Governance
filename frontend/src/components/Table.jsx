@@ -83,6 +83,7 @@ function Table({
   rowActions = [],
   onCellEditCommit,
   onRowClick,
+  onSelectionChange
 }) {
   const isZebraStriping = allterRowcolors; // Mets à false pour désactiver
   const oddRowColor = "#E9EFF8";
@@ -103,7 +104,17 @@ function Table({
       console.log("Aucune ligne sélectionnée");
     }
   };
-
+  const handleSelectionChange = (newSelection) => {
+    setSelectionModel(newSelection);
+    
+    // Récupérer les objets sélectionnés
+    const selectedRows = rows.filter(row => newSelection.includes(row.id));
+  
+    // Envoyer au parent
+    if (onSelectionChange) {
+      onSelectionChange(selectedRows);
+    }
+  };
   const [rowSelectionModel, setRowSelectionModel] = React.useState([]);
 
   const { setBreadcrumbs } = useBreadcrumb();
@@ -345,11 +356,23 @@ function Table({
         }}
         onRowClick={handleRowClick} // Ajout du gestionnaire de clic sur la ligne
         getRowHeight={getRowHeight}
-        /*rowSelectionModel={rowSelectionModel}
-        onRowSelectionModelChange={handleRowSelectionChange}
-         selectionModel={selectionModel}
-        onSelectionModelChange={(newSelection) => setSelectionModel(newSelection)}*/
-
+        selectionModel={checkboxSelection ? selectionModel : []} // Applique seulement si activé
+        onRowSelectionModelChange={
+          checkboxSelection
+            ? (newSelection) => {
+                setSelectionModel(newSelection); // Met à jour l’état local
+                
+                // Récupérer les objets sélectionnés
+                const selectedRows = rows.filter(row => newSelection.includes(row.id));
+  
+                // Envoyer la sélection au parent
+                if (onSelectionChange) {
+                  onSelectionChange(selectedRows);
+                }
+              }
+            : undefined
+        }
+        
         sx={{
           border: "1px solid #ccc",
 

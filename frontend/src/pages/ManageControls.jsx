@@ -17,7 +17,7 @@ import ImportCsvButton from "../components/ImportXcelButton";
 import { useState } from "react";
 import { DataGrid } from "@mui/x-data-grid";
 import { PermissionRoleContext } from "../Context/permissionRoleContext";
-import  useReferentiel  from "../Hooks/useReferentiel";
+import useReferentiel from "../Hooks/useReferentiel";
 import Spinner from "../components/Spinner";
 import { toast } from "react-toastify";
 import AddRisqueForm from "../components/Forms/AddRisqueForm";
@@ -27,12 +27,24 @@ const ManageControls = () => {
   const [isOpenRisk, setIsOpenRisk] = useState(false);
   const [transformedData, setTransformeData] = useState({});
   const [riskTransformedData, setRiskTransformeData] = useState({});
-  const { risksData, loading, error,updateRisk ,deleteRisk,setRisksData,createMultipleRisks,createRisk} = useReferentiel();
+  const {
+    risksData,
+    loading,
+    error,
+    updateRisk,
+    deleteMultipleRisks,
+    deleteRisk,
+    setRisksData,
+    createMultipleRisks,
+    createRisk,
+  } = useReferentiel();
   const { userRole, setUserRole } = useContext(PermissionRoleContext);
   const [showPopup, setShowPopup] = useState(false);
   const [insertionProgress, setInsertionProgress] = useState(0);
   const [isFormOpen, setIsFormOpen] = useState(false);
-
+  const [selectedRisks, setSelectedRisks] = useState([]);
+  const [openMultipleDeleteDialog, setOpenMultipleDeleteDialog] =
+    useState(false);
   const handleRowSelectionChange1 = (newRowSelectionModel) => {
     const selectedRow = newRowSelectionModel; // On suppose qu'une seule ligne est sélectionnée
 
@@ -63,7 +75,7 @@ const ManageControls = () => {
   const closeWindow = () => {
     setIsOpen(false);
   };
- 
+
   const formatRisksData = (data) => {
     return data.map((row) => ({
       code: row[0],
@@ -78,15 +90,13 @@ const ManageControls = () => {
 
   const handleConfirmInsertion = async (data) => {
     console.log("Insertion des données en cours...", data);
-    
+
     try {
-        await createMultipleRisks(data); // Appel de la fonction du hook pour insérer les données
-       
+      await createMultipleRisks(data); // Appel de la fonction du hook pour insérer les données
     } catch (error) {
-        console.error("Erreur:", error);
-       
+      console.error("Erreur:", error);
     }
-};
+  };
 
   const infosCntrl = {
     Code: "32",
@@ -123,7 +133,7 @@ const ManageControls = () => {
     console.log("transformedData" + transformedData);
     setIsOpenRisk(true);
     setRiskTransformeData(transformedData);
-    console.log("risk transformed data",riskTransformedData)
+    console.log("risk transformed data", riskTransformedData);
   };
   const closeRiskWindow = () => {
     setIsOpenRisk(false);
@@ -132,8 +142,7 @@ const ManageControls = () => {
     try {
       const response = await updateRisk(id, updatedData);
       console.log("Mise à jour réussie :", response);
-  
-  
+
       closeRiskWindow();
     } catch (error) {
       console.error("Erreur lors de la mise à jour du risque", error);
@@ -170,38 +179,36 @@ const ManageControls = () => {
   const onRisqueCreated = async (newRisque) => {
     console.log("Nouveau risque à ajouter :", newRisque);
     try {
-       await createRisk(newRisque);
-  
-      
+      await createRisk(newRisque);
     } catch (error) {
       console.error("Erreur lors de la création du risque", error);
     }
   };
-  
-  
 
   const [openDialog, setOpenDialog] = useState(false);
-const [selectedRisk, setSelectedRisk] = useState(null);
+  const [selectedRisk, setSelectedRisk] = useState(null);
 
-const handleDeleteClick = (selectedRow) => {
-  setSelectedRisk(selectedRow);
-  setOpenDialog(true);
-};
+  const handleDeleteClick = (selectedRow) => {
+    setSelectedRisk(selectedRow);
+    setOpenDialog(true);
+  };
 
-const handleConfirmDelete = async () => {
-  if (!selectedRisk?.id) {
-    toast.error("ID invalide, suppression impossible !");
-    return;
-  }
+  const handleConfirmDelete = async () => {
+    if (!selectedRisk?.id) {
+      toast.error("ID invalide, suppression impossible !");
+      return;
+    }
 
-  const success = await deleteRisk(selectedRisk.id); // Appel à la fonction de suppression du hook
-  if (success) {
-    toast.success("Risque supprimé avec succès !");
-    setRisksData((prev) => prev.filter((risk) => risk.id !== selectedRisk.id));
-  }
+    const success = await deleteRisk(selectedRisk.id); // Appel à la fonction de suppression du hook
+    if (success) {
+      toast.success("Risque supprimé avec succès !");
+      setRisksData((prev) =>
+        prev.filter((risk) => risk.id !== selectedRisk.id)
+      );
+    }
 
-  setOpenDialog(false);
-};
+    setOpenDialog(false);
+  };
   const riskRowActions = [
     {
       icon: <DeleteIcon sx={{ marginRight: "5px" }} />,
@@ -342,7 +349,29 @@ const handleConfirmDelete = async () => {
     },
   ];
 
+  const [selectedRows, setSelectedRows] = useState([]);
 
+  const handleSelectionChange = (selectedRows) => {
+    console.log("Lignes sélectionnées :", selectedRows);
+    setSelectedRisks(selectedRows); // Stocker les lignes sélectionnées
+  };
+  const handleConfirmDeleteMultiple = async () => {
+    if (selectedRisks.length === 0) {
+      toast.error("Aucun risque sélectionné !");
+      return;
+    }
+    const ids = selectedRisks.map((risk) => risk.id);
+    try {
+      await deleteMultipleRisks(ids); // Appel de la fonction pour supprimer
+      setSelectedRisks([]); // Réinitialisation de la sélection après suppression
+      setOpenMultipleDeleteDialog(false); // Fermeture de la popup
+    } catch (error) {
+      console.error("Erreur lors de la suppression multiple :", error);
+    }
+    console.log("Risques sélectionnés pour la suppression :", selectedRisks);
+
+    setOpenMultipleDeleteDialog(false);
+  };
 
   return (
     <div className="flex flex-1 min-h-screen bg-[#fbfcfe]">
@@ -363,9 +392,8 @@ const handleConfirmDelete = async () => {
         />
       )}
       {/* Barre latérale */}
-  
-        <SideBar userRole={userRole} />
-      
+
+      <SideBar userRole={userRole} />
 
       {/* Contenu principal */}
       <div className="flex flex-col flex-1 p-4 bg-[#fbfcfe] min-h-screen overflow-hidden">
@@ -408,55 +436,81 @@ const handleConfirmDelete = async () => {
                 className="h-full flex-1 w-full   "
               >
                 <div className="flex justify-end bg-transparent gap-4 p-4 items-start">
-                  <ImportCsvButton  onDataImported={handleDataImported} 
-        onConfirmInsertion={handleConfirmInsertion} 
-        formatData={formatRisksData} />
- <Button variant="contained" onClick={() => setIsFormOpen(true)}>
-        Ajouter un risque
-      </Button>
+                  <ImportCsvButton
+                    onDataImported={handleDataImported}
+                    onConfirmInsertion={handleConfirmInsertion}
+                    formatData={formatRisksData}
+                  />
+                  <Button
+                    variant="contained"
+                    onClick={() => setIsFormOpen(true)}
+                  >
+                    Ajouter un risque
+                  </Button>
+                  {selectedRisks.length > 0 && (
+                    <Button
+                      variant="contained"
+                      color="error"
+                      startIcon={<DeleteIcon />}
+                      onClick={() => setOpenMultipleDeleteDialog(true)}
+                      disabled={selectedRisks.length === 0} // Désactive si rien n'est sélectionné
+                    >
+                      Supprimer sélection
+                    </Button>
+                  )}
+                  {isFormOpen && (
+                    <AddRisqueForm
+                      title="Ajouter un nouveau risque"
+                      isOpen={isFormOpen}
+                      onClose={() => setIsFormOpen(false)}
+                      onRisqueCreated={onRisqueCreated}
+                    />
+                  )}{" "}
+                </div>
+                <div className="overflow-auto h-[calc(98vh-200px)] mb-16  py-7 flex justify-center">
+                  {loading ? (
+                    <div className="flex items-center justify-center w-full h-full">
+                      <Spinner color="var(--blue-menu)" />
+                    </div>
+                  ) : risksData.length === 0 ? (
+                    <p className="text-center text-subfont-gray mt-48">
+                      Aucun risque pour le moment. Vous pouvez charger un
+                      fichier Excel ?
+                    </p>
+                  ) : (
+                    <Table
+                      columnsConfig={riskColumnsConfig}
+                      rowsData={risksData}
+                      checkboxSelection={true}
+                      onSelectionModelChange={setSelectedRisks}
+                      onSelectionChange={handleSelectionChange}
+                      rowActions={riskRowActions}
+                      allterRowcolors={true}
+                      className="w-full"
+                    />
+                  )}
 
-      {isFormOpen && (
-        <AddRisqueForm
-        title="Ajouter un nouveau risque"
-        isOpen={isFormOpen}
-        onClose={() => setIsFormOpen(false)}
-        onRisqueCreated={onRisqueCreated} 
-      />
-      
-      )}                </div>
-<div className="overflow-auto h-[calc(98vh-200px)] mb-16  py-7 flex justify-center">
-  {loading ? (
-    <div className="flex items-center justify-center w-full h-full">
-    <Spinner color="var(--blue-menu)" />
-  </div>
-  ) : risksData.length === 0 ? (
-    <p className="text-center text-subfont-gray mt-48">
-      Aucun risque pour le moment. Vous pouvez charger un fichier Excel ?
-    </p>
-  ) : (
-    <Table
-      columnsConfig={riskColumnsConfig}
-      rowsData={risksData}
-      checkboxSelection={false}
-      rowActions={riskRowActions}
-      allterRowcolors={true}
-      className="w-full"
-    />
-  )}
-  {openDialog && (
-    <div className="fixed inset-0 flex items-center justify-center bg-gray-500 bg-opacity-50 z-50">
-      <DecisionPopUp
-        name="Cette action est irréversible."
-        text="Êtes-vous sûr de vouloir supprimer ce risque ?"
-        loading={loading}
-        handleConfirm={handleConfirmDelete}
-        handleDeny={() => setOpenDialog(false)}
-      />
-    </div>
-  )}
-</div>
-
-
+                  {openMultipleDeleteDialog && (
+                    <DecisionPopUp
+                      name="Cette action est irréversible."
+                      text="Êtes-vous sûr de vouloir supprimer ces risques ?"
+                      loading={loading}
+                      handleConfirm={handleConfirmDeleteMultiple} // Appelle la suppression multiple
+                      handleDeny={() => setOpenDialog(false)}
+                    />
+                  )}
+                  {openDialog && (
+                    <div className="fixed inset-0 flex items-center justify-center bg-gray-500 bg-opacity-50 z-50">
+                      <DecisionPopUp
+                        name="Cette action est irréversible."
+                        text="Êtes-vous sûr de vouloir supprimer ce risque ?"
+                        loading={loading}
+                        handleConfirm={handleConfirmDelete}
+                        handleDeny={() => setOpenDialog(false)}
+                      />
+                    </div>
+                  )}
+                </div>
               </TabPanel>
 
               <TabPanel
@@ -473,8 +527,6 @@ const handleConfirmDelete = async () => {
                   <ImportCsvButton />
                   <Button variant="contained">Ajouter un contrôle</Button>
                 </div>
-
-                
 
                 <div
                   style={{

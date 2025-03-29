@@ -155,7 +155,31 @@ const useReferentiel = () => {
     };
     
     
-
+    const deleteMultipleRisks = async (riskIds) => {
+        if (!Array.isArray(riskIds) || riskIds.length === 0) {
+            toast.error("Aucun risque sélectionné !");
+            return;
+        }
+    
+        setLoading(true);
+        setError(null);
+    
+        try {
+            const response = await api.post("/risks/multiple-delete", { ids: riskIds });
+    
+            if (response.status === 200) {
+                toast.success("Risques supprimés avec succès !");
+                setRisksData((prevRisks) => prevRisks.filter((risk) => !riskIds.includes(risk.id)));
+            }
+        } catch (error) {
+            setError("Erreur lors de la suppression des risques.");
+            toast.error("Échec de la suppression des risques !");
+            console.error(error);
+        } finally {
+            setLoading(false);
+        }
+    };
+    
 
     return {
     risksData,
@@ -164,6 +188,7 @@ const useReferentiel = () => {
     updateRisk,
     deleteRisk,
     createRisk,
+    deleteMultipleRisks,
     createMultipleRisks,
     setRisksData,
     };
