@@ -5,7 +5,6 @@ import { toast } from "react-toastify";
 import { useRef, useEffect } from "react";
 
 const AuthContext = createContext(null);
-const tokenRef = useRef(null);
 
 export const AuthProvider = ({ children }) => {
   const [token, setToken] = useState(null); // État pour le token
@@ -13,6 +12,7 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(false); // État pour le chargement
   const [error, setError] = useState(null); // État pour les erreurs
   const navigate = useNavigate();
+  const tokenRef = useRef(null); 
 
   
 

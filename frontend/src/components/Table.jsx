@@ -337,9 +337,12 @@ function Table({
         columns={columns}
         disableRowSelectionOnClick
         checkboxSelection={checkboxSelection}
-        disableRowSelectionOnClick // Empêche la sélection en cliquant sur une cellule
         autoHeight
-        
+        initialState={{
+          pagination: {
+            paginationModel: { pageSize: 25 }, // Définit 25 lignes par page par défaut
+          },
+        }}
         onRowClick={handleRowClick} // Ajout du gestionnaire de clic sur la ligne
         getRowHeight={getRowHeight}
         /*rowSelectionModel={rowSelectionModel}

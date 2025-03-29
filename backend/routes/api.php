@@ -54,8 +54,10 @@ Route::middleware(['auth:sanctum', AdminMiddleware::class])
             Route::get('/risks', 'index');
             Route::patch('/update-risk/{id}', 'updateRisk');
             Route::delete('/delete-risk/{id}', 'deleteRisk');
+            Route::post('/create-risk', 'store'); 
+            Route::post('/create-multiple-risks', 'storeMultiple'); 
         });
-
+        
         // Missions
         Route::controller(MissionController::class)->group(function () {
             Route::get('/getmissions', 'index');

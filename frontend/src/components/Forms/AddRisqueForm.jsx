@@ -24,8 +24,12 @@ function AddRisqueForm({ title, isOpen, onClose, initialValues, onRisqueCreated 
       return; // Empêcher la soumission
     }
     setError(''); // Réinitialiser les erreurs si tout est bon
-
-    onRisqueCreated(risqueData); // Met à jour avant d'envoyer
+const risqueDataToSend = {
+      code: risqueData.code,
+      name: risqueData.nom,
+      description: risqueData.description,
+    };
+    onRisqueCreated(risqueDataToSend); // Met à jour avant d'envoyer
     onClose(); // Ferme le formulaire après soumission
   };
 
@@ -61,7 +65,7 @@ function AddRisqueForm({ title, isOpen, onClose, initialValues, onRisqueCreated 
             width="450px"
             flexDirection="flex-col"
             required={true}
-            value={risqueData.nom}
+            value={risqueData.name}
             onChange={(e) => setRisqueData({ ...risqueData, nom: e.target.value })}
           />
         </div>
