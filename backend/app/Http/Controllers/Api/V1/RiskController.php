@@ -97,10 +97,23 @@ class RiskController extends BaseController
     /**
      * Display the specified resource.
      */
-    public function show(Risk $risk)
-    {
-        //
+    public function deleteMultipleRisks(Request $request)
+{
+    $ids = $request->input('ids');
+
+    if (empty($ids) || !is_array($ids)) {
+        return $this->sendError("Aucun risque sélectionné", []);
     }
+
+    $deletedRisks = $this->riskService->deleteMultipleRisks($ids);
+
+    if (empty($deletedRisks)) {
+        return $this->sendError("Aucun risque supprimé", []);
+    }
+
+    return $this->sendResponse(["deleted_ids" => $deletedRisks], "Risques supprimés avec succès");
+}
+
 
       //
     

@@ -55,7 +55,9 @@ Route::middleware(['auth:sanctum', AdminMiddleware::class])
             Route::patch('/update-risk/{id}', 'updateRisk');
             Route::delete('/delete-risk/{id}', 'deleteRisk');
             Route::post('/create-risk', 'store'); 
-            Route::post('/create-multiple-risks', 'storeMultiple'); 
+            Route::post('/create-multiple-risks', 'storeMultiple');
+            Route::post('/risks/multiple-delete', 'deleteMultipleRisks'); 
+ 
         });
         
         // Missions

@@ -61,4 +61,18 @@ public function getRiskById($id)
            return  $this->riskRepository->deleteRisk($risk);
         }
     }
+
+    public function deleteMultipleRisks(array $ids)
+{
+    $deletedRisks = [];
+
+    foreach ($ids as $id) {
+        if ($this->deleteRisk($id)) {
+            $deletedRisks[] = $id;
+        }
+    }
+
+    return $deletedRisks;
+}
+
 }
