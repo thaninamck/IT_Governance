@@ -53,7 +53,8 @@ const ManageControls = () => {
     setControlsData,
     createControl,
     updateControl,
-    deleteControl
+    deleteControl,
+    archiveControl,
   } = useReferentiel();
 
   const handleRowSelectionChange1 = (newRowSelectionModel) => {
@@ -268,6 +269,8 @@ const ManageControls = () => {
           "L'objet de la ligne sélectionnée pour l'archivage : ",
           selectedRow
         );
+        setSelectedControl(selectedRow);
+        handleArchiveControl();
       },
     },
     {
@@ -309,7 +312,7 @@ const ManageControls = () => {
     setSelectedRisk(selectedRow);
     setOpenDialog(true);
   };
-
+  
   const handleConfirmControlDelete = async () => {
     if (!selectedControl?.id) {
       toast.error("ID invalide, suppression impossible !");
@@ -321,7 +324,13 @@ const ManageControls = () => {
 
     setOpenDeleteControlDialog(false);
   };
-
+const handleArchiveControl = async () => {
+    if (!selectedControl?.id) {
+      toast.error("ID invalide, archivage impossible !");
+      return;
+    }
+    await archiveControl(selectedControl.id);
+  }
   const handleConfirmDelete = async () => {
     if (!selectedRisk?.id) {
       toast.error("ID invalide, suppression impossible !");
