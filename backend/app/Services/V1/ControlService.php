@@ -233,7 +233,7 @@ public function restoreControl($id)
 
 public function deleteControl($id){
     $control=$this->controlRepository->getControlById($id);
-    Log::debug("controle", context: [$control]);
+    //Log::debug("controle", context: [$control]);
     if (!($this->controlRepository->hasRelatedData($control))) {
        return  $this->controlRepository->deleteControl($control);
     }
@@ -246,13 +246,14 @@ public function deleteMultipleControls(array $ids): int
 
     foreach ($ids as $id) {
         $deleted = $this->deleteControl($id);
-        if ($deleted) {
+        if ($deleted !== null) { 
             $deletedCount++;
         }
     }
 
     return $deletedCount; 
 }
+
 
 }
 
