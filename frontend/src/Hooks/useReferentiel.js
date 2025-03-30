@@ -335,6 +335,9 @@ const useReferentiel = () => {
     }
   };
 
+ 
+ 
+ 
   const deleteMultipleControls = async (controlIds) => {
     if (!Array.isArray(controlIds) || controlIds.length === 0) {
       toast.error("Aucun contrôle sélectionné !");
@@ -349,10 +352,12 @@ const useReferentiel = () => {
         ids: controlIds,
       });
   
-      if (response.status === 200) {
+      if (response.status === 200 && Array.isArray(response.data)) {
+        const deletedIds = response.data; // IDs des contrôles supprimés retournés par l'API
+  
         toast.success("Contrôles supprimés avec succès !");
         setControlsData((prevControls) =>
-          prevControls.filter((control) => !controlIds.includes(control.id))
+          prevControls.filter((control) => !deletedIds.includes(control.id))
         );
       }
     } catch (error) {
@@ -363,6 +368,7 @@ const useReferentiel = () => {
       setLoading(false);
     }
   };
+  
   
   return {
     risksData,

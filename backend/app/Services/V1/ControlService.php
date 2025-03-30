@@ -240,19 +240,20 @@ public function deleteControl($id){
 }
 
 
-public function deleteMultipleControls(array $ids): int
+public function deleteMultipleControls(array $ids): array
 {
-    $deletedCount = 0;
+    $deletedIds = [];
 
     foreach ($ids as $id) {
         $deleted = $this->deleteControl($id);
-        if ($deleted !== null) { 
-            $deletedCount++;
+        if ($deleted !== null) { // Vérifier si la suppression a réussi
+            $deletedIds[] = $id;
         }
     }
 
-    return $deletedCount; 
+    return $deletedIds; // Retourne les IDs des contrôles supprimés
 }
+
 
 
 }

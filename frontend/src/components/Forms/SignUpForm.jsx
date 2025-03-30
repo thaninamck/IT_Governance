@@ -19,7 +19,7 @@ function SignUpForm({ title, username, password, onUsernameChange, onPasswordCha
   return (
     <form className="appForm_container_login flex flex-col items-center space-y-4" onSubmit={handleSubmit}>
       {/* Titre dynamique */}
-      <img src="/logo.png" alt="logo" className="h-44" />
+      <img src="/grcenterlogo1.png" alt="logo" className="h-44" />
 
       {/* Formulaire */}
       <InputForm
@@ -53,7 +53,7 @@ function SignUpForm({ title, username, password, onUsernameChange, onPasswordCha
         className="flex items-center justify-center cursor-pointer"
         onClick={() => navigate('/pw')}
       >
-        <span className="text-subfont-gray mt-4 hover:underline">
+        <span className="text-subfont-gray text-xs mt-4 hover:underline">
           Mot de passe oublié ?
         </span>
       </div>
