@@ -53,6 +53,7 @@ const ManageControls = () => {
     setControlsData,
     createControl,
     updateControl,
+    deleteControl
   } = useReferentiel();
 
   const handleRowSelectionChange1 = (newRowSelectionModel) => {
@@ -270,6 +271,13 @@ const ManageControls = () => {
       },
     },
     {
+      icon: <DeleteIcon sx={{ marginRight: "5px" }} />,
+      label: "Supprimer",
+      onClick: (selectedRow) => {
+        handleDeleteControlClick(selectedRow);
+      },
+    },
+    {
       icon: <SquarePen className="mr-2" />,
       label: "Modifier",
       onClick: (selectedRow) => {
@@ -290,10 +298,28 @@ const ManageControls = () => {
 
   const [openDialog, setOpenDialog] = useState(false);
   const [selectedRisk, setSelectedRisk] = useState(null);
+  const [selectedControl, setSelectedControl] = useState(null);
+  const [openDeleteControlDialog, setOpenDeleteControlDialog] = useState(false);
 
+  const handleDeleteControlClick = (selectedRow) => {
+    setSelectedControl(selectedRow);
+    setOpenDeleteControlDialog(true);
+  };
   const handleDeleteClick = (selectedRow) => {
     setSelectedRisk(selectedRow);
     setOpenDialog(true);
+  };
+
+  const handleConfirmControlDelete = async () => {
+    if (!selectedControl?.id) {
+      toast.error("ID invalide, suppression impossible !");
+      return;
+    }
+
+    const success = await deleteControl(selectedControl.id); // Appel à la fonction de suppression du hook
+    
+
+    setOpenDeleteControlDialog(false);
   };
 
   const handleConfirmDelete = async () => {
@@ -669,7 +695,7 @@ const ManageControls = () => {
                   }}
                 >
                   {loading ? (
-                    <div className="flex items-center justify-center w-full h-full">
+                    <div className="flex items-center justify-center mt-9 w-full h-full">
                       <Spinner color="var(--blue-menu)" />
                     </div>
                   ) : controlsData.length === 0 ? (
@@ -687,7 +713,17 @@ const ManageControls = () => {
                       className="w-full"
                     />
                   )}
-
+                  {openDeleteControlDialog && (
+                    <div className="fixed inset-0 flex items-center justify-center bg-gray-500 bg-opacity-50 z-50">
+                      <DecisionPopUp
+                        name="Cette action est irréversible."
+                        text="Êtes-vous sûr de vouloir supprimer ce controle ?"
+                        loading={loading}
+                        handleConfirm={handleConfirmControlDelete}
+                        handleDeny={() => setOpenDeleteControlDialog(false)}
+                      />
+                    </div>
+                  )}
                   {isCntrlFormOpen && (
                     <AddControlForm
                       title="Ajouter un nouveau contrôle"

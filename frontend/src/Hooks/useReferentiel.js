@@ -313,12 +313,34 @@ const useReferentiel = () => {
     }
   };
   
+  const deleteControl = async (cntrlId) => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const response = await api.delete(`/delete-control/${cntrlId}`);
+      if (response.status == 200) {
+        toast.success("controle supprimé avec succès !");
+        setControlsData((prevControls) =>
+          prevControls.filter((control) => control.id !== cntrlId)
+        );
+      }
+    } catch (error) {
+      setError("Erreur lors de la suppression du controle.");
+      toast.error("Ce controle ne peut pas tre supprimé !");
+      console.error(error);
+      return null; // Pour éviter un retour `undefined`
+    } finally {
+      setLoading(false);
+    }
+  };
   return {
     risksData,
     loading,
     error,
     updateRisk,
     deleteRisk,
+    deleteControl,
     createRisk,
     deleteMultipleRisks,
     createMultipleRisks,
