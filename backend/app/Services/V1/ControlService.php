@@ -33,6 +33,20 @@ class ControlService
 
     }
 
+    public function getSelectOptions()
+    {
+        $types = $this->typeRepository->getAllTypes();
+        $majorProcesses = $this->majorProcessRepository->getAllMajorProcesses();
+        $subProcesses = $this->subProcessRepository->getAllSubProcesses();
+        $sources = $this->sourceRepository->getAllSources();
+
+        return [
+            'types' => $types,
+            'majorProcesses' => $majorProcesses,
+            'subProcesses' => $subProcesses,
+            'sources' => $sources,
+        ];
+    }
     public function getAllControls()
 {
     $controls = $this->controlRepository->getAllControls();

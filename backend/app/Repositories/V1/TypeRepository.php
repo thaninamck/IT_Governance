@@ -12,4 +12,9 @@ class TypeRepository
     );
 }
 
+public function getAllTypes()
+{
+    return Type::all();
+}
+
 }

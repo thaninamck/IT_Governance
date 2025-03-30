@@ -32,4 +32,8 @@ class SubProcessRepository
     )->refresh();
 }
 
+public function getAllSubProcesses()
+{
+    return SubProcess::all();
+}
 }

@@ -68,18 +68,18 @@ class ControlController extends BaseController
             'code' => 'required|string|max:255',
             'test_script' => 'nullable|string', 
             'type' => 'nullable|array', 
-            'type.id' => 'nullable|exists:types,id', 
+            'type.id' => 'nullable', 
             'type.name' => 'nullable|string|max:255',
             'majorProcess' => 'nullable|array',
-            'majorProcess.id' => 'nullable|exists:major_processes,id',
             'majorProcess.code' => 'nullable|string|max:255',
             'majorProcess.description' => 'nullable|string',
             'subProcess' => 'nullable|array',
-            'subProcess.id' => 'nullable|exists:sub_processes,id',
+            'subProcess.id' => 'nullable',
             'subProcess.code' => 'nullable|string|max:255',
             'subProcess.name' => 'nullable|string|max:255',
             'sources' => 'nullable|array',
-            'sources.*.id' => 'exists:sources,id',
+            'sources.*.id' => 'nullable',
+            'sources.*.name' => 'nullable',
         ];
 
         $validator = Validator::make($request->all(), $rules);
@@ -202,6 +202,20 @@ class ControlController extends BaseController
     
 }
 
+public function getSelectOptions(Request $request)
+{
+    try {
+        $options = $this->controlService->getSelectOptions();
+
+        if (empty($options)) {
+            return $this->sendError("No select options found", []);
+        }
+
+        return $this->sendResponse($options, "Select options retrieved successfully");
+    } catch (\Exception $e) {
+        return $this->sendError("An error occurred while retrieving select options", ["error" => $e->getMessage()], 500);
+    }
+}
 
 public function deleteControl($id){
     if(!$this->controlService->deleteControl($id)){

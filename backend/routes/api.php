@@ -41,6 +41,8 @@ Route::middleware(['auth:sanctum', AdminMiddleware::class])
         // Controls
         Route::controller(ControlController::class)->group(function () {
             Route::get('/controls', 'index');
+            Route::get('/select-options', 'getSelectOptions');
+
             Route::patch('/update-control/{id}', 'update');
             Route::post('/insert-control', 'store');
             Route::post('/insert-controls', 'multipleStore');

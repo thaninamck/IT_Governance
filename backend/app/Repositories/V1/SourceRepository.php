@@ -11,5 +11,9 @@ class SourceRepository
         ['name' => $data['name'] ?? 'Source inconnue']
     );
 }
+public function getAllSources()
+{
+    return Source::all();
+}
 
 }

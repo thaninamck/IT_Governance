@@ -12,7 +12,10 @@ const useReferentiel = () => {
   const [error, setError] = useState(null);
   const [risksData, setRisksData] = useState([]); // Ajout du state
   const [controlsData, setControlsData] = useState([]);
-
+  const [typeOptions, setTypeOptions] = useState([]);
+  const [majorOptions, setMajorOptions] = useState([]);
+  const [subOptions, setSubOptions] = useState([]);
+  const [sourceOptions, setSourceOptions] = useState([]);
   const fetchRisks = async () => {
     setLoading(true);
     setError(null);
@@ -31,6 +34,7 @@ const useReferentiel = () => {
   useEffect(() => {
     fetchRisks();
     fetchControls();
+    fetchSelectOptions();
   }, []);
 
   const updateRisk = async (riskId, updatedData) => {
@@ -202,20 +206,31 @@ const useReferentiel = () => {
     setLoading(true);
     setError(null);
     try {
-      await api.patch(`/update-control/${controlId}`, updatedData);
-      toast.success("Contrôle mis à jour avec succès !");
-      setControlsData((prev) =>
-        prev.map((ctrl) =>
-          ctrl.id === controlId ? { ...ctrl, ...updatedData } : ctrl
-        )
-      );
+      // Effectuer la requête PATCH
+      const response = await api.patch(`/update-control/${controlId}`, updatedData);
+
+      // Vérifier si la réponse est réussie (si status est 2xx)
+      if (response.status >= 200 && response.status < 300) {
+        // Si la réponse est ok, mettre à jour l'état et afficher le toast
+        setControlsData((prev) =>
+          prev.map((ctrl) =>
+            ctrl.id === controlId ? { ...ctrl, ...updatedData } : ctrl
+          )
+        );
+        toast.success("Contrôle mis à jour avec succès !");
+      } else {
+        // Si le code status n'est pas 2xx, on considère comme une erreur
+        setError("Erreur lors de la mise à jour du contrôle.");
+        toast.error("Échec de la mise à jour du contrôle !");
+      }
     } catch (error) {
       setError("Erreur lors de la mise à jour du contrôle.");
       toast.error("Échec de la mise à jour du contrôle !");
     } finally {
       setLoading(false);
     }
-  };
+};
+
 
   const createControl = async (controlData) => {
     setLoading(true);
@@ -223,7 +238,8 @@ const useReferentiel = () => {
     try {
       const response = await api.post("/insert-control", controlData);
       toast.success("Contrôle ajouté avec succès !");
-      setControlsData((prev) => [...prev, response.data]);
+      console.log(response.data)
+      setControlsData((prev) => [...prev, { ...response.data }]);
     } catch (error) {
       setError("Erreur lors de l'ajout du contrôle.");
       toast.error("Échec de l'ajout du contrôle !");
@@ -277,7 +293,26 @@ const useReferentiel = () => {
       setLoading(false);
     }
   };
-
+ 
+  const fetchSelectOptions = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await api.get("/select-options");
+      console.log("select options",response.data);
+      setTypeOptions(response.data.types);
+      setMajorOptions(response.data.majorProcesses);
+      setSubOptions(response.data.subProcesses);
+      setSourceOptions(response.data.sources);
+    } catch (error) {
+      setError("Erreur lors de la récupération des options.");
+      console.error(error);
+      return null;
+    } finally {
+      setLoading(false);
+    }
+  };
+  
   return {
     risksData,
     loading,
@@ -296,6 +331,10 @@ const useReferentiel = () => {
     archiveControl,
     restoreControl,
     setControlsData,
+    typeOptions,
+    majorOptions,
+    subOptions,
+    sourceOptions,
   };
 };
 

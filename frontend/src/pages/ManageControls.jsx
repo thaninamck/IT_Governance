@@ -21,12 +21,23 @@ import useReferentiel from "../Hooks/useReferentiel";
 import Spinner from "../components/Spinner";
 import { toast } from "react-toastify";
 import AddRisqueForm from "../components/Forms/AddRisqueForm";
+import AddControlForm from "../components/Forms/AddControleForm";
+
 import DecisionPopUp from "../components/PopUps/DecisionPopUp";
 const ManageControls = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isOpenRisk, setIsOpenRisk] = useState(false);
   const [transformedData, setTransformeData] = useState({});
   const [riskTransformedData, setRiskTransformeData] = useState({});
+  const { userRole, setUserRole } = useContext(PermissionRoleContext);
+  const [showPopup, setShowPopup] = useState(false);
+  const [insertionProgress, setInsertionProgress] = useState(0);
+  const [isFormOpen, setIsFormOpen] = useState(false);
+  const [isCntrlFormOpen, setIsCntrlFormOpen] = useState(false);
+
+  const [selectedRisks, setSelectedRisks] = useState([]);
+  const [openMultipleDeleteDialog, setOpenMultipleDeleteDialog] =
+    useState(false);
   const {
     risksData,
     loading,
@@ -40,21 +51,16 @@ const ManageControls = () => {
     controlsData,
     createMultipleControls,
     setControlsData,
+    createControl,
+    updateControl,
   } = useReferentiel();
-  console.log("Valeur de controlsData :", controlsData);
 
-  const { userRole, setUserRole } = useContext(PermissionRoleContext);
-  const [showPopup, setShowPopup] = useState(false);
-  const [insertionProgress, setInsertionProgress] = useState(0);
-  const [isFormOpen, setIsFormOpen] = useState(false);
-  const [selectedRisks, setSelectedRisks] = useState([]);
-  const [openMultipleDeleteDialog, setOpenMultipleDeleteDialog] =
-    useState(false);
   const handleRowSelectionChange1 = (newRowSelectionModel) => {
     const selectedRow = newRowSelectionModel; // On suppose qu'une seule ligne est sélectionnée
 
     // Transformation des données dans le format attendu
     const transformedData = {
+      id: selectedRow.id, // ID
       Code: selectedRow.code, // Code
       Type: selectedRow.type || ["", "Unknown"], // Assurez-vous que 'type' existe
       CntrlDescription: selectedRow.description, // Description du contrôle
@@ -90,79 +96,93 @@ const ManageControls = () => {
   };
   const findIdByName = (list, name) => {
     if (!list || !name) return null;
-    const found = list.find(item => item[1] === name);
+    const found = list.find((item) => item[1] === name);
     return found ? { id: found[0], name } : null;
   };
-  
+
   const findControlByCode = (controls, code) => {
-    return controls.find(control => control.code === code);
+    return controls.find((control) => control.code === code);
   };
-  console.log("controls data", controlsData);
 
   const formatControlsData = (data, controlsData) => {
     if (!Array.isArray(data) || data.length < 2) return { controls: [] };
     if (!Array.isArray(controlsData)) {
-        console.error("controlsData n'est pas un tableau valide :", controlsData);
-        return { controls: [] };
+      console.error("controlsData n'est pas un tableau valide :", controlsData);
+      return { controls: [] };
     }
 
     const formattedData = [];
 
     for (let i = 1; i < data.length; i++) {
-        const row = data[i];
-        if (row.length === 0) continue; // Ignorer les lignes vides
+      const row = data[i];
+      if (row.length === 0) continue; // Ignorer les lignes vides
 
-        // Vérifier si le contrôle existe déjà
-        const existingControl = findControlByCode(controlsData, row[0]);
-        if (existingControl) continue; // Ignorer si le contrôle existe déjà
+      // Vérifier si le contrôle existe déjà
+      const existingControl = findControlByCode(controlsData, row[0]);
+      if (existingControl) continue; // Ignorer si le contrôle existe déjà
 
-        const control = {
-            code: row[0] || null,
-            description: row[1] || null,
-            test_script: row[2] || null,
-            type: row[3] ? {
-                id: findIdByName(controlsData.map(c => c.type), row[3]) || null,
-                name: row[3] || null
-            } : null,
-            majorProcess: row[4] ? {
-                id: findIdByName(controlsData.map(c => c.majorProcess), row[4]) || null,
-                code: row[4] || null,
-                description: row[5] || null
-            } : null,
-            subProcess: row[6] ? {
-                id: findIdByName(controlsData.map(c => c.subProcess), row[6]) || null,
-                code: row[6] || null,
-                name: row[7] || null
-            } : null,
-            sources: row[8]
-            ? row[8].split(",").map(name => {
-                const trimmedName = name.trim();
-                const sourceId = findIdByName(controlsData.flatMap(c => c.sources), trimmedName);
-                return {
-                    id: sourceId || null, // Met null si l'ID n'est pas trouvé
-                    name: sourceId ? undefined : trimmedName // Met le nom seulement si l'ID est null
-                };
+      const control = {
+        code: row[0] || null,
+        description: row[1] || null,
+        test_script: row[2] || null,
+        type: row[3]
+          ? {
+              id:
+                findIdByName(
+                  controlsData.map((c) => c.type),
+                  row[3]
+                ) || null,
+              name: row[3] || null,
+            }
+          : null,
+        majorProcess: row[4]
+          ? {
+              id:
+                findIdByName(
+                  controlsData.map((c) => c.majorProcess),
+                  row[4]
+                ) || null,
+              code: row[4] || null,
+              description: row[5] || null,
+            }
+          : null,
+        subProcess: row[6]
+          ? {
+              id:
+                findIdByName(
+                  controlsData.map((c) => c.subProcess),
+                  row[6]
+                ) || null,
+              code: row[6] || null,
+              name: row[7] || null,
+            }
+          : null,
+        sources: row[8]
+          ? row[8].split(",").map((name) => {
+              const trimmedName = name.trim();
+              const sourceId = findIdByName(
+                controlsData.flatMap((c) => c.sources),
+                trimmedName
+              );
+              return {
+                id: sourceId || null, // Met null si l'ID n'est pas trouvé
+                name: sourceId ? undefined : trimmedName, // Met le nom seulement si l'ID est null
+              };
             })
-            : []
-        
-        
-        };
+          : [],
+      };
 
-        formattedData.push(control);
+      formattedData.push(control);
     }
 
     console.log("Formatted Data:", formattedData);
-    return formattedData ;
-};
+    return formattedData;
+  };
 
-  
-  
-  
-  
   const handleDataImported = (data) => {
     console.log("Données importées :", data);
   };
-  
+
   const handleConfirmInsertion = async (data) => {
     console.log("Insertion des données en cours...", data);
 
@@ -352,6 +372,7 @@ const ManageControls = () => {
       field: "majorProcess",
       headerName: "Major Process",
       width: 250,
+      expandable: true,
       editable: false,
     },
     {
@@ -365,6 +386,7 @@ const ManageControls = () => {
       field: "subProcess",
       headerName: "Sub Process",
       width: 180,
+      expandable: true,
       editable: false,
     },
     {
@@ -387,6 +409,7 @@ const ManageControls = () => {
       headerName: "Sources",
       width: 200,
       editable: false,
+      expandable: true,
       renderCell: (params) =>
         Array.isArray(params.value)
           ? params.value.map((s) => s[0][0] || "Unknown").join(", ")
@@ -433,7 +456,7 @@ const ManageControls = () => {
   ];
 
   const [selectedRows, setSelectedRows] = useState([]);
-
+  console.log(controlsData);
   const handleSelectionChange = (selectedRows) => {
     console.log("Lignes sélectionnées :", selectedRows);
     setSelectedRisks(selectedRows); // Stocker les lignes sélectionnées
@@ -455,13 +478,29 @@ const ManageControls = () => {
 
     setOpenMultipleDeleteDialog(false);
   };
-
+  const handleControleCreated = async (newControle) => {
+    console.log("Nouveau contrôle créé :", newControle);
+    try {
+      await createControl(newControle);
+    } catch (error) {
+      console.error("Erreur lors de la création du contrôle :", error);
+    }
+  };
+  const handleControlUpdated = async (controlData, ControlId) => {
+    console.log("control data", controlData, ControlId);
+    try {
+      await updateControl(ControlId, controlData);
+    } catch (error) {
+      console.error("Erreur lors de la mise à jour du contrôle", error);
+    }
+  };
   return (
     <div className="flex flex-1 min-h-screen bg-[#fbfcfe]">
       {isOpen && (
         <ControlModalWindow
           isOpen={isOpen}
           onClose={closeWindow}
+          onControlUpdated={handleControlUpdated}
           infosCntrl={transformedData}
         />
       )}
@@ -476,7 +515,7 @@ const ManageControls = () => {
       )}
       {/* Barre latérale */}
 
-      <SideBar userRole={userRole} />
+      <SideBar userRole={"admin"} />
 
       {/* Contenu principal */}
       <div className="flex flex-col flex-1 p-4 bg-[#fbfcfe] min-h-screen overflow-hidden">
@@ -607,12 +646,19 @@ const ManageControls = () => {
               >
                 {/* Boutons en dehors de la zone de défilement */}
                 <div className="flex justify-end bg-transparent gap-4 p-4">
-                <ImportCsvButton
+                  <ImportCsvButton
                     onDataImported={handleDataImported}
                     onConfirmInsertion={handleConfirmCntrlInsertion}
-                    formatData={(data) => formatControlsData(data, controlsData)}
-                                      />
-                <Button variant="contained">Ajouter un contrôle</Button>
+                    formatData={(data) =>
+                      formatControlsData(data, controlsData)
+                    }
+                  />
+                  <Button
+                    variant="contained"
+                    onClick={() => setIsCntrlFormOpen(true)}
+                  >
+                    Ajouter un contrôle
+                  </Button>
                 </div>
 
                 <div
@@ -622,8 +668,12 @@ const ManageControls = () => {
                     minHeight: "400px",
                   }}
                 >
-                  {controlsData.length === 0 ? (
-                    <p className="text-center align-middle text-subfont-gray mt-48">
+                  {loading ? (
+                    <div className="flex items-center justify-center w-full h-full">
+                      <Spinner color="var(--blue-menu)" />
+                    </div>
+                  ) : controlsData.length === 0 ? (
+                    <p className="text-center text-subfont-gray mt-48">
                       Aucun contrôle pour le moment. Vous pouvez charger un
                       fichier Excel ?
                     </p>
@@ -633,8 +683,18 @@ const ManageControls = () => {
                       rowsData={controlsData}
                       checkboxSelection={false}
                       rowActions={cntrlRowActions}
-                      allterRowcolors={true}
+                      allterRowcolors
                       className="w-full"
+                    />
+                  )}
+
+                  {isCntrlFormOpen && (
+                    <AddControlForm
+                      title="Ajouter un nouveau contrôle"
+                      isOpen={isCntrlFormOpen}
+                      onClose={() => setIsCntrlFormOpen(false)}
+                      on
+                      onControleCreated={handleControleCreated}
                     />
                   )}
                 </div>
