@@ -238,4 +238,21 @@ public function deleteControl($id){
        return  $this->controlRepository->deleteControl($control);
     }
 }
+
+
+public function deleteMultipleControls(array $ids): int
+{
+    $deletedCount = 0;
+
+    foreach ($ids as $id) {
+        $deleted = $this->deleteControl($id);
+        if ($deleted) {
+            $deletedCount++;
+        }
+    }
+
+    return $deletedCount; 
 }
+
+}
+

@@ -49,6 +49,8 @@ Route::middleware(['auth:sanctum', AdminMiddleware::class])
             Route::patch('/archive-control/{id}', 'archiveControl');
             Route::patch('/restore-control/{id}', 'restoreControl');
             Route::delete('/delete-control/{id}', 'deleteControl');
+            Route::post('/controls/multiple-delete', 'multipleDelete'); 
+
         });
 
         // Risks

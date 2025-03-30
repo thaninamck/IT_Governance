@@ -144,7 +144,41 @@ class ControlController extends BaseController
        
     }
 
-
+    public function multipleDelete(Request $request): JsonResponse
+    {
+        try {
+            // Validate the request to ensure 'ids' is an array of integers
+            $validatedData = $request->validate([
+                'ids' => 'required|array|min:1',
+                'ids.*' => 'integer|exists:controls,id', // Ensure each ID exists in the 'controls' table
+            ]);
+    
+            $ids = $validatedData['ids'];
+    
+            // Perform the deletion
+            $deletedCount = $this->controlService->deleteMultipleControls($ids);
+    
+            if ($deletedCount === 0) {
+                return $this->sendError("No controls were deleted", [], 400);
+            }
+    
+            // Log the deletion action
+            $this->logService->logUserAction(
+                auth()->user()->email ?? 'Unknown',
+                'Admin',
+                "Suppression multiple de contrôles: " . implode(', ', $ids),
+                " "
+            );
+    
+            return $this->sendResponse(
+                ["message" => "$deletedCount controls deleted successfully"],
+                "Multiple controls deleted successfully"
+            );
+        } catch (\Exception $e) {
+            Log::error('Erreur dans multipleDelete : ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
+            return $this->sendError("An error occurred", ["error" => $e->getMessage()], 500);
+        }
+    }
 
     public function multipleStore(Request $request): JsonResponse
 {

@@ -334,6 +334,36 @@ const useReferentiel = () => {
       setLoading(false);
     }
   };
+
+  const deleteMultipleControls = async (controlIds) => {
+    if (!Array.isArray(controlIds) || controlIds.length === 0) {
+      toast.error("Aucun contrôle sélectionné !");
+      return;
+    }
+  
+    setLoading(true);
+    setError(null);
+  
+    try {
+      const response = await api.post("/controls/multiple-delete", {
+        ids: controlIds,
+      });
+  
+      if (response.status === 200) {
+        toast.success("Contrôles supprimés avec succès !");
+        setControlsData((prevControls) =>
+          prevControls.filter((control) => !controlIds.includes(control.id))
+        );
+      }
+    } catch (error) {
+      setError("Erreur lors de la suppression des contrôles.");
+      toast.error("Échec de la suppression des contrôles !");
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+  
   return {
     risksData,
     loading,
@@ -346,6 +376,7 @@ const useReferentiel = () => {
     createMultipleRisks,
     setRisksData,
     controlsData,
+    deleteMultipleControls, 
 
     updateControl,
     createControl,

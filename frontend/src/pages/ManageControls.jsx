@@ -34,7 +34,7 @@ const ManageControls = () => {
   const [insertionProgress, setInsertionProgress] = useState(0);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isCntrlFormOpen, setIsCntrlFormOpen] = useState(false);
-
+  const [selectedControls, setSelectedControls] = useState([]);
   const [selectedRisks, setSelectedRisks] = useState([]);
   const [openMultipleDeleteDialog, setOpenMultipleDeleteDialog] =
     useState(false);
@@ -55,6 +55,7 @@ const ManageControls = () => {
     updateControl,
     deleteControl,
     archiveControl,
+    deleteMultipleControls,
   } = useReferentiel();
 
   const handleRowSelectionChange1 = (newRowSelectionModel) => {
@@ -303,6 +304,7 @@ const ManageControls = () => {
   const [selectedRisk, setSelectedRisk] = useState(null);
   const [selectedControl, setSelectedControl] = useState(null);
   const [openDeleteControlDialog, setOpenDeleteControlDialog] = useState(false);
+  const [openMultipleControlDeleteDialog, setOpenMultipleControlDeleteDialog] = useState(false);
 
   const handleDeleteControlClick = (selectedRow) => {
     setSelectedControl(selectedRow);
@@ -312,7 +314,7 @@ const ManageControls = () => {
     setSelectedRisk(selectedRow);
     setOpenDialog(true);
   };
-  
+
   const handleConfirmControlDelete = async () => {
     if (!selectedControl?.id) {
       toast.error("ID invalide, suppression impossible !");
@@ -320,17 +322,16 @@ const ManageControls = () => {
     }
 
     const success = await deleteControl(selectedControl.id); // Appel à la fonction de suppression du hook
-    
 
     setOpenDeleteControlDialog(false);
   };
-const handleArchiveControl = async () => {
+  const handleArchiveControl = async () => {
     if (!selectedControl?.id) {
       toast.error("ID invalide, archivage impossible !");
       return;
     }
     await archiveControl(selectedControl.id);
-  }
+  };
   const handleConfirmDelete = async () => {
     if (!selectedRisk?.id) {
       toast.error("ID invalide, suppression impossible !");
@@ -491,11 +492,35 @@ const handleArchiveControl = async () => {
   ];
 
   const [selectedRows, setSelectedRows] = useState([]);
-  console.log(controlsData);
+  const handleControlSelectionChange = (selectedRows) => {
+    console.log("Lignes sélectionnées :", selectedRows);
+    setSelectedControls(selectedRows); 
+  };
   const handleSelectionChange = (selectedRows) => {
     console.log("Lignes sélectionnées :", selectedRows);
-    setSelectedRisks(selectedRows); // Stocker les lignes sélectionnées
+    setSelectedRisks(selectedRows); 
   };
+
+
+  const handleConfirmDeleteMultipleControls = async () => {
+    if (selectedControls.length === 0) {
+      toast.error("Aucun controle sélectionné !");
+      return;
+    }
+    const ids = selectedControls.map((control) => control.id);
+    try {
+      await deleteMultipleControls(ids); 
+      setSelectedControls([]); // Réinitialisation de la sélection après suppression
+      setOpenMultipleControlDeleteDialog(false); // Fermeture de la popup
+    } catch (error) {
+      console.error("Erreur lors de la suppression multiple :", error);
+    }
+
+    setOpenMultipleControlDeleteDialog(false);
+  };
+
+
+
   const handleConfirmDeleteMultiple = async () => {
     if (selectedRisks.length === 0) {
       toast.error("Aucun risque sélectionné !");
@@ -509,7 +534,6 @@ const handleArchiveControl = async () => {
     } catch (error) {
       console.error("Erreur lors de la suppression multiple :", error);
     }
-    console.log("Risques sélectionnés pour la suppression :", selectedRisks);
 
     setOpenMultipleDeleteDialog(false);
   };
@@ -612,7 +636,7 @@ const handleArchiveControl = async () => {
                       onClick={() => setOpenMultipleDeleteDialog(true)}
                       disabled={selectedRisks.length === 0} // Désactive si rien n'est sélectionné
                     >
-                      Supprimer sélection
+                      Supprimer 
                     </Button>
                   )}
                   {isFormOpen && (
@@ -694,6 +718,17 @@ const handleArchiveControl = async () => {
                   >
                     Ajouter un contrôle
                   </Button>
+                  {selectedControls.length > 0 && (
+                    <Button
+                      variant="contained"
+                      color="error"
+                      startIcon={<DeleteIcon />}
+                      onClick={() => setOpenMultipleControlDeleteDialog(true)}
+                      disabled={selectedControls.length === 0} // Désactive si rien n'est sélectionné
+                    >
+                      Supprimer 
+                    </Button>
+                  )}
                 </div>
 
                 <div
@@ -716,10 +751,21 @@ const handleArchiveControl = async () => {
                     <Table
                       columnsConfig={controlColumnsConfig}
                       rowsData={controlsData}
-                      checkboxSelection={false}
+                      checkboxSelection={true}
                       rowActions={cntrlRowActions}
+                      onSelectionModelChange={setSelectedControls}
+                      onSelectionChange={handleControlSelectionChange}
                       allterRowcolors
                       className="w-full"
+                    />
+                  )}
+                  {openMultipleControlDeleteDialog && (
+                    <DecisionPopUp
+                      name="Cette action est irréversible."
+                      text="Êtes-vous sûr de vouloir supprimer ces controles ?"
+                      loading={loading}
+                      handleConfirm={handleConfirmDeleteMultipleControls} // Appelle la suppression multiple
+                      handleDeny={() => setOpenMultipleControlDeleteDialog(false)}
                     />
                   )}
                   {openDeleteControlDialog && (
