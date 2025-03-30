@@ -5,183 +5,280 @@ import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 
 const useReferentiel = () => {
-    const navigate = useNavigate(); // Hook pour la navigation
+  const navigate = useNavigate(); // Hook pour la navigation
 
-    const { token, user } = useAuth();
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState(null);
-    const [risksData, setRisksData] = useState([]); // Ajout du state
+  const { token, user } = useAuth();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [risksData, setRisksData] = useState([]); // Ajout du state
+  const [controlsData, setControlsData] = useState([]);
 
-    const fetchRisks = async () => {
-        setLoading(true);
-        setError(null);
-        try {
-            const response = await api.get("/risks"); // Récupération des risques
-            setRisksData(response.data); // Stockage des risques dans le state
-            console.log(response.data);
-        } catch (error) {
-            setError("Erreur lors de la récupération des risques.");
-            console.error(error);
-        } finally {
-            setLoading(false);
-        }
-    };
+  const fetchRisks = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await api.get("/risks"); // Récupération des risques
+      setRisksData(response.data); // Stockage des risques dans le state
+      console.log(response.data);
+    } catch (error) {
+      setError("Erreur lors de la récupération des risques.");
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    useEffect(() => {
-        fetchRisks();
-    }, []);
+  useEffect(() => {
+    fetchRisks();
+    fetchControls();
+  }, []);
 
+  const updateRisk = async (riskId, updatedData) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await api.patch(`/update-risk/${riskId}`, updatedData);
+      toast.success("Risque mis à jour avec succès !");
+      setRisksData((prevRisks) =>
+        prevRisks.map((risk) =>
+          risk.id === riskId ? { ...risk, ...updatedData } : risk
+        )
+      );
+      return response.data;
+    } catch (error) {
+      setError("Erreur lors de la mise à jour du risque.");
+      toast.error("Échec de la mise à jour !");
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    const updateRisk = async (riskId, updatedData) => {
-        setLoading(true);
-        setError(null);
-        try {
-          const response = await api.patch(`/update-risk/${riskId}`, updatedData);
-          toast.success("Risque mis à jour avec succès !");
-          setRisksData((prevRisks) =>
-            prevRisks.map((risk) =>
-                risk.id === riskId ? { ...risk, ...updatedData } : risk
-            )
+  const deleteRisk = async (riskId) => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const response = await api.delete(`/delete-risk/${riskId}`);
+      if (response.status == 200) {
+        toast.success("Risque supprimé avec succès !");
+        setRisksData((prevRisks) =>
+          prevRisks.filter((risk) => risk.id !== riskId)
         );
-          return response.data;
-        } catch (error) {
-          setError("Erreur lors de la mise à jour du risque.");
-          toast.error("Échec de la mise à jour !");
-          console.error(error);
-        } finally {
-          setLoading(false);
-        }
+      }
+    } catch (error) {
+      setError("Erreur lors de la suppression du risque.");
+      toast.error("Ce risque ne peut pas tre supprimé !");
+      console.error(error);
+      return null; // Pour éviter un retour `undefined`
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const createRisk = async (riskData) => {
+    console.log("risque a jouter", riskData);
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await api.post("/create-risk", riskData);
+      toast.success("Risque ajouté avec succès !");
+      setRisksData((prevRisks) => [...prevRisks, response.data]);
+      return response.data;
+    } catch (error) {
+      if (error.response && error.response.status === 422) {
+        toast.error("Ce risque existe déjà !");
+
+        throw new Error("Ce risque existe déjà !");
+      }
+      setError("Erreur lors de l'ajout du risque.");
+      toast.error("Échec de l'ajout du risque !");
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+  const normalize = (str) => (str ? str.trim().toLowerCase() : "");
+
+  const createMultipleRisks = async (risksArray) => {
+    setLoading(true);
+    setError(null);
+
+    // Supprimer la première ligne (en-tête)
+    const filteredRisks = risksArray.slice(1);
+
+    // Normaliser les risques existants
+    const normalizedRisksData = risksData.map((risk) => ({
+      code: normalize(risk.code),
+      name: normalize(risk.nomRisque),
+      description: normalize(risk.description),
+    }));
+
+    // Filtrer les risques à insérer en détectant ceux qui ont au moins un champ différent
+    const uniqueRisks = filteredRisks.filter((newRisk) => {
+      const normalizedNewRisk = {
+        code: normalize(newRisk.code),
+        name: normalize(newRisk.name),
+        description: normalize(newRisk.description),
       };
-      
-      const deleteRisk = async (riskId) => {
-        setLoading(true);
-        setError(null);
-        
-        try {
-          const response = await api.delete(`/delete-risk/${riskId}`);
-          if (response.status == 200) {
-            toast.success("Risque supprimé avec succès !");
-            setRisksData((prevRisks) =>
-              prevRisks.filter((risk) => risk.id !== riskId)
-          );
-          }
-         
-        } catch (error) {
-          setError("Erreur lors de la suppression du risque.");
-          toast.error("Ce risque ne peut pas tre supprimé !");
-          console.error(error);
-          return null; // Pour éviter un retour `undefined`
-        } finally {
-          setLoading(false);
-        }
-      };
-      
-      const createRisk = async (riskData) => {
-        console.log("risque a jouter",riskData);
-        setLoading(true);
-        setError(null);
-        try {
-            const response = await api.post("/create-risk", riskData);
-            toast.success("Risque ajouté avec succès !");
-            setRisksData((prevRisks) => [...prevRisks, response.data]);
-            return response.data;
-        } catch (error) {
-            if (error.response && error.response.status === 422) {
-                toast.error("Ce risque existe déjà !");
 
-                throw new Error("Ce risque existe déjà !");
-              }
-            setError("Erreur lors de l'ajout du risque.");
-            toast.error("Échec de l'ajout du risque !");
-            console.error(error);
-        } finally {
-            setLoading(false);
-        }
-    };
-    const normalize = (str) => (str ? str.trim().toLowerCase() : "");
+      // Vérifier si un risque avec le même code existe mais avec des valeurs différentes
+      return !normalizedRisksData.some(
+        (existingRisk) =>
+          existingRisk.code === normalizedNewRisk.code &&
+          existingRisk.name === normalizedNewRisk.name &&
+          existingRisk.description === normalizedNewRisk.description
+      );
+    });
 
-    const createMultipleRisks = async (risksArray) => {
-        setLoading(true);
-        setError(null);
-    
-        // Supprimer la première ligne (en-tête)
-        const filteredRisks = risksArray.slice(1);
-    
-        // Normaliser les risques existants
-        const normalizedRisksData = risksData.map(risk => ({
-            code: normalize(risk.code),
-            name: normalize(risk.nomRisque), 
-            description: normalize(risk.description)
-        }));
-    
-        // Filtrer les risques à insérer en détectant ceux qui ont au moins un champ différent
-        const uniqueRisks = filteredRisks.filter(newRisk => {
-            const normalizedNewRisk = {
-                code: normalize(newRisk.code),
-                name: normalize(newRisk.name),
-                description: normalize(newRisk.description)
-            };
-    
-            // Vérifier si un risque avec le même code existe mais avec des valeurs différentes
-            return !normalizedRisksData.some(existingRisk =>
-                existingRisk.code === normalizedNewRisk.code &&
-                existingRisk.name === normalizedNewRisk.name &&
-                existingRisk.description === normalizedNewRisk.description
-            );
-        });
-    
-        console.log("RisksData:", risksData);
-        console.log("Risks to insert:", uniqueRisks);
-    
-        if (uniqueRisks.length === 0) {
-            toast.info("Aucun nouveau risque à ajouter.");
-            setLoading(false);
-            return;
-        }
-    
-        try {
-            const response = await api.post("/create-multiple-risks", uniqueRisks);
-            toast.success("Risques ajoutés avec succès !");
-            console.log(response.data);
-            setRisksData((prevRisks) => [...prevRisks, ...response.data]);
-            return response.data;
-        } catch (error) {
-            setError("Erreur lors de l'ajout des risques.");
-            toast.error("Échec de l'ajout des risques !");
-            console.error(error);
-        } finally {
-            setLoading(false);
-        }
-    };
-    
-    
-    const deleteMultipleRisks = async (riskIds) => {
-        if (!Array.isArray(riskIds) || riskIds.length === 0) {
-            toast.error("Aucun risque sélectionné !");
-            return;
-        }
-    
-        setLoading(true);
-        setError(null);
-    
-        try {
-            const response = await api.post("/risks/multiple-delete", { ids: riskIds });
-    
-            if (response.status === 200) {
-                toast.success("Risques supprimés avec succès !");
-                setRisksData((prevRisks) => prevRisks.filter((risk) => !riskIds.includes(risk.id)));
-            }
-        } catch (error) {
-            setError("Erreur lors de la suppression des risques.");
-            toast.error("Échec de la suppression des risques !");
-            console.error(error);
-        } finally {
-            setLoading(false);
-        }
-    };
-    
+    console.log("RisksData:", risksData);
+    console.log("Risks to insert:", uniqueRisks);
 
-    return {
+    if (uniqueRisks.length === 0) {
+      toast.info("Aucun nouveau risque à ajouter.");
+      setLoading(false);
+      return;
+    }
+
+    try {
+      const response = await api.post("/create-multiple-risks", uniqueRisks);
+      toast.success("Risques ajoutés avec succès !");
+      console.log(response.data);
+      setRisksData((prevRisks) => [...prevRisks, ...response.data]);
+      return response.data;
+    } catch (error) {
+      setError("Erreur lors de l'ajout des risques.");
+      toast.error("Échec de l'ajout des risques !");
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const deleteMultipleRisks = async (riskIds) => {
+    if (!Array.isArray(riskIds) || riskIds.length === 0) {
+      toast.error("Aucun risque sélectionné !");
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
+
+    try {
+      const response = await api.post("/risks/multiple-delete", {
+        ids: riskIds,
+      });
+
+      if (response.status === 200) {
+        toast.success("Risques supprimés avec succès !");
+        setRisksData((prevRisks) =>
+          prevRisks.filter((risk) => !riskIds.includes(risk.id))
+        );
+      }
+    } catch (error) {
+      setError("Erreur lors de la suppression des risques.");
+      toast.error("Échec de la suppression des risques !");
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchControls = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await api.get("/controls");
+      setControlsData(response.data);
+      console.log("controls data ",response.data);
+    } catch (error) {
+      setError("Erreur lors de la récupération des contrôles.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const updateControl = async (controlId, updatedData) => {
+    setLoading(true);
+    setError(null);
+    try {
+      await api.patch(`/update-control/${controlId}`, updatedData);
+      toast.success("Contrôle mis à jour avec succès !");
+      setControlsData((prev) =>
+        prev.map((ctrl) =>
+          ctrl.id === controlId ? { ...ctrl, ...updatedData } : ctrl
+        )
+      );
+    } catch (error) {
+      setError("Erreur lors de la mise à jour du contrôle.");
+      toast.error("Échec de la mise à jour du contrôle !");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const createControl = async (controlData) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await api.post("/insert-control", controlData);
+      toast.success("Contrôle ajouté avec succès !");
+      setControlsData((prev) => [...prev, response.data]);
+    } catch (error) {
+      setError("Erreur lors de l'ajout du contrôle.");
+      toast.error("Échec de l'ajout du contrôle !");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const createMultipleControls = async (controlsArray) => {
+    setLoading(true);
+    setError(null);
+    console.log("controlsArray",controlsArray);
+    try {
+      const response = await api.post("/insert-controls", {controls:controlsArray});
+      toast.success("Contrôles ajoutés avec succès !");
+      setControlsData((prev) => [...prev, ...response.data]);
+    } catch (error) {
+      setError("Erreur lors de l'ajout des contrôles.");
+      toast.error("Échec de l'ajout des contrôles !");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const archiveControl = async (controlId) => {
+    setLoading(true);
+    setError(null);
+    try {
+      await api.patch(`/archive-control/${controlId}`);
+      toast.success("Contrôle archivé avec succès !");
+      setControlsData((prev) => prev.filter((ctrl) => ctrl.id !== controlId));
+    } catch (error) {
+      setError("Erreur lors de l'archivage du contrôle.");
+      toast.error("Échec de l'archivage du contrôle !");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const restoreControl = async (controlId) => {
+    setLoading(true);
+    setError(null);
+    try {
+      await api.patch(`/restore-control/${controlId}`);
+      toast.success("Contrôle restauré avec succès !");
+      fetchControls();
+    } catch (error) {
+      setError("Erreur lors de la restauration du contrôle.");
+      toast.error("Échec de la restauration du contrôle !");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return {
     risksData,
     loading,
     error,
@@ -191,12 +288,20 @@ const useReferentiel = () => {
     deleteMultipleRisks,
     createMultipleRisks,
     setRisksData,
-    };
+    controlsData,
+
+    updateControl,
+    createControl,
+    createMultipleControls,
+    archiveControl,
+    restoreControl,
+    setControlsData,
+  };
 };
 
 export default useReferentiel;
 
-    /*
+/*
     
       const risksData = [
     {
@@ -236,4 +341,4 @@ export default useReferentiel;
     },
   ];
     
-    */ 
+    */

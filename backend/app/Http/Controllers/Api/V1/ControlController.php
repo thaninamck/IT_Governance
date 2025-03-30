@@ -9,6 +9,7 @@ use App\Http\Resources\Api\V1\ControlResource;
 
 use Illuminate\Support\Facades\Validator;
 use App\Services\V1\ControlService;
+use Log;
 
 class ControlController extends BaseController
 {
@@ -154,22 +155,25 @@ class ControlController extends BaseController
             'controls.*.code' => 'required|string|max:255',
             'controls.*.test_script' => 'nullable|string', 
             'controls.*.type' => 'nullable|array', 
-            'controls.*.type.id' => 'nullable|exists:types,id', 
+            'controls.*.type.id' => 'nullable', 
             'controls.*.type.name' => 'nullable|string|max:255',
             'controls.*.majorProcess' => 'nullable|array',
-            'controls.*.majorProcess.id' => 'nullable|exists:major_processes,id',
+            'controls.*.majorProcess.id' => 'nullable',
             'controls.*.majorProcess.code' => 'nullable|string|max:255',
             'controls.*.majorProcess.description' => 'nullable|string',
             'controls.*.subProcess' => 'nullable|array',
-            'controls.*.subProcess.id' => 'nullable|exists:sub_processes,id',
+            'controls.*.subProcess.id' => 'nullable',
             'controls.*.subProcess.code' => 'nullable|string|max:255',
             'controls.*.subProcess.name' => 'nullable|string|max:255',
             'controls.*.sources' => 'nullable|array',
-            'controls.*.sources.*.id' => 'exists:sources,id',
+            'controls.*.sources.*.name' => 'nullable|string|max:255',
+
+            'controls.*.sources.*.id' => 'nullable',
         ];
 
         $validator = Validator::make($request->all(), $rules);
-
+        Log::debug('Validation rules :',  [$validator->errors()]);
+        
         if ($validator->fails()) {
             return $this->sendError("Validation failed", $validator->errors(), 422);
         }
@@ -178,6 +182,7 @@ class ControlController extends BaseController
 
         $createdControls = [];
         foreach ($controlsData as $controlData) {
+            Log::debug('Control data :',  [$controlData]);
             $createdControls[] = new ControlResource($this->controlService->createControl($controlData));
 
             // Enregistrement des logs
@@ -190,9 +195,11 @@ class ControlController extends BaseController
         }
 
         return $this->sendResponse($createdControls, "Multiple controls created successfully", 201);
-    } catch (\Exception $e) {
+    }  catch (\Exception $e) {
+        Log::error('Erreur dans multipleStore : ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
         return $this->sendError("An error occurred", ["error" => $e->getMessage()], 500);
     }
+    
 }
 
 

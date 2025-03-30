@@ -37,7 +37,12 @@ const ManageControls = () => {
     setRisksData,
     createMultipleRisks,
     createRisk,
+    controlsData,
+    createMultipleControls,
+    setControlsData,
   } = useReferentiel();
+  console.log("Valeur de controlsData :", controlsData);
+
   const { userRole, setUserRole } = useContext(PermissionRoleContext);
   const [showPopup, setShowPopup] = useState(false);
   const [insertionProgress, setInsertionProgress] = useState(0);
@@ -83,11 +88,81 @@ const ManageControls = () => {
       description: row[2],
     }));
   };
+  const findIdByName = (list, name) => {
+    if (!list || !name) return null;
+    const found = list.find(item => item[1] === name);
+    return found ? { id: found[0], name } : null;
+  };
+  
+  const findControlByCode = (controls, code) => {
+    return controls.find(control => control.code === code);
+  };
+  console.log("controls data", controlsData);
 
+  const formatControlsData = (data, controlsData) => {
+    if (!Array.isArray(data) || data.length < 2) return { controls: [] };
+    if (!Array.isArray(controlsData)) {
+        console.error("controlsData n'est pas un tableau valide :", controlsData);
+        return { controls: [] };
+    }
+
+    const formattedData = [];
+
+    for (let i = 1; i < data.length; i++) {
+        const row = data[i];
+        if (row.length === 0) continue; // Ignorer les lignes vides
+
+        // Vérifier si le contrôle existe déjà
+        const existingControl = findControlByCode(controlsData, row[0]);
+        if (existingControl) continue; // Ignorer si le contrôle existe déjà
+
+        const control = {
+            code: row[0] || null,
+            description: row[1] || null,
+            test_script: row[2] || null,
+            type: row[3] ? {
+                id: findIdByName(controlsData.map(c => c.type), row[3]) || null,
+                name: row[3] || null
+            } : null,
+            majorProcess: row[4] ? {
+                id: findIdByName(controlsData.map(c => c.majorProcess), row[4]) || null,
+                code: row[4] || null,
+                description: row[5] || null
+            } : null,
+            subProcess: row[6] ? {
+                id: findIdByName(controlsData.map(c => c.subProcess), row[6]) || null,
+                code: row[6] || null,
+                name: row[7] || null
+            } : null,
+            sources: row[8]
+            ? row[8].split(",").map(name => {
+                const trimmedName = name.trim();
+                const sourceId = findIdByName(controlsData.flatMap(c => c.sources), trimmedName);
+                return {
+                    id: sourceId || null, // Met null si l'ID n'est pas trouvé
+                    name: sourceId ? undefined : trimmedName // Met le nom seulement si l'ID est null
+                };
+            })
+            : []
+        
+        
+        };
+
+        formattedData.push(control);
+    }
+
+    console.log("Formatted Data:", formattedData);
+    return formattedData ;
+};
+
+  
+  
+  
+  
   const handleDataImported = (data) => {
     console.log("Données importées :", data);
   };
-
+  
   const handleConfirmInsertion = async (data) => {
     console.log("Insertion des données en cours...", data);
 
@@ -97,7 +172,15 @@ const ManageControls = () => {
       console.error("Erreur:", error);
     }
   };
+  const handleConfirmCntrlInsertion = async (data) => {
+    console.log("Insertion des données en cours...", data);
 
+    try {
+      await createMultipleControls(data); // Appel de la fonction du hook pour insérer les données
+    } catch (error) {
+      console.error("Erreur:", error);
+    }
+  };
   const infosCntrl = {
     Code: "32",
     Type: [1, "préventif"],
@@ -268,7 +351,7 @@ const ManageControls = () => {
     {
       field: "majorProcess",
       headerName: "Major Process",
-      width: 150,
+      width: 250,
       editable: false,
     },
     {
@@ -312,7 +395,7 @@ const ManageControls = () => {
     { field: "actions", headerName: "Actions", width: 80 },
   ];
 
-  const controlsData = [
+  const controlsData1 = [
     {
       id: 7,
       code: "test",
@@ -524,8 +607,12 @@ const ManageControls = () => {
               >
                 {/* Boutons en dehors de la zone de défilement */}
                 <div className="flex justify-end bg-transparent gap-4 p-4">
-                  <ImportCsvButton />
-                  <Button variant="contained">Ajouter un contrôle</Button>
+                <ImportCsvButton
+                    onDataImported={handleDataImported}
+                    onConfirmInsertion={handleConfirmCntrlInsertion}
+                    formatData={(data) => formatControlsData(data, controlsData)}
+                                      />
+                <Button variant="contained">Ajouter un contrôle</Button>
                 </div>
 
                 <div
