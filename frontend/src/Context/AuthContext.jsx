@@ -4,93 +4,82 @@ import { authApi, api } from "../Api"; // Importer l'instance Axios pour les req
 import { toast } from "react-toastify";
 import { useRef, useEffect } from "react";
 
+
 const AuthContext = createContext(null);
 
+// Configurez les intercepteurs UNE FOIS au niveau module (hors composant)
+const configureInterceptors = () => {
+  const injectToken = (config) => {
+    const token = localStorage.getItem("token");
+    const publicEndpoints = [
+      "/check-email",
+      "/store-reset-code",
+      "/verify-reset-code", 
+      "/reset-password",
+    ];
+    
+    if (token && !publicEndpoints.includes(config.url)) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  };
+
+  // Configuration permanente des intercepteurs
+  authApi.interceptors.request.use(injectToken);
+  api.interceptors.request.use(injectToken);
+};
+
+// Appel initial de configuration
+configureInterceptors();
+
 export const AuthProvider = ({ children }) => {
-  const [token, setToken] = useState(null); // État pour le token
-  const [user, setUser] = useState(null); // État pour les informations de l'utilisateur
-  const [loading, setLoading] = useState(false); // État pour le chargement
-  const [error, setError] = useState(null); // État pour les erreurs
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
   const navigate = useNavigate();
-  const tokenRef = useRef(null); 
 
-  
+  const getCurrentToken = () => localStorage.getItem("token");
 
+  // Vérification initiale au montage
   useEffect(() => {
-    console.log("useEffect exécuté");
-  
-    const tokenRestored = localStorage.getItem("token");
-    const tokenExpiry = localStorage.getItem("token_expiry");
-  
-    console.log("Token récupéré :", tokenRestored);
-    console.log("Expiration récupérée :", tokenExpiry);
-  
-    if (tokenRestored && tokenExpiry) {
-      const now = new Date().getTime();
-      console.log("Temps actuel :", now);
-      console.log("Temps d'expiration :", parseInt(tokenExpiry));
-  
-      if (isNaN(tokenExpiry)) {
-        console.error("Erreur : tokenExpiry n'est pas un nombre valide.");
-        return;
-      }
-  
-      if (now > parseInt(tokenExpiry)) {
-        console.warn("Token expiré, suppression des données...");
-        localStorage.removeItem("token");
-        localStorage.removeItem("token_expiry");
-        setToken(null);
-        setUser(null);
-        navigate("/login"); // Redirige l'utilisateur si le token a expiré
-      } else {
-        console.log("Token encore valide, restauration...");
-        console.log("tokenRestored",tokenRestored)
-        setToken(tokenRestored);
-        console.log("token est ",token)
-      }
-    } else {
-      console.warn("Aucun token trouvé, redirection vers login...");
-      setToken(null);
+    const token = getCurrentToken();
+    const expiry = localStorage.getItem("token_expiry");
+
+    if (!token || !expiry || new Date().getTime() > parseInt(expiry)) {
+      localStorage.removeItem("token");
+      localStorage.removeItem("token_expiry");
       setUser(null);
       navigate("/login");
     }
-  }, []);
-  
-  
-
-  // 🔹 Connexion
+  }, [navigate]);
   const loginUser = async (credentials) => {
     setLoading(true);
     setError(null);
     try {
       const response = await authApi.post("/login", credentials);
-      console.log(response.data?.token)
       if (response.data?.token) {
-        const expirationTime = new Date().getTime() + 120 * 60 * 1000; // 120 minutes en millisecondes (même valeur que Laravel)
+        const expirationTime = new Date().getTime() + 120 * 60 * 1000;
         localStorage.setItem("token", response.data.token);
         localStorage.setItem("token_expiry", expirationTime);
-        setToken(response.data.token);
         setUser(response.data.user || null);
-      } else return response.data;
+      }
+      return response.data;
     } catch (error) {
-      setError("Échec de la connexion.");
+      setError("Échec de la connexion");
       throw error;
     } finally {
       setLoading(false);
     }
   };
-  
+
   const logout = async () => {
     setLoading(true);
     setError(null);
     try {
-  
       const response = await authApi.post("/logout");
-  
       if (response.status === 200) {
         localStorage.removeItem("token");
         localStorage.removeItem("token_expiry");
-        setToken(null);
         setUser(null);
         toast.success("Déconnexion réussie !");
         navigate("/login");
@@ -103,7 +92,21 @@ export const AuthProvider = ({ children }) => {
       setLoading(false);
     }
   };
-  
+
+  const fetchUser = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await authApi.get("/user");
+      setUser(response.data);
+    } catch (error) {
+      setError("Erreur lors de la récupération des informations utilisateur.");
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  };
+
   
   
 
@@ -135,66 +138,19 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // 🔹 Récupérer les informations de l'utilisateur
-  const fetchUser = async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const response = await authApi.get("/user"); // Endpoint pour récupérer les informations de l'utilisateur
-      setUser(response.data); // Mettre à jour les informations de l'utilisateur
-    } catch (error) {
-      setError(
-        "Erreur lors de la récupération des informations de l'utilisateur."
-      );
-      throw error;
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const publicEndpoints = [
-    "/check-email",
-    "/store-reset-code",
-    "/verify-reset-code",
-    "/reset-password",
-  ];
-
+ 
+ 
   
 
-  useEffect(() => {
-    tokenRef.current = token; // Met à jour la référence du token
+
+ 
   
-    const requestInterceptorAuthApi = authApi.interceptors.request.use((config) => {
-      if (tokenRef.current && !publicEndpoints.includes(config.url)) {
-        config.headers.Authorization = `Bearer ${tokenRef.current}`;
-        console.log("🔑 [authApi] Token ajouté:", tokenRef.current);
-      } else {
-        console.log("⚠️ [authApi] Pas de token pour cette requête:", config.url);
-      }
-      return config;
-    });
-  
-    const requestInterceptorApi = api.interceptors.request.use((config) => {
-      if (tokenRef.current && !publicEndpoints.includes(config.url)) {
-        config.headers.Authorization = `Bearer ${tokenRef.current}`;
-        console.log("🔑 [api] Token ajouté:", tokenRef.current);
-      } else {
-        console.log("⚠️ [api] Pas de token pour cette requête:", config.url);
-      }
-      return config;
-    });
-  
-    return () => {
-      authApi.interceptors.request.eject(requestInterceptorAuthApi);
-      api.interceptors.request.eject(requestInterceptorApi);
-    };
-  }, [token]);
 
   return (
     <AuthContext.Provider
       value={{
-        token,
-        user,
+        token: getCurrentToken(),
+                user,
         loginUser,
         logout,
         changePassword,

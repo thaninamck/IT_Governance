@@ -48,7 +48,7 @@ function GestionUtilisateur() {
     handleUpdateApp,
     handleUserCreation,
     isModalOpen,
-    setIsModalOpen
+    setIsModalOpen,
   } = useUser();
   // Configuration des colonnes de la table
   const columnsConfig2 = [
@@ -97,7 +97,6 @@ function GestionUtilisateur() {
       status: "Active",
     },
   ];
-
 
   // Accédez à userRole et setUserRole via le contexte
   const { userRole, setUserRole } = useContext(PermissionRoleContext);
@@ -154,8 +153,6 @@ const confirmDeleteApp = () => {
   // Gestion de la recherche d'utilisateur
   const handleSearchResults = (results) => setFilteredRows(results);
 
- 
-
   const handleCellEditCommit = (params) => {
     console.log("Cellule éditée :", params);
     setFilteredRows((prevRows) =>
@@ -182,7 +179,7 @@ const confirmDeleteApp = () => {
         />
 
         {/* Barre de recherche */}
-        <div className="flex justify-center mb-6">
+        <div className="flex justify-center mb-3">
           <SearchBar
             columnsConfig={columnsConfig2}
             initialRows={filteredRows}
@@ -191,7 +188,7 @@ const confirmDeleteApp = () => {
         </div>
 
         {/* Bouton d'exportation */}
-        <div className="flex justify-end items-center pr-10 mb-6">
+        <div className="flex justify-end items-center pr-10 mb-2">
           <ExportButton
             rowsData={filteredRows}
             headers={columnsConfig2.map((col) => col.headerName)}
@@ -215,33 +212,30 @@ const confirmDeleteApp = () => {
         />
         {/* Table d'affichage des utilisateurs */}
         <div
-          className={`flex-1 overflow-x-auto overflow-y-auto h-[400px]  ${
+          className={`flex-1 overflow-x-auto mx-6 overflow-y-auto h-[400px]  ${
             isDeletePopupOpen ? "blur-sm" : ""
           }`}
         >
           {loading ? (
-  <Spinner color="var(--blue-menu)" />
-) : (
-  <Table
-    key={JSON.stringify(filteredRows)}
-    columnsConfig={columnsConfig2}
-    rowsData={filteredRows}
-    checkboxSelection={false}
-    headerBackground="var(--blue-nav)"
-    statusOptions={statusOptions}
-    statusColors={statusColors}
-    rowActions={rowActions}
-    onCellEditCommit={handleCellEditCommit}
-  />
-)}
-
-          
+            <Spinner color="var(--blue-menu)" />
+          ) : (
+            <Table
+              key={JSON.stringify(filteredRows)}
+              columnsConfig={columnsConfig2}
+              rowsData={filteredRows}
+              checkboxSelection={false}
+              headerBackground="var(--blue-nav)"
+              statusOptions={statusOptions}
+              statusColors={statusColors}
+              rowActions={rowActions}
+              onCellEditCommit={handleCellEditCommit}
+            />
+          )}
         </div>
       </div>
 
       {/* Modal d'ajout d'un utilisateur */}
       <AddUserForm
-      
         title={"Ajouter un nouveau utilisateur"}
         loading={loading}
         isOpen={isModalOpen}
@@ -251,7 +245,7 @@ const confirmDeleteApp = () => {
 
       {isEditModalOpen && (
         <AddUserForm
-        loading={loading}
+          loading={loading}
           title={"Modifier un utilisateur"}
           isOpen={isEditModalOpen}
           onClose={() => setIsEditModalOpen(false)}
