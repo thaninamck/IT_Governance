@@ -65,7 +65,14 @@ export const AuthProvider = ({ children }) => {
       }
       return response.data;
     } catch (error) {
-      setError("Échec de la connexion");
+      console.log("erreur",error);
+      if (error.response?.status === 401) {
+        setError("Identifiants incorrects.");
+      } else if (error.response?.status === 403) {
+        setError("Votre compte est temporairement bloqué. Veuillez contacter l'administrateur.");
+      } else {
+        setError("Échec de la connexion");
+      }
       throw error;
     } finally {
       setLoading(false);
