@@ -35,4 +35,7 @@ class MajorProcessRepository
     );
 }
 
+public function getAllMajorProcesses()
+{
+    return MajorProcess::all();}
 }

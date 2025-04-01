@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { DataGrid } from "@mui/x-data-grid/DataGrid";
 import { User, ChevronDown } from "lucide-react";
+import { toast } from "react-toastify";
+
 //import SaveIcon from '@mui/icons-material/Save';
 
 import { Select, MenuItem, Checkbox, TextField, Button } from "@mui/material";
@@ -16,7 +18,7 @@ import {
 } from "@mui/material";
 import SearchBar from "../SearchBar";
 
-function Matrix({ data, userRole, onRowClick }) {
+function Matrix({ data, userRole, onRowClick,handleSaveexecutions }) {
   // Données imbriquées
   const data1 = {
     applications: [
@@ -97,16 +99,16 @@ function Matrix({ data, userRole, onRowClick }) {
               result.push({
                 id: uniqueId,
                 application: appName,
-                layerId:layer.id,
+                layerId:Number(layer.id),
                 applicationLayer: layerName,
                 applicationOwner: appOwner,
-                riskId: riskId,
+                riskId: +riskId,
                 riskCode:riskCode,
                 riskName: riskName,
                 riskDescription: riskDescription,
                 riskModified:riskModified,
                 riskOwner: riskOwner,
-                controlId: control.id,
+                controlId:Number(control.id),
                 controlCode:control.code,
                 controlDescription: control.description,
                 controlModified:controlModified,
@@ -295,24 +297,36 @@ useEffect(() => {
   const navigate = useNavigate();
 
   const handleSave = () => {
-    console.log("flatteneddata", flattenedData);
-
+    console.log("flattenedData", flattenedData);
     const dataToSend = {
-        executions: flattenedData.map(item => ({
-            layerId: item.layerId,
-            riskId: item.riskId,
-            riskDescription: item.riskDescription,
-            riskModified: item.riskModified,
-            riskOwner: item.riskOwner,
-            controlId: item.controlId,
-            controlDescription: item.controlDescription,
-            controlModified: item.controlModified,
-            controlOwner: item.controlOwner,
-            controlTester: item.controlTester
-        }))
-    };
+      executions: flattenedData.map(item => ({
+          layerId: item.layerId,
+          riskId: item.riskId,
+          riskDescription: item.riskDescription,
+          riskModified: item.riskModified,
+          riskOwner: item.riskOwner,
+          controlId: item.controlId,
+          controlDescription: item.controlDescription,
+          controlModified: item.controlModified,
+          controlOwner: item.controlOwner,
+          controlTester: item.controlTester
+      }))
+  };
+    // Vérification des champs obligatoires
+    const missingFields = flattenedData.some(
+        item => !item.controlTester || !item.riskOwner || !item.controlOwner
+    );
+
+    if (missingFields) {
+        toast.error("Veuillez affecter tous les contrôles à leurs testeurs et tous les risques/contrôles à leurs propriétaires.");
+        handleSaveexecutions(dataToSend);
+        return;
+    }
+
+   
 
     console.log("dataToSend", dataToSend);
+    
     // localStorage.removeItem("flattenedData");
 };
 

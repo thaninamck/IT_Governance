@@ -7,9 +7,14 @@ class TypeRepository
     public function firstOrCreate(array $data)
 {
     return Type::firstOrCreate(
-        ['id' => $data['id']],
+        //['id' => $data['id']],
         ['name' => $data['name'] ?? 'Type inconnu']
     );
+}
+
+public function getAllTypes()
+{
+    return Type::all();
 }
 
 }

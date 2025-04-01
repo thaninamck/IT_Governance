@@ -3,6 +3,7 @@ import Header from "../../components/Header/Header";
 import Matrix from "../../components/workPlan/Matrix";
 import WorkPlanSideBar from "../../components/workPlan/WorkPlanSideBar";
 import Flow from "../../components/workPlan/Flow";
+import useWorkplan from "../../Hooks/useWorkplan";
 import { NotificationDialog } from "../../components/workPlan/NotificationDialog";
 import { ConfirmationDialog } from "../../components/workPlan/ConfirmationDialog";
 const Workplan = () => {
@@ -83,11 +84,11 @@ const Workplan = () => {
   };
   
 
-  const addApplicationWithLayers = (id, description, layers) => {
+  const addApplicationWithLayers = (id, description, layers,owner) => {
     setApplication({
       id: id,
       description: description,
-      owner:"",
+      owner:owner,
       layers: layers.map((layer) => ({
         id: layer.id,
         name: layer.name,
@@ -342,7 +343,7 @@ const Workplan = () => {
     }
 
     //console.log("Ajout de l'application :", data);
-    addApplicationWithLayers(data.id, data.description, data.layers);
+    addApplicationWithLayers(data.id, data.description, data.layers,data.owner);
     const x = event.clientX;
     const y = event.clientY;
 
@@ -404,6 +405,11 @@ const Workplan = () => {
     { id: "e1-2", source: "1", target: "2", label: "Relation A-B" },
     { id: "e1-3", source: "1", target: "3", label: "Relation A-C" },
   ];
+
+
+  const handleSaveexecutions = (data) => {
+    console.log("Bouton cliqué dans l'enfant !",data);
+};
   return (
     <main className="min-h-screen">
       <div className="flex flex-col w-full bg-white min-h-screen overflow-hidden">
@@ -489,7 +495,7 @@ const Workplan = () => {
 
       <div className="bg-white  min-h-screen p-2 text-center">
         
-        <Matrix  data={dataStructure}></Matrix>
+        <Matrix  data={dataStructure} handleSaveexecutions={handleSaveexecutions}></Matrix>
       </div>
     </main>
   );

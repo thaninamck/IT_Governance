@@ -55,7 +55,9 @@ class AuthController extends BaseController
 
             $user = User::where('email', $request->email)->first();
             if (!$user || !Hash::check($request->password, $user->password)) {
-                return $this->sendError("Incorrect data", ["password" => ["No user found with the specified data"]]);
+                return $this->sendError("Incorrect data", ["incorrect data" => ["No user found with the specified data"]],401);
+            }elseif ($user && $user->is_active==false) {
+                return $this->sendError("User Blocked", ["Blocked" => ["this user is blocked temporarelly please wait until the admin unblocks you"]], 403);
             }
 
             $user->update(["last_activity" => now()]);
@@ -119,6 +121,7 @@ class AuthController extends BaseController
         $user->update([
             'password' => Hash::make($request->new_password),
             'must_change_password' => false,
+            'last_password_change' => now(),
         ]);
 
         $user->tokens()->delete();
@@ -232,6 +235,7 @@ class AuthController extends BaseController
         $user = User::where('email', $request->email)->first();
         $user->update([
             'password' => Hash::make($request->new_password),
+            'last_password_change' => now(),
         ]);
 
 

@@ -2,19 +2,21 @@ import React, { useState, useEffect } from "react";
 import CloseIcon from "@mui/icons-material/Close";
 import InfoDisplayComponent from "../InfosDisplay/InfoDisplayComponent";
 import TextDisplay from "./TextDisplay";
-
-const RiskModalWindow = ({ isOpen, onClose, infosRisk }) => {
+import  useReferentiel  from "../../Hooks/useReferentiel";
+const RiskModalWindow = ({ isOpen, onClose, infosRisk, onUpdateRisk }) => {
   // États pour gérer les données avec leur code
   const [Description, setDescription] = useState(infosRisk.Description);
   const [Code, setCode] = useState(infosRisk.Code || "");
   const [Nom, setNom] = useState(infosRisk.Nom || "");
   const [isEditing, setIsEditing] = useState(false); // État d'édition
-
+const [id, setId] = useState(infosRisk.id);
   useEffect(() => {
     // Mettre à jour les champs si infosRisk change
     setDescription(infosRisk.Description);
     setNom(infosRisk.Nom);
     setCode(infosRisk.Code);
+    setId(infosRisk.id);  
+
   }, [infosRisk]);
 
   const handleDescriptionChange = (newDescription, field) => {
@@ -37,16 +39,23 @@ const RiskModalWindow = ({ isOpen, onClose, infosRisk }) => {
   const DisableEdit = () => {
     setIsEditing(false);
   };
+  const { loading, updateRisk } = useReferentiel();
 
-  const handleSubmitEdit = () => {
+  const handleSubmitEdit = async () => {
     DisableEdit();
-    console.log({
-      Description,
-      Nom,
-      Code,
-    });
-    // Envoi des données au backend
+  
+    console.log("Risk ID:", id); // Vérifie l'ID avant d'envoyer la requête
+  
+    const updatedData = {
+      description: Description,
+      name: Nom,
+      code: Code,
+    };
+  
+    await onUpdateRisk(id, updatedData);
   };
+  
+  
 
   return (
     <div
@@ -124,7 +133,7 @@ const RiskModalWindow = ({ isOpen, onClose, infosRisk }) => {
                             onClick={handleSubmitEdit}
                             className="px-4 py-2 bg-blue-menu text-white rounded-md hover:bg-blue-600"
                         >
-                            Valider
+                             Valider 
                         </button>
                         ) : (
                         <button

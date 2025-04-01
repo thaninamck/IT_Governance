@@ -13,7 +13,7 @@ function Header() {
     <div className='header_container'>
       {/* Logo */}
       <div className='header_logo' onClick={() => navigate('/')}>
-        <img src='./mazars_logo.png' alt='Mazars Logo' />
+        <img src='./grcenterlogo1.png' alt='Mazars Logo' />
       </div>
 
       {/* Icons et utilisateur */}

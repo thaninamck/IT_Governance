@@ -12,9 +12,6 @@ use Illuminate\Support\Facades\DB;
 
 class ParticipationSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
         if (User::count() === 0 || Mission::count() === 0 || Profile::count() === 0) {
@@ -22,7 +19,35 @@ class ParticipationSeeder extends Seeder
             return;
         }
 
-        Participation::factory(20)->create();
+        $users = User::pluck('id')->toArray();
+        $missions = Mission::pluck('id')->toArray();
+        $profiles = Profile::pluck('id')->toArray();
+        $participations = [];
+
+        for ($i = 0; $i < 20; $i++) {
+            $user_id = $users[array_rand($users)];
+            $mission_id = $missions[array_rand($missions)];
+            $profile_id = $profiles[array_rand($profiles)];
+
+            $key = "$user_id-$mission_id"; // Clé unique pour éviter les doublons
+
+            if (!isset($participations[$key]) && 
+                !Participation::where('user_id', $user_id)->where('mission_id', $mission_id)->exists()) {
+                
+                $participations[$key] = [
+                    'user_id' => $user_id,
+                    'mission_id' => $mission_id,
+                    'profile_id' => $profile_id,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ];
+            }
+        }
+
+        // Insérer les valeurs uniques
+        if (!empty($participations)) {
+            Participation::insert(array_values($participations));
+        }
     }
 
     // public function run(): void
