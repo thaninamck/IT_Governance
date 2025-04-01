@@ -12,29 +12,31 @@ const useUser = () => {
   const [error, setError] = useState(null);
   const [notifications, setNotifications] = useState([]);
 
- // Fonction pour récupérer l'URL selon le type de notification
-const getNotificationUrl = (notification) => {
-  switch (notification.url?.type) {
-    case "mission":
-      return `/missions/${notification.url.id}`;
-    case "meeting":
-      return `/meetings/${notification.url.id}`;
-    default:
-      return "/";
-  }
-};
+  // Fonction pour récupérer l'URL selon le type de notification
+  const getNotificationUrl = (notification) => {
+    switch (notification.url?.type) {
+      case "mission":
+        return `/missions/${notification.url.id}`;
+      case "meeting":
+        return `/meetings/${notification.url.id}`;
+      case "security":
+        return "#";
+      default:
+        return "/";
+    }
+  };
 
-// Fonction pour formater les notifications
-const transformNotifications = (data) => {
-  return data.map((notif) => ({
-    id: notif.id, // UUID
-    sender: "SS", // Statique (tu peux changer si besoin)
-    message: notif.message, // Message récupéré
-    date: notif.created_at,
-    url: getNotificationUrl(notif), // Générer l'URL selon le type
-    isRead: notif.read_at !== null, // true si la notification a été lue
-  }));
-};
+  // Fonction pour formater les notifications
+  const transformNotifications = (data) => {
+    return data.map((notif) => ({
+      id: notif.id, // UUID
+      sender: "SS", // Statique (tu peux changer si besoin)
+      message: notif.message, // Message récupéré
+      date: notif.created_at,
+      url: getNotificationUrl(notif), // Générer l'URL selon le type
+      isRead: notif.read_at !== null, // true si la notification a été lue
+    }));
+  };
 
   // Fonction pour récupérer les notifications depuis l'API
   const fetchNotifications = async () => {
@@ -73,28 +75,39 @@ const transformNotifications = (data) => {
       fetchNotifications();
     }
   }, [token]);
-  
 
-  const markAsRead = async (id) => {
+  const markAsRead = async (id, event) => {
+    const notif = notifications.find((n) => n.id === id);
+    console.log("uuid", id);
+    // if (notif?.url && !notif.url === "#" && !notif.url === "") {
     const status = await MarkNotificationAsRead(id); // Appelle l'API pour marquer comme lu
 
-    if (status === 200) { // Vérifie si la requête a réussi
-        setNotifications((prevNotifications) =>
-            prevNotifications.map((notif) =>
-                notif.id === id ? { ...notif, isRead: true } : notif
-            )
-        );
+    if (status === 200) {
+      // Vérifie si la requête a réussi
+      setNotifications((prevNotifications) =>
+        prevNotifications.map((notif) =>
+          notif.id === id ? { ...notif, isRead: true } : notif
+        )
+      );
 
-        // Trouver la notification correspondante
-        const notif = notifications.find((n) => n.id === id);
-        if (notif?.url) {
-            navigate(notif.url); // Rediriger si une URL existe
+      // Trouver la notification correspondante
+      if (notif?.url) {
+        if (notif.url === "#" || notif.url === "") {
+          event.preventDefault(); // Empêche la navigation
+        } else {
+          navigate(notif.url); // Redirige normalement si l'URL est valide
         }
+      }
     } else {
-        toast.error(`Erreur lors de la mise à jour : ${status}`);
+      toast.error(`Erreur lors de la mise à jour : ${status}`);
     }
-};
+    //}
+  };
 
+  // Lorsque vous appelez markAsRead dans le gestionnaire d'événements :
+  const handleClick = (event, id) => {
+    markAsRead(id, event); // Passez l'événement et l'id à la fonction
+  };
 
   // Fonction pour marquer toutes les notifications comme lues
   const markAllAsRead = async () => {
@@ -117,7 +130,6 @@ const transformNotifications = (data) => {
       setLoading(false);
     }
   };
-  
 
   // État pour stocker le filtre sélectionné (Tout ou Non lues)
   const [filter, setFilter] = useState("all");

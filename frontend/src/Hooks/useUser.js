@@ -33,6 +33,7 @@ const useUser = () => {
         grade: user.grade,
         email: user.email,
         contact: user.phoneNumber,
+        lastPasswordChange: user.lastPasswordChange ? user.lastPasswordChange.split("T")[0] : "pas encore changé",
         dateField: user.createdAt.split("T")[0], // Extraction de la date sans l'heure
         dateField1: user.lastActivity.split(" ")[0], // Extraction de la date de la dernière activité
         status: user.isActive ? "Actif" : "Bloqué",

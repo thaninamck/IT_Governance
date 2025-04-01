@@ -17,6 +17,20 @@ class RiskRepository
     return $risk->update($data);
 }
 
+public function createRisk(array $data)
+{
+    $existingRisk = Risk::where('code', $data['code'])
+        ->where('name', $data['name'])
+        ->where('description', $data['description'])
+        ->first();
+
+    if ($existingRisk) {
+        return null; // Retourne null si le risque existe déjà
+    }
+
+    return Risk::create($data);
+}
+
 public function hasRelatedData(Risk $risk){
     return $risk->coverage()->exists() ;
 }

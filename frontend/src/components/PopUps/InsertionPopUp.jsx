@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { TypeAnimation } from 'react-type-animation';
 import { Progress } from "@material-tailwind/react";
 
-const InsertionPopUp = ({ value, finishingURL }) => {
+const InsertionPopUp = ({ value }) => {
     const [progressValue, setProgressValue] = useState(value);
 
     useEffect(() => {

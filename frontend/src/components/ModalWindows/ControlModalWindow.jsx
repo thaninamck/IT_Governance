@@ -4,10 +4,16 @@ import InfoDisplayComponent from "../InfosDisplay/InfoDisplayComponent";
 import TextDisplay from "./TextDisplay";
 import Separator from "../Decorators/Separator";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
-
+import useReferentiel from "../../Hooks/useReferentiel";
 import SingleOptionSelect from "../Selects/SingleOptionSelect";
-
-const ControlModalWindow = ({ isOpen, onClose, infosCntrl }) => {
+import MultiOptionSelect from "../Selects/MultiOptionSelect";
+const ControlModalWindow = ({
+  isOpen,
+  onClose,
+  infosCntrl,
+  onControlUpdated,
+}) => {
+  const { typeOptions, sourceOptions } = useReferentiel();
   // États pour gérer les données avec leur code
   const [CntrlDescription, setCntrlDescription] = useState(
     infosCntrl.CntrlDescription
@@ -25,12 +31,14 @@ const ControlModalWindow = ({ isOpen, onClose, infosCntrl }) => {
   const [SubProcessCode, setSubProcessCode] = useState(
     infosCntrl.SubProcess.Code || ""
   );
+  const types = typeOptions.map((option) => [option.id, option.name]);
 
-  //de la bdd hadou
-  const types = [
-    [1, "préventif"],
-    [2, "détéctif"],
-  ];
+  const Sources = sourceOptions.map((option) => [option.id, option.name]);
+  console.log("Sources", Sources);
+  // const types = [
+  //   [1, "préventif"],
+  //   [2, "détéctif"],
+  // ];
 
   const [sources, setSources] = useState(infosCntrl.Sources || []);
   const [type, setType] = useState(infosCntrl.Type || []);
@@ -78,8 +86,6 @@ const ControlModalWindow = ({ isOpen, onClose, infosCntrl }) => {
     }
   };
 
-  
-
   const EnableEdit = () => {
     setIsEditing(true);
   };
@@ -90,17 +96,20 @@ const ControlModalWindow = ({ isOpen, onClose, infosCntrl }) => {
 
   const handleSubmitEdit = () => {
     DisableEdit();
-    console.log({
-      CntrlDescription,
-      TestScript,
-      MajorProcess,
-      MajorProcessCode,
-      SubProcess,
-      SubProcessCode,
-      sources,
-      type,
-    });
-    // Envoi des données au backend
+    const formattedData = {
+       
+      description: CntrlDescription,
+      testScript: TestScript,
+      majorProcess: MajorProcess,
+      majorProcessCode: MajorProcessCode,
+      subProcess: SubProcess,
+      subProcessCode: SubProcessCode,
+      sources: sources, // Assurez-vous que c'est bien un tableau de [id, "Nom"]
+      type: type, // Vérifiez que c'est bien sous forme [id, "Nom du type"]
+    };
+
+    onControlUpdated(formattedData,infosCntrl.id,);
+    onClose();
   };
 
   return (
@@ -139,7 +148,7 @@ const ControlModalWindow = ({ isOpen, onClose, infosCntrl }) => {
 
           {/* Affichage du code */}
           <InfoDisplayComponent
-            borderWidth={25}
+            borderWidth={60}
             label={"Code:"}
             BoxContent={infosCntrl.Code}
             labelWidth={120}
@@ -159,7 +168,7 @@ const ControlModalWindow = ({ isOpen, onClose, infosCntrl }) => {
                   borderWidth={80}
                   label={""}
                   BoxContent={type[1]} // Affiche le libellé du type
-                  labelWidth={1}
+                  labelWidth={30}
                 />
               ) : (
                 <div className="flex gap-2">
@@ -201,83 +210,43 @@ const ControlModalWindow = ({ isOpen, onClose, infosCntrl }) => {
             labelWidth="120px"
           />
 
-<div className="flex gap-5 mt-6">
-  <label
-    htmlFor="Sources"
-    className="w-[120px] text-font-gray font-medium"
-  >
-    Sources:
-  </label>
+          <div className="flex gap-5 mt-6">
+            <label
+              htmlFor="Sources"
+              className="w-[120px] text-font-gray font-medium"
+            >
+              Sources:
+            </label>
 
-  <div className="flex flex-col gap-1 w-full">
-    {isEditing ? (
-      // Mode édition : Édition des sources
-      <div className="flex flex-col gap-2 w-full">
-        {/* Liste des SingleOptionSelect sauf le dernier */}
-        {sources.slice(0, -1).map((source, index) => (
-          <SingleOptionSelect
-            key={index}
-            placeholder={""}
-            width={300}
-            statuses={infosCntrl.Sources} // Liste complète des sources
-            onChange={(id, status) => {
-              // Mise à jour de la source sélectionnée
-              const updatedSources = [...sources];
-              updatedSources[index] = [id, status];
-              handleDescriptionChange(updatedSources, "Sources");
-            }}
-            checkedStatus={source} // Statut actuel de la source
-          />
-        ))}
-      </div>
-    ) : null}
-
-    {/* Dernier SingleOptionSelect avec le bouton Add */}
-    {isEditing && (
-      <div className="flex items-center gap-4">
-        <SingleOptionSelect
-          placeholder={""}
-          width={300}
-          statuses={infosCntrl.Sources} // Liste complète des sources
-          onChange={(id, status) => {
-            // Mise à jour de la dernière source
-            const updatedSources = [...sources];
-            updatedSources[sources.length - 1] = [id, status];
-            handleDescriptionChange(updatedSources, "Sources");
-          }}
-          checkedStatus={sources[sources.length - 1]} // Statut actuel de la dernière source
-        />
-        <AddCircleOutlineIcon
-          sx={{
-            color: "var(--blue-menu)",
-            width: "24px",
-            height: "24px",
-            cursor: "pointer",
-          }}
-          onClick={() => {
-            // Ajout d'une nouvelle source vide
-            const newSource = ["", ""]; // Exemple de nouvelle source vide
-            handleDescriptionChange([...sources, newSource], "Sources");
-          }}
-        />
-      </div>
-    )}
-
-    {/* Mode affichage : Affichage des sources en lecture seule */}
-    {!isEditing &&
-      sources.map((source, index) => (
-        <InfoDisplayComponent
-          key={index}
-          borderWidth={80}
-          label={""}
-          BoxContent={source[1]}
-          labelWidth={1}
-        />
-      ))}
-  </div>
-</div>
-
-
+            <div className="flex flex-col gap-1 w-full">
+              {isEditing
+                ? // Mode édition : Édition des sources
+                  (console.log("sources", sources),
+                  (
+                    <MultiOptionSelect
+                      placeholder="Sélectionnez les sources"
+                      width={300}
+                      height={40}
+                      objects={Sources.map(([id, status]) => ({ id, status }))}
+                      defaultSelected={infosCntrl.Sources} // Options sélectionnées par défaut
+                      onSelectionChange={(selected) => {
+                        // Mise à jour des sources sélectionnées
+                        handleDescriptionChange(selected, "Sources");
+                      }}
+                    />
+                  ))
+                : // Mode affichage : Affichage des sources en lecture seule
+                  sources.map((source, index) => (
+                    <InfoDisplayComponent
+                      key={index}
+                      borderWidth={80}
+                      label={""}
+                      BoxContent={source[1]}
+                      labelWidth={30}
+                    />
+                  ))}
+            </div>
+          </div>
           <Separator text={"Major Process"} />
           <InfoDisplayComponent
             borderWidth={50}

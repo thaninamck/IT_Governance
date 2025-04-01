@@ -1,5 +1,4 @@
-import React from 'react';
-import { useTheme } from '@mui/material/styles';
+import React, { useEffect, useState } from 'react';
 import Box from '@mui/material/Box';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import InputLabel from '@mui/material/InputLabel';
@@ -8,7 +7,14 @@ import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import Checkbox from '@mui/material/Checkbox';
 
-const MultiOptionSelect = ({ placeholder, width, objects,height }) => {
+const MultiOptionSelect = ({
+  placeholder,
+  width,
+  objects,
+  height,
+  defaultSelected = [], // Liste de tuples [id, status]
+  onSelectionChange,
+}) => {
   const ITEM_HEIGHT = 48;
   const ITEM_PADDING_TOP = 8;
   const MenuProps = {
@@ -20,18 +26,31 @@ const MultiOptionSelect = ({ placeholder, width, objects,height }) => {
     },
   };
 
-  const [selectedStatuses, setSelectedStatuses] = React.useState([]);
+  // Extraire uniquement les IDs des valeurs par défaut
+  const defaultIds = defaultSelected.map(([id]) => id);
+  const [selectedIds, setSelectedIds] = useState(defaultIds);
+
+  // Mettre à jour si defaultSelected change
+  useEffect(() => {
+    setSelectedIds(defaultSelected.map(([id]) => id));
+  }, [defaultSelected]);
 
   const handleChange = (event) => {
-    const {
-      target: { value },
-    } = event;
-
-    // On conserve les tuples complets dans `selectedStatuses`
-    setSelectedStatuses(
-      typeof value === 'string' ? value.split(',') : value
-    );
+    const { value } = event.target;
+  
+    // Créer une liste de tuples [id, status]
+    const updatedSelections = value.map((id) => {
+      const obj = objects.find((item) => item.id === id);
+      return obj ? [obj.id, obj.status] : null;
+    }).filter(Boolean); // Supprime les valeurs nulles
+  
+    setSelectedIds(value);
+  
+    if (onSelectionChange) {
+      onSelectionChange(updatedSelections); // Retourne [id, status]
+    }
   };
+  
 
   return (
     <div>
@@ -41,31 +60,26 @@ const MultiOptionSelect = ({ placeholder, width, objects,height }) => {
           width: `${width}px`,
           '& .MuiOutlinedInput-root': {
             borderRadius: 2,
-            height: `${height ? `${height}px` : 'auto'}`
-
+            height: height ? `${height}px` : 'auto',
           },
         }}
       >
-        <InputLabel id="demo-multiple-checkbox-label">{placeholder}</InputLabel>
+        <InputLabel>{placeholder}</InputLabel>
         <Select
-          labelId="demo-multiple-checkbox-label"
-          id="demo-multiple-checkbox"
           multiple
-          value={selectedStatuses}
+          value={selectedIds}
           onChange={handleChange}
           input={<OutlinedInput label={placeholder} />}
           renderValue={(selected) =>
-            selected.map((item) => item[1]).join(', ') // Affiche uniquement les noms des statuts sélectionnés
+            selected
+              .map((id) => objects.find((obj) => obj.id === id)?.status)
+              .join(', ')
           }
           MenuProps={MenuProps}
         >
           {objects.map(({ id, status }) => (
-            <MenuItem key={id} value={[id, status]}>
-              <Checkbox
-                checked={
-                  selectedStatuses.findIndex((item) => item[0] === id) > -1
-                }
-              />
+            <MenuItem key={id} value={id}>
+              <Checkbox checked={selectedIds.includes(id)} />
               {status}
             </MenuItem>
           ))}

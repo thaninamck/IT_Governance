@@ -19,7 +19,7 @@ function SignUpForm({ title, username, password, onUsernameChange, onPasswordCha
   return (
     <form className="appForm_container_login flex flex-col items-center space-y-4" onSubmit={handleSubmit}>
       {/* Titre dynamique */}
-      <img src="/logo.png" alt="logo" className="h-44" />
+      <img src="/grcenterlogo1.png" alt="logo" className="h-44" />
 
       {/* Formulaire */}
       <InputForm
@@ -47,13 +47,13 @@ function SignUpForm({ title, username, password, onUsernameChange, onPasswordCha
       </div>
 
       {/* Message d'erreur global */}
-      {typeof errorMessage === "string" && errorMessage && <p className="text-red-500">{errorMessage}</p>}
+      {typeof errorMessage === "string" && errorMessage && <p className="text-red-500 text-sm">{errorMessage}</p>}
       {/* Lien "Mot de passe oublié ?" */}
       <div
         className="flex items-center justify-center cursor-pointer"
         onClick={() => navigate('/pw')}
       >
-        <span className="text-subfont-gray mt-4 hover:underline">
+        <span className="text-subfont-gray text-sm mt-2 hover:underline">
           Mot de passe oublié ?
         </span>
       </div>

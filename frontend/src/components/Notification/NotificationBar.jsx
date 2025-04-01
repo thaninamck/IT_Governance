@@ -69,7 +69,8 @@ const NotificationBar = () => {
                 className={`notificationBar__item ${
                   !notif.isRead ? "unread" : ""
                 }`}
-                onClick={() => markAsRead(notif.id)}
+                onClick={(event) => markAsRead(notif.id,event)}
+               // onClick={() => markAsRead(notif.id)}
               >
                 <div className="notificationBar__icon mr-7">
                   <Bell size={20} />

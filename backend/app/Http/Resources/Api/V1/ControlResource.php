@@ -19,8 +19,11 @@ class ControlResource extends JsonResource
             'description' => $this->description,
             'type' => $this->type ? [$this->type->id, $this->type->name] : null,
             'majorProcess' => $this->majorProcess->description ?? null,
+
+            'majorProcessId' => $this->majorProcess->id ?? null,
             'majorProcessCode' => $this->majorProcess->code ?? null,
             'subProcess' => $this->subProcess->name ?? null,
+            'subProcessId' => $this->subProcess->id ?? null,
 
             'subProcessCode' => $this->subProcess->code ?? null,
             'sources' => $this->sources->map(fn($source) => [$source->id, $source->name])->toArray(),

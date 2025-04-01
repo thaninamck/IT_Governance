@@ -29,6 +29,42 @@ class RiskController extends BaseController
         return $this->sendResponse(RiskResource::collection($risks), "risks retrieved successfully");
     }
 
+    public function store(Request $request)
+    {
+        $data = $request->validate([
+            'code' => 'required|string|max:255|unique:risks,code',
+            'name' => 'required|string|max:255|unique:risks,name',
+            'description' => 'nullable|string',
+        ]);
+    
+        try {
+            $risk = $this->riskService->createRisk($data);
+            return $this->sendResponse(new RiskResource($risk), "Risque créé avec succès");
+        } catch (\Exception $e) {
+            return $this->sendError("Erreur lors de la création du risque", $e->getMessage(), 409);
+        }
+    }
+    
+    
+    public function storeMultiple(Request $request)
+{
+    $risksData = $request->validate([
+        '*.code' => 'required|string|max:255',
+        '*.name' => 'required|string|max:255',
+        '*.description' => 'nullable|string',
+    ]);
+
+    $risks = $this->riskService->createMultipleRisks($risksData);
+
+    if (empty($risks)) {
+        return $this->sendError("Erreur lors de la création des risques", []);
+    }
+
+    return $this->sendResponse(RiskResource::collection($risks), "Risques créés avec succès");
+}
+
+
+
 
     public function updateRisk(Request $request, $id)
 {
@@ -56,18 +92,28 @@ class RiskController extends BaseController
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
-    {
-        //
-    }
+ 
 
     /**
      * Display the specified resource.
      */
-    public function show(Risk $risk)
-    {
-        //
+    public function deleteMultipleRisks(Request $request)
+{
+    $ids = $request->input('ids');
+
+    if (empty($ids) || !is_array($ids)) {
+        return $this->sendError("Aucun risque sélectionné", []);
     }
+
+    $deletedRisks = $this->riskService->deleteMultipleRisks($ids);
+
+    if (empty($deletedRisks)) {
+        return $this->sendError("Aucun risque supprimé", []);
+    }
+
+    return $this->sendResponse(["deleted_ids" => $deletedRisks], "Risques supprimés avec succès");
+}
+
 
       //
     

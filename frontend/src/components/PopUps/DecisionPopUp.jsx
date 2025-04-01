@@ -5,8 +5,11 @@ import CircularProgress from "@mui/material/CircularProgress"; // Import du spin
 const DecisionPopUp = ({ name, text, loading, handleConfirm, handleDeny }) => {
   return (
     <div
+  className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
+>
+    <div
       className="rounded-lg w-auto h-auto bg-white drop-shadow-lg text-black
-        flex flex-col justify-around gap-4 p-6"
+        flex flex-col justify-around gap-4 p-6 z-50"
     >
       <div
         onClick={!loading ? handleDeny : null} // Désactiver la fermeture pendant le chargement
@@ -36,6 +39,7 @@ const DecisionPopUp = ({ name, text, loading, handleConfirm, handleDeny }) => {
           {loading ? <CircularProgress size={20} color="inherit" /> : "Confirmer"}
         </button>
       </div>
+    </div>
     </div>
   );
 };
