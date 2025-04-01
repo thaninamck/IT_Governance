@@ -42,12 +42,10 @@ const Login = () => {
       if (response?.must_change_password) {
         navigate("/firstconnection");
       } else {
-        if (response?.role==1){
-          navigate("/adminHomePage");
-        }
-          else{
-        navigate("/missions");}
+        console.log("response",response);
+        navigate(response?.user.role === "admin" ? "/adminHomePage" : "/missions");
       }
+      
     
     } catch (error) {
       // Gérer les erreurs de connexion

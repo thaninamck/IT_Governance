@@ -64,6 +64,13 @@ function GestionUtilisateur() {
       maxInitialLength: 20,
     },
     { field: "contact", headerName: "Contact", width: 200 },
+    {
+      field: "lastPasswordChange",
+      headerName: "Dernière modification du mot de passe",
+      width: 300,
+      expandable: true,
+      maxInitialLength: 20,
+    },
     { field: "dateField", headerName: "Dernière Activité", width: 150 },
     { field: "dateField1", headerName: "Date d'ajout", width: 130 },
     { field: "status", headerName: "Status", width: 140 },

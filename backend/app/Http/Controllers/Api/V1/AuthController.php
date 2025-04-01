@@ -121,6 +121,7 @@ class AuthController extends BaseController
         $user->update([
             'password' => Hash::make($request->new_password),
             'must_change_password' => false,
+            'last_password_change' => now(),
         ]);
 
         $user->tokens()->delete();
@@ -234,6 +235,7 @@ class AuthController extends BaseController
         $user = User::where('email', $request->email)->first();
         $user->update([
             'password' => Hash::make($request->new_password),
+            'last_password_change' => now(),
         ]);
 
 
