@@ -1,188 +1,158 @@
-.sideBar_container {
-    width: 20%; /* Ajustable pour les grands écrans */
-    min-width: 220px; /* Largeur minimale */
-    max-width: 280px; /* Largeur maximale */
-    height:min-content; /* Par défaut, la hauteur est basée sur la hauteur de la fenêtre */
+/* SideBar.css */
+.sidebar {
     
+    height: 100vh;
     background-color: var(--blue-menu);
-    border-radius: 0% 5px 5px 0%;
     color: white;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between; /* Répartir les éléments sur toute la hauteur */
-    transition: width 0.3s ease-in-out;
-    position: fixed;
-  top: 0;
-  left: 0;
-  overflow: hidden;
-   
-    
-}
-.collapsed {
+    z-index: 1000;
+    transition: width 0.2s ease;
     width: 60px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    height: 100vh; /* Par défaut, la hauteur est basée sur la hauteur de la fenêtre */
-    transition: width 0.3s ease-in-out;
-    background-color: var(--blue-menu);
-    border-radius: 0% 5px 5px 0%;
+    overflow: hidden;
   }
   
-  .expanded {
-    width: 20%; /* Ajustable pour les grands écrans */
-    min-width: 220px; /* Largeur minimale */
-    max-width: 280px; /* Largeur maximale */
-    height: 100vh; /* Par défaut, la hauteur est basée sur la hauteur de la fenêtre */
-    
-    background-color: var(--blue-menu);
-    border-radius: 0% 5px 5px 0%;
-    color: white;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between; /* Répartir les éléments sur toute la hauteur */
-    transition: width 0.3s ease-in-out;
+  .sidebar.expanded {
+    width: 250px;
   }
   
-  .toggle_icon {
+  .toggle-btn {
     display: flex;
-    align-items: center;
-    justify-content:right;
+    justify-content: flex-end;
+    padding: 15px;
     cursor: pointer;
-    padding: 10px;
   }
   
+  .toggle-btn .icon {
+    color: white;
+    font-size: 1.5rem;
+    transition: transform 0.2s ease;
+  }
   
-
-/* Section information de l'utilisateur */
- .user_info {
+  .sidebar-content {
+    padding: 10px;
+    height: calc(100% - 50px);
     display: flex;
     flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 15% 0;
-   
-}
-
- .user_info > div {
+  }
+  
+  .user-info {
+    text-align: center;
+    padding: 20px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  
+  .avatar {
     width: 60px;
     height: 60px;
+    margin: 0 auto 10px;
     background-color: var(--blue-nav);
     border-radius: 50%;
-    color: var(--blue-conf);
-    font-weight: 500;
-    font-size: 24px;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-bottom: 5%;
-}
-
-.user_info > span {
-    color: var(--status-gray);
-    font-weight: 400;
-    font-size: 14px;
-    margin-top: 2%;
-    text-align: center;
-}
-
-/* Liste des menus */
-.menu_list {
-  flex-grow: 1; /* Permet aux éléments de s'étendre */
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin-top: 15%;
-    padding-bottom: 10px;
-   /* justify-content: center;*/
-    
-}
-
- .menu_items {
-    width: 85%;
+    font-size: 1.5rem;
+    font-weight: bold;
+  }
   
-}
-
- .menu_items .menu_item{
+  .user-info h3 {
+    margin: 5px 0;
+    font-size: 1.1rem;
+  }
+  
+  .user-info span {
+    color: var(--status-gray);
+    font-size: 0.8rem;
+  }
+  
+  .menu {
+    flex-grow: 1;
+    margin: 20px 0;
+    overflow-y: scroll;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE/Edge */
+  }
+  
+  .menu::-webkit-scrollbar {
+    display: none; /* Chrome/Safari/Opera */
+  }
+  
+  .menu ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .menu-item {
     display: flex;
     align-items: center;
-    width: 100%;
-    height: 45px;
-    border-radius: 5px;
+    padding: 12px 15px;
     margin-bottom: 5px;
-    padding: 8px 10px;
+    border-radius: 5px;
     cursor: pointer;
-    transition: background-color 0.3s ease-in-out, transform 0.2s ease-in-out;
-    
-}
-
-
-
-/* Élément actif */
-.menu_items > .menu_item.active {
+    transition: background-color 0.2s ease;
+  }
+  
+  .menu-item:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+  }
+  
+  .menu-item.active {
     background-color: var(--blue-hover);
-}
-
-.logout_section li {
-    width: 80%;
-    margin-bottom: 30px;
-    margin-left: 30px;
-    
-}
-/* Style spécifique pour "Se déconnecter" */
-.logout_item {
-    margin-top: 10%; /* Positionne en bas */
-    padding: 12px 0px;
+  }
+  
+  .menu-icon {
+    margin-right: 15px;
+    font-size: 1.3rem;
+  }
+  
+  .logout {
+    padding: 15px 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  
+  .logout-btn {
+    display: flex;
+    align-items: center;
+    background: none;
+    border: none;
+    color: white;
+    width: 100%;
+    padding: 10px 15px;
     cursor: pointer;
-    transition: background-color 0.3s ease-in-out;
-   
-}
-
-
-
-
-/* 📌 Responsivité */
-@media (max-width: 1024px) {
-    .expanded{
-        width: 25%;
-        min-width: 180px;
-        height: 70vh;
+    border-radius: 5px;
+    transition: background-color 0.2s ease;
+  }
+  
+  .logout-btn:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+  }
+  
+  .logout-icon {
+    margin-right: 15px;
+    font-size: 1.3rem;
+  }
+  
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .sidebar.expanded {
+      width: 220px;
     }
-}
-
-@media (max-height: 700px) {
-    .expanded {
-        width: 25%;
-        min-width: 180px;
-        height: 830px;
-    }
-}
-@media (min-height: 600px) {
-    .expanded {
-        width: 25%;
-        min-width: 180px;
-        height: 954px;
-    }
-}
-@media (max-width: 768px) {
-    .expanded {
-        width: 100px;
-        height: 60vh; /* Réduit la taille pour les tablettes */
+  }
+  
+  @media (max-width: 480px) {
+    .sidebar.expanded {
+      width: 100%;
+      max-width: 300px;
     }
     
+    .sidebar:not(.expanded) {
+      width: 50px;
+    }
     
-     .menu_items > li span {
-        display: none; /* Cache le texte */
+    .toggle-btn {
+      padding: 10px;
     }
-}
-
-@media (max-width: 480px) {
-    .expanded {
-        width: 80px; /* Encore plus compact pour les petits écrans */
-        height: 50vh;
+    
+    .menu-item {
+      padding: 10px;
     }
-
-    .user_info > h3 {
-        display: none; /* Cache le nom */
-    }
-}
+  }
