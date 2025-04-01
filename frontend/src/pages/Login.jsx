@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import SignUpForm from "../components/Forms/SignUpForm";
 import whiteLogo from "../../public/whiteLogo.png";
@@ -14,7 +14,12 @@ const Login = () => {
 
   // Utiliser le contexte d'authentification
   const { loginUser, loading, error } = useAuth();
-
+  useEffect(() => {
+    if (error) {
+      console.log(error);
+      setErrorMessage(error);
+    }
+  }, [error]);
   const handleSubmit = async (e) => {
     e.preventDefault();
     setErrorMessage("");
@@ -28,7 +33,7 @@ const Login = () => {
     try {
       // Appeler la fonction de connexion du contexte
       const response = await loginUser({
-        email: username, // Assurez-vous que le backend attend "email" et non "username"
+        email: username, 
         password,
         captcha: captchaValue,
       });
@@ -37,11 +42,14 @@ const Login = () => {
       if (response?.must_change_password) {
         navigate("/firstconnection");
       } else {
-        navigate("/adminHomePage");
+        console.log("response",response);
+        navigate(response?.user.role === "admin" ? "/adminHomePage" : "/missions");
       }
+      
+    
     } catch (error) {
       // Gérer les erreurs de connexion
-      setErrorMessage(error || "Identifiants incorrects.");
+      setErrorMessage(error);
     }
   };
 

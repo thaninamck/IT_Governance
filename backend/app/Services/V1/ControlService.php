@@ -33,6 +33,20 @@ class ControlService
 
     }
 
+    public function getSelectOptions()
+    {
+        $types = $this->typeRepository->getAllTypes();
+        $majorProcesses = $this->majorProcessRepository->getAllMajorProcesses();
+        $subProcesses = $this->subProcessRepository->getAllSubProcesses();
+        $sources = $this->sourceRepository->getAllSources();
+
+        return [
+            'types' => $types,
+            'majorProcesses' => $majorProcesses,
+            'subProcesses' => $subProcesses,
+            'sources' => $sources,
+        ];
+    }
     public function getAllControls()
 {
     $controls = $this->controlRepository->getAllControls();
@@ -115,18 +129,19 @@ class ControlService
 public function createControl(array $data)
 {
     $type = $this->typeRepository->firstOrCreate([
-        'id' => $data['type']['id'] ?? null,
+        //'id' => $data['type']['id'] ?? null,
         'name' => $data['type']['name'] ?? 'Type inconnu'
     ]);
 
     $majorProcess = $this->majorProcessRepository->firstOrCreate([
-        'id' => $data['majorProcess']['id'] ?? null,
+        //'id' => $data['majorProcess']['id'] ?? null,
         'code' => $data['majorProcess']['code'] ?? 'code inconnu',
         'description' => $data['majorProcess']['description'] ?? 'Description inconnue'
     ]);
 
     
 if (!empty($data['subProcess']) && is_array($data['subProcess'])) {
+    Log::debug('subProcess', $data['subProcess']);
     $subProcess = $this->subProcessRepository->firstOrCreate([
         
         'code' => $data['subProcess']['code'] ?? 'code inconnu',
@@ -134,7 +149,7 @@ if (!empty($data['subProcess']) && is_array($data['subProcess'])) {
     ]);
     
 }
-//Log::debug('Avant assignation', ['sub_id' => $subProcess->id]);
+Log::debug('Avant assignation', ['sub_id' => $subProcess->id]);
 
 $controlData = [
     'code' => $data['code'],
@@ -174,7 +189,7 @@ if (!empty($data['test_script'])) {
         $sourceIds = [];
         foreach ($data['sources'] as $sourceData) {
             $source = $this->sourceRepository->firstOrCreate([
-                'id' => $sourceData['id'] ?? null,
+               // 'id' => $sourceData['id'] ?? null,
                 'name' => $sourceData['name'] ?? 'Source inconnue'
             ]);
             $sourceIds[] = $source->id;
@@ -218,9 +233,28 @@ public function restoreControl($id)
 
 public function deleteControl($id){
     $control=$this->controlRepository->getControlById($id);
-    Log::debug("controle", context: [$control]);
+    //Log::debug("controle", context: [$control]);
     if (!($this->controlRepository->hasRelatedData($control))) {
        return  $this->controlRepository->deleteControl($control);
     }
 }
+
+
+public function deleteMultipleControls(array $ids): array
+{
+    $deletedIds = [];
+
+    foreach ($ids as $id) {
+        $deleted = $this->deleteControl($id);
+        if ($deleted !== null) { // Vérifier si la suppression a réussi
+            $deletedIds[] = $id;
+        }
+    }
+
+    return $deletedIds; // Retourne les IDs des contrôles supprimés
 }
+
+
+
+}
+

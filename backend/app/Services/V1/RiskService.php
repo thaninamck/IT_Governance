@@ -13,6 +13,29 @@ class RiskService
     {
         $this->riskRepository = $riskRepository;
     }
+    public function createRisk(array $data)
+    {
+        $risk = $this->riskRepository->createRisk($data);
+    
+        if (!$risk) {
+            throw new \Exception("Ce risque existe déjà !");
+        }
+    
+        return $risk;
+    }
+    
+
+public function createMultipleRisks(array $risksData)
+{
+    $createdRisks = [];
+
+    foreach ($risksData as $data) {
+        $createdRisks[] = $this->createRisk($data);
+    }
+
+    return $createdRisks;
+}
+
 public function getRiskById($id)
     {
         return $this->riskRepository->getRiskById($id);
@@ -38,4 +61,18 @@ public function getRiskById($id)
            return  $this->riskRepository->deleteRisk($risk);
         }
     }
+
+    public function deleteMultipleRisks(array $ids)
+{
+    $deletedRisks = [];
+
+    foreach ($ids as $id) {
+        if ($this->deleteRisk($id)) {
+            $deletedRisks[] = $id;
+        }
+    }
+
+    return $deletedRisks;
+}
+
 }

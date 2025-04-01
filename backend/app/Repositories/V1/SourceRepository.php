@@ -7,9 +7,13 @@ class SourceRepository
     public function firstOrCreate(array $data)
 {
     return Source::firstOrCreate(
-        ['id' => $data['id']],
+        //['id' => $data['id']],
         ['name' => $data['name'] ?? 'Source inconnue']
     );
+}
+public function getAllSources()
+{
+    return Source::all();
 }
 
 }

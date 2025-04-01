@@ -80,6 +80,7 @@ class UserController extends BaseController
 
             $user->must_change_password = true;
             $user->last_activity = now();
+            $user->last_password_change = null;
             $user->save();
             $this->logService->logUserAction(
                 auth()->user()->email ?? 'Unknown',

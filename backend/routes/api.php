@@ -41,12 +41,16 @@ Route::middleware(['auth:sanctum', AdminMiddleware::class])
         // Controls
         Route::controller(ControlController::class)->group(function () {
             Route::get('/controls', 'index');
+            Route::get('/select-options', 'getSelectOptions');
+
             Route::patch('/update-control/{id}', 'update');
             Route::post('/insert-control', 'store');
             Route::post('/insert-controls', 'multipleStore');
             Route::patch('/archive-control/{id}', 'archiveControl');
             Route::patch('/restore-control/{id}', 'restoreControl');
             Route::delete('/delete-control/{id}', 'deleteControl');
+            Route::post('/controls/multiple-delete', 'multipleDelete'); 
+
         });
 
         // Risks
@@ -54,8 +58,12 @@ Route::middleware(['auth:sanctum', AdminMiddleware::class])
             Route::get('/risks', 'index');
             Route::patch('/update-risk/{id}', 'updateRisk');
             Route::delete('/delete-risk/{id}', 'deleteRisk');
+            Route::post('/create-risk', 'store'); 
+            Route::post('/create-multiple-risks', 'storeMultiple');
+            Route::post('/risks/multiple-delete', 'deleteMultipleRisks'); 
+ 
         });
-
+        
         // Missions
         Route::controller(MissionController::class)->group(function () {
             Route::get('/getmissions', 'index');
