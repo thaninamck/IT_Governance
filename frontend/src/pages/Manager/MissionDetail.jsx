@@ -52,7 +52,7 @@ function MissionDetail() {
           onToggleForm={handleToggleForm} // Passe la fonction en prop
           showForm={showForm}
           userRole={userRole}
-          missionId={mission}
+          missionId={missionData.id}
         />
         <AddMatrix userRole={userRole} />
       </div>

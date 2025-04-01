@@ -36,4 +36,15 @@ class ParticipationFactory extends Factory
             'profile_id' => $profile_id,
         ];
     }
+
+    // protected $model = Participation::class;
+
+    // public function definition()
+    // {
+    //     return [
+    //         'user_id' => User::inRandomOrder()->first()->id,
+    //         'mission_id' => Mission::inRandomOrder()->first()->id,
+    //         'profile_id' => Profile::inRandomOrder()->first()->id,
+    //     ];
+    // }
 }
