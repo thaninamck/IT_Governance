@@ -4,70 +4,127 @@ import './FormStyle.css';
 import Button from '../Button';
 import SelectInput from './SelectInput';
 import MultiOptionSelect from '../Selects/MultiOptionSelect';
+import { api } from '../../Api';
+import CreatableSelectInput from '../CreatableSelectInput';
 
 function NewAppForm({ title , initialValues = {}, onAddApp,onClose}) {
-  const [open, setOpen] = useState(true);
+ // const [open, setOpen] = useState(true);
   const isFirstRender = useRef(true); // Pour éviter l'écrasement après la première exécution
   // État pour gérer les erreurs de validation
     const [error, setError] = useState('');
 
    // États pour chaque champ avec valeurs par défaut
-   const [nomApp, setNomApp] = useState(initialValues?.nomApp || '');
+   const [name, setName] = useState(initialValues?.name || '');
    const [description, setDescription] = useState(initialValues?.description || '');
-   const [owner, setOwner] = useState(initialValues?.owner || '');
-   const [contact, setContact] = useState(initialValues?.contact || '');
-   const [selectedMulti, setSelectedMulti] = useState(initialValues?.couche || []);
+   const [full_name, setFullName] = useState(initialValues?.full_name || '');
+   const [email, setEmail] = useState(initialValues?.email || '');
+   const[owner_id,setOwnerId]= useState(initialValues?.owner_id || '');
+  const [selectedMulti, setSelectedMulti] = useState(initialValues?.layers || []);
    
+const [LayerOptions,setLayerOptions]=useState([]);
 
-   const handleClose = () => {
-    onAddApp({}); // Au lieu de null, passez un objet vide
-    onClose(); // Notify the parent component that the form is being closed
-    setOpen(false);
+
+
+ // Chargement des couches
+ const fetchLayers = async () => {
+  try {
+    const response = await api.get('/getlayers');
+    // Transformation directe des données en options
+    const options = response.data.map(layer => ({
+      label: layer.name,
+      value: layer.id,
+    }));
+    setLayerOptions(options);
+  } catch (error) {
+    console.error('Erreur lors de la récupération des couches', error);
+  }
+};
+
+ // Mise à jour des valeurs initiales
+ useEffect(() => {
+  fetchLayers();
+  resetFormWithInitialValues();
+}, [initialValues]);
+
+const resetFormWithInitialValues = () => {
+  setName(initialValues.name || '');
+  setDescription(initialValues.description || '');
+  setFullName(initialValues.full_name || '');
+  setEmail(initialValues.email || '');
+  setOwnerId(initialValues.owner_id || '');
+  setSelectedMulti(initialValues.layerName || []);
+};
+
+const handleClose = () => {
+  resetFormWithInitialValues(); // Réinitialise le formulaire
+  onAddApp({});
+  onClose();
+ // setOpen(false);
+};
+  
+  const handleLayerChange = (selectedOptions) => {
+    if (!selectedOptions) {
+      setSelectedMulti([]);
+      return;
+    }
+  
+    // Gérer les sélections multiples (existantes et nouvelles)
+    const updatedSelection = selectedOptions.map(option => ({
+      label: option.label,
+      value: option.value || option.label // Assigner un `value` pour les nouvelles entrées
+    }));
+  
+    setSelectedMulti(updatedSelection);
   };
   
-  
-
  // Mettre à jour les états si initialValues change
 // Assurer que les valeurs initiales sont prises en compte uniquement au premier rendu
 useEffect(() => {
+
+  fetchLayers();
   if (isFirstRender.current) {
-    setNomApp(initialValues.nomApp || '');
+    setName(initialValues.name || '');
     setDescription(initialValues.description || '');
-    setOwner(initialValues.owner || '');
-    setContact(initialValues.contact || '');
-    setSelectedMulti(initialValues.couche || []);
+    setFullName(initialValues.full_name || '');
+    setEmail(initialValues.email || '');
+    setOwnerId(initialValues.owner_id||'');
+    setSelectedMulti(initialValues.layerName || []);
     isFirstRender.current = false; // Marquer la première mise à jour comme faite
   }
 }, [initialValues]);
 
 const handleSubmit = (e) => {
   e.preventDefault();
+// Formatage des layers: extraire seulement les labels
+const formattedLayers = selectedMulti.map(layer => layer.label);
 
   // Vérifier que tous les champs requis sont remplis
-  if (!nomApp || !description|| !owner || !contact || !selectedMulti ) {
-    setError('Veuillez remplir tous les champs obligatoires.');
-    return; // Empêcher la soumission
-  }
+  // if (!name|| !description|| !full_name || !email  ) {
+  //   setError('Veuillez remplir tous les champs obligatoires.');
+  //   return; // Empêcher la soumission
+  // }
   const formData = { 
-    id: initialValues?.id || Date.now(), // Garde l'ID existant si c'est une mise à jour
-    nomApp, 
+    id: initialValues?.id , // Garde l'ID existant si c'est une mise à jour
+    name, 
     description, 
-    owner, 
-    contact, 
-    couche: selectedMulti 
+    full_name, 
+    email, 
+    owner_id,
+    layerName: formattedLayers 
   };
   setError(''); // Réinitialiser les erreurs si tout est bon
-
+  console.log('form data',formData)
 
   onAddApp(formData); 
 
-  setNomApp('');
+  setName('');
   setDescription('');
-  setOwner('');
-  setContact('');
-  setSelectedMulti([]);
+  setFullName('');
+  setEmail('');
+  setOwnerId('');
+ setSelectedMulti([]);
 
-  alert(initialValues?.id ? 'Application mise à jour avec succès !' : 'Application créée avec succès !');
+  //alert(initialValues?.id ? 'Application mise à jour avec succès !' : 'Application créée avec succès !');
 };
 
 
@@ -79,7 +136,7 @@ const handleSubmit = (e) => {
   ];
 
   return (
-    open && (
+    // open && (
       <form className=" ml-4 pr-4 pl-5  mt-3 relative pb-10    bg-gray-100" onSubmit={handleSubmit}>
         {/* Icône Close */}
         <div className='flex justify-end'>
@@ -102,8 +159,8 @@ const handleSubmit = (e) => {
           width="600px"
           flexDirection="flex-col"
           required={true}
-          value={nomApp}
-          onChange={(e) => setNomApp(e.target.value)}
+          value={name}
+          onChange={(e) => setName(e.target.value)}
         />
         <InputForm
           type="text"
@@ -124,8 +181,8 @@ const handleSubmit = (e) => {
           width="300px"
           flexDirection="flex-col"
           required={true}
-          value={owner}
-          onChange={(e) => setOwner(e.target.value)}
+          value={full_name}
+          onChange={(e) => setFullName(e.target.value)}
         />
         <InputForm
           type="email"
@@ -134,22 +191,32 @@ const handleSubmit = (e) => {
           width="300px"
          flexDirection="flex-col"
          required={true}
-          value={contact}
-          onChange={(e) => setContact(e.target.value)}
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
         />
         </div>
         </div>
         
+        <CreatableSelectInput
+  label="Couches"
+  options={LayerOptions}
+  value={selectedMulti} // On passe directement les objets {label, value}
+  onChange={handleLayerChange}
+  width="200px"
+  required={true}
+  multiSelect={true}
+/>
+
        
-        <SelectInput
+        {/* <SelectInput
         label="Couches"
-        options={options}
+        options={LayerOptions}
         value={selectedMulti}
         onChange={(e) => setSelectedMulti(e.target.value)}
         width="200px"
         required={true}
         multiSelect={true}
-      />
+      /> */}
        {/* <SelectInput
             label={'couche'}
             options={[
@@ -176,7 +243,7 @@ const handleSubmit = (e) => {
        
       </form>
     )
-  );
+ // );
 }
 
 export default NewAppForm;

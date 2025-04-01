@@ -21,6 +21,7 @@ class ClientService
     public function createClient(array $data): Client
     {
         return $this->clientRepository->createClient($data);
+        
     }
 
     public function updateClient($id ,array $data):?Client

@@ -50,11 +50,45 @@ class MissionService
     ];
 }
 
+public function getSystemsByMissionID($missionId)
+{
+    // Chargez la mission avec les systèmes et leurs relations
+    $mission = $this->missionRepository->getSystemsByMissionID($missionId)
+    ->load(['systems.layers', 'systems.owner']);
+
+    if (!$mission) {
+        return null; // ou lancer une exception
+    }
+
+     
+
+    return [
+        'id' => $mission->id,
+        'mission_name' => $mission->mission_name,
+        'systems' => $mission->systems->map(function ($system) {
+            return [
+                'id' => $system->id,
+                'name' => $system->name,
+                'description' => $system->description,
+                'ownerId'=>$system->owner->id,
+                'ownerName'=>$system->owner->full_name,
+                'ownerContact' => $system->owner->email,
+                'layers' => $system->layers->map(function ($layer) {
+                    return [
+                        'id' => $layer->id,
+                        'name' => $layer->name
+                    ];
+                })->toArray()
+            ];
+        })->toArray()
+    ];
+}
+
 
 
     public function createMission(array $data): Mission
     {
-        $data['status_id'] = 9;
+        $data['status_id'] = 16;
         return $this->missionRepository->createMission($data);
     }
 
@@ -70,13 +104,14 @@ class MissionService
     {
         return $this->missionRepository->cancelMission($id);
     }
-    public function stopMission(int $id):Mission
+    public function stopMission(int $id): array
     {
         return $this->missionRepository->stopMission($id);
     }
-    public function resumeMission(int $id, int $previousStatusId): ?Mission
+    
+    public function resumeMission(int $id, int $previousStatusId, string $newStartDate): ?Mission
 {
-    return $this->missionRepository->resumeMission($id, $previousStatusId);
+    return $this->missionRepository->resumeMission($id, $previousStatusId, $newStartDate );
 }
 
     public function getArchivedMissions()

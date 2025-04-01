@@ -1,118 +1,77 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { PlusCircle, SquarePen } from 'lucide-react';
 import NewAppForm from '../Forms/AppForm';
 import Table from '../Table';
 import DeleteOutlineRoundedIcon from '@mui/icons-material/DeleteOutlineRounded';
 import DecisionPopUp from '../PopUps/DecisionPopUp';
 import { useNavigate, useParams } from 'react-router-dom';
+import { api } from '../../Api';
+import { useSystem } from '../../Hooks/useSystem';
 
 function AddScope({ title, text, text1, onToggleForm, showForm, userRole, missionId }) {
-
-
-  const [applications, setApplications] = useState([
-    { id: 1, nomApp: "USSD", description: 'lllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllll', owner: 'farid akbi', contact: 'farid@gmail.com', couche: ["Data Base", "Application"] },
-    { id: 2, nomApp: "New SNOC", description: 'llllll', owner: 'farid akbi', contact: 'farid@gmail.com', couche: ['Data Base'] },
-    { id: 3, nomApp: "CSV360°", description: 'llllll', owner: 'farid akbi', contact: 'farid@gmail.com', couche: ['Data Base', 'Application'] }
-  ]);
-  const [isDeletePopupOpen, setIsDeletePopupOpen] = useState(false);
-  const [selectedAppId, setSelectedAppId] = useState(null);
-  const [selectedApp, setSelectedApp] = useState(null);
-  const [isAddingAnother, setIsAddingAnother] = useState(false);
-  const [showDecisionPopup, setShowDecisionPopup] = useState(false);
+  const {
+    applications,
+    setApplications,
+    isDeletePopupOpen,
+    setIsDeletePopupOpen,
+    selectedAppId,
+    selectedApp,
+    setSelectedApp,
+    showDecisionPopup,
+    setShowDecisionPopup,
+    isAddingAnother,
+    handleAddApp,
+    handleDeleteRow,
+    confirmDeleteMission,
+    handleEditRow,
+    handleDecisionResponse
+  } = useSystem(missionId, userRole, showForm, onToggleForm);
 
   const columnsConfig = [
-    { field: 'nomApp', headerName: 'Nom', width: 170, editable: true },
+    { field: 'name', headerName: 'Nom', width: 170, editable: true },
     { field: 'description', headerName: 'Description', editable: true, width: 220, expandable: true },
-    { field: 'owner', headerName: 'Owner', width: 170 },
-    { field: 'contact', headerName: 'Contact', width: 200 },
+    { field: 'ownerName', headerName: 'Owner', width: 170 },
+    { field: 'ownerContact', headerName: 'Contact', width: 200 },
     {
-      field: "couche",
+      field: "layers",
       headerName: "Couche",
       width: 200,
       expandable: true,
       customRenderCell: (params) => {
-        console.log("Couche value:", params.value); // Debugging line
+       // console.log("Couche value:", params.value); // Debugging line
 
-        const coucheValues = Array.isArray(params.value) ? params.value : [];
+        const layers = Array.isArray(params.value) ? params.value : [];
+       // console.log('cc',layers)
+
+
         return (
-          <div className="flex -space-x-2">
-            {coucheValues.length > 0 ? (
-              coucheValues.map((item, index) => {
-                const words = String(item).split(" ");
-                const initials = words.length > 1
-                  ? words.map((word) => word[0]).join("").toUpperCase()
-                  : String(item).substring(0, 3).toUpperCase();
-                return (
-                  <div
-                    key={index}
-                    title={item}
-                    className="w-11 h-11 flex items-center justify-center text-xs bg-blue-100 text-blue-600 rounded-full border border-white shadow cursor-pointer"
-                  >
-                    {initials}
-                  </div>
-                );
-              })
-            ) : (
-              <span className="text-gray-400">Aucune donnée</span>
-            )}
-          </div>
-        );
-      }
-    },
+          <div className="flex flex-wrap gap-1">
+          {layers.length > 0 ? (
+            layers.map((layer, index) => (
+              <div
+                key={index}
+                title={layer.name} // Affiche le nom complet au survol
+                className="px-2 py-1 text-xs bg-blue-100 text-blue-600 rounded-full border border-white shadow cursor-pointer"
+              >
+                {layer.name} {/* Affiche le nom complet */}
+                
+                {/* OU pour les initiales seulement : */}
+                {/* {layer.name.substring(0, 3).toUpperCase()} */}
+              </div>
+            ))
+          ) : (
+            <span className="text-gray-400">Aucune donnée</span>
+          )}
+        </div>
+      );
+    }
+  },
     // Ajouter la colonne "actions" conditionnellement
     ...((userRole === 'manager' || userRole === 'admin')
       ? [{ field: 'actions', headerName: 'Action', width: 80 }]
       : [])
   ];
-
-  const handleAddApp = (app) => {
-    if (selectedApp) {
-      // Mise à jour de l'application existante
-      setApplications((prevApps) =>
-        prevApps.map((row) =>
-          row.id === app.id ? { ...app, couche: Array.isArray(app.couche) ? app.couche : [] } : row
-        )
-      );
-      setSelectedApp(null);
-      onToggleForm();
-    } else {
-      // Ajout d'une nouvelle application
-      setApplications((prev) => [
-        ...prev,
-        { id: prev.length + 1, ...app, couche: Array.isArray(app.couche) ? app.couche : [] }
-      ]);
-      setShowDecisionPopup(true);
-    }
-  };
-
-  const handleDeleteRow = (selectedRow) => {
-    setSelectedAppId(selectedRow.id);
-    setIsDeletePopupOpen(true);
-  };
-
-  const confirmDeleteMission = () => {
-    if (selectedAppId !== null) {
-      setApplications((prev) => prev.filter((row) => row.id !== selectedAppId));
-    }
-    setIsDeletePopupOpen(false);
-    setSelectedAppId(null);
-  };
-
-  const handleEditRow = (selectedRow) => {
-    setSelectedApp(selectedRow);
-    if (!showForm) onToggleForm();
-  };
-
-  const handleDecisionResponse = (response) => {
-    setShowDecisionPopup(false);
-    if (response) {
-      setIsAddingAnother(true);
-    } else {
-      setIsAddingAnother(false);
-      onToggleForm();
-    }
-  };
-
+ 
   const rowActions = [
     { icon: <SquarePen className='mr-2' />, label: 'Modifier', onClick: handleEditRow },
     { icon: <DeleteOutlineRoundedIcon sx={{ color: 'var(--alert-red)', marginRight: '5px' }} />, label: 'Supprimer', onClick: handleDeleteRow }
@@ -158,14 +117,22 @@ function AddScope({ title, text, text1, onToggleForm, showForm, userRole, missio
       )}
 
       {(showForm || isAddingAnother) && (
-        <NewAppForm title={''} initialValues={selectedApp || {}} onAddApp={handleAddApp} onClose={() => setShowDecisionPopup(false)} />
+        <NewAppForm title={''} 
+        initialValues={selectedApp || {}}
+         onAddApp={handleAddApp} 
+        //  onClose={() => setShowDecisionPopup(false)} 
+        onClose={() => {
+          onToggleForm(); // Ferme le formulaire via la fonction parente
+          setSelectedApp(null);
+        }} 
+         />
       )}
 
 
       {isDeletePopupOpen && (
         <div className="absolute top-100 left-1/2 -translate-x-1/2 z-50 mt-9">
           <DecisionPopUp
-            name={applications.find((row) => row.id === selectedAppId)?.nomApp || 'cette Application'}
+            name={applications.find((row) => row.id === selectedAppId)?.name|| 'cette Application'}
             text="Êtes-vous sûr(e) de vouloir supprimer l'application "
             handleConfirm={confirmDeleteMission}
             handleDeny={() => setIsDeletePopupOpen(false)}

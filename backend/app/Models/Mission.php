@@ -1,8 +1,8 @@
 <?php
 
 namespace App\Models;
-use App\Models\clients;
-use App\Models\statuses;
+use App\Models\client;
+use App\Models\status;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -17,6 +17,8 @@ class Mission extends Model
         'client_id',
         'start_date',
         'end_date',
+        'audit_start_date',
+        'audit_end_date' 
     ];
 
     protected $dates = ['start_date', 'end_date'];
@@ -39,8 +41,6 @@ class Mission extends Model
     {
         return $this->hasMany(Execution::class);
     }
-   
-
     public function remediations(): HasMany
     {
         return $this->hasMany(Remediation::class);

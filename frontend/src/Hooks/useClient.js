@@ -133,6 +133,7 @@ const useClient = () => {
         handleDeleteRow,
         confirmDeleteClient,
         closeDeletePopup,
+        fetchClients,
     };
 };
 

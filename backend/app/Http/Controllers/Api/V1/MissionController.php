@@ -14,6 +14,9 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use App\Services\NotificationService;
+
+use function Laravel\Prompts\text;
+
 class MissionController extends BaseController
 {
     protected $missionService;
@@ -54,9 +57,11 @@ class MissionController extends BaseController
             $rules = [
                 'mission_name' => 'required|string|max:255',
                 'client_id' => 'required|integer|exists:clients,id', // Vérifie que le client existe
-                'start_date' => 'required|date',
-                'end_date' => 'nullable|date|after:start_date', // end_date doit être après start_date
                 'manager_id' => 'required|integer|exists:users,id', // Vérifie que le manager existe
+                'audit_start_date' => 'required|date',
+                'audit_end_date' => 'required|date|after:audit_start_date',
+                'start_date' => 'required|date|after:audit_end_date',
+                'end_date' => 'required|date|after:start_date', // end_date doit être après start_date
             ];
 
             // Validation des données
@@ -68,7 +73,7 @@ class MissionController extends BaseController
 
             // Données validées
             $missionData = $validator->validated();
-            $missionData['status_id'] = 9; // Définir le statut par défaut
+            $missionData['status_id'] = 16; // Définir le statut par défaut
 
             // Création de la mission
             $mission = $this->missionService->createMission($missionData);
@@ -120,8 +125,10 @@ class MissionController extends BaseController
                 'status_id' => 'sometimes|integer',
                 'mission_name' => 'sometimes|string|max:255',
                 'client_id' => 'sometimes|integer|exists:clients,id',
-                'start_date' => 'sometimes|date',
-                'end_date' => 'sometimes|date|after:start_date',
+                'audit_start_date' => 'sometimes|date',
+                'audit_end_date' => 'sometimes|date|after:audit_start_date',
+                'start_date' => 'sometimes|date|after:audit_end_date',
+                'end_date' => 'sometimes|date|after:start_date', // end_date doit être après start_date
                 'manager_id' => 'sometimes|integer|exists:users,id',
             ];
 
@@ -152,6 +159,8 @@ class MissionController extends BaseController
                 );
                 $this->participationService->updateParticipation($participation->id, $participantData);
             }
+            // Récupérer la mission avec les relations après mise à jour
+        $mission = Mission::with(['client', 'status', 'participations.user'])->find($mission->id);
             $this->logService->logUserAction(
                 auth()->user()->email ?? 'Unknown',
                 'Admin',
@@ -394,62 +403,125 @@ class MissionController extends BaseController
             return $this->sendError("An error occurred", ["error" => $e->getMessage()], 500);
         }
     }
-    public function stopMission($id): JsonResponse
-    {
-        try {
-            // Fermer la mission
-            $mission = $this->missionService->stopMission($id);
+   
 
-            if (!$mission) {
-                return $this->sendError("Mission not found", [], 404);
-            }
+// public function stopMission($id): JsonResponse
+// {
+//     try {
+//         // Fermer la mission
+//         $mission = $this->missionService->stopMission($id);
 
-            // Log de l'action
-            $this->logService->logUserAction(
-                auth()->user()->email ?? 'Unknown',
-                'Admin',
-                "stop de la mission : {$mission->mission_name}",
-                ""
-            );
+//         if (!$mission) {
+//             return $this->sendError("Mission not found", [], 404);
+//         }
 
-            // Réponse JSON
-            return $this->sendResponse(new MissionResource($mission), "Mission archived successfully");
-        } catch (\Exception $e) {
-            return $this->sendError("An error occurred", ["error" => $e->getMessage()], 500);
+//         // Log de l'action
+//         $this->logService->logUserAction(
+//             auth()->user()->email ?? 'Unknown',
+//             'Admin',
+//             "stop de la mission : {$mission->mission_name}",
+//             ""
+//         );
+
+//         // Réponse JSON
+//         return $this->sendResponse(new MissionResource($mission), "Mission archived successfully");
+//     } catch (\Exception $e) {
+//         return $this->sendError("An error occurred", ["error" => $e->getMessage()], 500);
+//     }
+// }
+
+ public function stopMission($id): JsonResponse
+ {
+    try {
+        // Mettre la mission en pause
+        $result = $this->missionService->stopMission($id);
+
+        if (!$result['mission']) {
+            return $this->sendError("Mission not found", [], 404);
         }
+
+        // Log de l'action
+        $this->logService->logUserAction(
+            auth()->user()->email ?? 'Unknown',
+            'Admin',
+            "Mise en pause de la mission : {$result['mission']->mission_name}",
+            ""
+        );
+
+        // Réponse JSON avec le statut précédent
+        return $this->sendResponse([
+            'mission' => new MissionResource($result['mission']),
+            'previous_status_id' => $result['previous_status_id'],
+        ], "Mission paused successfully");
+    } catch (\Exception $e) {
+        return $this->sendError("An error occurred", ["error" => $e->getMessage()], 500);
     }
+ }
 
-    public function resumeMission(Request $request, $id): JsonResponse
-    {
-        try {
-            // Récupérer le statut précédent depuis la requête
-            $previousStatusId = $request->input('previous_status_id');
+// public function resumeMission(Request $request, $id): JsonResponse
+// {
+//     try {
+//         // Récupérer le statut précédent depuis la requête
+//         $previousStatusId = $request->input('previous_status_id');
 
-            if (!$previousStatusId) {
-                return $this->sendError("Previous status ID is required", [], 400);
-            }
+//         if (!$previousStatusId) {
+//             return $this->sendError("Previous status ID is required", [], 400);
+//         }
 
-            // Reprendre la mission
-            $mission = $this->missionService->resumeMission($id, $previousStatusId);
+//         // Reprendre la mission
+//         $mission = $this->missionService->resumeMission($id, $previousStatusId);
 
-            if (!$mission) {
-                return $this->sendError("Mission not found", [], 404);
-            }
+//         if (!$mission) {
+//             return $this->sendError("Mission not found", [], 404);
+//         }
 
-            // Log de l'action
-            $this->logService->logUserAction(
-                auth()->user()->email ?? 'Unknown',
-                'Admin',
-                "Reprise de la mission : {$mission->mission_name}",
-                ""
-            );
+//         // Log de l'action
+//         $this->logService->logUserAction(
+//             auth()->user()->email ?? 'Unknown',
+//             'Admin',
+//             "Reprise de la mission : {$mission->mission_name}",
+//             ""
+//         );
 
-            // Réponse JSON
-            return $this->sendResponse(new MissionResource($mission), "Mission resumed successfully");
-        } catch (\Exception $e) {
-            return $this->sendError("An error occurred", ["error" => $e->getMessage()], 500);
+//         // Réponse JSON
+//         return $this->sendResponse(new MissionResource($mission), "Mission resumed successfully");
+//     } catch (\Exception $e) {
+//         return $this->sendError("An error occurred", ["error" => $e->getMessage()], 500);
+//     }
+// }
+
+public function resumeMission(Request $request, $id): JsonResponse
+ {
+    try {
+        // Récupérer le statut précédent et la nouvelle date de début depuis la requête
+        $previousStatusId = $request->input('previous_status_id');
+        $newStartDate = $request->input('new_start_date');
+
+        if (!$previousStatusId || !$newStartDate) {
+            return $this->sendError("Previous status ID and new start date are required", [], 400);
         }
+
+        // Reprendre la mission
+        $mission = $this->missionService->resumeMission($id, $previousStatusId, $newStartDate);
+
+        if (!$mission) {
+            return $this->sendError("Mission not found", [], 404);
+        }
+
+        // Log de l'action
+        $this->logService->logUserAction(
+            auth()->user()->email ?? 'Unknown',
+            'Admin',
+            "Reprise de la mission : {$mission->mission_name}",
+            ""
+        );
+
+        // Réponse JSON
+        return $this->sendResponse(new MissionResource($mission), "Mission resumed successfully");
+    } catch (\Exception $e) {
+        return $this->sendError("An error occurred", ["error" => $e->getMessage()], 500);
     }
+ }
     /**
      * Display the specified resource.
      */
@@ -469,6 +541,22 @@ class MissionController extends BaseController
         }
     }
 
+    public function getSystemsByMissionID($missionId):JsonResponse
+    {
+        try{
+            $systems=$this->missionService->getSystemsByMissionID($missionId);
+
+            if (!isset($systems)) {
+                return $this->sendError('Aucun system trouvé pour cette mission.', [], 404);
+            }
+
+            return $this->sendResponse($systems, 'Liste des systems récupérée avec succès.');
+
+        } catch (\Exception $e) {
+            return $this->sendError('Erreur lors de la récupération des systems.', ['error' => $e->getMessage()], 500);
+        }
+        
+    }
 
     /**
      * Update the specified resource in storage.
@@ -486,3 +574,4 @@ class MissionController extends BaseController
         //
     }
 }
+

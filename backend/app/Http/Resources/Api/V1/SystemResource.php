@@ -14,6 +14,19 @@ class SystemResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        return parent::toArray($request);
+        return [
+            'id'=>$this->id,
+            'name'=>$this->name,
+            'description'=>$this->description,
+            'ownerId'=>$this->owner_id,
+            'ownerName' => $this->owner->full_name ?? 'N/A', // Ajout d'une valeur par défaut
+        'ownerContact' => $this->owner->email ?? 'N/A',  // Ajout d'une valeur par défaut
+        'layers' => $this->whenLoaded('layers', function () {
+            return $this->layers->pluck('name'); // Retourne seulement les noms
+            
+            // OU si vous voulez tous les détails des layers :
+            // return LayerResource::collection($this->layers);
+        }, []),
+        ];
     }
 }
