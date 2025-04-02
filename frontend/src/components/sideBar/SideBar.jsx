@@ -11,37 +11,44 @@ function SideBar({ userRole }) {
   const navigate = useNavigate();
 
   const menuItems = {
-        admin: [
-          { key: "profile", label: "Profile", path: "/myprofile" },
-          { key: "dashboard", label: "Dashboard", path: "/adminHomePage" },
-          { key: "utilisateurs", label: "Utilisateurs", path: "/utilisateurs" },
-          { key: "Référentiels", label: "Référentiels", path: "/controlsManager" },
-          { key: "missions", label: "Missions", path: "/missions" },
-          { key: "clients", label: "Clients", path: "/clients" },
-          { key: "notification", label: "Notification", path: "/notification" },
-          { key: "settings", label: "Settings", path: "/settings" },
-          { key: "platforme", label: "Platforme", path: "/platforme" },
-        ],
-        testeur: [
-          { key: "profile", label: "Profile", path: "/myprofile" },
-          { key: "missions", label: "Missions", path: "/missions" },
-          { key: "notification", label: "Notification", path: "/notification" },
-        ],
-        manager: [
-          { key: "profile", label: "Profile", path: "/myprofile" },
-          { key: "missions", label: "Missions", path: "/missions" },
-          { key: "notification", label: "Notification", path: "/notification" },
-          { key: "revue", label: "Revue", path: "/revue" },
-        ],
-        superviseur: [
-          { key: "profile", label: "Profile", path: "/myprofile" },
-          { key: "missions", label: "Missions", path: "/missions" },
-          { key: "notification", label: "Notification", path: "/notification" },
-          { key: "revue", label: "Revue", path: "/revue" },
-        ],
-      };
-    
-      const userMenu = menuItems[userRole] || [];
+    admin: [
+      { key: "profile", label: "Profile", path: "/myprofile" },
+      { key: "dashboard", label: "Dashboard", path: "/adminHomePage" },
+      { key: "utilisateurs", label: "Utilisateurs", path: "/utilisateurs" },
+      { key: "Référentiels", label: "Référentiels", path: "/controlsManager" },
+      { key: "missions", label: "Missions", path: "/missions" },
+      { key: "clients", label: "Clients", path: "/clients" },
+      { key: "notification", label: "Notification", path: "/notification" },
+      { key: "settings", label: "Settings", path: "/settings" },
+      { key: "platforme", label: "Platforme", path: "/platforme" },
+    ],
+    testeur: [
+      { key: "profile", label: "Profile", path: "/myprofile" },
+      { key: "missions", label: "Missions", path: "/missions" },
+      { key: "notification", label: "Notification", path: "/notification" },
+    ],
+    manager: [
+      { key: "profile", label: "Profile", path: "/myprofile" },
+      { key: "missions", label: "Missions", path: "/missions" },
+      { key: "notification", label: "Notification", path: "/notification" },
+      { key: "revue", label: "Revue", path: "/revue" },
+    ],
+    superviseur: [
+      { key: "profile", label: "Profile", path: "/myprofile" },
+      { key: "missions", label: "Missions", path: "/missions" },
+      { key: "notification", label: "Notification", path: "/notification" },
+      { key: "revue", label: "Revue", path: "/revue" },
+    ],
+    // Menu par défaut pour les autres rôles
+    default: [
+      { key: "profile", label: "Profile", path: "/myprofile" },
+      { key: "missions", label: "Mes missions", path: "/missions" },
+      { key: "settings", label: "Paramètres", path: "/settings" }
+    ]
+  };
+  
+  // Récupération du menu avec fallback sur 'default' si le rôle n'existe pas
+  const userMenu = menuItems[userRole] || menuItems.default;
       const LogoutIcon = icons["logout"];
     
       const handleNavigation = (path) => {
