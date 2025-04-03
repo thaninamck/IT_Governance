@@ -8,7 +8,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { api } from '../../Api';
 import { useSystem } from '../../Hooks/useSystem';
 
-function AddScope({ title, text, text1, onToggleForm, showForm, userRole, missionId }) {
+function AddScope({ title, text, text1, onToggleForm, showForm, user, missionId }) {
   const {
     applications,
     setApplications,
@@ -25,7 +25,7 @@ function AddScope({ title, text, text1, onToggleForm, showForm, userRole, missio
     confirmDeleteMission,
     handleEditRow,
     handleDecisionResponse
-  } = useSystem(missionId, userRole, showForm, onToggleForm);
+  } = useSystem(missionId, user, showForm, onToggleForm);
 
   const columnsConfig = [
     { field: 'name', headerName: 'Nom', width: 170, editable: true },
@@ -67,7 +67,7 @@ function AddScope({ title, text, text1, onToggleForm, showForm, userRole, missio
     }
   },
     // Ajouter la colonne "actions" conditionnellement
-    ...((userRole === 'manager' || userRole === 'admin')
+    ...((/*user?.role === 'manager' ||*/ user?.role === 'admin')
       ? [{ field: 'actions', headerName: 'Action', width: 80 }]
       : [])
   ];
@@ -94,7 +94,7 @@ function AddScope({ title, text, text1, onToggleForm, showForm, userRole, missio
         <hr className="flex-grow border-t border-[var(--blue-menu)]" />
       </div>
 
-      {(userRole === 'manager' || userRole === 'admin') &&
+      {(/*user?.role === 'manager' ||*/ user?.role=== 'admin') &&
         <div className="flex flex-row items-center gap-4 pl-6">
           <p className="text-[var(--status-gray)] text-s">{applications.length > 0 ? text1 : text}</p>
           <button

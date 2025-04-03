@@ -35,12 +35,15 @@ class MissionService
         'start_date' => $mission->start_date,
         'end_date' => $mission->end_date,
         'client_id' => $mission->client_id,
+        'clientName' => $mission->client->commercial_name,
         'status_id' => $mission->status_id,
         'members' => $mission->participations->map(function ($participation) {
             return [
-                'id' => $participation->user->id,
+                'id' => $participation->id,
+                'userId'=>$participation->user->id,
                 'first_name' => $participation->user->first_name,
                 'last_name' => $participation->user->last_name,
+                'full_name' => $participation->user->first_name . ' ' . $participation->user->last_name,
                 'email' => $participation->user->email,
                 'profile' => [
                     'id' => $participation->profile->id,

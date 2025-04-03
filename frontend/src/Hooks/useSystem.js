@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { api } from '../Api';
 
 
-export const useSystem = (missionId, userRole, showForm, onToggleForm) => {
+export const useSystem = (missionId, user, showForm, onToggleForm) => {
   const [applications, setApplications] = useState([]);
   const [isDeletePopupOpen, setIsDeletePopupOpen] = useState(false);
   const [selectedAppId, setSelectedAppId] = useState(null);

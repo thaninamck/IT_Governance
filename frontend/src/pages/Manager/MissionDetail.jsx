@@ -6,14 +6,16 @@ import AddScope from "../../components/InfosDisplay/AddScope";
 import { useContext, useState } from "react";
 import { PermissionRoleContext } from "../../Context/permissionRoleContext";
 import AddMatrix from "../../components/InfosDisplay/AddMatrix";
+import { useAuth } from "../../Context/AuthContext";
 
 function MissionDetail() {
+   const { user} = useAuth();
   const { mission } = useParams(); // Récupérer les paramètres de l'URL
   const location = useLocation(); // Obtenir l'URL actuelle
   const [showForm, setShowForm] = useState(false);
   console.log("Mission sélectionnée :", mission); // Vérifie l'ID récupéré
 
-  const { userRole, setUserRole } = useContext(PermissionRoleContext);
+  //const { userRole, setUserRole } = useContext(PermissionRoleContext);
 
 
   const handleToggleForm = () => {
@@ -44,17 +46,24 @@ function MissionDetail() {
         {breadcrumbRoutes.some((route) =>
           location.pathname.startsWith(route)
         ) && <Breadcrumbs />}
-        <MissionInfo dataFormat={missionData} userRole={userRole} />
+        <MissionInfo
+         dataFormat={missionData} 
+         user={user} 
+         missionId={missionData.id}
+         />
+          
         <AddScope
           title={"Scope Application"}
           text={"Aucune application ajoutée pour le moment"}
           text1={"Ajouter d'autre application "}
           onToggleForm={handleToggleForm} // Passe la fonction en prop
           showForm={showForm}
-          userRole={userRole}
+         user={user}
           missionId={missionData.id}
         />
-        <AddMatrix userRole={userRole} />
+        <AddMatrix 
+       // userRole={userRole}
+         />
       </div>
     </div>
   );
