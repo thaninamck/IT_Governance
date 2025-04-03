@@ -51,7 +51,7 @@ function MissionDetail() {
          user={user} 
          missionId={missionData.id}
          />
-          
+        
         <AddScope
           title={"Scope Application"}
           text={"Aucune application ajoutée pour le moment"}
