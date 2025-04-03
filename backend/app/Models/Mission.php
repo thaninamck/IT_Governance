@@ -50,4 +50,11 @@ class Mission extends Model
         return $this->belongsToMany(System::class,'mission_systems','mission_id','system_id');
 
     }
+
+    public function scopeForUser($query, $userId)
+{
+    return $query->whereHas('participations', function($q) use ($userId) {
+        $q->where('user_id', $userId);
+    })->with(['client', 'status']);
+}
 }

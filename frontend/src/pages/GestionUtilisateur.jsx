@@ -19,7 +19,9 @@ import RestartAltIcon from "@mui/icons-material/RestartAlt";
 import { PermissionRoleContext } from "../Context/permissionRoleContext";
 import { Snackbar } from "@mui/material";
 import useUser from "../Hooks/useUser";
+import { useAuth } from "../Context/AuthContext";
 function GestionUtilisateur() {
+   const { user} = useAuth();
   const {
     filteredRows,
     setFilteredRows,
@@ -106,7 +108,7 @@ function GestionUtilisateur() {
   ];
 
   // Accédez à userRole et setUserRole via le contexte
-  const { userRole, setUserRole } = useContext(PermissionRoleContext);
+ // const { userRole, setUserRole } = useContext(PermissionRoleContext);
 
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
@@ -173,7 +175,7 @@ const confirmDeleteApp = () => {
   return (
     <div className="flex">
       {/* Sidebar pour la navigation */}
-      <SideBar userRole={userRole} className="flex-shrink-0 h-full fixed" />
+      <SideBar user={user} className="flex-shrink-0 h-full fixed" />
 
       {/* Contenu principal */}
       <div className="flex-1 flex flex-col h-screen overflow-y-auto">
@@ -182,7 +184,7 @@ const confirmDeleteApp = () => {
           title="Utilisateurs"
           buttonLabel="Ajouter un utilisateur"
           onButtonClick={openModal}
-          userRole={userRole}
+          user={user}
         />
 
         {/* Barre de recherche */}

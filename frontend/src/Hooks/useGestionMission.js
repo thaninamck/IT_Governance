@@ -3,10 +3,13 @@ import { useNavigate } from "react-router-dom";
 import { PermissionRoleContext } from "../Context/permissionRoleContext";
 import { useBreadcrumb } from "../Context/BreadcrumbContext";
 import {api} from "../Api";
+import useAuth from "./useAuth";
 
 
 
-const useGestionMission = () => {
+
+const useGestionMission = (user) => {
+ // const { user } = useAuth();
   const [rowsData2, setRowsData2] = useState([]);
   const [filteredRows, setFilteredRows] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -21,23 +24,30 @@ const useGestionMission = () => {
   const [activeView, setActiveView] = useState("active");
   const [isMissionCreated, setIsMissionCreated] = useState(false);
 
-  const { userRole } = useContext(PermissionRoleContext);
+ // const { userRole } = useContext(PermissionRoleContext);
   const { setBreadcrumbs } = useBreadcrumb();
   const navigate = useNavigate();
 
   // Récupérer les missions depuis l'API
   const fetchMissions = async () => {
     try {
-      const response = await api.get("/getmissions");
+      const endpoint = user?.role === "admin" ? "/getmissions" : "/getmissions/user";
+      const response = await api.get(endpoint);
+      
+      console.log('API response:', response.data);
       setRowsData2(response.data);
     } catch (error) {
       console.error("Erreur lors de la récupération des missions:", error);
+      // Optionnel: afficher un message à l'utilisateur
+      setSnackbarMessage("Erreur lors du chargement des missions");
+      setSnackbarOpen(true);
     }
   };
 
   useEffect(() => {
+    console.log('Current user role:', user?.role);
     fetchMissions();
-  }, []);
+  }, [user?.role]);
 
   // Mettre à jour les missions filtrées
   useEffect(() => {
@@ -71,14 +81,14 @@ const useGestionMission = () => {
 
   // Gérer la clôture d'une mission
   const handleCloturerRow = async (selectedRow) => {
-    if (userRole !== "admin") {
+    if (user?.role !== "admin"){
       setPendingActions((prevActions) => [
         ...prevActions,
         {
           id: selectedRow.id,
           type: "cloturer",
           row: selectedRow,
-          requestedBy: userRole,
+          requestedBy: user?.role,
           timestamp: new Date(),
         },
       ]);
@@ -270,7 +280,7 @@ const useGestionMission = () => {
     snackbarMessage,
     pendingActions,
     activeView,
-    userRole,
+   // user,
     setActiveView,
     setIsModalOpen,
     setIsEditModalOpen,

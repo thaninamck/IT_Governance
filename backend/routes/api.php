@@ -73,6 +73,7 @@ Route::middleware(['auth:sanctum', AdminMiddleware::class])
         
         // Missions
         Route::controller(MissionController::class)->group(function () {
+          //  Route::get('/getmissions/myMissions', 'getUserMissions');
            // Route::get('/getmissions', 'index');
            // Route::post('/createmissions', 'store');
            // Route::put('/updatemissionID/{id}', 'updateMission');
@@ -88,10 +89,10 @@ Route::middleware(['auth:sanctum', AdminMiddleware::class])
     });
  
 
-// Route::prefix('v1')->controller(ClientController::class)->group(function() {
-//     Route::post('/insertclients', 'storeMultiple');
+Route::prefix('v1')->controller(MissionController::class)->group(function() {
+    Route::get('/getmissions/user', 'getUserMissions')->middleware('auth:sanctum');
     
-// });
+});
 
 // Route::middleware(['auth:sanctum', AdminMiddleware::class])
 //     ->prefix('v1')

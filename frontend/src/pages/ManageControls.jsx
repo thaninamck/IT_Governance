@@ -24,7 +24,9 @@ import AddRisqueForm from "../components/Forms/AddRisqueForm";
 import AddControlForm from "../components/Forms/AddControleForm";
 
 import DecisionPopUp from "../components/PopUps/DecisionPopUp";
+import { useAuth } from "../Context/AuthContext";
 const ManageControls = () => {
+   const { user} = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const [isOpenRisk, setIsOpenRisk] = useState(false);
   const [transformedData, setTransformeData] = useState({});
@@ -574,7 +576,7 @@ const ManageControls = () => {
       )}
       {/* Barre latérale */}
 
-      <SideBar userRole={"admin"} />
+      <SideBar user={user} />
 
       {/* Contenu principal */}
       <div className="flex flex-col flex-1 p-4 bg-[#fbfcfe] min-h-screen overflow-hidden">
