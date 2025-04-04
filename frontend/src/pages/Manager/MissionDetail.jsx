@@ -40,7 +40,7 @@ function MissionDetail() {
 
   return (
     <div className=" ">
-      <Header />
+      <Header user={user}  />
       <div className=" ml-5 mr-6 pb-9">
         {/* Afficher Breadcrumbs uniquement si le chemin correspond */}
         {breadcrumbRoutes.some((route) =>

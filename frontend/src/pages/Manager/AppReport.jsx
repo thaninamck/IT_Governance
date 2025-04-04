@@ -15,6 +15,7 @@ import {
   Tooltip,
   Legend,
 } from "recharts";
+import { useAuth } from "../../Context/AuthContext";
 
 const missionData = {
   mission: "DSP",
@@ -113,9 +114,10 @@ const AppReport = () => {
 
   const decodedAppName = decodeURIComponent(appData?.name || "New SNOC");
 
+  const { user} = useAuth();
   return (
     <div>
-      <Header />
+      <Header user={user} />
       <div className="my-3 mx-4">
         <Breadcrumbs />
       </div>

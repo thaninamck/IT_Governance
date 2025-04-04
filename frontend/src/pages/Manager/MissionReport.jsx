@@ -19,6 +19,7 @@ import {
   Pie,
   Cell,
 } from "recharts";
+import { useAuth } from "../../Context/AuthContext";
 
 const exportToPDF = () => {
   const element = document.getElementById("report-content"); // L'élément HTML à exporter
@@ -119,9 +120,10 @@ const MissionReport = ({
     navigate(`/missions/${missionParam || missionName}/${app.name}`, { state: { appData: app } });
   };
 
+  const { user} = useAuth();
   return (
     <div>
-      <Header />
+      <Header user={user} />
 
       <div className="my-3 mx-4">
         <Breadcrumbs routes={breadcrumbs} />

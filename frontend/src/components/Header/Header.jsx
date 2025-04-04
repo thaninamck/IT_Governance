@@ -3,12 +3,17 @@ import { useNavigate } from 'react-router-dom';
 import "./Header.css";
 import icons from '../../assets/Icons'; // Importer l'objet contenant les icônes
 import NotificationPopup from '../Notification/NotificationPopup';
+import { useAuth } from '../../Context/AuthContext';
 
-function Header() {
+function Header({user}) {
   const navigate = useNavigate();
   const [showNotifications, setShowNotifications] = useState(false);
   const [unreadCount, setUnreadCount] = useState(3); // Example: Initial unread notifications count
-
+const { logout } = useAuth();
+const handleLogout = () => {
+  logout();
+  navigate("/login");
+};
   return (
     <div className='header_container'>
       {/* Logo */}
@@ -46,14 +51,14 @@ function Header() {
         </div>
 
         {/* Profil utilisateur */}
-        <div className="user_initials" onClick={() => navigate('/profile')}>TM</div>
-        <span className="user_name" onClick={() => navigate('/profile')}>Thanina Mecherak</span>
+        <div className="user_initials" onClick={() => navigate('/profile')}>  {user?.fullName?.split(' ').map(n => n[0]).join('')}</div>
+        <span className="user_name" onClick={() => navigate('/profile')}>{user?.fullName || 'Utilisateur'}</span>
 
         {/* Logout - Retour à la page de connexion */}
         <icons.logout 
           className="icon_logout" 
           sx={{ color: 'var(--blue-icons)', cursor: 'pointer' }} 
-          onClick={() => navigate('/login')} 
+          onClick={handleLogout}
         />
       </div>
     </div>

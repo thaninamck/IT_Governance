@@ -4,8 +4,10 @@ import SideBar from '../components/sideBar/SideBar';
 import HeaderBis from '../components/Header/HeaderBis';
 import OTPInput from '../components/OTPInput';
 import PopUp from '../components/PopUps/PopUp';
+import { useAuth } from '../Context/AuthContext';
 
 function ChangePassword() {
+  const { user} = useAuth();
     const [showPopup, setShowPopup] = useState(false); // État pour afficher le popup
     const [showOtp, setShowOtp] = useState(true); // État pour afficher le popup
     const navigate = useNavigate(); // Hook pour redirection 
@@ -26,7 +28,7 @@ function ChangePassword() {
   return (
     <div className="flex ">
       {/* Barre latérale fixe */}
-      <SideBar userRole="admin" className=" flex-shrink-0 h-full fixed" />
+      <SideBar user={user} className=" flex-shrink-0 h-full fixed" />
 
       {/* Contenu principal défilable */}
       <div className=" flex-1 flex flex-col h-screen overflow-y-auto">

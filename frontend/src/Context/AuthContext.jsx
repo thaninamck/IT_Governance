@@ -100,7 +100,9 @@ export const AuthProvider = ({ children }) => {
         ...response.data.user,
         role: response.data.user.role,
         fullName: response.data.user.fullName,
-        position: response.data.user.grade 
+        position: response.data.user.grade ,
+        phoneNumber:response.data.user.phoneNumber,
+        email:response.data.user.email
       };
       
       console.log(response.data)
