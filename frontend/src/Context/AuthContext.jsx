@@ -99,7 +99,7 @@ export const AuthProvider = ({ children }) => {
        const userData = {
         ...response.data.user,
         role: response.data.user.role,
-        fullName: response.data.user.firstName,
+        fullName: response.data.user.fullName,
         position: response.data.user.grade 
       };
       
@@ -153,7 +153,7 @@ export const AuthProvider = ({ children }) => {
       const userData = {
         ...response.data,
         role: response.data.role,
-        fullName: response.data.first_name,
+        fullName: response.data.fullName,
         position: response.data.grade || 'Non spécifié'
       };
       localStorage.setItem("user", JSON.stringify(userData));
