@@ -4,6 +4,7 @@ namespace App\Http\Resources\Api\V1;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Log;
 
 class ExecutionResource extends JsonResource
 {
@@ -47,4 +48,74 @@ class ExecutionResource extends JsonResource
             'userFullName' => $this->user_full_name,
         ];
     }
+
+
+
+    public function formatWorkplanOptions(array $data): array
+{
+    return [
+        'applications' => $this->formatSystems($data['systems'] ?? []),
+        'risks' => $this->formatRisks($data['risks'] ?? []),
+        'controls' => $this->formatControls($data['controls'] ?? [])
+    ];
+}
+
+protected function formatSystems(array $systems): array
+{
+    if (!isset($systems['systems'])) {
+        return [];
+    }
+
+    return array_map(function ($system) {
+        return [
+            'id' => 'app' . $system['id'],
+            'description' => $system['name'],
+            'layers' => array_map(function ($layer) {
+                return [
+                    'id' => (string)$layer['id'],
+                    'name' => $layer['name']
+                ];
+            }, $system['layers'] ?? []),
+            'owner' => $system['ownerName'] ?? ''
+        ];
+    }, $systems['systems']);
+}
+
+protected function formatRisks($risks): array
+{
+    // Si c'est une collection, on utilise toArray(), sinon on utilise tel quel
+    $risksArray = is_object($risks) && method_exists($risks, 'toArray') 
+        ? $risks->toArray() 
+        : $risks;
+
+    return array_map(function ($risk) {
+        return [
+            'idRisk' => (string)$risk['id'],
+            'description' => $risk['description'],
+            'nom' => $risk['name'],
+            'code' => $risk['code']
+        ];
+    }, $risksArray);
+}
+
+protected function formatControls($controls): array
+{
+    // Si c'est une collection, on utilise toArray(), sinon on utilise tel quel
+    $controlsArray = is_object($controls) && method_exists($controls, 'toArray')
+        ? $controls->toArray()
+        : $controls;
+
+    return array_map(function ($control) {
+        return [
+            'idCntrl' => (string)$control['id'],
+            'description' => $control['description'],
+            'majorProcess' => $control['major_process']['description'] ?? '',
+            'subProcess' => $control['sub_process']['name'] ?? '',
+            'type' => isset($control['type']['name']) ? strtolower($control['type']['name']) : '',
+            'testScript' => $control['test_script'] ?? '',
+            'code' => $control['code']
+        ];
+    }, $controlsArray);
+}
+
 }

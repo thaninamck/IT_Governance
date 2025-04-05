@@ -141,6 +141,8 @@ Route::middleware(['auth:sanctum', AdminMiddleware::class])
         Route::controller(ExecutionController::class)->group(function () {
             Route::post('/missions/{mission}/insert-executions', 'createExecutions');
             Route::get('/missions/{mission}/executions', 'getExecutionsByMission');
+            Route::get('/missions/{mission}/workplanOptions', 'getWorkplanOptionsByMission');
+
         });
 
         // MissionController Routes
@@ -149,6 +151,9 @@ Route::middleware(['auth:sanctum', AdminMiddleware::class])
         });
     });
 
+    Route::controller(ExecutionController::class)->group(function () {
+        Route::get('/missions/{mission}/workplanOptions', 'getWorkplanOptionsByMission');
+    });
 
     Route::middleware(['auth:sanctum', SupervisorMiddleware::class])
     ->prefix('v1')
