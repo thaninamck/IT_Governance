@@ -5,12 +5,15 @@ import AppsAccordionItem from "./AppsAccordionItem";
 import ControlAccordionItem from "./ControlAccordionItem";
 import useWorkplan from "../../Hooks/useWorkplan";
 import Spinner from "../Spinner";
+import { useParams } from 'react-router-dom';
+import { toast } from "react-toastify";
 const WorkPlanSideBar = ({
   onDragStart,
   onRiskDragStart,
   onControlDragStart,
 }) => {
-  const { applications, risks, controls, loading, error } = useWorkplan();
+  const { id } = useParams();
+  const { applications, risks, controls, loading, error } = useWorkplan(id);
   // Exemple de structure avec ID et description
   // const applications = [
   //   {

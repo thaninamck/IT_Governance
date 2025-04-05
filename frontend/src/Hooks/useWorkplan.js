@@ -4,7 +4,7 @@ import { useAuth } from "../Context/AuthContext"; // Contexte d'authentification
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 
-const useWorkplan = () => {
+const useWorkplan = (missionId) => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -31,7 +31,7 @@ const useWorkplan = () => {
   };
 
   useEffect(() => {
-    const missionId = 1; 
+    //const missionId = 1; 
     fetchOptions(missionId);
   }, []); 
   return {

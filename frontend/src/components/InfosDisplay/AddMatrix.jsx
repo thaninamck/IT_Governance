@@ -3,7 +3,7 @@ import { PlusCircle } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router-dom';
 import Matrix from '../workPlan/Matrix';
 
-function AddMatrix({ userRole }) {
+function AddMatrix({ userRole,missionId }) {
   
   const data1 = {
     applications: [
@@ -157,9 +157,10 @@ function AddMatrix({ userRole }) {
     ]
 
   };
+
   const navigate = useNavigate()
   const handleAddMatrix = () => {
-    navigate(`/Workplan`)
+    navigate(`/missions/${missionId}/Workplan`);
   }
 
   const [controleListe, setControleListe] = useState(data1);
@@ -195,7 +196,7 @@ function AddMatrix({ userRole }) {
           :
           <div className='flex flex-row items-center gap-4 pl-6'>
             <p className="text-[var(--status-gray)] text-s">
-              Aucune Matrice ajouter pour le moment</p>
+              Aucune matrice ajoutée pour le moment</p>
             {(userRole === 'manager' || userRole === 'admin') &&
               <button
                 onClick={handleAddMatrix}
