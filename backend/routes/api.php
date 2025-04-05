@@ -148,12 +148,13 @@ Route::middleware(['auth:sanctum', AdminMiddleware::class])
         // MissionController Routes
         Route::controller(MissionController::class)->group(function () {
             Route::get('/missions/{mission}/members', 'getMembersByMission');
+
         });
     });
 
-    Route::controller(ExecutionController::class)->group(function () {
-        Route::get('/missions/{mission}/workplanOptions', 'getWorkplanOptionsByMission');
-    });
+    // Route::controller(ExecutionController::class)->group(function () {
+    //     Route::get('/missions/{mission}/workplanOptions', 'getWorkplanOptionsByMission');
+    // });
 
     Route::middleware(['auth:sanctum', SupervisorMiddleware::class])
     ->prefix('v1')
