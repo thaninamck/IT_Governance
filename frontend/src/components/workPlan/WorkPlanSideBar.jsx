@@ -12,8 +12,7 @@ const WorkPlanSideBar = ({
   onRiskDragStart,
   onControlDragStart,
 }) => {
-  const { id } = useParams();
-  const { applications, risks, controls, loading, error } = useWorkplan(id);
+  const { applications, risks, controls, loading, error } = useWorkplan();
   // Exemple de structure avec ID et description
   // const applications = [
   //   {

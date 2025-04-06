@@ -3,7 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { DataGrid } from "@mui/x-data-grid/DataGrid";
 import { User, ChevronDown } from "lucide-react";
 import { toast } from "react-toastify";
-
+import useWorkplan from "../../Hooks/useWorkplan";
+import Spinner from "../Spinner";
 //import SaveIcon from '@mui/icons-material/Save';
 
 import { Select, MenuItem, Checkbox, TextField, Button } from "@mui/material";
@@ -186,7 +187,7 @@ useEffect(() => {
  
   const [selectedRisk, setSelectedRisk] = useState({});
   const [selectedApp, setSelectedApp] = useState({});
-
+const {createExecutions,loading}=useWorkplan();
   const [selectedControl, setSelectedControl] = useState({});
   const [testerValues, setTesterValues] = useState({});
 
@@ -296,7 +297,7 @@ useEffect(() => {
   const atLeastOneApp = flattenedData.length > 0;
   const navigate = useNavigate();
 
-  const handleSave = () => {
+  const handleSave = async () => {
     console.log("flattenedData", flattenedData);
     const dataToSend = {
       executions: flattenedData.map(item => ({
@@ -326,8 +327,9 @@ useEffect(() => {
    
 
     console.log("dataToSend", dataToSend);
-    
-    // localStorage.removeItem("flattenedData");
+    await createExecutions(dataToSend);
+     localStorage.removeItem("flattenedData");
+     navigate(-1);
 };
 
 
@@ -439,8 +441,9 @@ useEffect(() => {
     //     />
     //   ),
     //    },
-    ...((userRole === 'manager' || userRole === 'admin')
-    ? [{  field: "riskCheckbox",
+    // ...((userRole === 'manager' || userRole === 'admin')
+    // ? [
+      {  field: "riskCheckbox",
       headerName: "Select Risk",
       width: 150,
       renderCell: (params) => (
@@ -449,27 +452,28 @@ useEffect(() => {
           checked={!!selectedRisk[params.row.id]}
           onChange={handleRiskCheckboxChange(params.row.id)}
         />
-      ),}]
-    : []),
+      ),},
+    //]
+    //: []),
 
     
     { field: "riskCode", headerName: "Risk Code", width: 150, editable: false },
     { field: "riskName", headerName: "Risk Name", width: 150, editable: false },
-    // {
-    //   field: "riskDescription",
+     {
+       field: "riskDescription",
+       headerName: "Risk Description",
+       width: 350,
+       editable: false,
+     },
+    // ...((userRole === 'manager' || userRole === 'admin')
+    // ? [{ field: "riskDescription",
+    //   headerName: "Risk Description",
+    //   width: 200,
+    //   editable: false}]
+    // : [{ field: "riskDescription",
     //   headerName: "Risk Description",
     //   width: 350,
-    //   editable: false,
-    // },
-    ...((userRole === 'manager' || userRole === 'admin')
-    ? [{ field: "riskDescription",
-      headerName: "Risk Description",
-      width: 200,
-      editable: false}]
-    : [{ field: "riskDescription",
-      headerName: "Risk Description",
-      width: 350,
-      editable: true}]),
+    //   editable: true}]),
     {
       field: "riskOwner",
       headerName: "Risk Owner",
@@ -491,8 +495,9 @@ useEffect(() => {
     //   ),
     // },
 
-    ...((userRole === 'manager' || userRole === 'admin')
-    ? [{ field: "controlCheckbox",
+    // ...((userRole === 'manager' || userRole === 'admin')
+    // ? [
+      { field: "controlCheckbox",
       headerName: "Select Control",
       width: 150,
       renderCell: (params) => (
@@ -501,8 +506,10 @@ useEffect(() => {
           checked={!!selectedControl[params.row.id]}
           onChange={handleControlCheckboxChange(params.row.id)}
         />
-      ),}]
-    : []),
+      ),}
+    // ]
+    // : [])
+    ,
     {
       field: "controlCode",
       headerName: "Control Code",
@@ -602,7 +609,8 @@ useEffect(() => {
       </div>
       {(true) &&
         <div className="flex items-center gap-4 justify-end my-5 mr-4 space-x-4"
-          style={{ display: (userRole === 'admin' || userRole === 'manager') ? 'none' : 'flex' }}>
+          //style={{ display: (userRole === 'admin' || userRole === 'manager') ? 'none' : 'flex' }}
+          >
           {/* Label */}
           <label className="text-gray-900 font-semibold">Owner</label>
 
@@ -669,7 +677,7 @@ useEffect(() => {
                 onClick={handleSave}
                 className="bg-blue-menu text-white px-4 py-2 rounded-md hover:bg-blue-900"
               >
-                save
+                {loading ? (<Spinner color="white" size={25}/>) : "save"} 
               </button>
             )}
           </div>
@@ -693,7 +701,7 @@ useEffect(() => {
                 {/* Risques */}
                 <TableCell
                   align="center"
-                  style={{ width: 800 }}
+                  style={{ width: 950 }}
                   className="border border-subfont-gray"
                 >
                   Risques
