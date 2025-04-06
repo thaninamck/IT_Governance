@@ -19,100 +19,75 @@ import {
 } from "@mui/material";
 import SearchBar from "../SearchBar";
 
-function Matrix({ data, userRole, onRowClick,handleSaveexecutions }) {
-  // Données imbriquées
-  const data1 = {
-    applications: [
-      {
-        id: "app1",
-        description: "USSD",
-        layers: [
-          {
-            id: "l1",
-            name: "OS",
-            risks: [
-              {
-                id: "1",
-                nom: "SDLC requirements are not exist or are not conducted.",
-                description:
-                  "furfuzirfyzuf iuzyfoz ruozc furfuzirfyzuf iuzyfoz ruozc ojfyt yth iof ojfyt yth iof",
-                owner: "",
-                controls: [
-                  {
-                    id: "4",
-                    description:
-                      "Duties and areas of responsibility are separated, in order to reduce opportunities for unauthorized modification...",
-                    majorProcess: "Technical",
-                    subProcess: "Access control",
-                    testScript:
-                      "1. Obtain the access management policy,1.1. Ensure that the policy is validated, signed 2. Obtain HR list of departures during the.......",
-                    owner: "",
-                  },
-                ],
-              },
-            ],
-          },
-          {
-            id: "l2",
-            name: "APP",
-            risks: [],
-          },
-        ],
-        owner: "",
-      },
-    ],
-  };
-
-  const [controlModified,setControlModified]=useState(false);
-  const [riskModified,setRiskModified]=useState(false);
+function Matrix({ data, userRole, onRowClick, handleSaveexecutions }) {
+  const { createExecutions, loading, testers ,saveloading} = useWorkplan();
 
   const [flattenedData, setFlattenedData] = useState([]);
+
+   const [selectedRisk, setSelectedRisk] = useState({});
+  const [selectedApp, setSelectedApp] = useState({});
+  const [selectedControl, setSelectedControl] = useState({});
+  const [testerValues, setTesterValues] = useState({});
+  const [selectedTester, setSelectedTester] = useState([]);
+  const [editMessage, setEditMessage] = useState("");
+  const atLeastOneApp = flattenedData.length > 0;
+  const navigate = useNavigate();
+  //const [selectedTester, setSelectedTester] = useState(testers[0]);
+  const [isOpen, setIsOpen] = useState(false);
+  const [selectedItems, setSelectedItems] = useState([]);
+  const [owner, setOwner] = useState("");
+  const [controlModified, setControlModified] = useState(false);
+  const [riskModified, setRiskModified] = useState(false);
+
   const transformData = (data) => {
     const result = [];
     if (!data || !Array.isArray(data.applications)) {
-      console.error("Les données des applications sont manquantes ou incorrectes:", data);
-      return [];  // Retourne une liste vide au lieu de planter
+      console.error(
+        "Les données des applications sont manquantes ou incorrectes:",
+        data
+      );
+      return []; // Retourne une liste vide au lieu de planter
     }
 
     const uniqueIds = new Set(); // Track unique IDs
-  
+
     data.applications.forEach((app) => {
       const appName = app.description;
       const appOwner = app.owner;
-  
+
       app.layers.forEach((layer) => {
         const layerName = layer.name;
-  
+
         layer.risks.forEach((risk) => {
-          const riskId=risk.id;
+          const riskId = risk.id;
           const riskCode = risk.code;
           const riskName = risk.nom;
           const riskDescription = risk.description;
           const riskOwner = risk.owner;
-  
+
           risk.controls.forEach((control) => {
             const uniqueId = `${app.id}-${layer.id}-${risk.id}-${control.id}`;
-  
+
             // Check if the ID is already in the Set
             if (!uniqueIds.has(uniqueId)) {
               uniqueIds.add(uniqueId); // Add the ID to the Set
-  
+
               result.push({
                 id: uniqueId,
                 application: appName,
-                layerId:Number(layer.id),
+                layerId: Number(layer.id),
                 applicationLayer: layerName,
                 applicationOwner: appOwner,
                 riskId: +riskId,
-                riskCode:riskCode,
+                riskCode: riskCode,
                 riskName: riskName,
                 riskDescription: riskDescription,
-                riskModified:riskModified,
+                riskModified: riskModified,
                 riskOwner: riskOwner,
-                controlId:Number(control.id),
-                controlCode:control.code,
+                controlId: Number(control.id),
+                controlCode: control.code,
                 controlDescription: control.description,
-                controlModified:controlModified,
+                controlModified: controlModified,
                 majorProcess: control.majorProcess,
                 subProcess: control.subProcess,
                 type: control.type,
@@ -129,262 +104,34 @@ function Matrix({ data, userRole, onRowClick,handleSaveexecutions }) {
     return result;
   };
 
- 
+  // Fonction pour fusionner les nouvelles données avec flattenedData existant
+  const mergeData = (newData, existingData) => {
+    const mergedData = [...existingData];
 
-// Fonction pour fusionner les nouvelles données avec flattenedData existant
-const mergeData = (newData, existingData) => {
-  const mergedData = [...existingData];
+    newData.forEach((newItem) => {
+      const existingItemIndex = mergedData.findIndex(
+        (item) => item.id === newItem.id
+      );
 
-  newData.forEach((newItem) => {
-    const existingItemIndex = mergedData.findIndex((item) => item.id === newItem.id);
-
-    if (existingItemIndex !== -1) {
-      // Si l'élément existe déjà, conservez les modifications de l'utilisateur
-      mergedData[existingItemIndex] = {
-        ...newItem,
-        controlOwner: mergedData[existingItemIndex].controlOwner, // Conservez le propriétaire existant
-        controlTester: mergedData[existingItemIndex].controlTester, // Conservez le testeur existant
-      };
-    } else {
-      // Si l'élément n'existe pas, ajoutez-le à mergedData
-      mergedData.push(newItem);
-    }
-  });
-
-  return mergedData;
-};
-
-// Charger les données depuis localStorage au montage du composant
- useEffect(() => {
-   const savedData = localStorage.getItem("flattenedData");
-  if (savedData) {
-     const parsedData = JSON.parse(savedData);
-    setFlattenedData(parsedData); // Mettre à jour flattenedData avec les données sauvegardées
-     console.log("savedData", parsedData); // Vérifier les données chargées
-   }
- }, []);
-
-// Mettre à jour flattenedData lorsque data change
-useEffect(() => {
-  if (data) {
-    const transformedData = transformData(data);
-
-    // Utiliser une fonction de mise à jour pour éviter les dépendances cycliques
-    setFlattenedData((prevFlattenedData) => {
-      const mergedData = mergeData(transformedData, prevFlattenedData);
-      console.log("mergedData", mergedData); // Vérifier les données fusionnées
-      return mergedData;
-    });
-  }
-}, [data]); // Dépend uniquement de data
-
-// Sauvegarder les données dans localStorage à chaque mise à jour de flattenedData
-useEffect(() => {
-  if (flattenedData.length > 0) {
-    localStorage.setItem("flattenedData", JSON.stringify(flattenedData));
-  }
-}, [flattenedData]);
- 
-  const [selectedRisk, setSelectedRisk] = useState({});
-  const [selectedApp, setSelectedApp] = useState({});
-const {createExecutions,loading}=useWorkplan();
-  const [selectedControl, setSelectedControl] = useState({});
-  const [testerValues, setTesterValues] = useState({});
-
-  // Données initiales
-  const rows = [
-    {
-      id: 1,
-      application: "USSD",
-      applicationLayer: "OS",
-      applicationOwner: "rezazi",
-      riskCode: "FTRM",
-      riskName: "SEC log",
-      riskDescription: "Security log risk",
-      riskOwner: "John Doe",
-      controlCode: "PCS214",
-      controlDescription: "Supportability",
-      majorProcess: "Technical",
-      subProcess: "Access control",
-      testScript: "Verify logs",
-      controlOwner: "Jane Smith",
-      controlTester: 1, // ID du testeur
-    },
-    {
-      id: 2,
-      application: "USSD",
-      applicationLayer: "APP",
-      applicationOwner: "rezazi",
-      riskCode: "FTRM",
-      riskName: "SEC log",
-      riskDescription: "Security log risk",
-      riskOwner: "John Doe",
-      controlCode: "PCS215",
-      controlDescription: "Audit Logs",
-      majorProcess: "Technical",
-      subProcess: "Access control",
-      testScript: "Check audit logs",
-      controlOwner: "Jane Smith",
-      controlTester: 2, // ID du testeur
-    },
-  ];
-
-  // Liste des testeurs avec id et designation
-  const testers = [
-    { id: 1, designation: "Testeur 1" },
-    { id: 2, designation: "Testeur 2" },
-    { id: 3, designation: "Testeur 3" },
-    { id: 4, designation: "Testeur 4" },
-  ];
-  const [selectedTester, setSelectedTester] = useState(testers[0]);
-  const [isOpen, setIsOpen] = useState(false);
-  const [selectedItems, setSelectedItems] = useState([]);
-  const [owner, setOwner] = useState("");
-
-  const updateCells = (selectedItems, rows, ownername) => {
-    // Parcours des éléments sélectionnés
-    selectedItems.forEach((item) => {
-      const { id, type } = item;
-
-      // Recherche de la ligne correspondant à l'ID
-      const rowIndex = rows.findIndex((row) => row.id === id);
-
-      if (rowIndex !== -1) {
-        // Si l'élément est de type "risk", on met à jour la cellule correspondante
-        if (type === "risk") {
-          rows[rowIndex].riskOwner = ""; // Remplace par le nom réel
-
-          rows[rowIndex].riskOwner = ownername; // Remplace par le nom réel
-        }
-        // Si l'élément est de type "control", on met à jour la cellule correspondante
-        if (type === "control") {
-          rows[rowIndex].controlOwner = ownername; // Remplace par le nom réel
-        }
-      }
-    });
-    setFlattenedData(rows);
-    return rows; // Retourne les lignes mises à jour
-  };
-
-  const handleUpdateOwner = () => {
-    updateCells(selectedItems, flattenedData, owner);
-    setOwner("");
-    setSelectedControl({});
-    setSelectedRisk({});
-    setSelectedApp({});
-    setSelectedItems([]);
-  };
-
-  // Gestion des cases à cocher pour les risques
-  const handleRiskCheckboxChange = (id) => (event) => {
-    console.log("id slcted", id);
-    const type = "risk";
-    setSelectedItems((prev) => {
-      if (event.target.checked) {
-        // Si la case est cochée, on ajoute l'objet { id, type }
-        return [...prev, { id, type }];
+      if (existingItemIndex !== -1) {
+        // Si l'élément existe déjà, conservez les modifications de l'utilisateur
+        mergedData[existingItemIndex] = {
+          ...newItem,
+          controlOwner: mergedData[existingItemIndex].controlOwner, // Conservez le propriétaire existant
+          controlTester: mergedData[existingItemIndex].controlTester, // Conservez le testeur existant
+        };
       } else {
-        // Si la case est décochée, on retire l'objet { id, type }
-        return prev.filter((item) => item.id !== id || item.type !== type);
+        // Si l'élément n'existe pas, ajoutez-le à mergedData
+        mergedData.push(newItem);
       }
     });
-    setSelectedRisk((prev) => ({
-      ...prev,
-      [id]: event.target.checked,
-    }));
+
+    return mergedData;
   };
 
-  const atLeastOneApp = flattenedData.length > 0;
-  const navigate = useNavigate();
-
-  const handleSave = async () => {
-    console.log("flattenedData", flattenedData);
-    const dataToSend = {
-      executions: flattenedData.map(item => ({
-          layerId: item.layerId,
-          riskId: item.riskId,
-          riskDescription: item.riskDescription,
-          riskModified: item.riskModified,
-          riskOwner: item.riskOwner,
-          controlId: item.controlId,
-          controlDescription: item.controlDescription,
-          controlModified: item.controlModified,
-          controlOwner: item.controlOwner,
-          controlTester: item.controlTester
-      }))
-  };
-    // Vérification des champs obligatoires
-    const missingFields = flattenedData.some(
-        item => !item.controlTester || !item.riskOwner || !item.controlOwner
-    );
-
-    if (missingFields) {
-        toast.error("Veuillez affecter tous les contrôles à leurs testeurs et tous les risques/contrôles à leurs propriétaires.");
-        handleSaveexecutions(dataToSend);
-        return;
-    }
-
-   
-
-    console.log("dataToSend", dataToSend);
-    await createExecutions(dataToSend);
-     localStorage.removeItem("flattenedData");
-     navigate(-1);
-};
-
-
-  // Gestion des cases à cocher pour les contrôles
-  const handleControlCheckboxChange = (id) => (event) => {
-    console.log("id slcted", id);
-    const type = "control";
-    setSelectedItems((prev) => {
-      if (event.target.checked) {
-        // Si la case est cochée, on ajoute l'objet { id, type }
-        return [...prev, { id, type }];
-      } else {
-        // Si la case est décochée, on retire l'objet { id, type }
-        return prev.filter((item) => item.id !== id || item.type !== type);
-      }
-    });
-    setSelectedControl((prev) => ({
-      ...prev,
-      [id]: event.target.checked,
-    }));
-  };
-
-  // Gestion des sélections pour les testeurs
-  /*const handleTesterChange = (id, testerId) => (event) => {
-    const rowIndex = flattenedData.findIndex((row) => row.id === id);
-    if (rowIndex !== -1) {
-      flattenedData[rowIndex].controlTester = testerId;
-    }
-    setTesterValues((prev) => ({
-      ...prev,
-      [id]: testerId,
-    }));
-  };*/ //old version
-
-
-  const handleTesterChange = (id, testerId) => (event) => {
-    setFlattenedData((prevData) => {
-      return prevData.map((row) => {
-        if (row.id === id) {
-          return { ...row, controlTester: testerId }; // Update the tester
-        }
-        return row;
-      });
-    });
   
-    setTesterValues((prev) => ({
-      ...prev,
-      [id]: testerId,
-    }));
-  };
 
-
-
-
-
+ 
 
   const handleEditStop = (params, event) => {
     console.log("Edition terminée sur la cellule", params);
@@ -395,10 +142,9 @@ const {createExecutions,loading}=useWorkplan();
     // Mettre à jour le tableau de données avec la nouvelle valeur
     setFlattenedData((prevData) => {
       const updatedData = prevData.map((row) => {
-        console.log("field",field);
+        console.log("field", field);
         if (row.id === id) {
           row[field] = value; // Mettre à jour la cellule
-         
         }
         return row;
       });
@@ -443,7 +189,8 @@ const {createExecutions,loading}=useWorkplan();
     //    },
     // ...((userRole === 'manager' || userRole === 'admin')
     // ? [
-      {  field: "riskCheckbox",
+    {
+      field: "riskCheckbox",
       headerName: "Select Risk",
       width: 150,
       renderCell: (params) => (
@@ -452,19 +199,19 @@ const {createExecutions,loading}=useWorkplan();
           checked={!!selectedRisk[params.row.id]}
           onChange={handleRiskCheckboxChange(params.row.id)}
         />
-      ),},
+      ),
+    },
     //]
     //: []),
 
-    
     { field: "riskCode", headerName: "Risk Code", width: 150, editable: false },
     { field: "riskName", headerName: "Risk Name", width: 150, editable: false },
-     {
-       field: "riskDescription",
-       headerName: "Risk Description",
-       width: 350,
-       editable: false,
-     },
+    {
+      field: "riskDescription",
+      headerName: "Risk Description",
+      width: 350,
+      editable: false,
+    },
     // ...((userRole === 'manager' || userRole === 'admin')
     // ? [{ field: "riskDescription",
     //   headerName: "Risk Description",
@@ -497,7 +244,8 @@ const {createExecutions,loading}=useWorkplan();
 
     // ...((userRole === 'manager' || userRole === 'admin')
     // ? [
-      { field: "controlCheckbox",
+    {
+      field: "controlCheckbox",
       headerName: "Select Control",
       width: 150,
       renderCell: (params) => (
@@ -506,10 +254,10 @@ const {createExecutions,loading}=useWorkplan();
           checked={!!selectedControl[params.row.id]}
           onChange={handleControlCheckboxChange(params.row.id)}
         />
-      ),}
+      ),
+    },
     // ]
     // : [])
-    ,
     {
       field: "controlCode",
       headerName: "Control Code",
@@ -567,11 +315,17 @@ const {createExecutions,loading}=useWorkplan();
           variant="outlined"
           size="small"
         >
-          {testers.map((tester) => (
-            <MenuItem key={tester.id} value={tester.id}>
-              {tester.designation}
-            </MenuItem>
-          ))}
+          {loading ? (
+            <MenuItem disabled>Chargement...</MenuItem> // Afficher un message de chargement
+          ) : testers.length > 0 ? (
+            testers.map((tester) => (
+              <MenuItem key={tester.id} value={tester.id}>
+                {tester.designation}
+              </MenuItem>
+            ))
+          ) : (
+            <MenuItem disabled>Aucun testeur trouvé</MenuItem> // Message si pas de testeurs
+          )}
         </Select>
       ),
     },
@@ -591,26 +345,201 @@ const {createExecutions,loading}=useWorkplan();
     setSelectedControl({});
   };
 
-  const [editMessage, setEditMessage] = useState("");
 
-  
   const handleRowClick = (params) => {
     if (onRowClick) {
       onRowClick(params.row);
-
     }
   };
+  
+  const handleTesterChange = (id, testerId) => (event) => {
+    setFlattenedData((prevData) => {
+      return prevData.map((row) => {
+        if (row.id === id) {
+          return { ...row, controlTester: testerId }; // Update the tester
+        }
+        return row;
+      });
+    });
 
-  return (
+    setTesterValues((prev) => ({
+      ...prev,
+      [id]: testerId,
+    }));
+  };
+  
+  // Gestion des cases à cocher pour les contrôles
+  const handleControlCheckboxChange = (id) => (event) => {
+    console.log("id slcted", id);
+    const type = "control";
+    setSelectedItems((prev) => {
+      if (event.target.checked) {
+        // Si la case est cochée, on ajoute l'objet { id, type }
+        return [...prev, { id, type }];
+      } else {
+        // Si la case est décochée, on retire l'objet { id, type }
+        return prev.filter((item) => item.id !== id || item.type !== type);
+      }
+    });
+    setSelectedControl((prev) => ({
+      ...prev,
+      [id]: event.target.checked,
+    }));
+  };
+  
+  const updateCells = (selectedItems, rows, ownername) => {
+    // Parcours des éléments sélectionnés
+    selectedItems.forEach((item) => {
+      const { id, type } = item;
+
+      // Recherche de la ligne correspondant à l'ID
+      const rowIndex = rows.findIndex((row) => row.id === id);
+
+      if (rowIndex !== -1) {
+        // Si l'élément est de type "risk", on met à jour la cellule correspondante
+        if (type === "risk") {
+          rows[rowIndex].riskOwner = ""; // Remplace par le nom réel
+
+          rows[rowIndex].riskOwner = ownername; // Remplace par le nom réel
+        }
+        // Si l'élément est de type "control", on met à jour la cellule correspondante
+        if (type === "control") {
+          rows[rowIndex].controlOwner = ownername; // Remplace par le nom réel
+        }
+      }
+    });
+    setFlattenedData(rows);
+    return rows; // Retourne les lignes mises à jour
+  };
+
+  const handleUpdateOwner = () => {
+    updateCells(selectedItems, flattenedData, owner);
+    setOwner("");
+    setSelectedControl({});
+    setSelectedRisk({});
+    setSelectedApp({});
+    setSelectedItems([]);
+  };
+
+  // Gestion des cases à cocher pour les risques
+  const handleRiskCheckboxChange = (id) => (event) => {
+    console.log("id slcted", id);
+    const type = "risk";
+    setSelectedItems((prev) => {
+      if (event.target.checked) {
+        // Si la case est cochée, on ajoute l'objet { id, type }
+        return [...prev, { id, type }];
+      } else {
+        // Si la case est décochée, on retire l'objet { id, type }
+        return prev.filter((item) => item.id !== id || item.type !== type);
+      }
+    });
+    setSelectedRisk((prev) => ({
+      ...prev,
+      [id]: event.target.checked,
+    }));
+  };
+
+  
+
+
+
+  const handleSave = async () => {
+    console.log("flattenedData", flattenedData);
+    const dataToSend = {
+      executions: flattenedData.map((item) => ({
+        layerId: item.layerId,
+        riskId: item.riskId,
+        riskDescription: item.riskDescription,
+        riskModified: item.riskModified,
+        riskOwner: item.riskOwner,
+        controlId: item.controlId,
+        controlDescription: item.controlDescription,
+        controlModified: item.controlModified,
+        controlOwner: item.controlOwner,
+        controlTester: item.controlTester,
+      })),
+    };
+    // Vérification des champs obligatoires
+    const missingFields = flattenedData.some(
+      (item) => !item.controlTester || !item.riskOwner || !item.controlOwner
+    );
+
+    if (missingFields) {
+      toast.error(
+        "Veuillez affecter tous les contrôles à leurs testeurs et tous les risques/contrôles à leurs propriétaires."
+      );
+      handleSaveexecutions(dataToSend);
+      return;
+    }
+
+    console.log("dataToSend", dataToSend);
+    await createExecutions(dataToSend);
+    localStorage.removeItem("flattenedData");
+    navigate(-1);
+  };
+
+  
+
+  // Gestion des sélections pour les testeurs
+  /*const handleTesterChange = (id, testerId) => (event) => {
+    const rowIndex = flattenedData.findIndex((row) => row.id === id);
+    if (rowIndex !== -1) {
+      flattenedData[rowIndex].controlTester = testerId;
+    }
+    setTesterValues((prev) => ({
+      ...prev,
+      [id]: testerId,
+    }));
+  };*/ //old version
+
+ 
+
+  useEffect(() => {
+    if (!loading && testers.length > 0 && !selectedTester) {
+      setSelectedTester(testers[0]);  
+    }
+  }, [ testers]);
+// Charger les données depuis localStorage au montage du composant
+useEffect(() => {
+  const savedData = localStorage.getItem("flattenedData");
+  if (savedData) {
+    const parsedData = JSON.parse(savedData);
+    setFlattenedData(parsedData); // Mettre à jour flattenedData avec les données sauvegardées
+    console.log("savedData", parsedData); // Vérifier les données chargées
+  }
+}, []);
+
+// Mettre à jour flattenedData lorsque data change
+useEffect(() => {
+  if (data) {
+    const transformedData = transformData(data);
+
+    // Utiliser une fonction de mise à jour pour éviter les dépendances cycliques
+    setFlattenedData((prevFlattenedData) => {
+      const mergedData = mergeData(transformedData, prevFlattenedData);
+      console.log("mergedData", mergedData); // Vérifier les données fusionnées
+      return mergedData;
+    });
+  }
+}, [data]); // Dépend uniquement de data
+
+// Sauvegarder les données dans localStorage à chaque mise à jour de flattenedData
+useEffect(() => {
+  if (flattenedData.length > 0) {
+    localStorage.setItem("flattenedData", JSON.stringify(flattenedData));
+  }
+}, [flattenedData]);
+  
+
+return (
     <>
-      <div className="flex  items-center justify-start mb-6">
-        
-
-      </div>
-      {(true) &&
-        <div className="flex items-center gap-4 justify-end my-5 mr-4 space-x-4"
+      <div className="flex  items-center justify-start mb-6"></div>
+      {true && (
+        <div
+          className="flex items-center gap-4 justify-end my-5 mr-4 space-x-4"
           //style={{ display: (userRole === 'admin' || userRole === 'manager') ? 'none' : 'flex' }}
-          >
+        >
           {/* Label */}
           <label className="text-gray-900 font-semibold">Owner</label>
 
@@ -653,19 +582,25 @@ const {createExecutions,loading}=useWorkplan();
               </div>
               {isOpen && (
                 <ul className="absolute w-full bg-white border border-gray-300 rounded-md shadow-md mt-1">
-                  {testers.map((tester) => (
-                    <li
-                      key={tester.id}
-                      className="px-3 py-2 hover:bg-gray-100 cursor-pointer"
-                      onClick={() => {
-                        setSelectedTester(tester);
-                        handleUpdateTesters(tester);
-                        setIsOpen(false);
-                      }}
-                    >
-                      {tester.designation}
-                    </li>
-                  ))}
+                  {loading ? (
+                    <li className="px-3 py-2">Chargement des testeurs...</li> // Afficher un message de chargement
+                  ) : testers.length > 0 ? (
+                    testers.map((tester) => (
+                      <li
+                        key={tester.id}
+                        className="px-3 py-2 hover:bg-gray-100 cursor-pointer"
+                        onClick={() => {
+                          setSelectedTester(tester);
+                          handleUpdateTesters(tester);
+                          setIsOpen(false);
+                        }}
+                      >
+                        {tester.designation}
+                      </li>
+                    ))
+                  ) : (
+                    <li className="px-3 py-2">Aucun testeur trouvé</li> // Message si pas de testeurs
+                  )}
                 </ul>
               )}
             </div>
@@ -677,12 +612,12 @@ const {createExecutions,loading}=useWorkplan();
                 onClick={handleSave}
                 className="bg-blue-menu text-white px-4 py-2 rounded-md hover:bg-blue-900"
               >
-                {loading ? (<Spinner color="white" size={25}/>) : "save"} 
+                {saveloading ? <Spinner color="white" size={25} /> : "save"}
               </button>
             )}
           </div>
         </div>
-      }
+      )}
 
       <div className="mr-4">
         <TableContainer component={Paper} className="overflow-auto ">
@@ -735,7 +670,7 @@ const {createExecutions,loading}=useWorkplan();
                       }}
                       rows={flattenedData}
                       onRowClick={handleRowClick}
-                      // rows={searchResults} 
+                      // rows={searchResults}
                       columns={columns}
                       pageSize={5}
                       rowsPerPageOptions={[5, 10, 20]}
@@ -753,21 +688,21 @@ const {createExecutions,loading}=useWorkplan();
                               console.log("le row est trouvé", field);
                               row[field] = newValue; // Mettre à jour la cellule
                               switch (field) {
-                                case 'controlDescription':
-                                  row['controlModified']=true
+                                case "controlDescription":
+                                  row["controlModified"] = true;
                                   break;
-                               
-                                case 'riskDescription':
-                                row['riskModified']=true
+
+                                case "riskDescription":
+                                  row["riskModified"] = true;
                                   break;
-                               }
+                              }
                             }
                             return row;
                           });
                           return updatedData;
                         });
                       }}
-                    //disableSelectionOnClick
+                      //disableSelectionOnClick
                     />
                   </Paper>
                 </TableCell>

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\V1\ExecutionController;
+use App\Http\Controllers\Api\V1\ParticipationController;
 use App\Http\Middleware\AdminMiddleware;
 
 use App\Http\Middleware\ApiAuthenticate;
@@ -144,6 +145,12 @@ Route::middleware(['auth:sanctum', AdminMiddleware::class])
             Route::get('/missions/{mission}/workplanOptions', 'getWorkplanOptionsByMission');
 
         });
+        
+        Route::controller(ParticipationController::class)->group(function () {
+            
+            Route::get('/missions/{mission}/testers', 'getTestersByMissionID');
+
+        });
 
         // MissionController Routes
         Route::controller(MissionController::class)->group(function () {
@@ -152,8 +159,8 @@ Route::middleware(['auth:sanctum', AdminMiddleware::class])
         });
     });
 
-    // Route::controller(ExecutionController::class)->group(function () {
-    //     Route::get('/missions/{mission}/workplanOptions', 'getWorkplanOptionsByMission');
+    //  Route::controller(ParticipationController::class)->group(function () {
+    //     Route::get('/missions/{mission}/testers', 'getTestersByMissionID');
     // });
 
     Route::middleware(['auth:sanctum', SupervisorMiddleware::class])

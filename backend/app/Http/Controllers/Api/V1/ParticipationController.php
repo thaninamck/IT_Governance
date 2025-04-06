@@ -5,46 +5,33 @@ namespace App\Http\Controllers\Api\V1;
 use App\Http\Controllers\Controller;
 use App\Models\Participation;
 use Illuminate\Http\Request;
+use App\Services\V1\ParticipationService;
+use App\Services\V1\UserService;
 
-class ParticipationController extends Controller
+class ParticipationController extends BaseController
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+   protected $participationService;
+   
+   public function __construct(ParticipationService $participationService )
+   {
+       $this->participationService = $participationService;
+   }
+    
+    public function getTestersByMissionID($missionId)
     {
-        //
-    }
+        try{
+            $testers=$this->participationService->getTestersByMissionID($missionId);
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
+            if (!isset($testers)) {
+                return $this->sendError('Aucun testeur trouvé pour cette mission.', [], 404);
+            }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Participation $participation)
-    {
-        //
-    }
+            return $this->sendResponse($testers, 'Liste des testeurs récupérée avec succès.');
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Participation $participation)
-    {
-        //
+        } catch (\Exception $e) {
+            return $this->sendError('Erreur lors de la récupération des testeurs.', ['error' => $e->getMessage()], 500);
+        }
+        
     }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Participation $participation)
-    {
-        //
-    }
+    
 }

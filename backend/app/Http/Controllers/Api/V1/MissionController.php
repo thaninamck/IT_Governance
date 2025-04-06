@@ -558,20 +558,7 @@ public function resumeMission(Request $request, $id): JsonResponse
         
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Mission $mission)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Mission $mission)
-    {
-        //
-    }
+    
+   
 }
 
