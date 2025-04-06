@@ -6,7 +6,7 @@ import AddScope from "../../components/InfosDisplay/AddScope";
 import { useContext, useState } from "react";
 import { PermissionRoleContext } from "../../Context/permissionRoleContext";
 import AddMatrix from "../../components/InfosDisplay/AddMatrix";
-
+import Workplan from "../Manager/Workplan";
 function MissionDetail() {
   const { mission } = useParams(); // Récupérer les paramètres de l'URL
   const location = useLocation(); // Obtenir l'URL actuelle
@@ -45,6 +45,7 @@ function MissionDetail() {
           location.pathname.startsWith(route)
         ) && <Breadcrumbs />}
         <MissionInfo dataFormat={missionData} userRole={userRole} />
+        
         <AddScope
           title={"Scope Application"}
           text={"Aucune application ajoutée pour le moment"}
@@ -54,7 +55,7 @@ function MissionDetail() {
           userRole={userRole}
           missionId={missionData.id}
         />
-        <AddMatrix userRole={userRole} />
+        <AddMatrix userRole={userRole} missionId={missionData.id} />
       </div>
     </div>
   );

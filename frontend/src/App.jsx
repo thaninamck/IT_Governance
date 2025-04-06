@@ -227,7 +227,7 @@ const rowsData3 = [
           <Route path='/flow' element={<Flow/>}></Route>
 
           <Route path='/acc' element={<WorkPlanSideBar/>}></Route>
-          <Route path='/workplan' element={<Workplan/>}></Route>
+          <Route path='/missions/:id/workplan' element={<Workplan/>}></Route>
           {/* <Route path='/gestionmission/:mission' element={<MissionReport/>}></Route> */}
           <Route path='/adminaction' element={<AdminActionsPanel/>}></Route>
           <Route path='/missions/:mission' element={<MissionReport/>}></Route>

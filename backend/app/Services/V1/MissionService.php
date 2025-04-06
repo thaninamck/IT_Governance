@@ -84,7 +84,10 @@ public function getSystemsByMissionID($missionId)
     ];
 }
 
-
+public function getMissionSystemsById($id){
+    $data=$this->missionRepository->getMissionSystemsById($id);
+    return $data;	
+}
 
     public function createMission(array $data): Mission
     {
@@ -167,4 +170,7 @@ public function getSystemsByMissionID($missionId)
 
         return $createdMissions;
     }
+
+
+    
 }

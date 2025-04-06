@@ -6,12 +6,10 @@ use App\Models\Mission;
 
 class MissionRepository
 {
-    // public function getAllMissions()
-    // {
-    //     return Mission::with(['client', 'status', 'participations' => function ($query) {
-    //         $query->where('profile_id', 3);
-    //     }])->get();
-    // }
+     public function getMissionSystemsById($id)
+     {
+         return Mission::with(['systems.layers.owner'])->where('id',$id) ->get();
+     }
 
     public function getAllMissions()
     {
@@ -281,5 +279,8 @@ public function attachSystem(int $missionId, int $systemId): void
     $mission = Mission::findOrFail($missionId);
     $mission->systems()->attach($systemId);
 }
+
+
+
 
 }

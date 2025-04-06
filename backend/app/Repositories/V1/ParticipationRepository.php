@@ -32,5 +32,14 @@ class ParticipationRepository
     {
         Participation::where('mission_id', $missionId)->delete();
     }
+
+
+    public function getTestersByMissionID($id){
+        return Participation::where('mission_id', $id)
+        ->whereHas('profile', function ($query) {
+            $query->where('profile_name', 'testeur');
+        })
+        ->pluck('user_id');        
+        }
 }
 

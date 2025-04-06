@@ -11,10 +11,12 @@ class ExecutionService
     protected ExecutionRepository $executionRepository;
     protected CntrlRiskCovRepository $covRepository;
 
+
     public function __construct(ExecutionRepository $executionRepository, CntrlRiskCovRepository $covRepository)
     {
         $this->executionRepository =$executionRepository;
         $this->covRepository =$covRepository;
+        
     }
 
     public function getExecutionsByMission($missionId)
