@@ -28,14 +28,16 @@ class EvidenceRepository
         return Evidence::where('remediation_id', $remediationId)->get();
     }
 
-    public function download(Evidence $evidence)
-    {
-        $path = storage_path("app/public/evidences/{$evidence->file_name}");
+    public function deleteEvidence($evidenceId)
+{
+    $evidence = Evidence::find($evidenceId);
 
-        if (!file_exists($path)) {
-            abort(404, 'Fichier introuvable');
-        }
-
-        return response()->download($path, $evidence->file_name);
+    if (!$evidence) {
+        return false; 
     }
+
+    
+    Evidence::destroy($evidenceId);
+    return $evidence->file_name;
+}
 }

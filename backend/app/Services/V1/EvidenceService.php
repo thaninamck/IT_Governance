@@ -6,6 +6,7 @@ use App\Repositories\V1\EvidenceRepository;
 use App\Repositories\V1\CntrlRiskCovRepository;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 class EvidenceService
 {
     protected EvidenceRepository $evidenceRepository;
@@ -70,4 +71,21 @@ dans le frontend si tu veux acceder a un ficher specifique dans ton clique appel
             return null;
         }
     }
+
+    public function deleteFile($evidenceId)
+{
+    $deletedFileName = $this->evidenceRepository->deleteEvidence($evidenceId);
+
+    if ($deletedFileName) {
+        // Supprimer le fichier du disque
+        $filePath = 'evidences/' . $deletedFileName;
+        if (Storage::disk('public')->exists($filePath)) {
+            Storage::disk('public')->delete($filePath);
+        }
+
+        return true;
+    }
+
+    return false;
+}
 }
