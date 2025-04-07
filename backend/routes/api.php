@@ -172,7 +172,10 @@ Route::middleware(['auth:sanctum', AdminMiddleware::class])
     Route::middleware(['auth:sanctum', TesterMiddleware::class])
     ->prefix('v1')
     ->group(function () {
-        //
+        Route::controller(ExecutionController::class)->group(function () {
+            Route::get('/missions/{mission}/executions-for-tester', 'getExecutionsByMissionAndTester');
+
+        });
     });
 
 Route::post('/login', [AuthController::class, 'login'])->middleware(CheckPasswordReset::class);

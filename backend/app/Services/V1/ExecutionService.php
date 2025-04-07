@@ -24,6 +24,11 @@ class ExecutionService
         return $this->executionRepository->getExecutionsByMission($missionId);
     }
 
+    public function getExecutionsByMissionAndTester($missionId,$userId)
+    {
+        return $this->executionRepository->getExecutionsByMissionAndTester($missionId,$userId);
+    }
+
     public function createExecutions(array $data): Execution
     {
         DB::beginTransaction(); // Démarrer la transaction

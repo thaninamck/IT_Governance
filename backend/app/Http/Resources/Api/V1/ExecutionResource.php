@@ -45,7 +45,7 @@ class ExecutionResource extends JsonResource
             'systemOwnerEmail' => $this->system_owner_email,
 
             'userId' => $this->user_id,
-            'userFullName' => $this->user_full_name,
+            'userFullName' => $this->tester_full_name,
         ];
     }
 
