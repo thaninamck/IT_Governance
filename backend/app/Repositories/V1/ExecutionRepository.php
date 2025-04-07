@@ -145,5 +145,6 @@ class ExecutionRepository
         WHERE m.id = ? and u.id= ?",
             [$missionId,$userId]
         );
+        
     }
 }
