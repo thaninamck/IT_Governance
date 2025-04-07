@@ -15,7 +15,9 @@ return new class extends Migration
             $table->id();
             $table->string('name', 255);
             $table->string('description', 255);
-            $table->foreignId('owner_id')->constrained('owners');
+            $table->foreignId('owner_id')->constrained('owners')->nullable(true);
+            $table->foreignId('mission_id')->constrained('missions')->nullable(true);
+
             $table->timestamps();
         });
     }

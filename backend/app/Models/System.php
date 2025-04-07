@@ -16,7 +16,7 @@ class System extends Model
         return $this->hasMany(Layer::class);
     }
     public function missions(){
-        return $this->belongsToMany(Mission::class, 'mission_systems', 'system_id', 'mission_id');
+        return $this->belongsTo(Mission::class);
 
     }
     

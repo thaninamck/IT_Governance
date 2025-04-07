@@ -47,7 +47,7 @@ class Mission extends Model
     }
 
     public function systems(){
-        return $this->belongsToMany(System::class,'mission_systems','mission_id','system_id');
+        return $this->hasMany(System::class);
 
     }
 }

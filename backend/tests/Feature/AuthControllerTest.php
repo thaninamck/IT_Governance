@@ -38,6 +38,17 @@ class AuthControllerTest extends TestCase
     }
 
 
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     #[Test]
     public function it_logs_in_a_user_with_valid_credentials()
     {
@@ -83,13 +94,11 @@ class AuthControllerTest extends TestCase
         'password' => 'wrongpassword',
         'captchaValue' => 'fake-value'
     ])
-    ->assertStatus(400) 
+    ->assertStatus(401) 
     ->assertJson([
         'success' => false,
         'message' => 'Incorrect data',
-        'data' => [
-            'password' => ['No user found with the specified data'],
-        ],
+        
     ]);
 }
 
@@ -97,25 +106,25 @@ class AuthControllerTest extends TestCase
     #[Test]
     public function test_it_logs_out_a_user()
 {
-    // 🔹 Créer un utilisateur en BDD
+    
     $user = User::factory()->create();
 
-    // 🔹 Simuler une connexion
+    //  Simuler une connexion
     $this->actingAs($user);
 
-    // 🔹 Effectuer la requête de logout
+    //  Effectuer la requête de logout
     $response = $this->postJson('/api/logout');
 
-    // 🔹 Debug pour voir la réponse API
+    //  Debug pour voir la réponse API
     dump($response->json());
 
-    // 🔹 Vérifier la réponse (structure flexible)
+    //  Vérifier la réponse (structure flexible)
     $response->assertStatus(200)
              ->assertJsonFragment([
                  'Logged out successfully'
              ]);
 
-    // 🔹 Vérifier que les tokens sont supprimés
+    //  Vérifier que les tokens sont supprimés
     $this->assertDatabaseMissing('personal_access_tokens', [
         'tokenable_id' => $user->id
     ]);

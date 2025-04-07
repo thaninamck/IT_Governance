@@ -215,6 +215,8 @@ const rowsData3 = [
           <Route path='/utilisateurs' element={<GestionUtilisateur/>}></Route>
           <Route path='/clients' element={<GestionClient/>}></Route>
           <Route path='/settings' element={<Settings/>}></Route>
+          <Route path='/control' element={<ControleExcutionPage/>}></Route>
+
           <Route path='/missions/:mission/:nonApp/:controlCode' element={<ControleExcutionPage/>}></Route>
           <Route path='/remediation/:id' element={<RemediationActionId/>}></Route>
           <Route path='/listcontrole' element={<ListControle/>}></Route>

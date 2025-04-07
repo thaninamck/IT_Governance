@@ -52,7 +52,7 @@ export default function MultiSelectButtons({ onSelectionChange, selections }) {
   };
 
   return (
-    <div className="flex justify-between space-x-4 px-4 w-[75%]">
+    <div className="flex justify-between space-x-4 px-4 w-[45%]">
       {options.map((option) => (
         <button
           key={option}
