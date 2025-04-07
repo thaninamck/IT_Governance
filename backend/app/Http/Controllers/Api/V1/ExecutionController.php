@@ -115,9 +115,10 @@ class ExecutionController extends BaseController
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Execution $execution)
+    public function updateExecution(Request $request, Execution $execution)
     {
-        //
+        
+
     }
 
     public function storeFile(Request $request)
