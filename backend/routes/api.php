@@ -177,7 +177,7 @@ Route::middleware(['auth:sanctum', AdminMiddleware::class])
 
         });
     });
-
+    Route::post('/evidences/upload', [ExecutionController::class,'storeFile']);
 Route::post('/login', [AuthController::class, 'login'])->middleware(CheckPasswordReset::class);
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
 Route::post('/changePassword', [AuthController::class, 'forceUpdatePassword'])->middleware('auth:sanctum');

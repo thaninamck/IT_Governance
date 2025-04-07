@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Services\V1\ControlService;
+use App\Services\V1\EvidenceService;
 use App\Services\V1\MissionService;
 use App\Services\V1\RiskService;
 use Illuminate\Support\Facades\Validator;
@@ -17,9 +18,10 @@ class ExecutionController extends BaseController
     protected $missionService;
     protected $riskService;
     protected $controlService;
-
-    public function __construct(ExecutionService $executionService, MissionService $missionService, RiskService $riskService, ControlService $controlService)
+    protected $evidenceService;
+    public function __construct(ExecutionService $executionService, MissionService $missionService, RiskService $riskService, ControlService $controlService, EvidenceService $evidenceService)
     {
+        $this->evidenceService = $evidenceService;
         $this->executionService = $executionService;
         $this->missionService = $missionService;
         $this->riskService = $riskService;
@@ -93,8 +95,8 @@ class ExecutionController extends BaseController
     {
         try {
             $userId = auth()->user()->id;
-            
-            $executions = ExecutionResource::collection($this->executionService->getExecutionsByMissionAndTester($missionId,$userId));
+
+            $executions = ExecutionResource::collection($this->executionService->getExecutionsByMissionAndTester($missionId, $userId));
             if ($executions->isEmpty()) {
                 return $this->sendError('Aucune exécution trouvée pour cette mission et testeur.', [], 404);
             }
@@ -118,6 +120,37 @@ class ExecutionController extends BaseController
         //
     }
 
+    public function storeFile(Request $request)
+    {
+        $rules = [
+            'file' => 'required|file|max:10240', // Taille max de 10 Mo
+            'execution_id' => 'sometimes',
+            'remediation_id' => 'sometimes',
+
+            'is_f_test' => 'sometimes|boolean',
+        ];
+
+        // Validation des données
+        $validator = Validator::make($request->all(), $rules);
+
+        if ($validator->fails()) {
+            return $this->sendError("Validation of data failed", $validator->errors(), 422);
+        }
+        $data = [
+            'execution_id' => $request->execution_id,
+            'remediation_id' => $request->remediation_id,
+            'is_f_test' => $request->is_f_test,
+        ];
+        try {
+            // Appel au service pour stocker le fichier et les données associées
+            $this->evidenceService->storeFile($data, $request->file('file'));
+    
+            return $this->sendResponse("File uploaded successfully", [], 201);
+        } catch (\Exception $e) {
+            // Gestion des erreurs si le service échoue
+            return $this->sendError("Error while uploading file", ['error' => $e->getMessage()], 500);
+        }
+    }
     /**
      * Remove the specified resource from storage.
      */
@@ -127,22 +160,22 @@ class ExecutionController extends BaseController
     }
 
     public function getWorkplanOptionsByMission($missionId)
-{
-    try {
-        $data = [
-            'systems' => $this->missionService->getSystemsByMissionID($missionId), // Déjà un array
-            'risks' => $this->riskService->getAllRisks(), // Collection
-            'controls' => $this->controlService->getAllControls() // Collection
-        ];
+    {
+        try {
+            $data = [
+                'systems' => $this->missionService->getSystemsByMissionID($missionId), // Déjà un array
+                'risks' => $this->riskService->getAllRisks(), // Collection
+                'controls' => $this->controlService->getAllControls() // Collection
+            ];
 
-        return $this->sendResponse(
-            (new ExecutionResource(null))->formatWorkplanOptions($data),
-            'Workplan options retrieved successfully.'
-        );
+            return $this->sendResponse(
+                (new ExecutionResource(null))->formatWorkplanOptions($data),
+                'Workplan options retrieved successfully.'
+            );
 
-    } catch (\Exception $e) {
-        return $this->sendError('Failed to retrieve workplan options.', ['error' => $e->getMessage()], 500);
+        } catch (\Exception $e) {
+            return $this->sendError('Failed to retrieve workplan options.', ['error' => $e->getMessage()], 500);
+        }
     }
-}
 
 }
