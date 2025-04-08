@@ -42,6 +42,7 @@ export const useSystem = (missionId, user, showForm, onToggleForm) => {
           // Ajout d'une nouvelle application
         const response = await api.post(`/mission/${missionId}/createsystem`, app);
         setApplications(prev => [...prev, response.data]);
+        console.log(response.data)
         setShowDecisionPopup(true);
        
       }
