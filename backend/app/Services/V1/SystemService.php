@@ -147,7 +147,6 @@ $system->load('layers');
             'name' => $data['name'],
             'description' => $data['description'],
             'owner_id' => $owner->id
-            
         ]);
     
         // Gestion des layers si présents dans les données
