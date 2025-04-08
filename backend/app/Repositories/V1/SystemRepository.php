@@ -8,7 +8,7 @@ class SystemRepository
 {
     public function getAllSystems()
     {
-        return System::with(['owner'])->get();
+        return System::with(['owner','mission'])->get();
     }
 
     public function createSystem(array $data): System
@@ -42,7 +42,7 @@ class SystemRepository
             return null;
         }
         // Supprimer d'abord les associations dans mission_systems
-    $system->missions()->detach();
+   // $system->missions()->detach();
 
         $system_name=$system->name;
         $system->delete();
