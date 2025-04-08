@@ -58,5 +58,13 @@ public function deleteParticipation(int $id): ?string
     $participation->delete();
     return $user_id;
 }
+
+    public function getTestersByMissionID($id){
+        return Participation::where('mission_id', $id)
+        ->whereHas('profile', function ($query) {
+            $query->where('profile_name', 'testeur');
+        })
+        ->pluck('user_id');        
+        }
 }
 

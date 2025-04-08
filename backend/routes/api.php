@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\V1\ExecutionController;
+use App\Http\Controllers\Api\V1\ParticipationController;
 use App\Http\Middleware\AdminMiddleware;
 
 use App\Http\Middleware\ApiAuthenticate;
@@ -18,7 +19,6 @@ use App\Http\Controllers\Api\V1\LogController;
 use App\Http\Controllers\Api\V1\NotificationController;
 use App\Http\Controllers\Api\V1\MissionController;
 use App\Http\Controllers\Api\V1\OwnerController;
-use App\Http\Controllers\Api\V1\ParticipationController;
 use App\Http\Controllers\Api\V1\ProfileController;
 use App\Http\Controllers\Api\V1\SystemController;
 use App\Http\Controllers\Api\V1\RiskController;
@@ -155,6 +155,14 @@ Route::middleware(['auth:sanctum', ManagerMiddleware::class])
         Route::controller(ExecutionController::class)->group(function () {
             Route::post('/missions/{mission}/insert-executions', 'createExecutions');
             Route::get('/missions/{mission}/executions', 'getExecutionsByMission');
+            Route::get('/missions/{mission}/workplanOptions', 'getWorkplanOptionsByMission');
+
+        });
+        
+        Route::controller(ParticipationController::class)->group(function () {
+            
+            Route::get('/missions/{mission}/testers', 'getTestersByMissionID');
+
         });
 
         // MissionController Routes
@@ -163,6 +171,9 @@ Route::middleware(['auth:sanctum', ManagerMiddleware::class])
         // });
     });
 
+    //  Route::controller(ParticipationController::class)->group(function () {
+    //     Route::get('/missions/{mission}/testers', 'getTestersByMissionID');
+    // });
 
 Route::middleware(['auth:sanctum', SupervisorMiddleware::class])
     ->prefix('v1')
@@ -173,9 +184,12 @@ Route::middleware(['auth:sanctum', SupervisorMiddleware::class])
 Route::middleware(['auth:sanctum', TesterMiddleware::class])
     ->prefix('v1')
     ->group(function () {
-        //
-    });
+        Route::controller(ExecutionController::class)->group(function () {
+            Route::get('/missions/{mission}/executions-for-tester', 'getExecutionsByMissionAndTester');
 
+        });
+    });
+    Route::post('/evidences/upload', [ExecutionController::class,'storeFile']);
 Route::post('/login', [AuthController::class, 'login'])->middleware(CheckPasswordReset::class);
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
 Route::post('/changePassword', [AuthController::class, 'forceUpdatePassword'])->middleware('auth:sanctum');

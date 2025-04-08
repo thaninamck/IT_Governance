@@ -24,10 +24,11 @@ class ParticipationController extends BaseController
     /**
      * Display a listing of the resource.
      */
-    public function index()
-    {
-        //
-    }
+    public function index(){}
+
+
+    
+   
 
     /**
      * Store a newly created resource in storage.
@@ -96,19 +97,20 @@ class ParticipationController extends BaseController
         //
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Participation $participation)
+    public function getTestersByMissionID($missionId)
     {
-        //
-    }
+        try{
+            $testers=$this->participationService->getTestersByMissionID($missionId);
+            if (!isset($testers)) {
+                return $this->sendError('Aucun testeur trouvé pour cette mission.', [], 404);
+            }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Participation $participation)
-    {
-        //
+            return $this->sendResponse($testers, 'Liste des testeurs récupérée avec succès.');
+
+        } catch (\Exception $e) {
+            return $this->sendError('Erreur lors de la récupération des testeurs.', ['error' => $e->getMessage()], 500);
+        }
+        
     }
+    
 }

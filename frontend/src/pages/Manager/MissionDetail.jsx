@@ -8,6 +8,8 @@ import { PermissionRoleContext } from "../../Context/permissionRoleContext";
 import AddMatrix from "../../components/InfosDisplay/AddMatrix";
 import { useAuth } from "../../Context/AuthContext";
 
+import Workplan from "../Manager/Workplan";
+
 function MissionDetail() {
    const { user} = useAuth();
   const { mission } = useParams(); // Récupérer les paramètres de l'URL
@@ -61,9 +63,10 @@ function MissionDetail() {
          user={user}
           missionId={missionData.id}
         />
-        <AddMatrix 
-       // userRole={userRole}
-         />
+        {/* <AddMatrix 
+        //userRole={userRole}
+        //  missionId={missionData.id} 
+        // /> */}
       </div>
     </div>
   );

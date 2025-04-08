@@ -1,48 +1,55 @@
-import Breadcrumbs from '../../components/Breadcrumbs';
-import { useContext, useEffect, useState } from 'react';
-import Header from '../../components/Header/Header';
-import PopUp from '../../components/PopUps/PopUp';
-import ConclusionRemediationSection from '../subPages/ConclusionRemediationSection';
-import DescriptionTestScriptSection from '../subPages/DescriptionTestScriptSection';
-import EvidencesSection from '../subPages/EvidencesSection';
-import MultiSelectButtons from '../../components/ToggleButtons';
-import AccessTimeFilledIcon from '@mui/icons-material/AccessTimeFilled';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import { SquarePen } from 'lucide-react';
-import DeleteOutlineRoundedIcon from '@mui/icons-material/DeleteOutlineRounded';
-import SendIcon from '@mui/icons-material/Send';
-import JSZip from 'jszip';
-import { saveAs } from 'file-saver';
-import jsPDF from 'jspdf';
-import autoTable from 'jspdf-autotable';
-import emailjs from 'emailjs-com';
-import { useLocation, useNavigate } from 'react-router-dom';
-import { PermissionRoleContext } from '../../Context/permissionRoleContext';
+import Breadcrumbs from "../../components/Breadcrumbs";
+import { useContext, useEffect, useState } from "react";
+import Header from "../../components/Header/Header";
+import PopUp from "../../components/PopUps/PopUp";
+import ConclusionRemediationSection from "../subPages/ConclusionRemediationSection";
+import DescriptionTestScriptSection from "../subPages/DescriptionTestScriptSection";
+import EvidencesSection from "../subPages/EvidencesSection";
+import MultiSelectButtons from "../../components/ToggleButtons";
+import AccessTimeFilledIcon from "@mui/icons-material/AccessTimeFilled";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import { SquarePen } from "lucide-react";
+import DeleteOutlineRoundedIcon from "@mui/icons-material/DeleteOutlineRounded";
+import SendIcon from "@mui/icons-material/Send";
+import JSZip from "jszip";
+import { saveAs } from "file-saver";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
+import emailjs from "emailjs-com";
+import { useLocation, useNavigate } from "react-router-dom";
+import { PermissionRoleContext } from "../../Context/permissionRoleContext";
 
 // Initialize EmailJS with your userID
-emailjs.init('oAXuwpg74dQwm0C_s'); // Replace 'YOUR_USER_ID' with your actual userID
+emailjs.init("oAXuwpg74dQwm0C_s"); // Replace 'YOUR_USER_ID' with your actual userID
 
 function ControleExcutionPage() {
   // Accédez à userRole et setUserRole via le contexte
   const { userRole, setUserRole } = useContext(PermissionRoleContext);
   const location = useLocation();
   const controleData = location.state?.controleData || {};
-  console.log(controleData)
+  console.log(controleData);
 
   const [commentaire, setCommentaire] = useState("");
   const [isEditing, setIsEditing] = useState(true);
   const statusOptions = ["Terminé", "En_cours", "Non_commencee"];
-  const statusColors = { Terminé: 'green', En_cours: 'orange', Non_Commencée: 'gray' };
-  const [selectedMulti, setSelectedMulti] = useState('');
+  const statusColors = {
+    Terminé: "green",
+    En_cours: "orange",
+    Non_Commencée: "gray",
+  };
+  const [selectedMulti, setSelectedMulti] = useState("");
   const [showRemediation, setShowRemediation] = useState(false);
   const [showPopup, setShowPopup] = useState(false);
-  const [description, setDescription] = useState(controleData.controlDescription || '');
-  const [testScript, setTestScript] = useState(controleData.testScript || '');
-  const [type, setType] = useState(controleData.type || '');
-  const [majorProcess, setMajorProcess] = useState(controleData.majorProcess || '');
-  const [subProcess, setSubProcess] = useState(controleData.subProcess || '');
-  const [controleID, setControleID] = useState(controleData.controlCode || '');
-
+  const [description, setDescription] = useState(
+    controleData.controlDescription || ""
+  );
+  const [testScript, setTestScript] = useState(controleData.testScript || "");
+  const [type, setType] = useState(controleData.type || "");
+  const [majorProcess, setMajorProcess] = useState(
+    controleData.majorProcess || ""
+  );
+  const [subProcess, setSubProcess] = useState(controleData.subProcess || "");
+  const [controleID, setControleID] = useState(controleData.controlCode || "");
 
   const updateStatusBasedOnSuivi = () => {
     setAction((prevActions) =>
@@ -58,20 +65,25 @@ function ControleExcutionPage() {
   }, []);
 
   const columnsConfig = [
-    { field: 'id', headerName: 'ID', width: 250, editable: true },
-    { field: 'description', headerName: 'Description', editable: true, width: 300 },
-    { field: 'contact', headerName: 'Contact', width: 250 },
-    { field: 'dateField', headerName: 'Date début', width: 200 },
-    { field: 'dateField1', headerName: 'Date Fin', width: 200 },
+    { field: "id", headerName: "ID", width: 250, editable: true },
     {
-      field: 'suivi',
-      headerName: 'Suivi',
+      field: "description",
+      headerName: "Description",
       editable: true,
       width: 300,
     },
-    { field: 'status', headerName: 'Status', width: 180 },
-    { field: 'actions', headerName: 'Action', width: 80 },
-  ]
+    { field: "contact", headerName: "Contact", width: 250 },
+    { field: "dateField", headerName: "Date début", width: 200 },
+    { field: "dateField1", headerName: "Date Fin", width: 200 },
+    {
+      field: "suivi",
+      headerName: "Suivi",
+      editable: true,
+      width: 300,
+    },
+    { field: "status", headerName: "Status", width: 180 },
+    { field: "actions", headerName: "Action", width: 80 },
+  ];
 
   const [files, setFiles] = useState([
     // { name: 'document.pdf', size: 1024000 },
@@ -88,25 +100,63 @@ function ControleExcutionPage() {
     { label: "Not Applicable", value: "Not Applicable" },
   ];
   const [action, setAction] = useState([
-    { id: 1, description: 'llllll', contact: 'km_mohandouali@esi.dz', dateField: '2025-02-01', dateField1: '2025-02-06', suivi: '', status: 'Terminé' },
-    { id: 2, description: 'llllll', contact: 'manelmohandouali@gmail.com', dateField: '2025-02-05', dateField1: '2025-02-10', suivi: 'lll', status: 'En_cours' },
-    { id: 3, description: 'llllll', contact: 'manel.mohandouali@mazars.dz', dateField: '2025-01-11', dateField1: '2025-01-21', suivi: 'mll', status: 'Non_commencee' },
-    { id: 4, description: 'llllll', contact: 'farid@gmail.com', dateField: '2025-02-05', dateField1: '2025-02-10', suivi: 'lll', status: 'En_cours' },
-    { id: 5, description: 'llllll', contact: 'farid@gmail.com', dateField: '2025-01-11', dateField1: '2025-01-21', suivi: 'mll', status: 'Non_commencee' },
-
+    {
+      id: 1,
+      description: "llllll",
+      contact: "km_mohandouali@esi.dz",
+      dateField: "2025-02-01",
+      dateField1: "2025-02-06",
+      suivi: "",
+      status: "Terminé",
+    },
+    {
+      id: 2,
+      description: "llllll",
+      contact: "manelmohandouali@gmail.com",
+      dateField: "2025-02-05",
+      dateField1: "2025-02-10",
+      suivi: "lll",
+      status: "En_cours",
+    },
+    {
+      id: 3,
+      description: "llllll",
+      contact: "manel.mohandouali@mazars.dz",
+      dateField: "2025-01-11",
+      dateField1: "2025-01-21",
+      suivi: "mll",
+      status: "Non_commencee",
+    },
+    {
+      id: 4,
+      description: "llllll",
+      contact: "farid@gmail.com",
+      dateField: "2025-02-05",
+      dateField1: "2025-02-10",
+      suivi: "lll",
+      status: "En_cours",
+    },
+    {
+      id: 5,
+      description: "llllll",
+      contact: "farid@gmail.com",
+      dateField: "2025-01-11",
+      dateField1: "2025-01-21",
+      suivi: "mll",
+      status: "Non_commencee",
+    },
   ]);
 
-  const [selectedActionId, setSelectedActionId] = useState('')
+  const [selectedActionId, setSelectedActionId] = useState("");
   const [isDeletePopupOpen, setIsDeletePopupOpen] = useState(false);
   const [isAddingAnother, setIsAddingAnother] = useState(false);
   // États pour stocker les fichiers séparément
   const [evidenceFiles, setEvidenceFiles] = useState([]);
   const [testFiles, setTestFiles] = useState([]);
 
-
   const handleDeleteRow = (selectedRow) => {
     setSelectedActionId(selectedRow.id);
-    console.log(selectedActionId)
+    console.log(selectedActionId);
     setIsDeletePopupOpen(true);
   };
   const confirmDeleteMission = () => {
@@ -131,8 +181,8 @@ function ControleExcutionPage() {
     }
   };
   const onClose = () => {
-    setShowDecisionPopup(false)
-  }
+    setShowDecisionPopup(false);
+  };
   // Configurez EmailJS avec votre userID
   //emailjs.init('YOUR_USER_ID');
 
@@ -151,32 +201,50 @@ function ControleExcutionPage() {
 
     console.log("Envoi de l'email avec les paramètres :", templateParams);
 
-    emailjs.send('service_dg6av6d', 'template_f4ojiam', templateParams)
+    emailjs
+      .send("service_dg6av6d", "template_f4ojiam", templateParams)
       .then((response) => {
-        console.log('E-mail envoyé avec succès!', response.status, response.text);
+        console.log(
+          "E-mail envoyé avec succès!",
+          response.status,
+          response.text
+        );
         alert(`E-mail envoyé avec succès à ${selectedRow.contact} !`);
       })
       .catch((error) => {
-        console.error('Erreur lors de l\'envoi de l\'e-mail:', error);
-        alert('Erreur lors de l\'envoi de l\'e-mail. Veuillez réessayer.');
+        console.error("Erreur lors de l'envoi de l'e-mail:", error);
+        alert("Erreur lors de l'envoi de l'e-mail. Veuillez réessayer.");
       });
   };
 
-
   const rowActions = [
-    { icon: <SendIcon sx={{ marginRight: '5px', width: '20px', height: '20px' }} />, label: 'Envoyer', onClick: (selectedRow) => handlesendAction(selectedRow) },
-    { icon: <SquarePen className='mr-2 w-[20px] h-[20px]' />, label: 'Modifier', onClick: (selectedRow) => handleEditRow(selectedRow) },
-    { icon: <DeleteOutlineRoundedIcon sx={{ color: 'var(--alert-red)', marginRight: '5px' }} />, label: 'Supprimer', onClick: (selectedRow) => handleDeleteRow(selectedRow) },
-
-
+    {
+      icon: (
+        <SendIcon sx={{ marginRight: "5px", width: "20px", height: "20px" }} />
+      ),
+      label: "Envoyer",
+      onClick: (selectedRow) => handlesendAction(selectedRow),
+    },
+    {
+      icon: <SquarePen className="mr-2 w-[20px] h-[20px]" />,
+      label: "Modifier",
+      onClick: (selectedRow) => handleEditRow(selectedRow),
+    },
+    {
+      icon: (
+        <DeleteOutlineRoundedIcon
+          sx={{ color: "var(--alert-red)", marginRight: "5px" }}
+        />
+      ),
+      label: "Supprimer",
+      onClick: (selectedRow) => handleDeleteRow(selectedRow),
+    },
   ];
-
 
   const [multiSelectStatus, setMultiSelectStatus] = useState({});
 
-
   const handleCommentSave = (newComment) => {
-    console.log('Nouveau commentaire:', newComment);
+    console.log("Nouveau commentaire:", newComment);
     setCommentaire(newComment);
   };
 
@@ -217,7 +285,6 @@ function ControleExcutionPage() {
     }
   };
 
-
   const handleDelete = (index) => {
     if (activePanel === "evidence") {
       setEvidenceFiles((prevFiles) => prevFiles.filter((_, i) => i !== index));
@@ -234,17 +301,16 @@ function ControleExcutionPage() {
     // console.log('evd',newSelection)
   };
 
-  const shouldShowRemediation = selectedMulti === 'Partially Applied' || selectedMulti === 'Not Applied';
-  const isValidateDisabled = !selectedMulti || !commentaire || shouldShowRemediation;
+  const shouldShowRemediation =
+    selectedMulti === "Partially Applied" || selectedMulti === "Not Applied";
+  const isValidateDisabled =
+    !selectedMulti || !commentaire || shouldShowRemediation;
   const [showDecisionPopup, setShowDecisionPopup] = useState(false);
-
 
   const handleAdd = (remediation) => {
     if (selectedActionId) {
-
       // Mise à jour de l'application existante
       setAction((prevApps) =>
-
         prevApps.map((row) => (row.id === remediation.id ? remediation : row))
       );
       setSelectedActionId(null);
@@ -252,14 +318,14 @@ function ControleExcutionPage() {
     } else {
       setAction((prev) => [
         ...prev,
-        { id: prev.length + 1, ...remediation } // Add the remediation to the list
+        { id: prev.length + 1, ...remediation }, // Add the remediation to the list
       ]);
       setShowDecisionPopup(true);
-    };
-  }
+    }
+  };
   const handleValidate = () => {
     // Lorsque vous cliquez sur "Valider", affichez le popup
-    console.log('handleValidate called');
+    console.log("handleValidate called");
     setShowPopup(true);
   };
   const handlePopupClose = () => setShowPopup(false);
@@ -275,7 +341,8 @@ function ControleExcutionPage() {
 
     // Fonction pour vérifier si une nouvelle page est nécessaire
     const addNewPageIfNeeded = (offset) => {
-      if (offset > doc.internal.pageSize.height - 20) { // 20 est une marge
+      if (offset > doc.internal.pageSize.height - 20) {
+        // 20 est une marge
         doc.addPage();
         return 30; // Réinitialiser la position verticale
       }
@@ -283,23 +350,23 @@ function ControleExcutionPage() {
     };
 
     doc.setFontSize(18);
-    doc.text('Rapport de Contrôle', 105, 20, { align: 'center' });
+    doc.text("Rapport de Contrôle", 105, 20, { align: "center" });
     doc.setFontSize(12);
     doc.text(`Date: ${new Date().toLocaleDateString()}`, 14, 30);
 
     // Tableau récapitulatif des informations principales
     autoTable(doc, {
       startY: yOffset,
-      head: [['Champ', 'Valeur']],
+      head: [["Champ", "Valeur"]],
       body: [
-        ['Type:', type,],
-        ['Major Process:', majorProcess],
-        ['Sub Process:', subProcess],
-        ['Description', description],
-        ['Test Script', testScript],
-        ['Status', selectedMulti],
-        ['Commentaire', commentaire],
-        ['Critères', JSON.stringify(localSelections)],
+        ["Type:", type],
+        ["Major Process:", majorProcess],
+        ["Sub Process:", subProcess],
+        ["Description", description],
+        ["Test Script", testScript],
+        ["Status", selectedMulti],
+        ["Commentaire", commentaire],
+        ["Critères", JSON.stringify(localSelections)],
       ],
       didDrawPage: (data) => {
         yOffset = data.cursor.y + 10; // Mettre à jour la position verticale après le tableau
@@ -312,8 +379,18 @@ function ControleExcutionPage() {
     // Liste des remédiations sous forme de tableau
     autoTable(doc, {
       startY: yOffset,
-      head: [['ID', 'Description', 'Contact', 'Date Début', 'Date Fin', 'Suivi', 'Status']],
-      body: action.map(item => [
+      head: [
+        [
+          "ID",
+          "Description",
+          "Contact",
+          "Date Début",
+          "Date Fin",
+          "Suivi",
+          "Status",
+        ],
+      ],
+      body: action.map((item) => [
         item.id,
         item.description,
         item.contact,
@@ -332,11 +409,11 @@ function ControleExcutionPage() {
     //    Ajout des données du test script
     autoTable(doc, {
       startY: yOffset,
-      head: [['Étape', 'Phrase', 'Validée', 'Commentaire']],
+      head: [["Étape", "Phrase", "Validée", "Commentaire"]],
       body: testScriptData.map((item, index) => [
         index + 1,
         item.phrase,
-        item.isChecked ? 'Oui' : 'Non', // Afficher "Oui" ou "Non" pour la validation
+        item.isChecked ? "Oui" : "Non", // Afficher "Oui" ou "Non" pour la validation
         item.comment || "Aucun commentaire", // Afficher "Aucun commentaire" si le commentaire est vide
       ]),
       didDrawPage: (data) => {
@@ -379,9 +456,8 @@ function ControleExcutionPage() {
     // Créer un fichier ZIP
     const zip = new JSZip();
 
-
     // Générer le PDF
-    const pdfBlob = doc.output('blob');
+    const pdfBlob = doc.output("blob");
 
     // Ajouter le PDF au ZIP
     zip.file("rapport_controle.pdf", pdfBlob);
@@ -408,20 +484,31 @@ function ControleExcutionPage() {
     // doc.save('rapport_controle.pdf');
     // setShowPopup(true);
 
-
     console.log(
-      'Type:', type,
-      'Major Process:', majorProcess,
-      'Sub Process:', subProcess,
-      'Description:', description,
-      'TestScript:', testScript,
-      'Test Script Data:', testScriptData,
-      'Evidence Files:', evidenceFiles,
-      'Test Files:', testFiles,
-      'status:', selectedMulti,
-      'Commentaire:', commentaire,
-      'remediation:', action,
-      'critere:', localSelections
+      "Type:",
+      type,
+      "Major Process:",
+      majorProcess,
+      "Sub Process:",
+      subProcess,
+      "Description:",
+      description,
+      "TestScript:",
+      testScript,
+      "Test Script Data:",
+      testScriptData,
+      "Evidence Files:",
+      evidenceFiles,
+      "Test Files:",
+      testFiles,
+      "status:",
+      selectedMulti,
+      "Commentaire:",
+      commentaire,
+      "remediation:",
+      action,
+      "critere:",
+      localSelections
     );
     //setIsEditing(false); // Quitter le mode édition après la sauvegarde
   };
@@ -435,40 +522,59 @@ function ControleExcutionPage() {
       remediations: action,
     };
     setShowPopup(true);
-  }
+  };
 
   const navigate = useNavigate();
 
   const handleRowClick = (rowData) => {
     // Naviguer vers la page de détails avec l'ID du contrôle dans l'URL
-    navigate(`/remediation/${rowData.id}`, { state: { remediationData: rowData } });
+    navigate(`/remediation/${rowData.id}`, {
+      state: { remediationData: rowData },
+    });
     // navigate('/controle', { state: { controleData: rowData } });
-    console.log('Détails du contrôle sélectionné:', rowData);
+    console.log("Détails du contrôle sélectionné:", rowData);
   };
 
-
   // Check if all remediations are done
-  const isAllRemediationDone = action.every((remediation) => remediation.status === 'Terminé') && selectedMulti != '';
+  const isAllRemediationDone =
+    action.every((remediation) => remediation.status === "Terminé") &&
+    selectedMulti != "";
 
   // Determine the status of the control
-  const controlStatus = isAllRemediationDone ? 'Terminé' : 'En_cours';
+  const controlStatus = isAllRemediationDone ? "Terminé" : "En_cours";
 
-  const controlIcon = controlStatus === 'Terminé' ? (
-    <CheckCircleIcon style={{ color: 'var( --success-green)', animation: 'fadeIn 1s ease', width: '40px', height: '40px' }} />
-  ) : (
-    <AccessTimeFilledIcon style={{ color: 'var(--await-orange)', animation: 'fadeIn 1s ease', width: '40px', height: '40px' }} />
-  );
-
+  const controlIcon =
+    controlStatus === "Terminé" ? (
+      <CheckCircleIcon
+        style={{
+          color: "var( --success-green)",
+          animation: "fadeIn 1s ease",
+          width: "25px",
+          height: "25px",
+        }}
+      />
+    ) : (
+      <AccessTimeFilledIcon
+        style={{
+          color: "var(--await-orange)",
+          animation: "fadeIn 1s ease",
+          width: "25px",
+          height: "25px",
+        }}
+      />
+    );
 
   return (
     <div className=" ">
       <Header />
-      <div className='ml-5 mr-6 pb-9'>
-        {location.pathname.includes('') && <Breadcrumbs />}
+      <div className="ml-8 mr-6 pb-9">
+        {location.pathname.includes("") && <Breadcrumbs />}
         {/*ajout ici animation and icons*/}
         {/* Display Control Status with Icon */}
         <div className="flex items-center gap-2 justify-end pr-12">
-          <h1 className=' font-semibold text-xl' >Le controle est {controlStatus}</h1>
+          <h1 className=" font-medium text-lg">
+            Statut du controle: {controlStatus}
+          </h1>
           {controlIcon}
         </div>
 
@@ -483,27 +589,28 @@ function ControleExcutionPage() {
           majorProcess={majorProcess}
           subProcess={subProcess}
           onTestScriptChange={handleTestScriptChange} // Transmettre la fonction de rappel
-
         />
-
-        <EvidencesSection
-          handleSelectionChange={handleSelectionChange}
-          files={files}
-          handleSaveFiles={handleSaveFiles}
-          handleDelete={handleDelete}
-          evidenceFiles={evidenceFiles}
-          testFiles={testFiles}
-          activePanel={activePanel}
-          setActivePanel={setActivePanel}
-          handleTabChange={handleTabChange}
-        />
-
-
+        <div className=" max-h-screen min-h-screen">
+          <EvidencesSection
+            handleSelectionChange={handleSelectionChange}
+            files={files}
+            handleSaveFiles={handleSaveFiles}
+            handleDelete={handleDelete}
+            evidenceFiles={evidenceFiles}
+            testFiles={testFiles}
+            activePanel={activePanel}
+            setActivePanel={setActivePanel}
+            handleTabChange={handleTabChange}
+          />
+        </div>
 
         <ConclusionRemediationSection
           selectedMulti={selectedMulti}
           setSelectedMulti={setSelectedMulti}
-          shouldShowRemediation={selectedMulti === 'Partially Applied' || selectedMulti === 'Not Applied'}
+          shouldShowRemediation={
+            selectedMulti === "Partially Applied" ||
+            selectedMulti === "Not Applied"
+          }
           commentaire={commentaire}
           setCommentaire={setCommentaire}
           action={action}
@@ -527,14 +634,15 @@ function ControleExcutionPage() {
           isAddingAnother={isAddingAnother}
           controleID={controleID}
           onClose={onClose}
-
-
         />
-        {showPopup &&
+        {showPopup && (
           <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-md z-50">
-            <PopUp text={'Contrôle envoyé au superviseur avec succès'} redirectionURL={handlePopupClose} />
+            <PopUp
+              text={"Contrôle envoyé au superviseur avec succès"}
+              redirectionURL={handlePopupClose}
+            />
           </div>
-        }
+        )}
       </div>
     </div>
   );

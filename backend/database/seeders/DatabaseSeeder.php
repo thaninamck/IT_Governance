@@ -26,7 +26,7 @@ class DatabaseSeeder extends Seeder
         ]);
         
         $this->call([
-
+            MissionSeeder::class,
             SourceSeeder::class,
     SystemSeeder::class,
 
@@ -35,7 +35,7 @@ class DatabaseSeeder extends Seeder
             StatusSeeder::class,
             ClientSeeder::class,
             UserSeeder::class,
-            MissionSeeder::class,
+            
             ProfileSeeder::class,
             ParticipationSeeder::class,
             

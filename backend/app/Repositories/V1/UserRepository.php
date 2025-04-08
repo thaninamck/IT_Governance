@@ -108,4 +108,8 @@ class UserRepository
         return collect($createdUsers);
     }
 
+    public function getUsersByIds($userIds)
+    {
+        return User::whereIn('id', $userIds)->get();
+    }
 }

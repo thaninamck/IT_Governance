@@ -13,11 +13,10 @@ return new class extends Migration
     {
         Schema::create('evidences', function (Blueprint $table) {
             $table->id();
-            $table->string('path', 255)->nullable();
-            $table->string('title', 255)->nullable();
+            $table->string('file_name', 255)->nullable();
             $table->boolean('is_f_test')->default(false);
-            $table->foreignId('execution_id')->constrained('executions');
-            $table->foreignId('remediation_id')->constrained('remediations');
+            $table->foreignId('execution_id')->nullable()->constrained('executions','id');
+            $table->foreignId('remediation_id')->nullable()->constrained('remediations');
 
             $table->timestamps();//pour insered_at
         });

@@ -9,9 +9,10 @@ class ParticipationService
 {
 
     protected ParticipationRepository $participationRepository;
-
-    public function __construct(ParticipationRepository $participationRepository)
+    protected UserService $userService;
+    public function __construct(ParticipationRepository $participationRepository,UserService $userService)
     {
+        $this->userService = $userService;
         $this->participationRepository = $participationRepository;
     }
 
@@ -85,4 +86,26 @@ public function deleteParticipationById(int $id): ?string
    }
    return $this->participationRepository->deleteParticipation($id);
 }
+
+    public function getTestersByMissionID($id)
+{
+    $testers_ids = $this->participationRepository->getTestersByMissionID($id);
+
+    if ($testers_ids->isEmpty()) {
+        return null;
+    }
+
+    $users = $this->userService->getUsersByIds($testers_ids);
+
+    $testers = $users->map(function($user) {
+        return [
+            'id' => $user->id,
+            'designation' => $user->first_name . ' ' . $user->last_name,
+        ];
+    });
+
+    return $testers;
+}
+
+
 }

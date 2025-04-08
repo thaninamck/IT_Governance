@@ -11,15 +11,22 @@ class ExecutionService
     protected ExecutionRepository $executionRepository;
     protected CntrlRiskCovRepository $covRepository;
 
+
     public function __construct(ExecutionRepository $executionRepository, CntrlRiskCovRepository $covRepository)
     {
         $this->executionRepository =$executionRepository;
         $this->covRepository =$covRepository;
+        
     }
 
     public function getExecutionsByMission($missionId)
     {
         return $this->executionRepository->getExecutionsByMission($missionId);
+    }
+
+    public function getExecutionsByMissionAndTester($missionId,$userId)
+    {
+        return $this->executionRepository->getExecutionsByMissionAndTester($missionId,$userId);
     }
 
     public function createExecutions(array $data): Execution

@@ -32,6 +32,9 @@ class StatusSeeder extends Seeder
 
         // Créer un statut pour chaque élément de la liste
         foreach ($statusList as $statusName) {
+            if (Status::where('status_name', $statusName)->exists()) {
+                continue; // Si le statut existe déjà, on passe à l'itération suivante
+            }
             Status::create(['status_name' => $statusName]);
         }
     }

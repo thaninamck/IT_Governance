@@ -38,7 +38,10 @@ function ConclusionRemediationSection({
 }) {
   return (
     <div>
-      <Separator text={'Conclusion'} />
+      <div className='mr-5'>
+      <Separator text={'Conclusion'}  />
+
+      </div>
       <div className='flex flex-row items-center gap-14 py-7 ml-5'>
         <label className="mr-8 font-medium">Status</label>
         <SelectInput
@@ -111,8 +114,10 @@ function ConclusionRemediationSection({
       {action.length > 0 && (
         
         <>
+              <div className='mr-5'>
+
           <Separator text={'Remédiation'} />
-         
+         </div>
           <div className={`mt-6 flex-1 overflow-x-auto overflow-y-auto h-[400px] transition-all }`}>
 
           {isDeletePopupOpen && (

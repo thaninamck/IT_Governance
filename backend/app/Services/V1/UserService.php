@@ -96,4 +96,10 @@ class UserService
         return $this->userRepository->createMultipleUsers($usersData);
 
     }
+
+
+    public function getUsersByIds($userIds)
+    {
+        return $this->userRepository->getUsersByIds($userIds);
+    }
 }

@@ -215,6 +215,8 @@ const rowsData3 = [
           <Route path='/utilisateurs' element={<GestionUtilisateur/>}></Route>
           <Route path='/clients' element={<GestionClient/>}></Route>
           <Route path='/settings' element={<Settings/>}></Route>
+          <Route path='/control' element={<ControleExcutionPage/>}></Route>
+
           <Route path='/missions/:mission/:nonApp/:controlCode' element={<ControleExcutionPage/>}></Route>
           <Route path='/remediation/:id' element={<RemediationActionId/>}></Route>
           <Route path='/listcontrole' element={<ListControle/>}></Route>
@@ -227,7 +229,7 @@ const rowsData3 = [
           <Route path='/flow' element={<Flow/>}></Route>
 
           <Route path='/acc' element={<WorkPlanSideBar/>}></Route>
-          <Route path='/workplan' element={<Workplan/>}></Route>
+          <Route path='/missions/:id/workplan' element={<Workplan/>}></Route>
           {/* <Route path='/gestionmission/:mission' element={<MissionReport/>}></Route> */}
           <Route path='/adminaction' element={<AdminActionsPanel/>}></Route>
           <Route path='/missions/:mission' element={<MissionReport/>}></Route>

@@ -25,13 +25,14 @@ class MissionSeeder extends Seeder
         // Récupération de tous les systèmes
         $systems = System::all();
 
-        if ($systems->count() > 0) {
-            foreach ($missions as $mission) {
-                // S'assurer de ne pas demander plus de systèmes qu'il en existe
-                $randomSystems = $systems->count() > 1 ? $systems->random(min(3, $systems->count()))->pluck('id')->toArray() : $systems->pluck('id')->toArray();
-                
-                $mission->systems()->attach($randomSystems);
+        foreach ($missions as $mission) {
+            $randomSystems = $systems->count() > 1 ? $systems->random(min(3, $systems->count())) : $systems;
+        
+            foreach ($randomSystems as $system) {
+                $system->mission_id = $mission->id;
+                $system->save();
             }
         }
+        
     }
 }
