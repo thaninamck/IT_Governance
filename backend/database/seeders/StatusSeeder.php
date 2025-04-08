@@ -1,41 +1,35 @@
 <?php
-
 namespace Database\Seeders;
 
-use App\Models\Status;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-
+use Illuminate\Support\Facades\DB;
 
 class StatusSeeder extends Seeder
 {
     public function run(): void
     {
-        // Liste des statuts à créer
-        $statusList = [
-            'archivée',
-            'en attente d\'archivage',
-            'en attente de suppression',
-            'supprimée',
-            'en attente d\'annulation',
-            'annulée',
-            'en attente de clôture',
-            'clôturée',
-            'en cours',
-            'en attente',
-            'applied',
-            'not applied',
-            'not applicable',
-            'not tested',
-            'partially applied',
+        // Liste des statuts à créer pour chaque entité
+        $statuses = [
+            
+            'execution' => [
+                'applied',
+                'not applied',
+                'not applicable',
+                'not tested',
+                'partially applied',
+            ],
         ];
 
-        // Créer un statut pour chaque élément de la liste
-        foreach ($statusList as $statusName) {
-            if (Status::where('status_name', $statusName)->exists()) {
-                continue; // Si le statut existe déjà, on passe à l'itération suivante
+        // Exécution des insertions SQL pour chaque entité
+        foreach ($statuses as $entity => $statusNames) {
+            foreach ($statusNames as $statusName) {
+                DB::table('statuses')->insert([
+                    'status_name' => $statusName,
+                    'entity' => 'control',
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
             }
-            Status::create(['status_name' => $statusName]);
         }
     }
 }

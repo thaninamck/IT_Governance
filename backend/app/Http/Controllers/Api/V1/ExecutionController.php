@@ -117,6 +117,19 @@ class ExecutionController extends BaseController
      */
     public function updateExecution(Request $request, Execution $execution)
     {
+        $rules = [
+            'description' => 'sometimes|string',
+            'files' => 'sometimes|array', 
+            'files.*' => 'file|max:10240', 
+            'status_id'
+        ];
+
+        // Validation des données
+        $validator = Validator::make($request->all(), $rules);
+
+        if ($validator->fails()) {
+            return $this->sendError("Validation of data failed", $validator->errors(), 422);
+        }
         
 
     }

@@ -538,7 +538,7 @@ return (
       {true && (
         <div
           className="flex items-center gap-4 justify-end my-5 mr-4 space-x-4"
-          //style={{ display: (userRole === 'admin' || userRole === 'manager') ? 'none' : 'flex' }}
+          style={{ display: (userRole === 'admin' || userRole === 'manager') ? 'none' : 'flex' }}
         >
           {/* Label */}
           <label className="text-gray-900 font-semibold">Owner</label>
