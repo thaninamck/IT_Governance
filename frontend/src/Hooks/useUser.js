@@ -14,6 +14,8 @@ const useUser = () => {
   const [ResetShow, setResetShow] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [selectedApp, setSelectedApp] = useState(null);
+  const [selectedUserToReset, setSelecteduserToReset] = useState({});
+
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   // État pour gérer l'affichage du modal d'ajout d'utilisateur
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -78,7 +80,7 @@ const useUser = () => {
   };
 
   const generateRandomPassword = () => {
-    const length = 10;
+    const length = 12; // Longueur du mot de passe
     const charset =
       "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
     let password = "";
@@ -89,34 +91,32 @@ const useUser = () => {
   };
 
   const handleResetRow = (selectedRow) => {
-    setSelectedAppId(selectedRow.id);
+    setSelecteduserToReset({
+      email:selectedRow.email,
+      new_password: generateRandomPassword(),
+    });
     setResetShow(true);
-    console.log(selectedRow);
+    console.log("aqli i resret",selectedRow);
   };
 
   const handleResetConfirm = async () => {
-    if (selectedAppId !== null) {
-      const selectedUser = filteredRows.find((row) => row.id === selectedAppId);
-      if (!selectedUser) return;
-
-      const newPassword = generateRandomPassword();
-      const userEmail = selectedUser.email;
+    if (selectedUserToReset !== null) {
+      
 
       try {
         setLoading(true);
         setError(null);
 
         // 🔹 Appel API pour mettre à jour le mot de passe
-        await api.post(`/reset-user/${selectedAppId}`, {
-          new_password: newPassword,
-        });
+        console.log("user to reset",selectedUserToReset)
+        await api.post(`/reset-user`, selectedUserToReset);
         //await api.post(`/reset-user/${selectedAppId}`);
         // 🔹 Envoi du mail avec le nouveau mot de passe
         await emailjs.send(
-          "service_ft79mie",
-          "template_f4ojiam",
-          { to_email: userEmail, new_password: newPassword },
-          "oAXuwpg74dQwm0C_s"
+          "service_qm58mng",
+          "template_g520ynb",
+          { email: selectedUserToReset.email, password: selectedUserToReset.new_password },
+          "jhF4FXcRjk6PSE78R"
         );
 
         setFilteredRows((prevRows) =>
@@ -125,7 +125,7 @@ const useUser = () => {
           )
         );
 
-        toast.success("Mot de passe réinitialisé avec succès !");
+        toast.success("Utilisateur réinitialisé avec succès !");
       } catch (error) {
         console.error("Erreur lors de la réinitialisation :", error);
         toast.error("Échec de la réinitialisation du mot de passe.");
@@ -138,7 +138,7 @@ const useUser = () => {
     }
   };
 
-  // Modification d'une mission
+  
   const handleEditRow = (selectedRow) => {
     // const missionToEdit = filteredRows.find(row => row.id === rowId);
     setSelectedApp({ ...selectedRow }); // S'assurer que l'objet est bien copié
@@ -211,10 +211,17 @@ const useUser = () => {
       setLoading(true);
       setError(null);
       const response = await api.post("/insert-user", formattedUser);
+      console.log("response", response);
       setFilteredRows((prevRows) => [
         ...prevRows,
         { id: response.data.user.id, ...newUser },
       ]);
+      await emailjs.send(
+        "service_qm58mng",
+        "template_g520ynb",
+        { email: formattedUser.email, password: formattedUser.password },
+        "jhF4FXcRjk6PSE78R"
+      );
       toast.success("Utilisateur ajouté avec succès !");
     } catch (error) {
       console.log("Erreur lors de l'ajout :", error);

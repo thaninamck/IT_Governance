@@ -43,6 +43,11 @@ Route::middleware(['auth:sanctum', AdminMiddleware::class])
             Route::post('/insert-users', 'storeMultiple');
         });
 
+        Route::controller(AuthController::class)->group(function () {
+            Route::post('/reset-user',  'resetUser');
+
+          });
+
         // Logs
         Route::get('/logs', [LogController::class, 'getUserActivityLogs']);
 

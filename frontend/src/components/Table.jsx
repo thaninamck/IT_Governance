@@ -30,10 +30,10 @@ function ExpandableCell({ value, maxInitialLength = 50, onExpand }) {
 
   // Tronquer le contenu initial
   const displayValue = isExpanded
-    ? value
-    : value.length > maxInitialLength
-    ? value.substring(0, maxInitialLength) + "..."
-    : value;
+  ? value
+  : typeof value === 'string' && value.length > maxInitialLength
+  ? value.substring(0, maxInitialLength) + "..."
+  : value;
 
   return (
     <div
@@ -54,8 +54,8 @@ function ExpandableCell({ value, maxInitialLength = 50, onExpand }) {
       title={!isExpanded ? "Cliquez pour développer" : "Cliquez pour réduire"}
     >
       {displayValue}
-      {value.length > maxInitialLength && (
-        <span
+      {value?.length > maxInitialLength && (
+                <span
           style={{
             color: "blue",
             marginLeft: "2px",

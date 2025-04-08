@@ -53,9 +53,9 @@ function GestionUtilisateur() {
   // Configuration des colonnes de la table
   const columnsConfig2 = [
     //{ field: 'utilisateur', headerName: 'Utilisateur', width: 180, editable: false },
-    { field: "nom", headerName: "Nom", width: 160, editable: true },
-    { field: "prenom", headerName: "Prénom", width: 150, editable: true },
-    { field: "grade", headerName: "Grade", width: 180 },
+    { field: "nom", headerName: "Nom", width: 160, editable: true,expandable: true },
+    { field: "prenom", headerName: "Prénom", width: 150, editable: true ,expandable: true},
+    { field: "grade", headerName: "Grade", width: 180 ,expandable: true},
     {
       field: "email",
       headerName: "Email",
@@ -63,7 +63,7 @@ function GestionUtilisateur() {
       expandable: true,
       maxInitialLength: 20,
     },
-    { field: "contact", headerName: "Contact", width: 200 },
+    { field: "contact", headerName: "Contact", width: 200 ,expandable: true},
     {
       field: "lastPasswordChange",
       headerName: "Dernière modification du mot de passe",
@@ -71,8 +71,8 @@ function GestionUtilisateur() {
       expandable: true,
       maxInitialLength: 20,
     },
-    { field: "dateField", headerName: "Dernière Activité", width: 150 },
-    { field: "dateField1", headerName: "Date d'ajout", width: 130 },
+    { field: "dateField", headerName: "Dernière Activité", width: 150,expandable:true },
+    { field: "dateField1", headerName: "Date d'ajout", width: 130,expandable:true },
     { field: "status", headerName: "Status", width: 140 },
     { field: "actions", headerName: "Actions", width: 80 },
   ];
@@ -143,7 +143,7 @@ const confirmDeleteApp = () => {
         handleResetRow(selectedRow);
       },
       disabled: (selectedRow) => {
-        return !selectedRow || !["Active"].includes(selectedRow.status);
+        return !selectedRow || !["Actif"].includes(selectedRow.status);
       },
     },
     {

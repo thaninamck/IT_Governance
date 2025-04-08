@@ -70,7 +70,11 @@ export const AuthProvider = ({ children }) => {
         setError("Identifiants incorrects.");
       } else if (error.response?.status === 403) {
         setError("Votre compte est temporairement bloqué. Veuillez contacter l'administrateur.");
-      } else {
+      } else if(error.response?.status === 422) {
+        setError(error.response.data.data.password[0])
+      }
+      
+      else {
         setError("Échec de la connexion");
       }
       throw error;
