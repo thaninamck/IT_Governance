@@ -582,6 +582,9 @@ function Matrix({
   };
   const handleAtWorkplanDelete = () => {
     console.log("handleAtWorkplanDelete");
+    setFlattenedData((prevData) =>
+      prevData.filter((row) => !selectedControls.includes(row.id))
+    );
   };
   return (
     <>
