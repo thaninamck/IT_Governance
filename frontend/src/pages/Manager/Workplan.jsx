@@ -8,13 +8,14 @@ import { NotificationDialog } from "../../components/workPlan/NotificationDialog
 import { ConfirmationDialog } from "../../components/workPlan/ConfirmationDialog";
 import { useAuth } from "../../Context/AuthContext";
 const Workplan = () => {
-  const [appDuplicationDialogOpen, setappDuplicationDialogOpen] = useState(false);
+  const [appDuplicationDialogOpen, setappDuplicationDialogOpen] =
+    useState(false);
   const [startWithriskDialogOpen, setstartWithriskDialogOpen] = useState(false);
-  const [startWithCntrlDialogOpen, setstartWithCntrlDialogOpen] =useState(false);
-  const [openConfirmationDialog, setopenConfirmationDialog] =useState(false);
-  const [openErrorDialog, setopenErrorDialog] =useState(false);
-  const [layerWithoutControl, setlayerWithoutControl] =useState("");
-
+  const [startWithCntrlDialogOpen, setstartWithCntrlDialogOpen] =
+    useState(false);
+  const [openConfirmationDialog, setopenConfirmationDialog] = useState(false);
+  const [openErrorDialog, setopenErrorDialog] = useState(false);
+  const [layerWithoutControl, setlayerWithoutControl] = useState("");
 
   const [appNodes, setAppNodes] = useState([]);
   const [edges, setEdges] = useState([]);
@@ -24,46 +25,43 @@ const Workplan = () => {
   const appEmpty = application?.id === undefined || application?.id === null;
   useEffect(() => {
     console.log("Nouvelle valeur de application:", application);
-  }, [application]);//juste pour surveiller l'app
+  }, [application]); //juste pour surveiller l'app
 
-  
-    // Charger l'état sauvegardé au montage
-    useEffect(() => {
-      const savedNodes = JSON.parse(window.localStorage.getItem("appNodes")) || [];
-      const savedEdges = JSON.parse(window.localStorage.getItem("edges")) || [];
-      const savedApp = JSON.parse(window.localStorage.getItem("application")) || {};
-      console.log("savedNodes",savedNodes);
-      setAppNodes(savedNodes);
-      setEdges(savedEdges);
-      setApplication(savedApp);
-    }, []);
-  
-    // Sauvegarder l'état à chaque modification
-    useEffect(() => {
-      window.localStorage.setItem("appNodes", JSON.stringify(appNodes));
-    }, [appNodes]);
-  
-    useEffect(() => {
-      window.localStorage.setItem("edges", JSON.stringify(edges));
-    }, [edges]);
-  
-    useEffect(() => {
-      window.localStorage.setItem("application", JSON.stringify(application));
-    }, [application]);
-  
-  
+  // Charger l'état sauvegardé au montage
+  useEffect(() => {
+    const savedNodes =
+      JSON.parse(window.localStorage.getItem("appNodes")) || [];
+    const savedEdges = JSON.parse(window.localStorage.getItem("edges")) || [];
+    const savedApp =
+      JSON.parse(window.localStorage.getItem("application")) || {};
+    console.log("savedNodes", savedNodes);
+    setAppNodes(savedNodes);
+    setEdges(savedEdges);
+    setApplication(savedApp);
+  }, []);
 
-  
+  // Sauvegarder l'état à chaque modification
+  useEffect(() => {
+    window.localStorage.setItem("appNodes", JSON.stringify(appNodes));
+  }, [appNodes]);
+
+  useEffect(() => {
+    window.localStorage.setItem("edges", JSON.stringify(edges));
+  }, [edges]);
+
+  useEffect(() => {
+    window.localStorage.setItem("application", JSON.stringify(application));
+  }, [application]);
+
   const deleteItemsInApplication = (idsToDelete = []) => {
     if (!application) return;
-  
+
     setApplication((prevApp) => {
       // Vérifier si l'application elle-même doit être supprimée
       if (idsToDelete.includes(prevApp.id)) {
-
         return {}; // Supprime toute l'application
       }
-  
+
       // Filtrage des layers
       const filteredLayers = prevApp.layers
         .filter((layer) => !idsToDelete.includes(layer.id))
@@ -78,18 +76,16 @@ const Workplan = () => {
               ),
             })),
         }));
-  
-  
-      return  { ...prevApp, layers: filteredLayers };
+
+      return { ...prevApp, layers: filteredLayers };
     });
   };
-  
 
-  const addApplicationWithLayers = (id, description, layers,owner) => {
+  const addApplicationWithLayers = (id, description, layers, owner) => {
     setApplication({
       id: id,
       description: description,
-      owner:owner,
+      owner: owner,
       layers: layers.map((layer) => ({
         id: layer.id,
         name: layer.name,
@@ -99,75 +95,96 @@ const Workplan = () => {
   };
 
   // Fonction pour ajouter un risque dans une couche spécifique de l'application courante
-  const addRiskToLayer = (idLayer, riskID, riskName, riskDescription,riskCode) => {
+  const addRiskToLayer = (
+    idLayer,
+    riskID,
+    riskName,
+    riskDescription,
+    riskCode
+  ) => {
     if (!application) return; // Vérifie qu'une application existe
 
     setApplication((prevApp) => ({
-        ...prevApp,
-        layers: prevApp.layers.map((layer) =>
-            layer.id === idLayer
-                ? {
-                    ...layer,
-                    risks: layer.risks.some(risk => risk.id === riskID)
-                        ? layer.risks // Ne rien ajouter si le risque existe déjà
-                        : [
-                            ...layer.risks,
-                            { id: riskID, nom: riskName,code:riskCode ,description: riskDescription, owner: "", controls: [] }
-                        ],
-                }
-                : layer
-        ),
+      ...prevApp,
+      layers: prevApp.layers.map((layer) =>
+        layer.id === idLayer
+          ? {
+              ...layer,
+              risks: layer.risks.some((risk) => risk.id === riskID)
+                ? layer.risks // Ne rien ajouter si le risque existe déjà
+                : [
+                    ...layer.risks,
+                    {
+                      id: riskID,
+                      nom: riskName,
+                      code: riskCode,
+                      description: riskDescription,
+                      owner: "",
+                      controls: [],
+                    },
+                  ],
+            }
+          : layer
+      ),
     }));
-};
+  };
 
-
-  const addControlToRisk = (idLayer, idRisk, cntrlID, cntrlDescription, majorProcess, subProcess,  testScript,type,code) => {
+  const addControlToRisk = (
+    idLayer,
+    idRisk,
+    cntrlID,
+    cntrlDescription,
+    majorProcess,
+    subProcess,
+    testScript,
+    type,
+    code
+  ) => {
     if (!application) return; // Vérifie qu'une application existe
 
     setApplication((prevApp) => ({
-        ...prevApp,
-        layers: prevApp.layers.map((layer) =>
-            layer.id === idLayer
-                ? {
-                    ...layer,
-                    risks: layer.risks.map((risk) =>
-                        risk.id === idRisk
-                            ? {
-                                ...risk,
-                                controls: risk.controls.some(control => control.id === cntrlID)
-                                    ? risk.controls // Ne rien ajouter si le contrôle existe déjà
-                                    : [
-                                        ...risk.controls,
-                                        { 
-                                            id: cntrlID, 
-                                            description: cntrlDescription, 
-                                            majorProcess, 
-                                            subProcess, 
-                                            type,
-                                            testScript,
-                                            code,
+      ...prevApp,
+      layers: prevApp.layers.map((layer) =>
+        layer.id === idLayer
+          ? {
+              ...layer,
+              risks: layer.risks.map((risk) =>
+                risk.id === idRisk
+                  ? {
+                      ...risk,
+                      controls: risk.controls.some(
+                        (control) => control.id === cntrlID
+                      )
+                        ? risk.controls // Ne rien ajouter si le contrôle existe déjà
+                        : [
+                            ...risk.controls,
+                            {
+                              id: cntrlID,
+                              description: cntrlDescription,
+                              majorProcess,
+                              subProcess,
+                              type,
+                              testScript,
+                              code,
 
-                                            owner: "" 
-                                        }
-                                    ],
-                            }
-                            : risk
-                    ),
-                }
-                : layer
-        ),
+                              owner: "",
+                            },
+                          ],
+                    }
+                  : risk
+              ),
+            }
+          : layer
+      ),
     }));
 
     console.log("l'application mise à jour", application);
-};
-
+  };
 
   const addToDataStructure = (application) => {
-    
     console.log("Ajout de l'application :", application);
 
     setDataStructure((prevApp) => {
-
       const updatedStructure = {
         ...prevApp,
         applications: [...prevApp.applications, application],
@@ -185,39 +202,39 @@ const Workplan = () => {
   const onRiskDragStart = (event, items) => {
     console.log(items);
     event.dataTransfer.setData("application/json", JSON.stringify(items));
-    console.log("risks dragged here",items);
+    console.log("risks dragged here", items);
   };
 
   const handleAddAppClick = () => {
     const layerWithoutControl = application.layers.find((layer) =>
       layer.risks.every((risk) => risk.controls.length === 0)
     );
-  
+
     if (layerWithoutControl) {
-      setopenErrorDialog( true);
-      setlayerWithoutControl(layerWithoutControl.name)
-       
-      
+      setopenErrorDialog(true);
+      setlayerWithoutControl(layerWithoutControl.name);
+
       //alert(`La couche '${layerWithoutControl.name}' n'a pas de contrôle. Veuillez en ajouter avant de continuer.`);
-      return ;
+      return;
     }
     addToDataStructure(application);
     //setExistedAppVerified(false);
     setAppNodes([]);
-    setEdges([])
-    setApplication({})
+    setEdges([]);
+    setApplication({});
   };
 
-  const   handleopenConfirmationDialog  = () => {
-    setopenConfirmationDialog(true)
-    
+  const handleopenConfirmationDialog = () => {
+    setopenConfirmationDialog(true);
   };
-  
+
   const onRiskDrop = (event, layerId) => {
     event.preventDefault();
-    const risksData = JSON.parse(event.dataTransfer.getData("application/json"));
-  
-   if (!Array.isArray(risksData)) {
+    const risksData = JSON.parse(
+      event.dataTransfer.getData("application/json")
+    );
+
+    if (!Array.isArray(risksData)) {
       console.warn("Dropped data is not an array of risks");
       return;
     }
@@ -227,16 +244,22 @@ const Workplan = () => {
         setstartWithriskDialogOpen(true);
         return; // Bloque l'ajout
       }
-  
+
       if (!layerId || !riskData) {
         console.warn("Layer ID or Risk Data not found");
         return;
       }
-  
-      addRiskToLayer(layerId, riskData.idRisk, riskData.nom, riskData.description,riskData.code);
+
+      addRiskToLayer(
+        layerId,
+        riskData.idRisk,
+        riskData.nom,
+        riskData.description,
+        riskData.code
+      );
       const x = event.clientX;
       const y = event.clientY + index * 50; // Adjust position for each risk
-  
+
       // Créer le nœud du risque
       const newRiskNode = {
         id: layerId + "_" + riskData.idRisk,
@@ -248,15 +271,15 @@ const Workplan = () => {
             onControlDrop(event, riskData.idRisk, layerId),
         },
       };
-  
+
       // Créer l'edge entre la couche et le risque
       const newEdge = {
-        id: `e-${layerId}-${layerId+"_"+riskData.idRisk}`,
+        id: `e-${layerId}-${layerId + "_" + riskData.idRisk}`,
         source: layerId,
         target: layerId + "_" + riskData.idRisk,
         label: "",
       };
-  
+
       // Mettre à jour les states
       setAppNodes((prevNodes) => [...prevNodes, newRiskNode]);
       setEdges((prevEdges) => [...prevEdges, newEdge]);
@@ -270,30 +293,32 @@ const Workplan = () => {
 
   const onControlDrop = (event, riskId, layerId) => {
     event.preventDefault();
-    let controlsData = JSON.parse(event.dataTransfer.getData("application/json"));
-  
+    let controlsData = JSON.parse(
+      event.dataTransfer.getData("application/json")
+    );
+
     console.log("Dropped data:", controlsData);
-  
+
     // Ensure controlsData is an array
     if (!Array.isArray(controlsData)) {
       controlsData = [controlsData];
     }
-  
+
     controlsData.forEach((controlData, index) => {
       const isCntrl = controlData && "idCntrl" in controlData;
       if (!isCntrl) {
         setstartWithCntrlDialogOpen(true);
         return; // Bloque l'ajout
       }
-  
+
       if (!riskId || !controlData) {
         console.warn("Risk ID or Control Data not found");
         return;
       }
-  
+
       const x = event.clientX;
       const y = event.clientY + index * 50; // Adjust position for each control
-  
+
       // Créer le nœud du contrôle
       const newControlNode = {
         id: `${layerId}_${riskId}_${controlData.idCntrl}_${index}`, // Ensure unique ID
@@ -301,7 +326,7 @@ const Workplan = () => {
         position: { x: x + 500, y: y + 5 * 100 },
         data: { controlData },
       };
-  
+
       // Créer l'edge entre le risque et le contrôle
       const newEdge = {
         id: `e-${riskId}-${layerId}_${riskId}_${controlData.idCntrl}_${index}`, // Ensure unique ID
@@ -309,7 +334,7 @@ const Workplan = () => {
         target: `${layerId}_${riskId}_${controlData.idCntrl}_${index}`,
         label: "",
       };
-  
+
       // Mettre à jour les states
       setAppNodes((prevNodes) => [...prevNodes, newControlNode]);
       setEdges((prevEdges) => [...prevEdges, newEdge]);
@@ -344,7 +369,12 @@ const Workplan = () => {
     }
 
     //console.log("Ajout de l'application :", data);
-    addApplicationWithLayers(data.id, data.description, data.layers,data.owner);
+    addApplicationWithLayers(
+      data.id,
+      data.description,
+      data.layers,
+      data.owner
+    );
     const x = event.clientX;
     const y = event.clientY;
 
@@ -366,7 +396,6 @@ const Workplan = () => {
         onRiskDrop: (event) => onRiskDrop(event, layer.id),
       },
     }));
-
 
     // Créer les edges entre l'application et ses couches
     const newEdges = data.layers.map((layer) => ({
@@ -407,11 +436,10 @@ const Workplan = () => {
     { id: "e1-3", source: "1", target: "3", label: "Relation A-C" },
   ];
 
-
   const handleSaveexecutions = (data) => {
-    console.log("Bouton cliqué dans l'enfant !",data);
-};
-const { user} = useAuth();
+    console.log("Bouton cliqué dans l'enfant !", data);
+  };
+  const { user } = useAuth();
   return (
     <main className="min-h-screen">
       <div className="flex flex-col w-full bg-white min-h-screen overflow-hidden">
@@ -435,7 +463,6 @@ const { user} = useAuth();
               deleteItemsInApplication={deleteItemsInApplication}
             />
             <div className=" z-50 absolute bg-transparent bottom-0 right-0 w-auto h-auto ">
-             
               <button
                 className={
                   appEmpty
@@ -481,23 +508,28 @@ const { user} = useAuth();
         />
       )}
 
-{openErrorDialog && (
+      {openErrorDialog && (
         <NotificationDialog
           message={`La couche '${layerWithoutControl}' n'a pas de contrôle. Veuillez en ajouter avant de continuer.`}
           open={openErrorDialog}
           setOpen={setopenErrorDialog}
-
         />
       )}
 
-{openConfirmationDialog && (
-        <ConfirmationDialog onConfirm={handleAddAppClick} open={openConfirmationDialog} setOpen={setopenConfirmationDialog} appname={application.description}/>
+      {openConfirmationDialog && (
+        <ConfirmationDialog
+          onConfirm={handleAddAppClick}
+          open={openConfirmationDialog}
+          setOpen={setopenConfirmationDialog}
+          appname={application.description}
+        />
       )}
 
-
       <div className="bg-white  min-h-screen p-2 text-center">
-        
-        <Matrix  data={dataStructure} handleSaveexecutions={handleSaveexecutions}></Matrix>
+        <Matrix
+          data={dataStructure}
+          handleSaveexecutions={handleSaveexecutions}
+        ></Matrix>
       </div>
     </main>
   );
