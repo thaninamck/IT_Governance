@@ -179,6 +179,8 @@ Route::middleware(['auth:sanctum', AdminMiddleware::class])
     ->group(function () {
         Route::controller(ExecutionController::class)->group(function () {
             Route::get('/missions/{mission}/executions-for-tester', 'getExecutionsByMissionAndTester');
+            Route::put('/executions/update-execution/{execution}', 'updateExecution');
+            Route::put('/executions/launch-execution/{execution}', 'launchExecution');
 
         });
     });
@@ -314,3 +316,7 @@ Route::prefix('v1')->controller(ClientController::class)->group(function() {
 Route::put('/updateclientID/{id}', 'updateClient');
 
 });
+
+
+// Route::put('executions/update-execution/{execution}', [ExecutionController::class, 'updateExecution']);
+// Route::put('executions/launch-execution/{execution}', [ExecutionController::class, 'launchExecution']);

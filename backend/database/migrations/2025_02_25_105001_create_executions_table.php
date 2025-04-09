@@ -13,7 +13,7 @@ return new class extends Migration {
         Schema::create('executions', function (Blueprint $table) {
             $table->id();
             $table->string('cntrl_modification', 255)->nullable();
-            $table->string('remark', 255)->nullable();
+            $table->string('comment', 255)->nullable();
             $table->string('control_owner', 255)->nullable();
              $table->date('launched_at')->nullable();
             $table->boolean('ipe')->default(false);
