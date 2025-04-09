@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\V1\EvidenceController;
 use App\Http\Controllers\Api\V1\ExecutionController;
 use App\Http\Controllers\Api\V1\ParticipationController;
 use App\Http\Middleware\AdminMiddleware;
@@ -183,8 +184,12 @@ Route::middleware(['auth:sanctum', AdminMiddleware::class])
             Route::put('/executions/launch-execution/{execution}', 'launchExecution');
 
         });
+        Route::controller(EvidenceController::class)->group(function () {
+            Route::delete('/evidences/delete-execution/{delete}', 'deleteEvidence');
+
+        });
     });
-    Route::post('/evidences/upload', [ExecutionController::class,'storeFile']);
+    //Route::post('/evidences/upload', [ExecutionController::class,'storeFile']);
 Route::post('/login', [AuthController::class, 'login'])->middleware(CheckPasswordReset::class);
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
 Route::post('/changePassword', [AuthController::class, 'forceUpdatePassword'])->middleware('auth:sanctum');

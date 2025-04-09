@@ -8,7 +8,7 @@ class EvidenceRepository
     {
         
         // Créer l'enregistrement en BDD
-        return Evidence::create([
+        return Evidence::firstOrCreate([
             'file_name' => $fileName,
             'is_f_test' => $data['is_f_test'] ?? false,
             'execution_id' => $data['execution_id'] ?? null,
