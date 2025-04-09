@@ -147,4 +147,18 @@ class ExecutionRepository
         );
         
     }
+
+    public function updateExecution($executionId, $executionData)
+{
+    $execution = Execution::findOrFail($executionId); 
+    $execution->update($executionData);
+
+    return $execution;
+}
+
+public function updateAnExecutionRaw($executionId,$raw){
+    $execution=Execution::find($executionId);
+    return $execution->update($raw)  ? true : false;
+    }
+
 }

@@ -10,12 +10,14 @@ class ExecutionService
 {
     protected ExecutionRepository $executionRepository;
     protected CntrlRiskCovRepository $covRepository;
+    protected EvidenceService $evidenceService;
 
 
-    public function __construct(ExecutionRepository $executionRepository, CntrlRiskCovRepository $covRepository)
+    public function __construct( EvidenceService $evidenceService,ExecutionRepository $executionRepository, CntrlRiskCovRepository $covRepository)
     {
         $this->executionRepository =$executionRepository;
         $this->covRepository =$covRepository;
+        $this->evidenceService = $evidenceService;
         
     }
 
@@ -76,4 +78,42 @@ class ExecutionService
     }
 
     
+    public function updateExecution($executionId, $data)
+{
+    $executionData = [
+        'id' => $executionId,
+        'cntrl_modification' => $data['description'],
+        'ipe' => $data['ipe'],
+        'design' => $data['design'],
+        'effectiveness' => $data['effectiveness'],
+        'status_id' => $data['status_id'],
+        'comment' => $data['comment'],
+    ];
+
+    // Mise à jour de l'exécution
+    $execution = $this->executionRepository->updateExecution($executionId, $executionData);
+
+    if ($execution) {
+        // Si des fichiers sont envoyés, on les traite
+        if (isset($data['files'])) {
+            // Ajouter `execution_id` à chaque fichier
+            foreach ($data['files'] as &$fileData) {
+                $fileData['execution_id'] = $executionId; // Ajout de l'ID d'exécution à chaque fichier
+            }
+
+            // On envoie les fichiers au service de stockage
+            $this->evidenceService->storeFiles($data['files']);
+        }
+    }
+}
+
+
+
+public function launchExecution($executionId)
+{
+    $raw=[
+        'launched_at' => now(),
+    ];
+    return $this->executionRepository->updateAnExecutionRaw($executionId , $raw);
+}
 }

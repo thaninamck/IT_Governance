@@ -30,7 +30,7 @@ function AddUserForm({ title, isOpen, loading, onClose, initialValues, onUserCre
 
   const generatePassword = () => {
     const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@#$%&*!';
-    return Array.from({ length: 10 }, () => chars.charAt(Math.floor(Math.random() * chars.length))).join('');
+    return Array.from({ length: 12 }, () => chars.charAt(Math.floor(Math.random() * chars.length))).join('');
   };
 
   useEffect(() => {
@@ -70,22 +70,22 @@ function AddUserForm({ title, isOpen, loading, onClose, initialValues, onUserCre
         user_password: generatedPassword,
       };
 
-      try {
-        const response = await emailjs.send('service_mcpkn9g', 'template_ln3j8zy', templateParams, 'oAXuwpg74dQwm0C_s');
-        if (response.status !== 200) {
-          alert('Échec de l\'envoi de l\'e-mail.');
-          return;
-        }
-      } catch (error) {
-        console.error('Erreur lors de l\'envoi de l\'e-mail :', error);
-        alert('Une erreur est survenue lors de l\'envoi de l\'e-mail.');
-        return;
-      } finally {
-        setInternalLoading(false);
-      }
+      // try {
+      //   const response = await emailjs.send('service_mcpkn9g', 'template_ln3j8zy', templateParams, 'oAXuwpg74dQwm0C_s');
+      //   if (response.status !== 200) {
+      //     alert('Échec de l\'envoi de l\'e-mail.');
+      //     return;
+      //   }
+      // } catch (error) {
+      //   console.error('Erreur lors de l\'envoi de l\'e-mail :', error);
+      //   alert('Une erreur est survenue lors de l\'envoi de l\'e-mail.');
+      //   return;
+      // } finally {
+      //   setInternalLoading(false);
+      // }
     }
 
-    onUserCreated(updatedUser);
+    await onUserCreated(updatedUser);
     onClose();
     setError('');
   };

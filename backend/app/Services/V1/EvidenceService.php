@@ -30,12 +30,17 @@ class EvidenceService
     }
 
 
-    public function storeFiles($data, $files)
+    public function storeFiles($filesData)
 {
     $createdEvidences = [];  
 
-    foreach ($files as $file) {
-        $createdEvidences[] = $this->storeFile($data, $file);
+    foreach ($filesData as $fileData) {
+        $data=[
+            'is_f_test' => $fileData['is_f_test'] ?? false,
+            'execution_id' => $fileData['execution_id'] ?? null,
+            'remediation_id' => $fileData['remediation_id'] ?? null,
+        ];
+        $createdEvidences[] = $this->storeFile($data, $fileData['file']);
     }
 
     return $createdEvidences; 

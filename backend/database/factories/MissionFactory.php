@@ -41,6 +41,7 @@ class MissionFactory extends Factory
         // Trouver ou créer un statut de mission aléatoire
         $status = Status::firstOrCreate([
             'status_name' => $this->faker->randomElement($missionStatuses),
+            'entity'=> 'mission',
         ]);
 
         return [

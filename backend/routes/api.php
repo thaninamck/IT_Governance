@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\V1\EvidenceController;
 use App\Http\Controllers\Api\V1\ExecutionController;
 use App\Http\Controllers\Api\V1\ParticipationController;
 use App\Http\Middleware\AdminMiddleware;
@@ -39,6 +40,11 @@ Route::middleware(['auth:sanctum', AdminMiddleware::class])
             Route::delete('/user/{id}', 'deleteUser');
             Route::post('/insert-users', 'storeMultiple');
         });
+
+        Route::controller(AuthController::class)->group(function () {
+            Route::post('/reset-user',  'resetUser');
+
+          });
 
         // Logs
         Route::get('/logs', [LogController::class, 'getUserActivityLogs']);
@@ -148,11 +154,18 @@ Route::middleware(['auth:sanctum', TesterMiddleware::class])
     ->group(function () {
         Route::controller(ExecutionController::class)->group(function () {
             Route::get('/missions/{mission}/executions-for-tester', 'getExecutionsByMissionAndTester');
+            Route::put('/executions/update-execution/{execution}', 'updateExecution');
+            Route::put('/executions/launch-execution/{execution}', 'launchExecution');
+
+        });
+        Route::controller(EvidenceController::class)->group(function () {
+            Route::delete('/evidences/delete-execution/{delete}', 'deleteEvidence');
 
         });
     });
 
-Route::post('/evidences/upload', [ExecutionController::class,'storeFile']);
+    //Route::post('/evidences/upload', [ExecutionController::class,'storeFile']);
+
 Route::post('/login', [AuthController::class, 'login'])->middleware(CheckPasswordReset::class);
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
 Route::post('/changePassword', [AuthController::class, 'forceUpdatePassword'])->middleware('auth:sanctum');
@@ -312,6 +325,7 @@ Route::prefix('v1')->controller(ClientController::class)->group(function () {
 
 
 
+
 // Route::middleware(['auth:sanctum', AdminMiddleware::class])
 //     ->prefix('v1')
 //     ->group(function () {
@@ -323,3 +337,9 @@ Route::prefix('v1')->controller(ClientController::class)->group(function () {
 //             Route::post('/insertclients', 'storeMultiple');
 //         });
 //     });
+
+
+
+// Route::put('executions/update-execution/{execution}', [ExecutionController::class, 'updateExecution']);
+// Route::put('executions/launch-execution/{execution}', [ExecutionController::class, 'launchExecution']);
+

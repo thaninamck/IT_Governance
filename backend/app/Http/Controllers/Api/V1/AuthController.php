@@ -28,25 +28,32 @@ class AuthController extends BaseController
         try {
             $settings = Setting::pluck('value', 'key')->toArray();
 
+            $minLength = $settings['password_min_length'] ?? 6;
+            $maxLength = $settings['password_max_length'] ?? 255;
+            
             $rules = [
                 'email' => 'required|email',
                 'password' => 'required',
-                 //'captchaValue' => 'required'
             ];
-
-            if (isset($settings['password_min_length'])) {
-                $rules['password'] .= '|min:' . $settings['password_min_length'];
+            
+            $messages = [];
+            
+            if ($minLength) {
+                $rules['password'] .= '|min:' . $minLength;
+                $messages['password.min'] = "Le mot de passe doit avoir au minimuum {$minLength} caracteres.";
             }
-
-            if (isset($settings['password_max_length'])) {
-                $rules['password'] .= '|max:' . $settings['password_max_length'];
+            
+            if ($maxLength) {
+                $rules['password'] .= '|max:' . $maxLength;
+                $messages['password.max'] = "Le mot de passe ne doit pas avoir plus de  {$maxLength} caracteres.";
             }
-
-            $validator = Validator::make($request->all(), $rules);
-
+            
+            $validator = Validator::make($request->all(), $rules, $messages);
+            
             if ($validator->fails()) {
-                return $this->sendError("Validation of data failed", $validator->errors(),422);
+                return $this->sendError("Validation of data failed", $validator->errors(), 422);
             }
+            
 
              //$recaptchaData = $this->recaptchaService->verify($request);
              //if (!$recaptchaData) {
@@ -236,6 +243,40 @@ class AuthController extends BaseController
         $user->update([
             'password' => Hash::make($request->new_password),
             'last_password_change' => now(),
+        ]);
+
+
+        return $this->sendResponse(['Password reset successfully. Please log in again.'], 'Password reset successfully. Please log in again.');
+    }
+
+
+
+    public function resetUser(Request $request)
+    {
+
+        $rules = [
+            'email' => 'required|email|exists:users,email',
+            
+            'new_password' => [
+                'required',
+                'string',
+                        ],
+        ];
+
+        // Validation des données
+        $validator = Validator::make($request->all(), $rules);
+
+        if ($validator->fails()) {
+            return $this->sendError("Validation of data failed", $validator->errors(), 422);
+        }
+
+       
+
+        $user = User::where('email', $request->email)->first();
+        $user->update([
+            'password' => Hash::make($request->new_password),
+            'last_password_change' => null,
+            'must_change_password' => true,
         ]);
 
 
