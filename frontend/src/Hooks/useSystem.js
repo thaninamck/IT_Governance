@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { api } from '../Api';
 
 
-export const useSystem = (missionId, userRole, showForm, onToggleForm) => {
+export const useSystem = (missionId, user, showForm, onToggleForm) => {
   const [applications, setApplications] = useState([]);
   const [isDeletePopupOpen, setIsDeletePopupOpen] = useState(false);
   const [selectedAppId, setSelectedAppId] = useState(null);
@@ -42,6 +42,7 @@ export const useSystem = (missionId, userRole, showForm, onToggleForm) => {
           // Ajout d'une nouvelle application
         const response = await api.post(`/mission/${missionId}/createsystem`, app);
         setApplications(prev => [...prev, response.data]);
+        console.log(response.data)
         setShowDecisionPopup(true);
        
       }

@@ -6,6 +6,7 @@ import Flow from "../../components/workPlan/Flow";
 import useWorkplan from "../../Hooks/useWorkplan";
 import { NotificationDialog } from "../../components/workPlan/NotificationDialog";
 import { ConfirmationDialog } from "../../components/workPlan/ConfirmationDialog";
+import { useAuth } from "../../Context/AuthContext";
 const Workplan = () => {
   const [appDuplicationDialogOpen, setappDuplicationDialogOpen] = useState(false);
   const [startWithriskDialogOpen, setstartWithriskDialogOpen] = useState(false);
@@ -410,12 +411,13 @@ const Workplan = () => {
   const handleSaveexecutions = (data) => {
     console.log("Bouton cliqué dans l'enfant !",data);
 };
+const { user} = useAuth();
   return (
     <main className="min-h-screen">
       <div className="flex flex-col w-full bg-white min-h-screen overflow-hidden">
         {/* Header avec une hauteur de 15% */}
         <div className=" h-[11vh] flex-shrink-0 ">
-          <Header />
+          <Header user={user} />
         </div>
 
         {/* Contenu principal qui prend le reste */}

@@ -281,6 +281,19 @@ public function attachSystem(int $missionId, int $systemId): void
 }
 
 
-
-
+public function getUserMissions($userId)
+{
+    // return Mission::with([
+    //         'client:id,commercial_name',
+    //         'status:id,status_name',
+    //         'participations.user:id,first_name,last_name,email,role',
+    //         'participations.profile:id,profile_name'
+    //     ])
+    //     ->whereHas('participations', function($query) use ($userId) {
+    //         $query->where('user_id', $userId);
+    //     })
+    //     ->get();
+        $missions = Mission::forUser($userId)->get();
+        return $missions;
+}
 }

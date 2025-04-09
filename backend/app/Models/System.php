@@ -10,7 +10,7 @@ class System extends Model
 {
     use HasFactory;
     protected $fillable=[
-        "name","description", "owner_id"
+        "name","description", "owner_id","mission_id"
     ];
     public function layers(){
         return $this->hasMany(Layer::class);

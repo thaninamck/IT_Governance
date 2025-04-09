@@ -38,12 +38,21 @@ const Login = () => {
         captcha: captchaValue,
       });
 
+      // Stockez les infos utilisateur dans le localStorage
+    localStorage.setItem('user', JSON.stringify({
+      role: response.user.role,
+      fullName: response.user.firstName,
+      position: response.user.grade
+    }));
+
       // Rediriger l'utilisateur en fonction de la réponse
       if (response?.must_change_password) {
         navigate("/firstconnection");
-      } else {
-        console.log("response",response);
-        navigate(response?.user.role === "admin" ? "/adminHomePage" : "/missions");
+      // } else if (response?.user.role === "admin")  {
+      //   console.log("response",response);
+      //   navigate( "/adminHomePage");
+      }else{
+        navigate( "/missions");
       }
       
     

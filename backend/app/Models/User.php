@@ -63,6 +63,13 @@ class User extends Authenticatable
     {
         return $this->hasMany(Participation::class);
     }
+
+    public function missions()
+{
+    return $this->belongsToMany(Mission::class, 'participations', 'user_id', 'mission_id')
+                ->withPivot('profile_id')
+                ->withTimestamps();
+}
     public function notifications(): MorphMany
     {
         return $this->morphMany(\Illuminate\Notifications\DatabaseNotification::class, 'notifiable');

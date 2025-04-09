@@ -4,11 +4,13 @@ import "./SideBar.css";
 import icons from "../../assets/Icons";
 import ArrowBackIosNewRoundedIcon from "@mui/icons-material/ArrowBackIosNewRounded";
 import MenuRoundedIcon from "@mui/icons-material/MenuRounded";
+import { useAuth } from "../../Context/AuthContext";
 
-function SideBar({ userRole }) {
+function SideBar({ user }) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
   const navigate = useNavigate();
+  const { logout } = useAuth();
 
   const menuItems = {
     admin: [
@@ -48,14 +50,17 @@ function SideBar({ userRole }) {
   };
   
   // Récupération du menu avec fallback sur 'default' si le rôle n'existe pas
-  const userMenu = menuItems[userRole] || menuItems.default;
+  const userMenu = menuItems[user?.role] || menuItems.default;
       const LogoutIcon = icons["logout"];
     
       const handleNavigation = (path) => {
         setSelectedItem(path); // Marquer l'élément sélectionné
         navigate(path); // Naviguer vers la page correspondante
       };
-  
+      const handleLogout = () => {
+        logout();
+        navigate("/login");
+      };
   return (
     <div className={`sidebar ${isExpanded ? "expanded" : ""}`}>
       <div className="toggle-btn" onClick={() => setIsExpanded(!isExpanded)}>
@@ -69,9 +74,11 @@ function SideBar({ userRole }) {
       {isExpanded && (
         <div className="sidebar-content">
           <div className="user-info">
-            <div className="avatar">LK</div>
-            <h3>Lotfi Koliai</h3>
-            <span>Directeur - Consultant IT</span>
+            <div className="avatar">
+            {user?.fullName?.split(' ').map(n => n[0]).join('')}
+            </div>
+            <h3>{user?.fullName || 'Utilisateur'}</h3>
+            <span>{user?.position || 'Poste non défini'}</span>
           </div>
 
           <nav className="menu">
@@ -95,7 +102,7 @@ function SideBar({ userRole }) {
           </nav>
 
           <div className="logout">
-            <button className="logout-btn">
+            <button className="logout-btn" onClick={handleLogout}>
               {LogoutIcon && <LogoutIcon className="logout-icon" />}
               <span>Se déconnecter</span>
             </button>

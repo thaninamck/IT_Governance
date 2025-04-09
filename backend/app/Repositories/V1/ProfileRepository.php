@@ -2,7 +2,18 @@
 
 namespace App\Repositories\V1;
 
+use App\Models\Profile;
+
 class ProfileRepository
 {
-    // Implémentez vos méthodes ici
+    public function getAllProfiles()
+    {
+        return Profile::all();
+    }
+    public function createProfile(string $name):Profile
+    {
+        return Profile::create($name);
+    }
+
+
 }

@@ -21,22 +21,33 @@ const SingleOptionSelect = ({ placeholder, width, statuses, onChange,checkedStat
   };
 
   // État pour une seule option sélectionnée
-  const [selectedStatus, setSelectedStatus] = React.useState(checkedStatus);
+  const [selectedStatus, setSelectedStatus] = React.useState(checkedStatus || []);
 
+
+  // const handleChange = (event) => {
+  //   const {
+  //     target: { value },
+  //   } = event;
+
+  //   // On conserve le tuple sélectionné (id, status)
+  //   setSelectedStatus(value);
+
+  //   // Appel de la fonction de rappel avec l'ID et le statut sélectionnés
+  //   if (onChange) {
+  //     onChange(value[0], value[1]);
+  //   }
+  // };
   const handleChange = (event) => {
-    const {
-      target: { value },
-    } = event;
-
-    // On conserve le tuple sélectionné (id, status)
+    const { value } = event.target;
+  
+    if (!Array.isArray(value) || value.length < 2) return; // Vérification robuste
+    
     setSelectedStatus(value);
-
-    // Appel de la fonction de rappel avec l'ID et le statut sélectionnés
     if (onChange) {
       onChange(value[0], value[1]);
     }
   };
-
+  
   return (
     <div>
       <FormControl

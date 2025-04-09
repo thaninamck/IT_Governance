@@ -68,11 +68,12 @@ class SystemService
         $system = $this->systemRepository->createSystem([
             'name' => $data['name'],
             'description' => $data['description'],
-            'owner_id' => $owner->id
+            'owner_id' => $owner->id,
+            'mission_id' => $missionId,
         ]);
 
         // Associer au système à la mission
-        $this->missionRepository->attachSystem($missionId, $system->id);
+       // $this->missionRepository->attachSystem($missionId, $system->id);
 
 // Créer les layers et les associer au système
 $layers = [];

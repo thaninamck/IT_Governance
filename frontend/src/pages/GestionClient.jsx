@@ -12,9 +12,11 @@ import DecisionPopUp from '../components/PopUps/DecisionPopUp';
 import ExportButton from '../components/ExportButton';
 import { PermissionRoleContext } from '../Context/permissionRoleContext';
 import useClient from '../Hooks/useClient';
+import { useAuth } from '../Context/AuthContext';
 
 
 function GestionClient() {
+    const { user} = useAuth();
     // Configuration des colonnes pour la table
     const columnsConfig = [
         { field: 'commercialName', headerName: 'Nom', width: 250 },
@@ -47,7 +49,7 @@ function GestionClient() {
     } = useClient();
 
     // Accédez à userRole et setUserRole via le contexte
-    const { userRole } = useContext(PermissionRoleContext);
+   // const { userRole } = useContext(PermissionRoleContext);
 
     // Actions pour la table
     const rowActions = [
@@ -61,12 +63,12 @@ function GestionClient() {
     return (
         <div className="flex">
             {/* Barre latérale */}
-            <SideBar userRole={userRole} className="flex-shrink-0 h-full fixed" />
+            <SideBar user={user} className="flex-shrink-0 h-full fixed" />
 
             {/* Contenu principal */}
             <div className="flex-1 flex flex-col h-screen overflow-y-auto">
                 <HeaderBis />
-                <HeaderWithAction title="Client" buttonLabel="Créer un Client" onButtonClick={openModal} userRole={userRole} />
+                <HeaderWithAction title="Client" buttonLabel="Créer un Client" onButtonClick={openModal} user={user} />
 
                 {/* Barre de recherche */}
                 <div className="flex items-center justify-center mb-6">

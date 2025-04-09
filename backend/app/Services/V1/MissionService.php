@@ -20,6 +20,7 @@ class MissionService
     {
         return $this->missionRepository->getAllMissions();
     }
+
     public function getMembersByMission($missionId)
 {
     $mission = $this->missionRepository->getMembersByMission($missionId);
@@ -34,12 +35,15 @@ class MissionService
         'start_date' => $mission->start_date,
         'end_date' => $mission->end_date,
         'client_id' => $mission->client_id,
+        'clientName' => $mission->client->commercial_name,
         'status_id' => $mission->status_id,
         'members' => $mission->participations->map(function ($participation) {
             return [
-                'id' => $participation->user->id,
+                'id' => $participation->id,
+                'userId'=>$participation->user->id,
                 'first_name' => $participation->user->first_name,
                 'last_name' => $participation->user->last_name,
+                'full_name' => $participation->user->first_name . ' ' . $participation->user->last_name,
                 'email' => $participation->user->email,
                 'profile' => [
                     'id' => $participation->profile->id,
@@ -172,5 +176,37 @@ public function getMissionSystemsById($id){
     }
 
 
-    
+    public function getUserMissions($userId)
+{
+    $missions = $this->missionRepository->getUserMissions($userId);
+
+    return $missions->map(function ($mission) use ($userId) {
+        // Trouver la participation de l'utilisateur courant
+        $userParticipation = $mission->participations->firstWhere('user_id', $userId);
+        $profile_name=$userParticipation->profile;
+        
+        return [
+            'id' => $mission->id,
+            'missionName' => $mission->mission_name,
+            'clientId' => $mission->client_id,
+            'clientName' => $mission->client->commercial_name,
+            'startDate' => $mission->start_date,
+            'endDate' => $mission->end_date,
+            'auditStartDate' => $mission->audit_start_date,
+            'auditEndDate' => $mission->audit_end_date,
+            'statusId' => $mission->status_id,
+            'status' => $mission->status->status_name,
+            'profileName' => $profile_name->profile_name,
+            // Conserver les autres participations si nécessaire
+            // 'participations' => $mission->participations->map(function ($participation) {
+            //     return [
+            //         'profile' => [
+            //             'id' => $participation->profile->id,
+            //             'profileName' => $participation->profile->profile_name
+            //         ]
+            //     ];
+            // })->toArray()
+        ];
+    })->toArray();
+}
 }

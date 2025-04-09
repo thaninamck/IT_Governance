@@ -22,10 +22,16 @@ import { Snackbar } from "@mui/material";
 import ImportCsvButton from "../components/ImportXcelButton";
 import StatusMission from "../components/StatusMission";
 import useGestionMission from "../Hooks/useGestionMission";
+import { useAuth } from "../Context/AuthContext";
+import { useNavigate } from "react-router-dom";
+import SideBarStdr from "../components/sideBar/SideBarStdr";
 
 
 
 function GestionMission() {
+  const navigate = useNavigate();
+ const { user} = useAuth();
+ 
 
   const {
     rowsData2,
@@ -40,7 +46,7 @@ function GestionMission() {
     snackbarMessage,
     pendingActions,
     activeView,
-    userRole,
+   // user,
     setActiveView,
     setIsModalOpen,
     setIsEditModalOpen,
@@ -62,13 +68,17 @@ function GestionMission() {
     handlePopupClose,
     isMissionCreated,
     handleRowClick,
-  } = useGestionMission();
+  } = useGestionMission(user);
 
+  console.log(user)
   // Colonnes de la table
   const columnsConfig2 = [
     { field: "clientName", headerName: "Client", width: 170 },
     { field: "missionName", headerName: "Mission", width: 170 },
-    { field: "manager", headerName: "Manager", width: 200 },
+    ...(user?.role === "admin" 
+      ? [{ field: "manager", headerName: "Manager", width: 200 }]
+      : [{ field: "profileName", headerName: "Profile", width: 150 }]
+  ),
     { field: "startDate", headerName: "Date de début", width: 150 },
     { field: "endDate", headerName: "Date fin", width: 150 },
     {
@@ -94,7 +104,7 @@ function GestionMission() {
 
   // Actions sur les lignes de la table
   const rowActions = [
-    ...(userRole === "admin"
+    ...(user?.role === "admin" 
       ? [
           {
             icon: <ArchiveRoundedIcon sx={{ marginRight: "5px" }} />,
@@ -112,7 +122,7 @@ function GestionMission() {
       disabled: (selectedRow) =>
         !selectedRow || !["en_cours", "en_retard"].includes(selectedRow.status),
     },
-    ...(userRole === "admin"
+    ...(user?.role === "admin" 
       ? [
           {
             icon: <HighlightOffRoundedIcon sx={{ marginRight: "5px" }} />,
@@ -124,7 +134,7 @@ function GestionMission() {
           },
         ]
       : []),
-    ...(userRole === "admin"
+    ...(user?.role === "admin" 
       ? [
           {
             icon: (selectedRow) =>
@@ -146,7 +156,7 @@ function GestionMission() {
       label: "Modifier",
       onClick: handleEditRow,
     },
-    ...(userRole === "admin"
+    ...(user?.role === "admin" 
       ? [
           {
             icon: (
@@ -167,16 +177,23 @@ function GestionMission() {
       onClick: handleViewReport,
     },
   ];
+
+  console.log(missionsToDisplay)
   return (
     <div className="flex">
-      <SideBar userRole={userRole} className="flex-shrink-0 h-full fixed" />
+      {user?.role === "admin" ? (
+        <SideBar user={user} />
+      ) : (
+        <SideBarStdr user={user} />
+      )}
+      
       <div className="flex-1 flex flex-col h-screen overflow-y-auto">
         <HeaderBis />
         <HeaderWithAction
           title="Missions"
           buttonLabel="Créer une mission"
            onButtonClick={() => setIsModalOpen(true)}
-          userRole={userRole}
+        user={user}
         />
         <div className="flex items-center justify-center mb-6">
           <SearchBar
@@ -195,7 +212,7 @@ function GestionMission() {
         </div>
 
         {/* Boutons pour basculer entre les vues */}
-        {userRole === 'admin' &&
+        {user?.role === "admin"  &&
           <div className="flex border-b-2 border-gray-300 mb-3 ml-8 ">
             <button
               className={`px-4 py-2 ${activeView === "active"
@@ -305,7 +322,6 @@ function GestionMission() {
           />
         </div>
       )}
-
 
 
     </div>

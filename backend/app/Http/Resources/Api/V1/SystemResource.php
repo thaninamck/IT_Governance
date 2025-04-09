@@ -18,6 +18,8 @@ class SystemResource extends JsonResource
             'id'=>$this->id,
             'name'=>$this->name,
             'description'=>$this->description,
+            'missionId'=>$this->mission_id,
+           // 'missionName'=>$this->mission->mission_name,
             'ownerId'=>$this->owner_id,
             'ownerName' => $this->owner->full_name ?? 'N/A', // Ajout d'une valeur par défaut
         'ownerContact' => $this->owner->email ?? 'N/A',  // Ajout d'une valeur par défaut

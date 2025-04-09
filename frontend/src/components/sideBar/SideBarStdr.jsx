@@ -4,17 +4,20 @@ import "./SideBar.css";
 import icons from "../../assets/Icons";
 import ArrowBackIosNewRoundedIcon from "@mui/icons-material/ArrowBackIosNewRounded";
 import MenuRoundedIcon from "@mui/icons-material/MenuRounded";
+import { useAuth } from "../../Context/AuthContext";
 
 
-function SideBarStdr() {
+function SideBarStdr({user}) {
     const [isExpanded, setIsExpanded] = useState(false);
     const [selectedItem, setSelectedItem] = useState(null);
     const navigate = useNavigate();
+     const { logout } = useAuth();
   
     const menuItems = [
           { key: "profile", label: "Profile", path: "/myprofile" },
           { key: "missions", label: "Mes missions", path: "/missions" },
-          { key: "settings", label: "Paramètres", path: "/settings" }
+          { key: "notification", label: "Notification", path: "/notification" },
+      
         ]
       
       // Récupération du menu avec fallback sur 'default' si le rôle n'existe pas
@@ -26,6 +29,10 @@ function SideBarStdr() {
           setSelectedItem(path); // Marquer l'élément sélectionné
           navigate(path); // Naviguer vers la page correspondante
         };
+        const handleLogout = () => {
+            logout();
+            navigate("/login");
+          };
     
     return (
       <div className={`sidebar ${isExpanded ? "expanded" : ""}`}>
@@ -40,10 +47,12 @@ function SideBarStdr() {
         {isExpanded && (
           <div className="sidebar-content">
             <div className="user-info">
-              <div className="avatar">LK</div>
-              <h3>Lotfi Koliai</h3>
-              <span>Directeur - Consultant IT</span>
-            </div>
+              <div className="avatar">
+              {user?.fullName?.split(' ').map(n => n[0]).join('')}
+              </div>
+              <h3>{user?.fullName || 'Utilisateur'}</h3>
+            <span>{user?.position || 'Poste non défini'}</span>
+          </div>
   
             <nav className="menu">
               <ul>
@@ -66,7 +75,7 @@ function SideBarStdr() {
             </nav>
   
             <div className="logout">
-              <button className="logout-btn">
+              <button className="logout-btn" onClick={handleLogout}>
                 {LogoutIcon && <LogoutIcon className="logout-icon" />}
                 <span>Se déconnecter</span>
               </button>

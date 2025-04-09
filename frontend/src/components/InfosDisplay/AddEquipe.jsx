@@ -1,28 +1,51 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import SingleOptionSelect from '../Selects/SingleOptionSelect';
+import { api } from '../../Api';
+import useUser from '../../Hooks/useNotification';
 
-const AddEquipe = ({ onAddCollaborators }) => {
+const AddEquipe = ({ missionId, onMemberAdded }) => {
   const [collaborators, setCollaborators] = useState([]); // Liste des collaborateurs
   const [errors, setErrors] = useState({});
 
   // Données pour les membres et les rôles
-  const members = [
-    [1, 'Azyadi Zouaghi'],
-    [2, 'Sara Lounes'],
-    [3, 'Kamelia Toubal'],
-    [4, 'Houda Elmaouhab'],
-    [5, 'Manel Mohand Ouali'],
-    [6, 'Thanina Mecherak'],
-    [7, 'Ikram Berihi'],
-    [8, 'Selma Boughoufalah'],
-  ];
+  const [members, setMembers] = useState([]);
 
-  const roles = [
-    [1, 'Manager'],
-    [2, 'Supeviseur'],
-    [3, 'Testeur'],
-  ];
+  const [profiles, setProfiles] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+useEffect(() => {
+  const fetchData = async () => {
+    try {
+      setLoading(true);
+      
+      // 1. Récupérer les utilisateurs
+      const usersResponse = await api.get('/users');
+      const formattedMembers = usersResponse.data.map(user => [
+        user.id,
+        `${user.firstName} ${user.lastName}` // Format: [id, "Prénom Nom"]
+      ]);
+      setMembers(formattedMembers);
+      
+      // 2. Récupérer les profils
+      const profilesResponse = await api.get('/getprofils');
+      const formattedProfiles = profilesResponse.data.map(profile => [
+        profile.id,
+        profile.profileName || profile.profile_name
+      ]);
+      setProfiles(formattedProfiles);
+      
+    } catch (err) {
+      setError(err.message);
+      console.error("Erreur lors du chargement des données:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchData();
+}, []);
 
   // Ajouter un collaborateur vide à la liste
   const handleAddCollaborator = () => {
@@ -57,8 +80,6 @@ const AddEquipe = ({ onAddCollaborators }) => {
     setErrors(newErrors);
   };
 
-
-  
   // Mettre à jour la sélection d'un membre pour un collaborateur spécifique
   const handleMemberChange = (index, id, name) => {
     const updatedCollaborators = [...collaborators];
@@ -77,7 +98,8 @@ const AddEquipe = ({ onAddCollaborators }) => {
 
   
 // Soumission des collaborateurs
-const handleSubmit = () => {
+const handleSubmit = async () => {
+
   if (Object.keys(errors).length > 0) {
     alert("Corrigez les erreurs avant de soumettre.");
     return;
@@ -88,15 +110,41 @@ const handleSubmit = () => {
     return;
   }
 
-  const formattedCollaborators = collaborators.map(c => ({
-    membre: c.member.name,
-    role: c.role.name,
-  }));
+  // const formattedCollaborators = collaborators.map(c => ({
+  //   membre: c.member.name,
+  //   role: c.role.name,
+  // }));
 
-  
-    onAddCollaborators(formattedCollaborators);
-    setCollaborators([]); // Réinitialiser après soumission
-    setErrors({}); // Réinitialisation des erreurs
+  try {
+    const membersToAdd = collaborators.map(c => ({
+      user_id: c.member.id,
+      profile_id: c.role.id
+    }));
+
+    const response = await api.post(`/missions/${missionId}/createmembers`, {
+      members: membersToAdd
+    });
+
+    // Formatage correct pour DisplayEquipe
+    const newMembers = response.data.map(member => ({
+      full_name: member.full_name, // ou autre champ selon la réponse
+      profile: {
+        profile_name: member.profile_name
+      }
+    }));
+
+    // Ajout des nouveaux membres
+    newMembers.forEach(member => {
+      onMemberAdded(member);
+    });
+
+    setCollaborators([]);
+    setErrors({});
+    
+  } catch (error) {
+    console.error("Erreur:", error);
+    alert("Erreur lors de l'ajout");
+  }
   };
   
   
@@ -138,7 +186,7 @@ const handleSubmit = () => {
                   <SingleOptionSelect
                     placeholder="Rôle"
                     width={90}
-                    statuses={roles}
+                    statuses={profiles}
                     onChange={(id, name) => handleRoleChange(index, id, name)}
                     checkedStatus={[]}
                   />

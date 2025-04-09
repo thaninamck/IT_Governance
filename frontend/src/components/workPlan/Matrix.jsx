@@ -19,7 +19,7 @@ import {
 } from "@mui/material";
 import SearchBar from "../SearchBar";
 
-function Matrix({ data, userRole, onRowClick, handleSaveexecutions }) {
+function Matrix({ data, user, onRowClick, handleSaveexecutions }) {
   const { createExecutions, loading, testers ,saveloading} = useWorkplan();
 
   const [flattenedData, setFlattenedData] = useState([]);
@@ -40,6 +40,7 @@ function Matrix({ data, userRole, onRowClick, handleSaveexecutions }) {
   const [riskModified, setRiskModified] = useState(false);
 
   const transformData = (data) => {
+    console.log("datapp",data)
     const result = [];
     if (!data || !Array.isArray(data.applications)) {
       console.error(
@@ -71,7 +72,7 @@ function Matrix({ data, userRole, onRowClick, handleSaveexecutions }) {
             // Check if the ID is already in the Set
             if (!uniqueIds.has(uniqueId)) {
               uniqueIds.add(uniqueId); // Add the ID to the Set
-
+console.log('controlpp',control)
               result.push({
                 id: uniqueId,
                 application: appName,
@@ -93,7 +94,8 @@ function Matrix({ data, userRole, onRowClick, handleSaveexecutions }) {
                 type: control.type,
                 testScript: control.testScript,
                 controlOwner: control.owner,
-                controlTester: "",
+               // controlTester: "",
+               controlTester: control.testeur,
               });
             }
           });
@@ -301,34 +303,68 @@ function Matrix({ data, userRole, onRowClick, handleSaveexecutions }) {
       editable: false,
     },
     {
-      field: "controlTester",
-      headerName: "Testeur",
-      width: 150,
-      renderCell: (params) => (
-        <Select
-          value={testerValues[params.row.id] || params.row.controlTester || ""}
-          onChange={(event) => {
-            const selectedTesterId = event.target.value;
-            handleTesterChange(params.row.id, selectedTesterId)(event);
-          }}
-          fullWidth
-          variant="outlined"
-          size="small"
-        >
-          {loading ? (
-            <MenuItem disabled>Chargement...</MenuItem> // Afficher un message de chargement
-          ) : testers.length > 0 ? (
-            testers.map((tester) => (
-              <MenuItem key={tester.id} value={tester.id}>
-                {tester.designation}
-              </MenuItem>
-            ))
-          ) : (
-            <MenuItem disabled>Aucun testeur trouvé</MenuItem> // Message si pas de testeurs
-          )}
-        </Select>
-      ),
-    },
+  field: "controlTester",
+  headerName: "Testeur",
+  width: 150,
+  // renderCell: (params) => {
+  //   return  (
+  //     <Select
+  //       value={testerValues[params.row.id] || params.row.controlTester || ""}
+  //       onChange={(event) => {
+  //         const selectedTesterId = event.target.value;
+  //         handleTesterChange(params.row.id, selectedTesterId)(event);
+  //       }}
+  //       fullWidth
+  //       variant="outlined"
+  //       size="small"
+  //     >
+  //       {loading ? (
+  //         <MenuItem disabled>Chargement...</MenuItem>
+  //       ) : testers.length > 0 ? (
+  //         testers.map((tester) => (
+  //           <MenuItem key={tester.id} value={tester.id}>
+  //             {tester.designation}
+  //           </MenuItem>
+  //         ))
+  //       ) : (
+  //         <MenuItem disabled>Aucun testeur trouvé</MenuItem>
+  //       )}
+  //     </Select>
+  //   ) 
+  // },
+  renderCell: (params) => {
+    const controlTester = testerValues[params.row.id];
+    console.log('testeur',controlTester)
+  
+    return controlTester ? (
+      <span>{controlTester}</span>
+    ) : 
+      <Select
+        value={testerValues[params.row.id] || params.row.controlTester || ""}
+        onChange={(event) => {
+          const selectedTesterId = event.target.value;
+          handleTesterChange(params.row.id, selectedTesterId)(event);
+        }}
+        fullWidth
+        variant="outlined"
+        size="small"
+      >
+        {loading ? (
+          <MenuItem disabled>Chargement...</MenuItem>
+        ) : testers.length > 0 ? (
+          testers.map((tester) => (
+            <MenuItem key={tester.id} value={tester.id}>
+              {tester.designation}
+            </MenuItem>
+          ))
+        ) : (
+          <MenuItem disabled>Aucun testeur trouvé</MenuItem>
+        )}
+      </Select>
+    
+  },
+},
+
   ];
 
   const handleUpdateTesters = (selectedTester) => {
@@ -476,7 +512,7 @@ function Matrix({ data, userRole, onRowClick, handleSaveexecutions }) {
     console.log("dataToSend", dataToSend);
     await createExecutions(dataToSend);
     localStorage.removeItem("flattenedData");
-    navigate(-1);
+   // navigate(-1);
   };
 
   
@@ -513,8 +549,9 @@ useEffect(() => {
 // Mettre à jour flattenedData lorsque data change
 useEffect(() => {
   if (data) {
+    
     const transformedData = transformData(data);
-
+    console.log('mm',transformedData)
     // Utiliser une fonction de mise à jour pour éviter les dépendances cycliques
     setFlattenedData((prevFlattenedData) => {
       const mergedData = mergeData(transformedData, prevFlattenedData);
@@ -535,10 +572,12 @@ useEffect(() => {
 return (
     <>
       <div className="flex  items-center justify-start mb-6"></div>
-      {true && (
+      {/* {true && ( */}
         <div
           className="flex items-center gap-4 justify-end my-5 mr-4 space-x-4"
-          style={{ display: (userRole === 'admin' || userRole === 'manager') ? 'none' : 'flex' }}
+
+          style={{ display: (user?.role === 'admin'/* || userRole === 'manager'*/) ? 'flex' :  'none'}}
+
         >
           {/* Label */}
           <label className="text-gray-900 font-semibold">Owner</label>
@@ -617,7 +656,7 @@ return (
             )}
           </div>
         </div>
-      )}
+      {/* )} */}
 
       <div className="mr-4">
         <TableContainer component={Paper} className="overflow-auto ">

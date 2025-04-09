@@ -41,13 +41,46 @@ export const AuthProvider = ({ children }) => {
   const getCurrentToken = () => localStorage.getItem("token");
 
   // Vérification initiale au montage
+  // useEffect(() => {
+  //   const token = getCurrentToken();
+  //   const expiry = localStorage.getItem("token_expiry");
+  //   const storedUser = localStorage.getItem("user");
+  //   console.log('stor',storedUser)
+
+  //   if (!token || !expiry || new Date().getTime() > parseInt(expiry)) {
+  //     localStorage.removeItem("token");
+  //     localStorage.removeItem("token_expiry");
+  //     localStorage.removeItem("user");
+  //     setUser(null);
+  //     navigate("/login");
+  //   }
+      
+  // }, [navigate]);
+
   useEffect(() => {
     const token = getCurrentToken();
     const expiry = localStorage.getItem("token_expiry");
-
-    if (!token || !expiry || new Date().getTime() > parseInt(expiry)) {
+    const storedUser = localStorage.getItem("user");
+  
+    if (token && expiry && new Date().getTime() < parseInt(expiry)) {
+      if (storedUser) {
+        setUser(JSON.parse(storedUser));
+      } else {
+        // Si pas d'utilisateur stocké mais token valide, on fetch les infos
+        fetchUser().catch(() => {
+          // En cas d'erreur, on déconnecte
+          localStorage.removeItem("token");
+          localStorage.removeItem("token_expiry");
+          localStorage.removeItem("user");
+          setUser(null);
+          navigate("/login");
+        });
+      }
+    } else {
+      // Token invalide ou expiré
       localStorage.removeItem("token");
       localStorage.removeItem("token_expiry");
+      localStorage.removeItem("user");
       setUser(null);
       navigate("/login");
     }
@@ -61,7 +94,20 @@ export const AuthProvider = ({ children }) => {
         const expirationTime = new Date().getTime() + 120 * 60 * 1000;
         localStorage.setItem("token", response.data.token);
         localStorage.setItem("token_expiry", expirationTime);
-        setUser(response.data.user || null);
+       // setUser(response.data.user || null);
+
+       const userData = {
+        ...response.data.user,
+        role: response.data.user.role,
+        fullName: response.data.user.fullName,
+        position: response.data.user.grade ,
+        phoneNumber:response.data.user.phoneNumber,
+        email:response.data.user.email
+      };
+      
+      console.log(response.data)
+      localStorage.setItem("user", JSON.stringify(userData));
+      setUser(userData);
       }
       return response.data;
     } catch (error) {
@@ -91,6 +137,9 @@ export const AuthProvider = ({ children }) => {
       if (response.status === 200) {
         localStorage.removeItem("token");
         localStorage.removeItem("token_expiry");
+       // localStorage.removeItem("flattenedData");
+        
+        localStorage.removeItem("user");
         setUser(null);
         toast.success("Déconnexion réussie !");
         navigate("/login");
@@ -109,7 +158,14 @@ export const AuthProvider = ({ children }) => {
     setError(null);
     try {
       const response = await authApi.get("/user");
-      setUser(response.data);
+      const userData = {
+        ...response.data,
+        role: response.data.role,
+        fullName: response.data.fullName,
+        position: response.data.grade || 'Non spécifié'
+      };
+      localStorage.setItem("user", JSON.stringify(userData));
+      setUser(userData);
     } catch (error) {
       setError("Erreur lors de la récupération des informations utilisateur.");
       throw error;
@@ -161,7 +217,7 @@ export const AuthProvider = ({ children }) => {
     <AuthContext.Provider
       value={{
         token: getCurrentToken(),
-                user,
+        user,
         loginUser,
         logout,
         changePassword,

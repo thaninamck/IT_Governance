@@ -17,11 +17,41 @@ class ParticipationService
     }
 
 
-    public function createParticipation(array $data): Participation
+    public function addMembersToMission(int $missionId, array $members): array
     {
-        return $this->participationRepository->createParticipation($data);
-    }
+        $addedMembers = [];
+        
+        foreach ($members as $member) {
+            // Vérifie d'abord si la participation existe déjà
+            $existing = $this->participationRepository->findParticipationByMissionAndUserAndProfile(
+                $missionId, 
+                $member['user_id'], 
+                $member['profile_id']
+            );
+            
+            if (!$existing) {
+                $participation = $this->participationRepository->createParticipation([
+                    'mission_id' => $missionId,
+                    'user_id' => $member['user_id'],
+                    'profile_id' => $member['profile_id']
+    
+                ]);
+                 // Chargez les relations pour la réponse
+        $participation->load(['user', 'profile']);
 
+                $addedMembers[] = [
+                    $participation,
+                    'full_name' => $participation->user->first_name . ' ' . $participation->user->last_name,
+                    'profile_name' => $participation->profile->profile_name,
+                ];
+
+            }
+        }
+        
+        return $addedMembers;
+    }
+    
+   
     // Mettre à jour un participant
     public function updateParticipation(int $id, array $data): Participation
     {
@@ -45,6 +75,17 @@ class ParticipationService
         $this->participationRepository->deleteByMissionId($missionId);
     }
 
+   
+public function deleteParticipationById(int $id): ?string
+{
+
+   $participation=$this->participationRepository->findMemberById($id);
+
+   if(!$participation){
+    return null;
+   }
+   return $this->participationRepository->deleteParticipation($id);
+}
 
     public function getTestersByMissionID($id)
 {

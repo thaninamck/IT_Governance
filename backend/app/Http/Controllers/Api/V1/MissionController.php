@@ -558,7 +558,86 @@ public function resumeMission(Request $request, $id): JsonResponse
         
     }
 
+
+//     public function getUserMissions(Request $request)
+// {
+//     $user = $request->user(); // Utilisateur authentifié
     
-   
+//     $missions = Mission::with(['client', 'status'])
+//         ->whereHas('participations', function($query) use ($user) {
+//             $query->where('user_id', $user->id);
+//         })
+//         ->get();
+
+//     return response()->json($missions);
+// }
+
+// public function getUserMissions(Request $request)
+// {
+//     $user = $request->user();
+    
+//     $missions = Mission::with([
+//         'client:id,name', // Seulement l'id et le nom du client
+//         'status:id,name', // Seulement l'id et le nom du statut
+//         'participations.user:id,name,role' // Seulement l'id, name et role des utilisateurs participants
+//     ])
+//     ->whereHas('participations', function($query) use ($user) {
+//         $query->where('user_id', $user->id);
+//     })
+//     ->get([
+//         'id as missionId',
+//         'mission_name as missionName',
+//         'client_id',
+//         'start_date',
+//         'end_date',
+//         'audit_start_date as startAuditDate',
+//         'audit_end_date as endAuditDate',
+//         'status_id'
+//     ]);
+
+//     return response()->json(
+//         $missions->map(function ($mission) use ($user) {
+//             return [
+//                 'missionId' => $mission->missionId,
+//                 'missionName' => $mission->missionName,
+//                 'clientId' => $mission->client_id,
+//                 'clientName' => $mission->client->name,
+//                 'startDate' => $mission->start_date,
+//                 'endDate' => $mission->end_date,
+//                 'startAuditDate' => $mission->startAuditDate,
+//                 'endAuditDate' => $mission->endAuditDate,
+//                 'status' => $mission->status->name,
+//                 'statusId' => $mission->status_id,
+//                 'userId' => $user->id,
+//                 'userName' => $user->name,
+//                 'userRole' => $user->role
+//             ];
+//         })
+//     );
+// }
+
+
+public function getUserMissions(Request $request)
+{
+    $userId = $request->user()->id;
+    $missions = $this->missionService->getUserMissions($userId);
+    
+    return response()->json($missions);
+}
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(Request $request, Mission $mission)
+    {
+        //
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(Mission $mission)
+    {
+        //
+    }
 }
 
