@@ -63,10 +63,11 @@ function MissionDetail() {
          user={user}
           missionId={missionData.id}
         />
-        {/* <AddMatrix 
-        //userRole={userRole}
-        //  missionId={missionData.id} 
-        // /> */}
+        <AddMatrix 
+        user={user}
+        dataFormat={missionData}
+        missionId={missionData.id} 
+        />
       </div>
     </div>
   );
