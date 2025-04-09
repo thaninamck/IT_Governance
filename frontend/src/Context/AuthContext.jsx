@@ -133,7 +133,7 @@ export const AuthProvider = ({ children }) => {
       if (response.status === 200) {
         localStorage.removeItem("token");
         localStorage.removeItem("token_expiry");
-        localStorage.removeItem("flattenedData");
+       // localStorage.removeItem("flattenedData");
         
         localStorage.removeItem("user");
         setUser(null);
