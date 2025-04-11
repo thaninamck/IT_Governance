@@ -31,9 +31,9 @@ class Control extends Model
         return $this->hasMany(StepTestScript::class);
     }
 
-    public function executions(){
-        return $this->hasMany(Execution::class);
-    }
+    // public function executions(){
+    //     return $this->hasMany(Execution::class);
+    // }
     public function remediations(){
         return $this->hasMany(Remediation::class);
     }

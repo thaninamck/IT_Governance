@@ -13,4 +13,8 @@ class Evidence extends Model
         "execution_id",
         
     ];
+    public function execution()
+    {
+        return $this->belongsTo(Execution::class);
+    }
 }
