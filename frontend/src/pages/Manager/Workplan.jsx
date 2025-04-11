@@ -168,6 +168,7 @@ const Workplan = () => {
                               code,
 
                               owner: "",
+                              executionId: "",
                             },
                           ],
                     }
@@ -529,6 +530,7 @@ const Workplan = () => {
         <Matrix
           data={dataStructure}
           handleSaveexecutions={handleSaveexecutions}
+          fromScopeModification={false}
         ></Matrix>
       </div>
     </main>

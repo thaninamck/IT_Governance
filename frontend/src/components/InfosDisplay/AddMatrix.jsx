@@ -210,6 +210,7 @@ useEffect(()=>{
       const layerId = exec.layerId;
       const riskId = exec.riskId;
       const controlId = exec.controlId;
+      const executionId=exec.executionId;
   
       // Si l'application n'existe pas, on l'ajoute
       if (!applications[appId]) {
@@ -251,6 +252,7 @@ useEffect(()=>{
       // Ajout du contrôle (tu peux dédupliquer ici si besoin)
       risk.controls.push({
         id: controlId,
+        executionId: executionId,
         description: exec.controlDescription,
         majorProcess:exec.majorProcess, // à récupérer si disponible
         subProcess: "N/A", // idem
@@ -295,7 +297,7 @@ useEffect(()=>{
               </button>
             </div>
           )}
-          <Matrix data={{ applications: controleListe }} user={user} onRowClick={handleRowClick} />
+          <Matrix data={{ applications: controleListe }} user={user} onRowClick={handleRowClick} fromScopeModification={true} lockModification={true} />
         </>
       ) : (
         <div className='flex flex-row items-center gap-4 pl-6'>

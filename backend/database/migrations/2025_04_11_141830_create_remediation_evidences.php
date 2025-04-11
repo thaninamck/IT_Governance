@@ -11,13 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('executions_evidences', function (Blueprint $table) {
+        Schema::create('remediation_evidences', function (Blueprint $table) {
             $table->id();
             $table->string('file_name', 255)->nullable();
-            $table->boolean('is_f_test')->default(false);
-            $table->foreignId('execution_id')->nullable()->constrained('executions','id');
+            $table->foreignId('remediation_id')->nullable()->constrained('remediations','id');
 
-            $table->timestamps();//pour insered_at
+            $table->timestamps();
         });
     }
 
@@ -26,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('evidences');
+        Schema::dropIfExists('remediation_evidences');
     }
 };

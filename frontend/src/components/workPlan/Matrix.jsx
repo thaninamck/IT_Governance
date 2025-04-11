@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, use } from "react";
 import { useNavigate } from "react-router-dom";
 import { DataGrid } from "@mui/x-data-grid/DataGrid";
 import { User, ChevronDown } from "lucide-react";
@@ -6,7 +6,7 @@ import { toast } from "react-toastify";
 import useWorkplan from "../../Hooks/useWorkplan";
 import Spinner from "../Spinner";
 import { Trash } from "lucide-react";
-//import SaveIcon from '@mui/icons-material/Save';
+import DecisionPopUp from "../PopUps/DecisionPopUp"; //import SaveIcon from '@mui/icons-material/Save';
 
 import { Select, MenuItem, Checkbox, TextField, Button } from "@mui/material";
 import {
@@ -19,6 +19,7 @@ import {
   Paper,
 } from "@mui/material";
 import SearchBar from "../SearchBar";
+import NotificationPopup from "../Notification/NotificationPopup";
 
 function Matrix({
   data,
@@ -26,9 +27,11 @@ function Matrix({
   onRowClick,
   handleSaveexecutions,
   fromScopeModification,
+  lockModification,
 }) {
-  const { createExecutions, loading, testers, saveloading } = useWorkplan();
-
+  const { createExecutions, loading, testers, saveloading, deleteExecutions } =
+    useWorkplan();
+  const [saveWork, setSaveWork] = useState(false);
   const [flattenedData, setFlattenedData] = useState([]);
   const [selectedControls, setSelectedControls] = useState([]);
   const [selectedRows, setSelectedRows] = useState([]);
@@ -40,6 +43,7 @@ function Matrix({
   const [selectedTester, setSelectedTester] = useState([]);
   const [editMessage, setEditMessage] = useState("");
   const atLeastOneApp = flattenedData.length > 0;
+  const [modify, setModify] = useState(lockModification);
   const navigate = useNavigate();
   //const [selectedTester, setSelectedTester] = useState(testers[0]);
   const [isOpen, setIsOpen] = useState(false);
@@ -104,6 +108,7 @@ function Matrix({
                 testScript: control.testScript,
                 controlOwner: control.owner,
                 // controlTester: "",
+                executionId: control.executionId,
                 controlTester: control.testeur,
               });
             }
@@ -166,7 +171,7 @@ function Matrix({
       field: "application",
       headerName: "Application",
       width: 150,
-      editable: true,
+      editable: false,
     },
     {
       field: "applicationLayer",
@@ -217,7 +222,7 @@ function Matrix({
       field: "riskDescription",
       headerName: "Risk Description",
       width: 350,
-      editable: false,
+      editable: lockModification,
     },
     // ...((userRole === 'manager' || userRole === 'admin')
     // ? [{ field: "riskDescription",
@@ -232,7 +237,7 @@ function Matrix({
       field: "riskOwner",
       headerName: "Risk Owner",
       width: 150,
-      editable: false,
+      editable: lockModification,
     },
 
     // Contrôles
@@ -275,7 +280,7 @@ function Matrix({
       field: "controlDescription",
       headerName: "Control Description",
       width: 200,
-      editable: true,
+      editable: lockModification,
     },
     {
       field: "majorProcess",
@@ -299,13 +304,13 @@ function Matrix({
       field: "testScript",
       headerName: "Test Script",
       width: 150,
-      editable: true,
+      editable: !lockModification ? true : false,
     },
     {
       field: "controlOwner",
       headerName: "Control Owner",
       width: 150,
-      editable: false,
+      editable: lockModification,
     },
     {
       field: "controlTester",
@@ -577,24 +582,59 @@ function Matrix({
     console.log("✅ Selected full rows:", fullSelectedRows);
   }, [selectedControls]);
 
-  const handleFromScopeDelete = () => {
-    console.log("handleFromScopeDelete");
+  const handleFromScopeDelete = async () => {
+    // Récupérer les IDs des contrôles sélectionnés
+    const idsToDelete = {
+      executionsIds: selectedRows.map((row) => row.executionId),
+    };
+    console.log("handleFromScopeDelete", idsToDelete);
+
+    // Appeler la fonction pour supprimer les exécutions
+    const undeletableIds = await deleteExecutions(idsToDelete);
+    if (undeletableIds.length > 0) {
+      // Mettre à jour flattenedData pour ne garder que les exécutions non supprimées
+      setFlattenedData((prevData) =>
+        prevData.filter(
+          (row) =>
+            // Garder les lignes qui ne sont pas sélectionnées ou qui n'ont pas été supprimées
+            !idsToDelete.includes(row.executionId) ||
+            undeletableIds.includes(row.executionId)
+        )
+      );
+    }
   };
+
   const handleAtWorkplanDelete = () => {
     console.log("handleAtWorkplanDelete");
     setFlattenedData((prevData) =>
       prevData.filter((row) => !selectedControls.includes(row.id))
     );
   };
+
+  const handleModifyLines = () => {
+    setModify(true);
+  
+    const updatedData = flattenedData.map(row => {
+      if (selectedRows.includes(row.id)) {
+        return { ...row, modifiable: true }; // ou autre champ si déjà existant
+      }
+      return row;
+    });
+  
+    setFlattenedData(updatedData);
+  
+    console.log("selectedControls for update", selectedRows); // a continuer ........
+  };
+  
   return (
     <>
       <div className="flex  items-center justify-start mb-6"></div>
-      {/* {true && ( */}
+
       <div
         className="flex items-center gap-4 justify-end my-5 mr-4 space-x-4"
         style={{
           display:
-            user?.role === "admin" /* || userRole === 'manager'*/
+            user?.role !== "admin" /* || userRole === 'manager'*/
               ? "flex"
               : "none",
         }}
@@ -668,16 +708,19 @@ function Matrix({
         <div className="   ">
           {atLeastOneApp && (
             <button
-              onClick={handleSave}
+              onClick={() => {
+                setSaveWork(true);
+              }}
               className="bg-blue-menu text-white px-4 py-2 rounded-md hover:bg-blue-900"
             >
-              {saveloading ? <Spinner color="white" size={25} /> : "save"}
+              valider
             </button>
           )}
         </div>
-        
       </div>
+
       {selectedRows.length > 0 && (
+        <>
           <button
             className="bg-alert-red text-white px-4 py-2 rounded-md hover:bg-red-700 flex items-center gap-2"
             onClick={
@@ -689,10 +732,26 @@ function Matrix({
             <Trash size={18} />
             Supprimer
           </button>
-        )}
-      {/* )} */}
 
-      <div className="mr-4">
+          <button
+            className="bg-blue-conf text-white px-4 py-2 rounded-md hover:bg-red-700 flex items-center gap-2"
+            onClick={handleModifyLines}
+          >
+            <Trash size={18} />
+            modifier
+          </button>
+        </>
+      )}
+      {saveWork && (
+        <DecisionPopUp
+          handleConfirm={handleSave}
+          handleDeny={() => setSaveWork(false)}
+          name="Confirmation"
+          text="Êtes-vous sûr de vouloir valider les modifications ?"
+          loading={saveloading}
+        />
+      )}
+      <div className="m-3">
         <TableContainer component={Paper} className="overflow-auto ">
           <Table>
             <TableHead>
@@ -700,7 +759,7 @@ function Matrix({
                 {/* Application */}
                 <TableCell
                   align="center"
-                  style={{ width: 450 }}
+                  style={{ width: 500 }}
                   className="border border-subfont-gray"
                 >
                   Application
@@ -747,6 +806,7 @@ function Matrix({
                       columns={columns}
                       pageSize={5}
                       checkboxSelection
+                      disableRowSelectionOnClick
                       onRowSelectionModelChange={(newSelection) => {
                         setSelectedControls(newSelection);
                       }}
