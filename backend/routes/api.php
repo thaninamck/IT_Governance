@@ -183,7 +183,7 @@ Route::post('/notifications/read-all', [NotificationController::class, 'markAllA
 Route::post('/notifications/{id}/read', [NotificationController::class, 'markNotificationAsRead'])->middleware('auth:sanctum');
 
 // Route::post('/insert-executions', [ExecutionController::class, 'createExecutions'])->middleware(ManagerMiddleware::class,'auth:sanctum');
-Route::get('/missions/{mission}/executions', [ExecutionController::class, 'getExecutionsByMission']);
+Route::get('/executions/get-options', [ExecutionController::class, 'getExecutionStatusOptions']);
 //Route::get('/missions/{mission}/members', [MissionController::class, 'getMembersByMission']);
 Route::post('/reset-password', [AuthController::class, 'resetPassword']);
 

@@ -4,6 +4,7 @@ namespace App\Services\V1;
 use App\Models\execution;
 use App\Repositories\V1\ExecutionRepository;
 use App\Repositories\V1\CntrlRiskCovRepository;
+use App\Repositories\V1\StatusRepository;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 class ExecutionService
@@ -11,10 +12,15 @@ class ExecutionService
     protected ExecutionRepository $executionRepository;
     protected CntrlRiskCovRepository $covRepository;
     protected EvidenceService $evidenceService;
+    protected $statusRepository;
 
 
-    public function __construct( EvidenceService $evidenceService,ExecutionRepository $executionRepository, CntrlRiskCovRepository $covRepository)
+    public function __construct( EvidenceService $evidenceService,ExecutionRepository $executionRepository, 
+    CntrlRiskCovRepository $covRepository , StatusRepository $statusRepository)
     {
+    
+        $this->statusRepository = $statusRepository;
+
         $this->executionRepository =$executionRepository;
         $this->covRepository =$covRepository;
         $this->evidenceService = $evidenceService;
@@ -26,6 +32,10 @@ class ExecutionService
         return $this->executionRepository->getExecutionsByMission($missionId);
     }
 
+    public function getExecutionStatusOptions()
+    {
+        return $this->statusRepository->getExecutionStatusOptions();
+    }
     public function getExecutionsByMissionAndTester($missionId,$userId)
     {
         return $this->executionRepository->getExecutionsByMissionAndTester($missionId,$userId);
