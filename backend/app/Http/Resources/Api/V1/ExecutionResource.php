@@ -14,42 +14,56 @@ class ExecutionResource extends JsonResource
      * @return array<string, mixed>
      */
     public function toArray(Request $request): array
-    {
-        return [
-            'executionId' => $this->execution_id,
-            'executionModification' => $this->execution_modification,
-            'executionRemark' => $this->execution_remark,
-            'executionControlOwner' => $this->execution_control_owner,
-            'executionLaunchedAt' => $this->execution_launched_at,
-            'executionIpe' => $this->execution_ipe,
-            'executionEffectiveness' => $this->execution_effectiveness,
-            'executionDesign' => $this->execution_design,
-            'statusName' => $this->status_name,
-            'statusId' => $this->status_id,
-            'missionId' => $this->mission_id,
-            'missionName' => $this->mission_name,
-            'controlId' => $this->control_id,
-            'controlDescription' => $this->control_description,
-            'controlCode' => $this->control_code,
-           
-            'coverageId' => $this->coverage_id,
-            'coverageRiskId' => $this->coverage_risk_id,
-            'riskId' => $this->risk_id,
-            'riskName' => $this->risk_name,
-            'riskCode' => $this->risk_code,
-            'riskDescription' => $this->risk_description,
-            'riskOwner'=>$this->risk_owner,
-            'layerId' => $this->layer_id,
-            'layerName' => $this->layer_name,
-            'systemId' => $this->system_id,
-            'systemName' => $this->system_name,
-            'systemOwner' => $this->system_owner_full_name,
-            'systemOwnerEmail' => $this->system_owner_email,
+{
+    return [
+        'executionId' => $this->execution_id,
+        'executionModification' => $this->execution_modification,
+        'executionRemark' => $this->execution_remark,
+        'executionControlOwner' => $this->execution_control_owner,
+        'executionLaunchedAt' => $this->execution_launched_at,
+        'executionIpe' => $this->execution_ipe,
+        'executionEffectiveness' => $this->execution_effectiveness,
+        'executionDesign' => $this->execution_design,
 
-            'userId' => $this->user_id,
-            'userFullName' => $this->tester_full_name,
-        ];
-    }
+        'statusId' => $this->status_id,
+        'statusName' => $this->status_name,
+
+        'missionId' => $this->mission_id,
+        'missionName' => $this->mission_name,
+
+        'controlId' => $this->control_id,
+        'controlDescription' => $this->control_description,
+        'controlCode' => $this->control_code,
+
+        'riskId' => $this->risk_id,
+        'riskName' => $this->risk_name,
+        'riskCode' => $this->risk_code,
+        'riskDescription' => $this->risk_description,
+        'riskOwner' => $this->risk_owner,
+
+        'coverageId' => $this->coverage_id,
+        'coverageRiskId' => $this->coverage_risk_id,
+
+        'layerId' => $this->layer_id,
+        'layerName' => $this->layer_name,
+
+        'systemId' => $this->system_id,
+        'systemName' => $this->system_name,
+        'systemOwner' => $this->system_owner_full_name,
+        'systemOwnerEmail' => $this->system_owner_email,
+
+        'majorProcess' => $this->major_process,
+        'subProcess' => $this->sub_process,
+        'typeName' => $this->type_name,
+
+        'userId' => $this->user_id,
+        'userFullName' => $this->tester_full_name,
+
+        'steps' => json_decode($this->steps ?? '[]', true),
+        'sources' => json_decode($this->sources ?? '[]', true),
+    ];
+}
+
 
 
 
