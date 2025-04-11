@@ -15,7 +15,6 @@ const useWorkplan = () => {
   const [controls, setControls] = useState([]);
   const [risks, setRisks] = useState([]);
   const [testers, setTesters] = useState([]);
-
   const [executions, setExecutions] = useState([]);
   const fetchOptions = async (id) => {
     setLoading(true);
@@ -74,6 +73,24 @@ const useWorkplan = () => {
     fetchTesters(id);
   }, []); 
 
+  const deleteExecutions = async (executionsIds) => {
+    
+    try {
+      // Formater les données comme requis par l'API
+      //const formattedData = { executions: executionsData };
+
+      const response = await api.post(`/executions/deleteExecutions`, executionsIds);
+       if(response.status===400){
+        return response.data;
+        toast.error("certains controles ne peuvent as etre supprimés ils sont en cours d'execution .");
+       }
+       toast.success("Controles supprimées avec succès.");
+     return []
+    } catch (err) {
+      setError(err);
+      console.error("Erreur lors de la suppression des exécutions:", err);
+    } 
+  };
   
   return {
     loading,
@@ -84,6 +101,7 @@ const useWorkplan = () => {
     controls,
     testers,
     createExecutions,
+    deleteExecutions,
   };
 };
 

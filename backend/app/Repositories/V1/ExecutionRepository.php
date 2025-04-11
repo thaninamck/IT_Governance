@@ -10,7 +10,7 @@ class ExecutionRepository
 
     public function createExecution(array $executionData)
     {
-        $statusId = Status::where('status_name', 'en attente')->value('id');
+        //$statusId = Status::where('status_name', 'en attente')->value('id');
 
         return Execution::create([
             'control_id' => $executionData['controlId'],
@@ -18,7 +18,7 @@ class ExecutionRepository
             'control_owner' => $executionData['controlOwner'],
             'user_id' => $executionData['controlTester'],
             'layer_id' => $executionData['layerId'],
-            'status_id' => $statusId,
+            'status_id' => null,
         ]);
 
     }
@@ -150,8 +150,8 @@ class ExecutionRepository
 
     public function updateExecution($executionId, $executionData)
 {
-    $execution = Execution::findOrFail($executionId); 
-    $execution->update($executionData);
+    $execution = Execution::where('id',$executionId)->update($executionData); 
+    
 
     return $execution;
 }
@@ -160,5 +160,40 @@ public function updateAnExecutionRaw($executionId,$raw){
     $execution=Execution::find($executionId);
     return $execution->update($raw)  ? true : false;
     }
+
+    public function hasRelatedData($execution)
+{
+    
+    $hasRelatedData=$execution->evidences()->exists() ;
+    if($hasRelatedData){
+        return true;
+    }
+    return false;
+}
+
+
+public function deleteExecutions($executionsIds)
+{
+    $nonDeletable = [];
+
+    foreach ($executionsIds as $id) {
+        $execution = Execution::find($id);
+
+        // Si l'exécution a des données liées, on la met dans les non supprimables
+        if ($this->hasRelatedData($execution)) {
+            $nonDeletable[] = $id;
+            continue;
+        }
+
+        // Sinon on la supprime
+        if ($execution) {
+            $execution->delete();
+        }
+    }
+
+    // Retourner les IDs non supprimables
+    return $nonDeletable;
+}
+
 
 }

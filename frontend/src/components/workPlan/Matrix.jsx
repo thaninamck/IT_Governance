@@ -1,11 +1,12 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, use } from "react";
 import { useNavigate } from "react-router-dom";
 import { DataGrid } from "@mui/x-data-grid/DataGrid";
 import { User, ChevronDown } from "lucide-react";
 import { toast } from "react-toastify";
 import useWorkplan from "../../Hooks/useWorkplan";
 import Spinner from "../Spinner";
-//import SaveIcon from '@mui/icons-material/Save';
+import { Trash } from "lucide-react";
+import DecisionPopUp from "../PopUps/DecisionPopUp"; //import SaveIcon from '@mui/icons-material/Save';
 
 import { Select, MenuItem, Checkbox, TextField, Button } from "@mui/material";
 import {
@@ -18,19 +19,31 @@ import {
   Paper,
 } from "@mui/material";
 import SearchBar from "../SearchBar";
+import NotificationPopup from "../Notification/NotificationPopup";
 
-function Matrix({ data, user, onRowClick, handleSaveexecutions }) {
-  const { createExecutions, loading, testers ,saveloading} = useWorkplan();
-
+function Matrix({
+  data,
+  user,
+  onRowClick,
+  handleSaveexecutions,
+  fromScopeModification,
+  lockModification,
+}) {
+  const { createExecutions, loading, testers, saveloading, deleteExecutions } =
+    useWorkplan();
+  const [saveWork, setSaveWork] = useState(false);
   const [flattenedData, setFlattenedData] = useState([]);
+  const [selectedControls, setSelectedControls] = useState([]);
+  const [selectedRows, setSelectedRows] = useState([]);
 
-   const [selectedRisk, setSelectedRisk] = useState({});
+  const [selectedRisk, setSelectedRisk] = useState({});
   const [selectedApp, setSelectedApp] = useState({});
   const [selectedControl, setSelectedControl] = useState({});
   const [testerValues, setTesterValues] = useState({});
   const [selectedTester, setSelectedTester] = useState([]);
   const [editMessage, setEditMessage] = useState("");
   const atLeastOneApp = flattenedData.length > 0;
+  const [modify, setModify] = useState(lockModification);
   const navigate = useNavigate();
   //const [selectedTester, setSelectedTester] = useState(testers[0]);
   const [isOpen, setIsOpen] = useState(false);
@@ -40,7 +53,7 @@ function Matrix({ data, user, onRowClick, handleSaveexecutions }) {
   const [riskModified, setRiskModified] = useState(false);
 
   const transformData = (data) => {
-    console.log("datapp",data)
+    console.log("datapp", data);
     const result = [];
     if (!data || !Array.isArray(data.applications)) {
       console.error(
@@ -72,7 +85,7 @@ function Matrix({ data, user, onRowClick, handleSaveexecutions }) {
             // Check if the ID is already in the Set
             if (!uniqueIds.has(uniqueId)) {
               uniqueIds.add(uniqueId); // Add the ID to the Set
-console.log('controlpp',control)
+              console.log("controlpp", control);
               result.push({
                 id: uniqueId,
                 application: appName,
@@ -94,8 +107,9 @@ console.log('controlpp',control)
                 type: control.type,
                 testScript: control.testScript,
                 controlOwner: control.owner,
-               // controlTester: "",
-               controlTester: control.testeur,
+                // controlTester: "",
+                executionId: control.executionId,
+                controlTester: control.testeur,
               });
             }
           });
@@ -131,10 +145,6 @@ console.log('controlpp',control)
     return mergedData;
   };
 
-  
-
- 
-
   const handleEditStop = (params, event) => {
     console.log("Edition terminée sur la cellule", params);
 
@@ -161,7 +171,7 @@ console.log('controlpp',control)
       field: "application",
       headerName: "Application",
       width: 150,
-      editable: true,
+      editable: false,
     },
     {
       field: "applicationLayer",
@@ -212,7 +222,7 @@ console.log('controlpp',control)
       field: "riskDescription",
       headerName: "Risk Description",
       width: 350,
-      editable: false,
+      editable: lockModification,
     },
     // ...((userRole === 'manager' || userRole === 'admin')
     // ? [{ field: "riskDescription",
@@ -227,7 +237,7 @@ console.log('controlpp',control)
       field: "riskOwner",
       headerName: "Risk Owner",
       width: 150,
-      editable: false,
+      editable: lockModification,
     },
 
     // Contrôles
@@ -270,7 +280,7 @@ console.log('controlpp',control)
       field: "controlDescription",
       headerName: "Control Description",
       width: 200,
-      editable: true,
+      editable: lockModification,
     },
     {
       field: "majorProcess",
@@ -294,77 +304,78 @@ console.log('controlpp',control)
       field: "testScript",
       headerName: "Test Script",
       width: 150,
-      editable: true,
+      editable: !lockModification ? true : false,
     },
     {
       field: "controlOwner",
       headerName: "Control Owner",
       width: 150,
-      editable: false,
+      editable: lockModification,
     },
     {
-  field: "controlTester",
-  headerName: "Testeur",
-  width: 150,
-  // renderCell: (params) => {
-  //   return  (
-  //     <Select
-  //       value={testerValues[params.row.id] || params.row.controlTester || ""}
-  //       onChange={(event) => {
-  //         const selectedTesterId = event.target.value;
-  //         handleTesterChange(params.row.id, selectedTesterId)(event);
-  //       }}
-  //       fullWidth
-  //       variant="outlined"
-  //       size="small"
-  //     >
-  //       {loading ? (
-  //         <MenuItem disabled>Chargement...</MenuItem>
-  //       ) : testers.length > 0 ? (
-  //         testers.map((tester) => (
-  //           <MenuItem key={tester.id} value={tester.id}>
-  //             {tester.designation}
-  //           </MenuItem>
-  //         ))
-  //       ) : (
-  //         <MenuItem disabled>Aucun testeur trouvé</MenuItem>
-  //       )}
-  //     </Select>
-  //   ) 
-  // },
-  renderCell: (params) => {
-    const controlTester = testerValues[params.row.id];
-    console.log('testeur',controlTester)
-  
-    return controlTester ? (
-      <span>{controlTester}</span>
-    ) : 
-      <Select
-        value={testerValues[params.row.id] || params.row.controlTester || ""}
-        onChange={(event) => {
-          const selectedTesterId = event.target.value;
-          handleTesterChange(params.row.id, selectedTesterId)(event);
-        }}
-        fullWidth
-        variant="outlined"
-        size="small"
-      >
-        {loading ? (
-          <MenuItem disabled>Chargement...</MenuItem>
-        ) : testers.length > 0 ? (
-          testers.map((tester) => (
-            <MenuItem key={tester.id} value={tester.id}>
-              {tester.designation}
-            </MenuItem>
-          ))
-        ) : (
-          <MenuItem disabled>Aucun testeur trouvé</MenuItem>
-        )}
-      </Select>
-    
-  },
-},
+      field: "controlTester",
+      headerName: "Testeur",
+      width: 150,
+      // renderCell: (params) => {
+      //   return  (
+      //     <Select
+      //       value={testerValues[params.row.id] || params.row.controlTester || ""}
+      //       onChange={(event) => {
+      //         const selectedTesterId = event.target.value;
+      //         handleTesterChange(params.row.id, selectedTesterId)(event);
+      //       }}
+      //       fullWidth
+      //       variant="outlined"
+      //       size="small"
+      //     >
+      //       {loading ? (
+      //         <MenuItem disabled>Chargement...</MenuItem>
+      //       ) : testers.length > 0 ? (
+      //         testers.map((tester) => (
+      //           <MenuItem key={tester.id} value={tester.id}>
+      //             {tester.designation}
+      //           </MenuItem>
+      //         ))
+      //       ) : (
+      //         <MenuItem disabled>Aucun testeur trouvé</MenuItem>
+      //       )}
+      //     </Select>
+      //   )
+      // },
+      renderCell: (params) => {
+        const controlTester = testerValues[params.row.id];
+        console.log("testeur", controlTester);
 
+        return controlTester ? (
+          <span>{controlTester}</span>
+        ) : (
+          <Select
+            value={
+              testerValues[params.row.id] || params.row.controlTester || ""
+            }
+            onChange={(event) => {
+              const selectedTesterId = event.target.value;
+              handleTesterChange(params.row.id, selectedTesterId)(event);
+            }}
+            fullWidth
+            variant="outlined"
+            size="small"
+          >
+            {loading ? (
+              <MenuItem disabled>Chargement...</MenuItem>
+            ) : testers.length > 0 ? (
+              testers.map((tester) => (
+                <MenuItem key={tester.id} value={tester.id}>
+                  {tester.designation}
+                </MenuItem>
+              ))
+            ) : (
+              <MenuItem disabled>Aucun testeur trouvé</MenuItem>
+            )}
+          </Select>
+        );
+      },
+    },
   ];
 
   const handleUpdateTesters = (selectedTester) => {
@@ -381,13 +392,12 @@ console.log('controlpp',control)
     setSelectedControl({});
   };
 
-
   const handleRowClick = (params) => {
     if (onRowClick) {
       onRowClick(params.row);
     }
   };
-  
+
   const handleTesterChange = (id, testerId) => (event) => {
     setFlattenedData((prevData) => {
       return prevData.map((row) => {
@@ -403,7 +413,7 @@ console.log('controlpp',control)
       [id]: testerId,
     }));
   };
-  
+
   // Gestion des cases à cocher pour les contrôles
   const handleControlCheckboxChange = (id) => (event) => {
     console.log("id slcted", id);
@@ -422,7 +432,7 @@ console.log('controlpp',control)
       [id]: event.target.checked,
     }));
   };
-  
+
   const updateCells = (selectedItems, rows, ownername) => {
     // Parcours des éléments sélectionnés
     selectedItems.forEach((item) => {
@@ -476,10 +486,6 @@ console.log('controlpp',control)
     }));
   };
 
-  
-
-
-
   const handleSave = async () => {
     console.log("flattenedData", flattenedData);
     const dataToSend = {
@@ -512,10 +518,12 @@ console.log('controlpp',control)
     console.log("dataToSend", dataToSend);
     await createExecutions(dataToSend);
     localStorage.removeItem("flattenedData");
-   // navigate(-1);
+    // navigate(-1);
   };
 
-  
+  useEffect(() => {
+    console.log("selectedControls", selectedControls);
+  }, [selectedControls]);
 
   // Gestion des sélections pour les testeurs
   /*const handleTesterChange = (id, testerId) => (event) => {
@@ -529,136 +537,221 @@ console.log('controlpp',control)
     }));
   };*/ //old version
 
- 
-
   useEffect(() => {
     if (!loading && testers.length > 0 && !selectedTester) {
-      setSelectedTester(testers[0]);  
+      setSelectedTester(testers[0]);
     }
-  }, [ testers]);
-// Charger les données depuis localStorage au montage du composant
-useEffect(() => {
-  const savedData = localStorage.getItem("flattenedData");
-  if (savedData) {
-    const parsedData = JSON.parse(savedData);
-    setFlattenedData(parsedData); // Mettre à jour flattenedData avec les données sauvegardées
-    console.log("savedData", parsedData); // Vérifier les données chargées
-  }
-}, []);
+  }, [testers]);
+  // Charger les données depuis localStorage au montage du composant
+  useEffect(() => {
+    const savedData = localStorage.getItem("flattenedData");
+    if (savedData) {
+      const parsedData = JSON.parse(savedData);
+      setFlattenedData(parsedData); // Mettre à jour flattenedData avec les données sauvegardées
+      console.log("savedData", parsedData); // Vérifier les données chargées
+    }
+  }, []);
 
-// Mettre à jour flattenedData lorsque data change
-useEffect(() => {
-  if (data) {
-    
-    const transformedData = transformData(data);
-    console.log('mm',transformedData)
-    // Utiliser une fonction de mise à jour pour éviter les dépendances cycliques
-    setFlattenedData((prevFlattenedData) => {
-      const mergedData = mergeData(transformedData, prevFlattenedData);
-      console.log("mergedData", mergedData); // Vérifier les données fusionnées
-      return mergedData;
-    });
-  }
-}, [data]); // Dépend uniquement de data
+  // Mettre à jour flattenedData lorsque data change
+  useEffect(() => {
+    if (data) {
+      const transformedData = transformData(data);
+      console.log("mm", transformedData);
+      // Utiliser une fonction de mise à jour pour éviter les dépendances cycliques
+      setFlattenedData((prevFlattenedData) => {
+        const mergedData = mergeData(transformedData, prevFlattenedData);
+        console.log("mergedData", mergedData); // Vérifier les données fusionnées
+        return mergedData;
+      });
+    }
+  }, [data]); // Dépend uniquement de data
 
-// Sauvegarder les données dans localStorage à chaque mise à jour de flattenedData
-useEffect(() => {
-  if (flattenedData.length > 0) {
-    localStorage.setItem("flattenedData", JSON.stringify(flattenedData));
-  }
-}, [flattenedData]);
+  // Sauvegarder les données dans localStorage à chaque mise à jour de flattenedData
+  useEffect(() => {
+    if (flattenedData.length > 0) {
+      localStorage.setItem("flattenedData", JSON.stringify(flattenedData));
+    }
+  }, [flattenedData]);
+
+  useEffect(() => {
+    const fullSelectedRows = flattenedData.filter((row) =>
+      selectedControls.includes(row.id)
+    );
+    setSelectedRows(fullSelectedRows);
+
+    console.log("✅ Selected full rows:", fullSelectedRows);
+  }, [selectedControls]);
+
+  const handleFromScopeDelete = async () => {
+    // Récupérer les IDs des contrôles sélectionnés
+    const idsToDelete = {
+      executionsIds: selectedRows.map((row) => row.executionId),
+    };
+    console.log("handleFromScopeDelete", idsToDelete);
+
+    // Appeler la fonction pour supprimer les exécutions
+    const undeletableIds = await deleteExecutions(idsToDelete);
+    if (undeletableIds.length > 0) {
+      // Mettre à jour flattenedData pour ne garder que les exécutions non supprimées
+      setFlattenedData((prevData) =>
+        prevData.filter(
+          (row) =>
+            // Garder les lignes qui ne sont pas sélectionnées ou qui n'ont pas été supprimées
+            !idsToDelete.includes(row.executionId) ||
+            undeletableIds.includes(row.executionId)
+        )
+      );
+    }
+  };
+
+  const handleAtWorkplanDelete = () => {
+    console.log("handleAtWorkplanDelete");
+    setFlattenedData((prevData) =>
+      prevData.filter((row) => !selectedControls.includes(row.id))
+    );
+  };
+
+  const handleModifyLines = () => {
+    setModify(true);
   
-
-return (
+    const updatedData = flattenedData.map(row => {
+      if (selectedRows.includes(row.id)) {
+        return { ...row, modifiable: true }; // ou autre champ si déjà existant
+      }
+      return row;
+    });
+  
+    setFlattenedData(updatedData);
+  
+    console.log("selectedControls for update", selectedRows); // a continuer ........
+  };
+  
+  return (
     <>
       <div className="flex  items-center justify-start mb-6"></div>
-      {/* {true && ( */}
-        <div
-          className="flex items-center gap-4 justify-end my-5 mr-4 space-x-4"
 
-          style={{ display: (user?.role === 'admin'/* || userRole === 'manager'*/) ? 'flex' :  'none'}}
+      <div
+        className="flex items-center gap-4 justify-end my-5 mr-4 space-x-4"
+        style={{
+          display:
+            user?.role !== "admin" /* || userRole === 'manager'*/
+              ? "flex"
+              : "none",
+        }}
+      >
+        {/* Label */}
+        <label className="text-gray-900 font-semibold">Owner</label>
 
+        {/* Input Field */}
+        <div className="relative flex items-center bg-white rounded-md border border-gray-300 w-60 px-3 py-2">
+          <User className="text-gray-500 mr-2" size={16} />
+          <input
+            type="text"
+            onChange={(e) => setOwner(e.target.value)}
+            className="bg-transparent outline-none w-full"
+            placeholder="Owner"
+            value={owner}
+          />
+        </div>
+        <div>{editMessage && <p>{editMessage}</p>}</div>
+
+        {/* Button */}
+        <button
+          onClick={handleUpdateOwner}
+          className="bg-blue-menu text-white px-4 py-2 rounded-md hover:bg-blue-900"
         >
+          Ajouter
+        </button>
+
+        <div className="flex items-center  space-x-4">
           {/* Label */}
-          <label className="text-gray-900 font-semibold">Owner</label>
+          <label className="text-gray-900 font-semibold">Testeur</label>
 
-          {/* Input Field */}
-          <div className="relative flex items-center bg-white rounded-md border border-gray-300 w-60 px-3 py-2">
-            <User className="text-gray-500 mr-2" size={16} />
-            <input
-              type="text"
-              onChange={(e) => setOwner(e.target.value)}
-              className="bg-transparent outline-none w-full"
-              placeholder="Owner"
-              value={owner}
-            />
-          </div>
-          <div>{editMessage && <p>{editMessage}</p>}</div>
-
-          {/* Button */}
-          <button
-            onClick={handleUpdateOwner}
-            className="bg-blue-menu text-white px-4 py-2 rounded-md hover:bg-blue-900"
-          >
-            Ajouter
-          </button>
-
-          <div className="flex items-center  space-x-4">
-            {/* Label */}
-            <label className="text-gray-900 font-semibold">Testeur</label>
-
-            {/* Dropdown */}
-            <div className="relative z-30 w-60">
-              <div
-                className="flex items-center bg-white rounded-md border border-gray-300 px-3 py-2 cursor-pointer"
-                onClick={() => setIsOpen(!isOpen)}
-              >
-                <User className="text-gray-500 mr-2" size={16} />
-                <span className="flex-1 text-gray-700">
-                  {selectedTester.designation}
-                </span>
-                <ChevronDown className="text-gray-500" size={16} />
-              </div>
-              {isOpen && (
-                <ul className="absolute w-full bg-white border border-gray-300 rounded-md shadow-md mt-1">
-                  {loading ? (
-                    <li className="px-3 py-2">Chargement des testeurs...</li> // Afficher un message de chargement
-                  ) : testers.length > 0 ? (
-                    testers.map((tester) => (
-                      <li
-                        key={tester.id}
-                        className="px-3 py-2 hover:bg-gray-100 cursor-pointer"
-                        onClick={() => {
-                          setSelectedTester(tester);
-                          handleUpdateTesters(tester);
-                          setIsOpen(false);
-                        }}
-                      >
-                        {tester.designation}
-                      </li>
-                    ))
-                  ) : (
-                    <li className="px-3 py-2">Aucun testeur trouvé</li> // Message si pas de testeurs
-                  )}
-                </ul>
-              )}
+          {/* Dropdown */}
+          <div className="relative z-30 w-60">
+            <div
+              className="flex items-center bg-white rounded-md border border-gray-300 px-3 py-2 cursor-pointer"
+              onClick={() => setIsOpen(!isOpen)}
+            >
+              <User className="text-gray-500 mr-2" size={16} />
+              <span className="flex-1 text-gray-700">
+                {selectedTester.designation}
+              </span>
+              <ChevronDown className="text-gray-500" size={16} />
             </div>
-          </div>
-
-          <div className="   ">
-            {atLeastOneApp && (
-              <button
-                onClick={handleSave}
-                className="bg-blue-menu text-white px-4 py-2 rounded-md hover:bg-blue-900"
-              >
-                {saveloading ? <Spinner color="white" size={25} /> : "save"}
-              </button>
+            {isOpen && (
+              <ul className="absolute w-full bg-white border border-gray-300 rounded-md shadow-md mt-1">
+                {loading ? (
+                  <li className="px-3 py-2">Chargement des testeurs...</li> // Afficher un message de chargement
+                ) : testers.length > 0 ? (
+                  testers.map((tester) => (
+                    <li
+                      key={tester.id}
+                      className="px-3 py-2 hover:bg-gray-100 cursor-pointer"
+                      onClick={() => {
+                        setSelectedTester(tester);
+                        handleUpdateTesters(tester);
+                        setIsOpen(false);
+                      }}
+                    >
+                      {tester.designation}
+                    </li>
+                  ))
+                ) : (
+                  <li className="px-3 py-2">Aucun testeur trouvé</li> // Message si pas de testeurs
+                )}
+              </ul>
             )}
           </div>
         </div>
-      {/* )} */}
 
-      <div className="mr-4">
+        <div className="   ">
+          {atLeastOneApp && (
+            <button
+              onClick={() => {
+                setSaveWork(true);
+              }}
+              className="bg-blue-menu text-white px-4 py-2 rounded-md hover:bg-blue-900"
+            >
+              valider
+            </button>
+          )}
+        </div>
+      </div>
+
+      {selectedRows.length > 0 && (
+        <>
+          <button
+            className="bg-alert-red text-white px-4 py-2 rounded-md hover:bg-red-700 flex items-center gap-2"
+            onClick={
+              fromScopeModification
+                ? handleFromScopeDelete
+                : handleAtWorkplanDelete
+            }
+          >
+            <Trash size={18} />
+            Supprimer
+          </button>
+
+          <button
+            className="bg-blue-conf text-white px-4 py-2 rounded-md hover:bg-red-700 flex items-center gap-2"
+            onClick={handleModifyLines}
+          >
+            <Trash size={18} />
+            modifier
+          </button>
+        </>
+      )}
+      {saveWork && (
+        <DecisionPopUp
+          handleConfirm={handleSave}
+          handleDeny={() => setSaveWork(false)}
+          name="Confirmation"
+          text="Êtes-vous sûr de vouloir valider les modifications ?"
+          loading={saveloading}
+        />
+      )}
+      <div className="m-3">
         <TableContainer component={Paper} className="overflow-auto ">
           <Table>
             <TableHead>
@@ -666,7 +759,7 @@ return (
                 {/* Application */}
                 <TableCell
                   align="center"
-                  style={{ width: 450 }}
+                  style={{ width: 500 }}
                   className="border border-subfont-gray"
                 >
                   Application
@@ -712,6 +805,12 @@ return (
                       // rows={searchResults}
                       columns={columns}
                       pageSize={5}
+                      checkboxSelection
+                      disableRowSelectionOnClick
+                      onRowSelectionModelChange={(newSelection) => {
+                        setSelectedControls(newSelection);
+                      }}
+                      rowSelectionModel={selectedControls}
                       rowsPerPageOptions={[5, 10, 20]}
                       editMode="cell"
                       onCellEditStop={(params, event) => {

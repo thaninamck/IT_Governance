@@ -38,7 +38,7 @@ class EvidenceService
         $data=[
             'is_f_test' => $fileData['is_f_test'] ?? false,
             'execution_id' => $fileData['execution_id'] ?? null,
-            'remediation_id' => $fileData['remediation_id'] ?? null,
+           
         ];
         $createdEvidences[] = $this->storeFile($data, $fileData['file']);
     }

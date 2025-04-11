@@ -42,9 +42,9 @@ Route::middleware(['auth:sanctum', AdminMiddleware::class])
         });
 
         Route::controller(AuthController::class)->group(function () {
-            Route::post('/reset-user',  'resetUser');
+            Route::post('/reset-user', 'resetUser');
 
-          });
+        });
 
         // Logs
         Route::get('/logs', [LogController::class, 'getUserActivityLogs']);
@@ -124,11 +124,13 @@ Route::middleware(['auth:sanctum', ManagerMiddleware::class])
             Route::post('/missions/{mission}/insert-executions', 'createExecutions');
             Route::get('/missions/{mission}/executions', 'getExecutionsByMission');
             Route::get('/missions/{mission}/workplanOptions', 'getWorkplanOptionsByMission');
+            Route::post('/executions/deleteExecutions', 'deleteExecutions');
+            Route::post('/executions/update-executions', 'updateMultipleExecutions');
 
         });
-        
+
         Route::controller(ParticipationController::class)->group(function () {
-            
+
             Route::get('/missions/{mission}/testers', 'getTestersByMissionID');
 
         });
@@ -139,9 +141,9 @@ Route::middleware(['auth:sanctum', ManagerMiddleware::class])
         // });
     });
 
-    //  Route::controller(ParticipationController::class)->group(function () {
-    //     Route::get('/missions/{mission}/testers', 'getTestersByMissionID');
-    // });
+//  Route::controller(ParticipationController::class)->group(function () {
+//     Route::get('/missions/{mission}/testers', 'getTestersByMissionID');
+// });
 
 Route::middleware(['auth:sanctum', SupervisorMiddleware::class])
     ->prefix('v1')
@@ -164,7 +166,7 @@ Route::middleware(['auth:sanctum', TesterMiddleware::class])
         });
     });
 
-    //Route::post('/evidences/upload', [ExecutionController::class,'storeFile']);
+//Route::post('/evidences/upload', [ExecutionController::class,'storeFile']);
 
 Route::post('/login', [AuthController::class, 'login'])->middleware(CheckPasswordReset::class);
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');

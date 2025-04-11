@@ -12,7 +12,6 @@ class EvidenceRepository
             'file_name' => $fileName,
             'is_f_test' => $data['is_f_test'] ?? false,
             'execution_id' => $data['execution_id'] ?? null,
-            'remediation_id' => $data['remediation_id'] ?? null,
         ]);
     }
 

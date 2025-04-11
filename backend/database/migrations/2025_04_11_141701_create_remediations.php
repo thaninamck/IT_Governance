@@ -16,8 +16,8 @@ return new class extends Migration
             $table->string('description', 255)->nullable(); 
             $table->string('owner_cntct', 255); 
             $table->string('follow_up', 255)->nullable(); // Suivi de la remédiation
-            $table->foreignId('control_id')->constrained('controls');
-            $table->foreignId('mission_id')->constrained('missions'); // Clé étrangère vers missions
+            $table->foreignId('execution_id')->constrained('executions');
+            
 
             $table->timestamps();
         });
