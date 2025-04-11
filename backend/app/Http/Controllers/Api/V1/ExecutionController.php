@@ -92,6 +92,25 @@ class ExecutionController extends BaseController
         }
     }
 
+    public function getExecutionsByApp($appId)
+    {
+        try {
+
+            $executions = ExecutionResource::collection($this->executionService->getExecutionsByApp($appId));
+            if ($executions->isEmpty()) {
+                return $this->sendError('Aucune exécution trouvée pour cette system.', [], 404);
+            }
+
+            return $this->sendResponse(
+                $executions,
+                'Liste des exécutions récupérée avec succès.'
+            );
+
+        } catch (\Exception $e) {
+            return $this->sendError('Erreur lors de la récupération des exécutions.', ['error' => $e->getMessage()], 500);
+        }
+    }
+
     public function getExecutionsByMissionAndTester($missionId)
     {
         try {
@@ -112,6 +131,25 @@ class ExecutionController extends BaseController
         }
     }
 
+    public function getExecutionsByMissionAndSystemAndTester($missionId,$appId)
+    {
+        try {
+            $userId = auth()->user()->id;
+
+            $executions = ExecutionResource::collection($this->executionService->getExecutionsByMissionAndSystemAndTester($missionId, $userId,$appId));
+            if ($executions->isEmpty()) {
+                return $this->sendError('Aucune exécution trouvée pour cette mission et system et testeur.', [], 404);
+            }
+
+            return $this->sendResponse(
+                $executions,
+                'Liste des exécutions récupérée avec succès.'
+            );
+
+        } catch (\Exception $e) {
+            return $this->sendError('Erreur lors de la récupération des exécutions.', ['error' => $e->getMessage()], 500);
+        }
+    }
 
     /**
      * Update the specified resource in storage.

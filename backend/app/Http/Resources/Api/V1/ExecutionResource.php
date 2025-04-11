@@ -16,7 +16,8 @@ class ExecutionResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'executionId' => $this->execution_id,
+            
+            'id' => $this->execution_id,
             'executionModification' => $this->execution_modification,
             'executionRemark' => $this->execution_remark,
             'executionControlOwner' => $this->execution_control_owner,

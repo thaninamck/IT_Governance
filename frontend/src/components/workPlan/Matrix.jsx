@@ -40,7 +40,7 @@ function Matrix({ data, user, onRowClick, handleSaveexecutions }) {
   const [riskModified, setRiskModified] = useState(false);
 
   const transformData = (data) => {
-    console.log("datapp",data)
+   // console.log("datapp",data)
     const result = [];
     if (!data || !Array.isArray(data.applications)) {
       console.error(
@@ -72,7 +72,7 @@ function Matrix({ data, user, onRowClick, handleSaveexecutions }) {
             // Check if the ID is already in the Set
             if (!uniqueIds.has(uniqueId)) {
               uniqueIds.add(uniqueId); // Add the ID to the Set
-console.log('controlpp',control)
+//console.log('controlpp',control)
               result.push({
                 id: uniqueId,
                 application: appName,
@@ -102,7 +102,7 @@ console.log('controlpp',control)
         });
       });
     });
-    console.log("Données transformées:", result); // Ajouter un log pour déboguer
+  //  console.log("Données transformées:", result); // Ajouter un log pour déboguer
     return result;
   };
 
@@ -306,39 +306,8 @@ console.log('controlpp',control)
   field: "controlTester",
   headerName: "Testeur",
   width: 150,
-  // renderCell: (params) => {
-  //   return  (
-  //     <Select
-  //       value={testerValues[params.row.id] || params.row.controlTester || ""}
-  //       onChange={(event) => {
-  //         const selectedTesterId = event.target.value;
-  //         handleTesterChange(params.row.id, selectedTesterId)(event);
-  //       }}
-  //       fullWidth
-  //       variant="outlined"
-  //       size="small"
-  //     >
-  //       {loading ? (
-  //         <MenuItem disabled>Chargement...</MenuItem>
-  //       ) : testers.length > 0 ? (
-  //         testers.map((tester) => (
-  //           <MenuItem key={tester.id} value={tester.id}>
-  //             {tester.designation}
-  //           </MenuItem>
-  //         ))
-  //       ) : (
-  //         <MenuItem disabled>Aucun testeur trouvé</MenuItem>
-  //       )}
-  //     </Select>
-  //   ) 
-  // },
   renderCell: (params) => {
-    const controlTester = testerValues[params.row.id];
-    console.log('testeur',controlTester)
-  
-    return controlTester ? (
-      <span>{controlTester}</span>
-    ) : 
+    return  (
       <Select
         value={testerValues[params.row.id] || params.row.controlTester || ""}
         onChange={(event) => {
@@ -361,8 +330,40 @@ console.log('controlpp',control)
           <MenuItem disabled>Aucun testeur trouvé</MenuItem>
         )}
       </Select>
-    
+    ) 
   },
+
+  // renderCell: (params) => {
+  //   const controlTester = testerValues[params.row.id];
+  //  // console.log('testeur',controlTester)
+  
+  //   return controlTester ? (
+  //     <span>{controlTester}</span>
+  //   ) : 
+  //     <Select
+  //       value={testerValues[params.row.id] || params.row.controlTester || ""}
+  //       onChange={(event) => {
+  //         const selectedTesterId = event.target.value;
+  //         handleTesterChange(params.row.id, selectedTesterId)(event);
+  //       }}
+  //       fullWidth
+  //       variant="outlined"
+  //       size="small"
+  //     >
+  //       {loading ? (
+  //         <MenuItem disabled>Chargement...</MenuItem>
+  //       ) : testers.length > 0 ? (
+  //         testers.map((tester) => (
+  //           <MenuItem key={tester.id} value={tester.id}>
+  //             {tester.designation}
+  //           </MenuItem>
+  //         ))
+  //       ) : (
+  //         <MenuItem disabled>Aucun testeur trouvé</MenuItem>
+  //       )}
+  //     </Select>
+    
+  // },
 },
 
   ];
@@ -406,7 +407,7 @@ console.log('controlpp',control)
   
   // Gestion des cases à cocher pour les contrôles
   const handleControlCheckboxChange = (id) => (event) => {
-    console.log("id slcted", id);
+   // console.log("id slcted", id);
     const type = "control";
     setSelectedItems((prev) => {
       if (event.target.checked) {
@@ -459,7 +460,7 @@ console.log('controlpp',control)
 
   // Gestion des cases à cocher pour les risques
   const handleRiskCheckboxChange = (id) => (event) => {
-    console.log("id slcted", id);
+   // console.log("id slcted", id);
     const type = "risk";
     setSelectedItems((prev) => {
       if (event.target.checked) {
@@ -481,7 +482,7 @@ console.log('controlpp',control)
 
 
   const handleSave = async () => {
-    console.log("flattenedData", flattenedData);
+   // console.log("flattenedData", flattenedData);
     const dataToSend = {
       executions: flattenedData.map((item) => ({
         layerId: item.layerId,
@@ -551,7 +552,7 @@ useEffect(() => {
   if (data) {
     
     const transformedData = transformData(data);
-    console.log('mm',transformedData)
+   // console.log('mm',transformedData)
     // Utiliser une fonction de mise à jour pour éviter les dépendances cycliques
     setFlattenedData((prevFlattenedData) => {
       const mergedData = mergeData(transformedData, prevFlattenedData);
@@ -572,11 +573,11 @@ useEffect(() => {
 return (
     <>
       <div className="flex  items-center justify-start mb-6"></div>
-      {/* {true && ( */}
+       {true && ( 
         <div
           className="flex items-center gap-4 justify-end my-5 mr-4 space-x-4"
 
-          style={{ display: (user?.role === 'admin'/* || userRole === 'manager'*/) ? 'flex' :  'none'}}
+         // style={{ display: (user?.role === 'admin'/* || userRole === 'manager'*/) ? 'flex' :  'none'}}
 
         >
           {/* Label */}
@@ -656,7 +657,7 @@ return (
             )}
           </div>
         </div>
-      {/* )} */}
+       )} 
 
       <div className="mr-4">
         <TableContainer component={Paper} className="overflow-auto ">

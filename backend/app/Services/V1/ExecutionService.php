@@ -25,10 +25,19 @@ class ExecutionService
     {
         return $this->executionRepository->getExecutionsByMission($missionId);
     }
+    public function getExecutionsByApp($appId)
+    {
+        return $this->executionRepository->getExecutionsByApp($appId);
+    }
 
     public function getExecutionsByMissionAndTester($missionId,$userId)
     {
         return $this->executionRepository->getExecutionsByMissionAndTester($missionId,$userId);
+    }
+
+    public function getExecutionsByMissionAndSystemAndTester($missionId,$userId,$appId)
+    {
+        return $this->executionRepository->getExecutionsByMissionAndSystemAndTester($missionId,$userId,$appId);
     }
 
     public function createExecutions(array $data): Execution

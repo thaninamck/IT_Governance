@@ -64,19 +64,17 @@ public function getSystemsByMissionID($missionId)
         return null; // ou lancer une exception
     }
 
-     
-
-    return [
-        'id' => $mission->id,
-        'mission_name' => $mission->mission_name,
-        'systems' => $mission->systems->map(function ($system) {
+    return response()->json([
+        'systems' => $mission->systems->map(function ($system) use ($mission) {
             return [
+                'missionId' => $mission->id,
+                'missionName' => $mission->mission_name,
                 'id' => $system->id,
                 'name' => $system->name,
                 'description' => $system->description,
-                'ownerId'=>$system->owner->id,
-                'ownerName'=>$system->owner->full_name,
-                'ownerContact' => $system->owner->email,
+                'ownerId' => $system->owner->id ?? null,
+                'ownerName' => $system->owner->full_name ?? null,
+                'ownerContact' => $system->owner->email ?? null,
                 'layers' => $system->layers->map(function ($layer) {
                     return [
                         'id' => $layer->id,
@@ -85,7 +83,7 @@ public function getSystemsByMissionID($missionId)
                 })->toArray()
             ];
         })->toArray()
-    ];
+    ]);
 }
 
 public function getMissionSystemsById($id){

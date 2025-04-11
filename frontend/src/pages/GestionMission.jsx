@@ -30,7 +30,7 @@ import SideBarStdr from "../components/sideBar/SideBarStdr";
 
 function GestionMission() {
   const navigate = useNavigate();
- const { user} = useAuth();
+ const { user,viewMode} = useAuth();
  
 
   const {
@@ -68,7 +68,7 @@ function GestionMission() {
     handlePopupClose,
     isMissionCreated,
     handleRowClick,
-  } = useGestionMission(user);
+  } = useGestionMission(user,viewMode);
 
   console.log(user)
   // Colonnes de la table

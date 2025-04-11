@@ -6,160 +6,6 @@ import { api } from '../../Api';
 
 function AddMatrix({ user,missionId ,dataFormat}) {
   
-  const data1 = {
-    // applications: [
-    //   {
-    //     id: "app1",
-    //     description: "USSD",
-    //     layers: [
-    //       {
-    //         id: "l1",
-    //         name: "OS",
-    //         risks: [
-    //           {
-    //             id: "1",
-    //             nom: "SDLC requirements are not exist or are not conducted.",
-    //             description:
-    //               "furfuzirfyzuf iuzyfoz ruozc furfuzirfyzuf iuzyfoz ruozc ojfyt yth iof ojfyt yth iof",
-    //             owner: "sisi",
-    //             controls: [
-    //               {
-    //                 id: "4",
-    //                 description:
-    //                   "Duties and areas of responsibility are separated, in order to reduce opportunities for unauthorized modification...",
-    //                 majorProcess: "Technical",
-    //                 subProcess: "Access control",
-    //                 type:"detectif",
-    //                 testScript:
-    //                   "1. Obtain the access management policy,1.1. Ensure that the policy is validated, signed 2. Obtain HR list of departures during the.......",
-    //                 owner: "titi",
-    //               },
-    //             ],
-    //           },
-    //         ],
-    //       },
-    //       {
-    //         id: "l1",
-    //         name: "DB",
-    //         risks: [
-    //           {
-    //             id: "2",
-    //             nom: "SDLC1 requirements are not exist or are not conducted.",
-    //             description:
-    //               "furfuzirfyzuf iuzyfoz ruozc furfuzirfyzuf iuzyfoz ruozc ojfyt yth iof ojfyt yth iof",
-    //             owner: "TEST",
-    //             controls: [
-    //               {
-    //                 id: "4",
-    //                 description:
-    //                   "Duties and areas of responsibility are separated, in order to reduce opportunities for unauthorized modification...",
-    //                 majorProcess: "Technical",
-    //                 subProcess: "Access control",
-    //                 type:"detectif",
-    //                 testScript:
-    //                   "1. Obtain the access management policy,1.1. Ensure that the policy is validated, signed 2. Obtain HR list of departures during the.......",
-    //                 owner: "mimi",
-    //               },
-    //             ],
-    //           },
-    //         ],
-    //       },
-
-    //     ],
-    //     owner: "",
-    //   },
-
-    //   {
-    //     id: "app2",
-    //     description: "New SNOC",
-    //     layers: [
-    //       {
-    //         id: "l1",
-    //         name: "app",
-    //         risks: [
-    //           {
-    //             id: "5",
-    //             nom: "SDLCppppppp requirements are not exist or are not conducted.",
-    //             description:
-    //               "ttttttttttttttttt ruozc furfuzirfyzuf iuzyfoz ruozc ojfyt yth iof ojfyt yth iof",
-    //             owner: "sisi 3",
-    //             controls: [
-    //               {
-    //                 id: "1",
-    //                 description:
-    //                   "Duties 212and areas of responsibility are separated, in order to reduce opportunities for unauthorized modification...",
-    //                 majorProcess: "Technical",
-    //                 subProcess: "Access control",
-    //                 type:"detectif",
-    //                 testScript:
-    //                   "1. Obtain the access management policy,1.1. Ensure that the policy is validated, signed 2. Obtain HR list of departures during the.......",
-    //                 owner: "titi",
-    //               },
-    //             ],
-    //           },
-    //         ],
-    //       },
-    //       {
-    //         id: "l4",
-    //         name: "DB",
-    //         risks: [
-    //           {
-    //             id: "2",
-    //             nom: "SDLC1 requirements are not exist or are not conducted.",
-    //             description:
-    //               "furfuzirfyzuf iuzyfoz ruozc furfuzirfyzuf iuzyfoz ruozc ojfyt yth iof ojfyt yth iof",
-    //             owner: "TEST",
-    //             controls: [
-    //               {
-    //                 id: "8",
-    //                 description:
-    //                   "Duties and areas of responsibility are separated, in order to reduce opportunities for unauthorized modification...",
-    //                 majorProcess: "Technical",
-    //                 subProcess: "Access control",
-    //                 type:"correctif",
-    //                 testScript:
-    //                   "1. Obtain the access management policy,1.1. Ensure that the policy is validated, signed 2. Obtain HR list of departures during the.......",
-    //                 owner: "mimi",
-    //               },
-    //             ],
-    //           },
-    //         ],
-    //       },
-    //       {
-    //         id: "3",
-    //         name: "OS",
-    //         risks: [
-    //           {
-    //             id: "6",
-    //             nom: " requirements are not exist or are not conducted.",
-    //             description:
-    //               "furfuzirfyzuf iuzyfoz ruozc furfuzirfyzuf iuzyfoz ruozc ojfyt yth iof ojfyt yth iof",
-    //             owner: "sisi 3",
-    //             controls: [
-    //               {
-    //                 id: "9",
-    //                 description:
-    //                   "Duties  of responsibility are separated, in order to reduce opportunities for unauthorized modification...",
-    //                 majorProcess: "Technical",
-    //                 subProcess: "Access control",
-    //                 type:"detectif",
-    //                 testScript:
-    //                   "1. Obtain the access management policy,1.1. Ensure that the policy is validated, signed 2. Obtain HR list of departures during the.......",
-    //                 owner: "AAA",
-    //               },
-    //             ],
-    //           },
-    //         ],
-    //       },
-
-    //     ],
-    //     owner: "",
-    //   },
-    // ]
-
-  };
-
-
   const [controleListe, setControleListe] = useState([]);
 
   const [loading, setLoading] = useState(true);
@@ -179,12 +25,12 @@ function AddMatrix({ user,missionId ,dataFormat}) {
     const fetchMatrixData = async () => {
       try {
          const response = await api.get(`/missions/${missionId}/getmatrix`);
-        console.log('resp',response.data)
+      //  console.log('resp',response.data)
         // setControleListe(mapToFrontendStructure(response.data));
         const rows = transformExecutionsToAppStructure(response.data);
-        console.log('data',rows)
+       // console.log('data',rows)
         setControleListe(rows);
-        console.log('controle',controleListe)
+       // console.log('controle',controleListe)
       } catch (error) {
         console.error('Erreur lors de la récupération de la matrice :', error);
       } finally {
@@ -198,7 +44,7 @@ function AddMatrix({ user,missionId ,dataFormat}) {
   }, [missionId]);
 
 useEffect(()=>{
-  console.log('tstst',controleListe);
+ // console.log('tstst',controleListe);
 },[controleListe])
 
 

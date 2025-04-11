@@ -219,6 +219,16 @@ Route::prefix('v1')->group(function () {
         Route::get('/missions/{missionId}/getmatrix', 'getExecutionsByMission');
     });
 });
+Route::prefix('v1')->group(function () {
+    Route::controller(ExecutionController::class)->group(function () {
+        Route::get('/missions/{appId}/getexecutionsList', 'getExecutionsByApp');
+    });
+});
+Route::middleware('auth:sanctum')->prefix('v1')->group(function () {
+    Route::controller(ExecutionController::class)->group(function () {
+        Route::get('/missions/{missionId}/{appId}/getexecutionsListForTesteur', 'getExecutionsByMissionAndSystemAndTester');
+    });
+});
 
 
 //gestion layers
@@ -258,6 +268,10 @@ Route::prefix('v1')->group(function () {
     Route::controller(SystemController::class)->group(function () {
         Route::delete('/deletesystemId/{id}', 'deleteSystem');
     });
+});
+
+Route::prefix('v1')->controller(SystemController::class)->group(function () {
+    Route::get('/systems/{systemId}', 'getsystemInfo');
 });
 
 // Route::prefix('v1')->group(function () {
