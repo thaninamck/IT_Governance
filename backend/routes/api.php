@@ -184,7 +184,7 @@ Route::post('/notifications/{id}/read', [NotificationController::class, 'markNot
 
 // Route::post('/insert-executions', [ExecutionController::class, 'createExecutions'])->middleware(ManagerMiddleware::class,'auth:sanctum');
 Route::get('/executions/get-options', [ExecutionController::class, 'getExecutionStatusOptions']);
-//Route::get('/missions/{mission}/members', [MissionController::class, 'getMembersByMission']);
+Route::get('/missions/{mission}/executions', [ExecutionController::class, 'getExecutionsByMission']);
 Route::post('/reset-password', [AuthController::class, 'resetPassword']);
 
 

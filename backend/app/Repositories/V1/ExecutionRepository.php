@@ -55,6 +55,7 @@ public function getExecutionsByMission($missionId)
 
             json_agg( json_build_object(
               'step_execution_id', se.id,
+              'step text' , sts.text,
               'step_comment', se.comment,
               'step_checked', se.checked
             )) AS steps,
@@ -147,6 +148,7 @@ public function getExecutionById($executionId)
 
             json_agg( json_build_object(
               'step_execution_id', se.id,
+              'step text' , sts.text,
               'step_comment', se.comment,
               'step_checked', se.checked
             )) AS steps,
@@ -210,6 +212,7 @@ public function getExecutionById($executionId)
 
             json_agg( json_build_object(
               'step_execution_id', se.id,
+              'step text' , sts.text,
               'step_comment', se.comment,
               'step_checked', se.checked
             )) AS steps,

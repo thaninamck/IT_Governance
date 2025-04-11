@@ -58,9 +58,11 @@ class ExecutionResource extends JsonResource
 
         'userId' => $this->user_id,
         'userFullName' => $this->tester_full_name,
-
-        'steps' => json_decode($this->steps ?? '[]', true),
+'testScript' => $this->formatStepsText($this->steps),
+        //'steps' => json_decode($this->steps ?? '[]', true),
         'sources' => json_decode($this->sources ?? '[]', true),
+       // 'sources' => $this->formatSourcesText($this->sources),
+
     ];
 }
 
@@ -132,6 +134,33 @@ protected function formatControls($controls): array
             'code' => $control['code']
         ];
     }, $controlsArray);
+}
+private function formatStepsText($steps): string
+{
+   // Si steps est un JSON encodé en chaîne, on le décode
+   $decoded = is_string($steps) ? json_decode($steps, true) : $steps;
+
+   if (!is_array($decoded)) return '';
+
+   return collect($decoded)
+       ->pluck('step text')
+       ->filter(fn($comment) => !is_null($comment) && trim($comment) !== '')
+       ->map(fn($comment) => ucfirst(trim($comment)))
+       ->implode('. ') . (count($decoded) ? '.' : '');
+}
+private function formatSourcesText($sources): ?string
+{
+    $decoded = is_string($sources) ? json_decode($sources, true) : $sources;
+
+    if (!is_array($decoded)) return null;
+
+    $uniqueNames = collect($decoded)
+        ->pluck('source_name')
+        ->filter(fn($name) => !is_null($name) && trim($name) !== '')
+        ->unique()
+        ->values();
+
+    return $uniqueNames->isNotEmpty() ? $uniqueNames->implode(', ') : null;
 }
 
 }
