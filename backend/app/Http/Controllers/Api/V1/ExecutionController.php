@@ -274,7 +274,14 @@ public function deleteExecutions(Request $request)
     }
 }
 
-
+public function getExecutionStatusOptions(){
+    try {
+        $data = $this->executionService->getExecutionStatusOptions();
+        return $this->sendResponse($data, "Execution status options retrieved successfully", 200);
+    } catch (\Exception $e) {
+        return $this->sendError("Error while retrieving execution status options", ['error' => $e->getMessage()], 500);
+    }
+}
 public function launchExecution($executionId){
     try {
        return $this->executionService->launchExecution($executionId) ? $this->sendResponse("Execution launched successfully", [], 200) : $this->sendError("launching execution failed", [], 404)
