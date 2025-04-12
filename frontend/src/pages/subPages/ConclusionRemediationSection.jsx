@@ -7,7 +7,7 @@ import EditableTextarea from '../../components/EditableInput';
 import Remediation from '../../components/Forms/Remediation';
 import Table from '../../components/Table';
 import DecisionPopUp from '../../components/PopUps/DecisionPopUp';
-
+import useExecution from '../../Hooks/useExecution';
 function ConclusionRemediationSection({
   selectedMulti,
   setSelectedMulti,
@@ -36,6 +36,18 @@ function ConclusionRemediationSection({
   controleID,
   onClose,
 }) {
+
+  const {options }=useExecution();
+  const statuses = options.map((status) => ({
+    label: status.status_name,  // Ce que tu affiches à l'utilisateur
+    value: status.id            // L'ID qui est utilisé en interne
+  }));
+  
+  console.log("Options",statuses);
+  const fallbackStatuses = [
+    { label: "Aucun status trouvé pour le moment ", value: 0 },
+    
+  ]
   return (
     <div>
       <div className='mr-5'>
@@ -46,14 +58,8 @@ function ConclusionRemediationSection({
         <label className="mr-8 font-medium">Status</label>
         <SelectInput
           label=""
-          options={[
-            { label: "Applied", value: "Applied" },
-            { label: "Partially Applied", value: "Partially Applied" },
-            { label: "Not Applied", value: "Not Applied" },
-            { label: "Not Tested", value: "Not Tested" },
-            { label: "Not Applicable", value: "Not Applicable" },
-          ]}
-          value={selectedMulti}
+          options={statuses.length > 0 ? statuses : fallbackStatuses}
+                    value={selectedMulti}
           onChange={(e) => setSelectedMulti(e.target.value)}
           width="200px"
           multiSelect={false}

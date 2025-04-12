@@ -112,7 +112,18 @@ class ExecutionController extends BaseController
         }
     }
 
-
+public function getExecutionById($executionId)
+{
+    $returnedExecution = $this->executionService->getExecutionById($executionId);
+    if ($returnedExecution) {
+        return $this->sendResponse(
+            $returnedExecution,
+            'Execution retrieved successfully'
+        );
+    } else {
+        return $this->sendError('Execution not found', [], 404);
+    }
+}
     /**
      * Update the specified resource in storage.
      */
