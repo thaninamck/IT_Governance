@@ -54,20 +54,15 @@ function DescriptionTestScriptSection({
         />
       </div>
       <div className=" flex flex-row    gap-1 ">
-        <label htmlFor="Description" className="text-font-gray font-medium">
-          Description:
-        </label>
-        <div className="w-full mr-6 ">
-          <TextDisplay
-            content={description}
-            isEditing={isEditing}
-            onSave={handleSave}
-            onContentChange={setDescription}
-            borderWidth="100%"
-            labelWidth="120px"
-            flexDirection="column"
-          />
-        </div>
+      <InputForm
+          type="text"
+          label="Description:"
+          placeholder=""
+          width="55%"
+          flexDirection="flex-row gap-4 items-center mb-2"
+          value={description}
+          readOnly
+        />
       </div>
 
       <div className=" mt-2 flex flex-col gap-2  w-[98%]  ">

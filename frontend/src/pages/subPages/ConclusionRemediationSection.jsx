@@ -39,15 +39,15 @@ function ConclusionRemediationSection({
 
   const {options }=useExecution();
   const statuses = options.map((status) => ({
-    label: status.status_name,  // Ce que tu affiches à l'utilisateur
-    value: status.id            // L'ID qui est utilisé en interne
+    label: status.status_name,  
+    value: status.id            
   }));
   
-  console.log("Options",statuses);
   const fallbackStatuses = [
     { label: "Aucun status trouvé pour le moment ", value: 0 },
     
   ]
+  
   return (
     <div>
       <div className='mr-5'>
