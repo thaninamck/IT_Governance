@@ -158,6 +158,8 @@ Route::middleware(['auth:sanctum', TesterMiddleware::class])
             Route::get('/missions/{mission}/executions-for-tester', 'getExecutionsByMissionAndTester');
             Route::put('/executions/update-execution/{execution}', 'updateExecution');
             Route::put('/executions/launch-execution/{execution}', 'launchExecution');
+            Route::get('/executions/get-options', 'getExecutionStatusOptions');
+            Route::get('/executions/get-execution/{execution}', 'getExecutionById');
 
         });
         Route::controller(EvidenceController::class)->group(function () {
@@ -183,7 +185,6 @@ Route::post('/notifications/read-all', [NotificationController::class, 'markAllA
 Route::post('/notifications/{id}/read', [NotificationController::class, 'markNotificationAsRead'])->middleware('auth:sanctum');
 
 // Route::post('/insert-executions', [ExecutionController::class, 'createExecutions'])->middleware(ManagerMiddleware::class,'auth:sanctum');
-Route::get('/executions/get-options', [ExecutionController::class, 'getExecutionStatusOptions']);
 Route::get('/missions/{mission}/executions', [ExecutionController::class, 'getExecutionsByMission']);
 Route::post('/reset-password', [AuthController::class, 'resetPassword']);
 

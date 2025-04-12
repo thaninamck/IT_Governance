@@ -31,7 +31,10 @@ class ExecutionService
     {
         return $this->executionRepository->getExecutionsByMission($missionId);
     }
-
+public function getExecutionById($executionId)
+{
+    return $this->executionRepository->getExecutionById($executionId);
+}
     public function getExecutionStatusOptions()
     {
         return $this->statusRepository->getExecutionStatusOptions();
