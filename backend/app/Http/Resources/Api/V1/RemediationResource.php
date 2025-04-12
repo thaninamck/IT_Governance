@@ -14,6 +14,12 @@ class RemediationResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        return parent::toArray($request);
+        return [
+            'id'=>$this->id,
+            'ownerContact'=>$this->owner_cntct,
+            'description'=>$this->description,
+            'suivi'=>$this->follow_up,
+            'executionId'=>$this->execution_id
+        ];
     }
 }
