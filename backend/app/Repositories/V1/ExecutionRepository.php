@@ -44,7 +44,7 @@ class ExecutionRepository
         SELECT 
             e.id AS execution_id, 
             e.cntrl_modification AS execution_modification,
-            e.comment AS execution_remark,
+            e.comment AS execution_comment,
             e.control_owner AS execution_control_owner,
             e.launched_at AS execution_launched_at,
             e.ipe AS execution_ipe,
@@ -132,62 +132,35 @@ class ExecutionRepository
 public function getExecutionById($executionId)
 {
     return DB::select("
-        SELECT 
-            e.id AS execution_id, 
-            e.cntrl_modification AS execution_modification,
-            e.comment AS execution_remark,
-            e.control_owner AS execution_control_owner,
-            e.launched_at AS execution_launched_at,
-            e.ipe AS execution_ipe,
-            e.effectiveness AS execution_effectiveness,
-            e.design AS execution_design,
-            sts.control_id,
+       SELECT 
+    e.id AS execution_id,
+    sts.control_id,
 
-            json_agg( json_build_object(
-              'step_execution_id', se.id,
-              'step text' , sts.text,
-              'step_comment', se.comment,
-              'step_checked', se.checked
-            )) AS steps,
+    json_agg(DISTINCT jsonb_build_object(
+        'step_execution_id', se.id,
+        'step_text', sts.text,
+        'step_comment', se.comment,
+        'step_checked', se.checked
+    )) AS steps,
 
-            json_agg( json_build_object(
-              'source_name', so.name
-            )) AS sources,
+    json_agg(DISTINCT jsonb_build_object(
+        'evidence_id', ev.id,
+        'file_name', ev.file_name,
+        'is_f_test', ev.is_f_test
+    )) AS evidences
 
-            st.id AS status_id,
-            st.status_name,
+FROM public.executions e
+JOIN public.step_executions se ON e.id = se.execution_id
+JOIN public.step_test_scripts sts ON se.step_id = sts.id
+JOIN public.controls c ON c.id = sts.control_id
+LEFT JOIN public.executions_evidences ev ON ev.execution_id = e.id
 
-            c.id AS control_id, 
-            c.description AS control_description,
-            c.code AS control_code,
-            mp.description AS major_process,
-            sp.name AS sub_process,
-            t.name AS type_name,
-            u.id AS user_id,
-            CONCAT(u.first_name, ' ', u.last_name) AS tester_full_name
+WHERE e.id = ?
 
-        FROM public.executions e
-        JOIN public.step_executions se ON e.id = se.execution_id
-        JOIN public.step_test_scripts sts ON se.step_id = sts.id
-        JOIN public.controls c ON c.id = sts.control_id
-        LEFT JOIN public.statuses st ON e.status_id = st.id
-        LEFT JOIN public.major_processes mp ON c.major_id = mp.id
-        LEFT JOIN public.sub_processes sp ON c.sub_id = sp.id
-        LEFT JOIN public.types t ON c.type_id = t.id
-        JOIN public.cntrl_srcs cs ON cs.control_id = c.id
-        JOIN public.sources so ON cs.source_id = so.id
-        JOIN public.users u ON e.user_id = u.id
+GROUP BY 
+    e.id, 
+    sts.control_id;
 
-        WHERE e.id = ?
-
-        GROUP BY 
-            e.id, e.cntrl_modification, e.comment, e.control_owner, e.launched_at, 
-            e.ipe, e.effectiveness, e.design,
-            sts.control_id,
-            st.id, st.status_name,
-            t.name, sp.name, mp.description,
-            c.id, c.description, c.code,
-            u.id, u.first_name, u.last_name
     ", [$executionId]);
 }
 
@@ -198,7 +171,7 @@ public function getExecutionById($executionId)
     SELECT 
         e.id AS execution_id, 
         e.cntrl_modification AS execution_modification,
-        e.comment AS execution_remark,
+        e.comment AS execution_comment,
         e.control_owner AS execution_control_owner,
         e.launched_at AS execution_launched_at,
         e.ipe AS execution_ipe,

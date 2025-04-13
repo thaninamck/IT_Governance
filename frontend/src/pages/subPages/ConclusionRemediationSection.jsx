@@ -35,6 +35,7 @@ function ConclusionRemediationSection({
   isAddingAnother,
   controleID,
   onClose,
+  
 }) {
 
   const {options }=useExecution();
@@ -59,7 +60,7 @@ function ConclusionRemediationSection({
         <SelectInput
           label=""
           options={statuses.length > 0 ? statuses : fallbackStatuses}
-                    value={selectedMulti}
+          value={selectedMulti}
           onChange={(e) => setSelectedMulti(e.target.value)}
           width="200px"
           multiSelect={false}

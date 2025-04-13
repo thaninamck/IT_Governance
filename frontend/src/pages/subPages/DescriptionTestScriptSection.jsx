@@ -14,6 +14,7 @@ function DescriptionTestScriptSection({
   type,
   majorProcess,
   subProcess,
+  controlOwner,
   onTestScriptChange, // Fonction pour récupérer les données du test script en temps réel
 }) {
   return (
@@ -52,6 +53,15 @@ function DescriptionTestScriptSection({
           value={subProcess}
           readOnly
         />
+        <InputForm
+          type="text"
+          label="Owner du controle"
+          placeholder=""
+          width="55%"
+          flexDirection="flex-row gap-4 items-center mb-2"
+          value={controlOwner}
+          readOnly
+        />
       </div>
       <div className=" flex flex-row    gap-1 ">
       <InputForm
@@ -79,7 +89,7 @@ function DescriptionTestScriptSection({
         /> */}
 
         <InstructionSplitter
-          instructions={testScript}
+          steps={testScript}
           onChange={onTestScriptChange} // Passer la fonction de rappel
         />
       </div>

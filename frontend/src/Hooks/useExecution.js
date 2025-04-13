@@ -18,11 +18,23 @@ const useExecution = () => {
       setOptions(response.data);
     } catch (error) {
       setError(error);
-      toast.error("Failed to fetch status options");
     } finally {
       setLoading(false);
     }
   }
+
+  const getExecutionById =  async ($id) => {
+        setLoading(true);
+        try {
+        const response = await api.get(`/executions/get-execution/${$id}`);
+        return response.data;
+        } catch (error) {
+        setError(error);
+        toast.error("Failed to fetch execution");
+        } finally {
+        setLoading(false);
+        }
+    };
  useEffect(() => {
     fetchOptions();
   }, []);
@@ -30,6 +42,7 @@ const useExecution = () => {
     loading,
     error,
    options,
+   getExecutionById
     
     
     

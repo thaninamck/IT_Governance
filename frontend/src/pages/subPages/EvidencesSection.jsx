@@ -19,6 +19,8 @@ function EvidencesSection({
   activePanel,
   setActivePanel,
   handleTabChange,
+  selections,
+  onStatesChange
 }) {
   return (
     <div >
@@ -26,7 +28,9 @@ function EvidencesSection({
         <Separator text={"Evidences"} />
       </div>
       <div className="flex items-center justify-center mt-16 mb-12">
-        <ToggleButton onSelectionChange={handleSelectionChange} />
+        <ToggleButton selections={selections}
+        onSelectionChange={handleSelectionChange}
+        onStatesChange={onStatesChange} />
       </div>
 
       {/* Contenu des onglets */}

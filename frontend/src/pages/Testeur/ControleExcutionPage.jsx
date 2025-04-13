@@ -18,18 +18,47 @@ import autoTable from "jspdf-autotable";
 import emailjs from "emailjs-com";
 import { useLocation, useNavigate } from "react-router-dom";
 import { PermissionRoleContext } from "../../Context/permissionRoleContext";
-
+import useExecution from "../../Hooks/useExecution";
 // Initialize EmailJS with your userID
 emailjs.init("oAXuwpg74dQwm0C_s"); // Replace 'YOUR_USER_ID' with your actual userID
 
-function ControleExcutionPage() {
+ function ControleExcutionPage() {
   // Accédez à userRole et setUserRole via le contexte
   const { userRole, setUserRole } = useContext(PermissionRoleContext);
+  const {loading ,getExecutionById}=useExecution();
   const location = useLocation();
   const controleData = location.state?.controleData || {};
   console.log(controleData);
 
-  const [commentaire, setCommentaire] = useState("");
+  const [executionData, setExecutionData] = useState(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const data = await getExecutionById(controleData.executionId);
+  
+      if (data && Array.isArray(data)) {
+        const parsedData = data.map(item => ({
+          ...item,
+          steps: JSON.parse(item.steps),
+          evidences: JSON.parse(item.evidences)
+        }));
+  
+        setExecutionData(parsedData);
+      }
+    };
+  
+    if (controleData.executionId) {
+      fetchData();
+    }
+  }, [controleData.executionId]);
+const [evideces, setEvidences] = useState([]);
+const [steps, setSteps] = useState([]);
+useEffect(() => {
+  console.log("Execution Data:", executionData);
+  setEvidences(executionData?.[0]?.evidences || []);
+  setSteps(executionData?.[0]?.steps || []);
+}, [executionData]);
+  const [commentaire, setCommentaire] = useState(controleData.commentaire || ""); 
   const [isEditing, setIsEditing] = useState(true);
   const statusOptions = ["Terminé", "En_cours", "Non_commencee"];
   const statusColors = {
@@ -37,19 +66,38 @@ function ControleExcutionPage() {
     En_cours: "orange",
     Non_Commencée: "gray",
   };
-  const [selectedMulti, setSelectedMulti] = useState("");
+  const [selectedMulti, setSelectedMulti] = useState(controleData.statusId);
+
+  useEffect(() => {
+    console.log("Selected Multi:", selectedMulti);
+  }, [selectedMulti]); // Log the selectedMulti whenever it changes
+
+
   const [showRemediation, setShowRemediation] = useState(false);
   const [showPopup, setShowPopup] = useState(false);
   const [description, setDescription] = useState(
     controleData.controlDescription || ""
   );
   const [testScript, setTestScript] = useState(controleData.testScript || "");
-  const [type, setType] = useState(controleData.type || "");
+  const [type, setType] = useState(controleData.typeName || "");
+  const [controlOwner, setControlOwner] = useState(controleData.executionControlOwner
+    || "");
   const [majorProcess, setMajorProcess] = useState(
     controleData.majorProcess || ""
   );
   const [subProcess, setSubProcess] = useState(controleData.subProcess || "");
   const [controleID, setControleID] = useState(controleData.controlCode || "");
+  const [selections,setSelections] = useState({
+    IPE: controleData.ipe,           
+    Design: controleData.design,      
+    Effectiveness: controleData.effectiveness  
+  });
+
+  const handleStatesChange = (selections) => {
+    console.log("Depuis ControlExecution :", selections);
+    setSelections(selections);
+  };
+
 
   const updateStatusBasedOnSuivi = () => {
     setAction((prevActions) =>
@@ -332,6 +380,7 @@ function ControleExcutionPage() {
 
   const [testScriptData, setTestScriptData] = useState([]); // État pour stocker les données du test script
   const handleTestScriptChange = (data) => {
+    console.log("Test Script Data:", data);
     setTestScriptData(data); // Mettre à jour les données du test script en temps réel
   };
 
@@ -525,7 +574,7 @@ function ControleExcutionPage() {
   };
 
   const navigate = useNavigate();
-
+  
   const handleRowClick = (rowData) => {
     // Naviguer vers la page de détails avec l'ID du contrôle dans l'URL
     navigate(`/remediation/${rowData.id}`, {
@@ -581,13 +630,14 @@ function ControleExcutionPage() {
         <DescriptionTestScriptSection
           description={description}
           setDescription={setDescription}
-          testScript={testScript}
+          testScript={steps}
           setTestScript={setTestScript}
           isEditing={isEditing}
           handleSave={handleSave}
           type={type}
           majorProcess={majorProcess}
           subProcess={subProcess}
+          controlOwner={controlOwner}
           onTestScriptChange={handleTestScriptChange} // Transmettre la fonction de rappel
         />
         <div className=" max-h-screen min-h-screen">
@@ -601,6 +651,8 @@ function ControleExcutionPage() {
             activePanel={activePanel}
             setActivePanel={setActivePanel}
             handleTabChange={handleTabChange}
+            selections={selections}
+            onStatesChange={handleStatesChange} 
           />
         </div>
 
@@ -634,6 +686,7 @@ function ControleExcutionPage() {
           isAddingAnother={isAddingAnother}
           controleID={controleID}
           onClose={onClose}
+          
         />
         {showPopup && (
           <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-md z-50">
