@@ -73,7 +73,7 @@ class MissionController extends BaseController
 
             // Données validées
             $missionData = $validator->validated();
-            $missionData['status_id'] = 16; // Définir le statut par défaut
+            $missionData['status_id'] = 10; // Définir le statut par défaut non commencée
 
             // Création de la mission
             $mission = $this->missionService->createMission($missionData);
@@ -269,7 +269,7 @@ class MissionController extends BaseController
 
                     // Données validées
                     $validatedData = $validator->validated();
-                    $validatedData['status_id'] = 9; // Définir le statut par défaut
+                    $validatedData['status_id'] = 10; // Définir le statut par défaut NOn commencée
 
                     // Création de la mission
                     $mission = $this->missionService->createMission($validatedData);

@@ -12,5 +12,4 @@ class StatusRepository
                      ->select('id', 'status_name')
                      ->get();
     }
-    
 }

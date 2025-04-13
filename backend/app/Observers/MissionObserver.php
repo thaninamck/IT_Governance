@@ -12,8 +12,16 @@ class MissionObserver
      */
     public function saving(Mission $mission)
     {
+
+        \Log::info('MissionObserver - saving triggered', [
+            'mission_id' => $mission->id,
+            'start_date' => $mission->start_date,
+            'end_date' => $mission->end_date,
+            'status_id_before' => $mission->status_id,
+        ]);
+        
         // Liste des statuts que l'Observer doit gérer
-        $managedStatuses = [16, 9, 17];
+        $managedStatuses = [10, 9, 11];
 
         // Si le statut actuel n'est pas dans la liste des statuts gérés, on ne fait rien
         if (!in_array($mission->status_id, $managedStatuses)) {
@@ -25,11 +33,11 @@ class MissionObserver
         $endDate = Carbon::parse($mission->end_date);
 
         if ($currentDate < $startDate) {
-            $mission->status_id = 16; // Non commencée
+            $mission->status_id = 10; // Non commencée
         } elseif ($currentDate >= $startDate && $currentDate <= $endDate) {
             $mission->status_id = 9; // En cours
         } elseif ($currentDate > $endDate) {
-            $mission->status_id = 17; // En retard
+            $mission->status_id = 11; // En retard
         }
     }
 

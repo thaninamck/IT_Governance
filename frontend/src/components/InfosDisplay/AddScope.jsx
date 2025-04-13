@@ -8,7 +8,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { api } from '../../Api';
 import { useSystem } from '../../Hooks/useSystem';
 
-function AddScope({ title, text, text1, onToggleForm, showForm, user, missionId }) {
+function AddScope({ dataFormat,title, text, text1, onToggleForm, showForm, user, missionId,missionName }) {
   const {
     applications,
     setApplications,
@@ -25,7 +25,7 @@ function AddScope({ title, text, text1, onToggleForm, showForm, user, missionId 
     confirmDeleteMission,
     handleEditRow,
     handleDecisionResponse
-  } = useSystem(missionId, user, showForm, onToggleForm);
+  } = useSystem(missionId, user, showForm, onToggleForm,missionName);
 
   const columnsConfig = [
     { field: 'name', headerName: 'Nom', width: 170, editable: true },
@@ -67,7 +67,7 @@ function AddScope({ title, text, text1, onToggleForm, showForm, user, missionId 
     }
   },
     // Ajouter la colonne "actions" conditionnellement
-    ...((/*user?.role === 'manager' ||*/ user?.role === 'admin')
+    ...((dataFormat?.profileName === 'manager' || user?.role === 'admin')
       ? [{ field: 'actions', headerName: 'Action', width: 80 }]
       : [])
   ];
@@ -81,7 +81,8 @@ function AddScope({ title, text, text1, onToggleForm, showForm, user, missionId 
   const navigate = useNavigate(); // Hook pour la navigation
   const handleRowClick = (rowData) => {
     // Naviguer vers la page de détails avec l'ID du contrôle dans l'URL
-    navigate(`/missions/${missionId}/${rowData.nomApp}`, { state: { AppData: rowData } });
+    //navigate(`/missions/${missionId}/${rowData.name}`, { state: { AppData: rowData } });
+    navigate(`/missions/${missionName}/${rowData.name}`, { state: { AppData: rowData } });
     console.log('Détails du app sélectionné:', rowData);
   };
 
@@ -94,7 +95,7 @@ function AddScope({ title, text, text1, onToggleForm, showForm, user, missionId 
         <hr className="flex-grow border-t border-[var(--blue-menu)]" />
       </div>
 
-      {(/*user?.role === 'manager' ||*/ user?.role=== 'admin') &&
+      {(dataFormat?.profileName === 'manager'  || user?.role=== 'admin') &&
         <div className="flex flex-row items-center gap-4 pl-6">
           <p className="text-[var(--status-gray)] text-s">{applications.length > 0 ? text1 : text}</p>
           <button

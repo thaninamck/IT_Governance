@@ -179,6 +179,22 @@ class SystemController extends BaseController
         }
     }
 
+    public function getsystemInfo($appId)
+    {
+        try {
+            $system = $this->systemService->getsystemInfo($appId);
+
+            if (!isset($system)) {
+                return $this->sendError('Aucun membre trouvé pour cette mission.', [], 404);
+            }
+
+            return $this->sendResponse($system, 'system récupérée avec succès.');
+
+        } catch (\Exception $e) {
+            return $this->sendError('Erreur lors de la récupération de system.', ['error' => $e->getMessage()], 500);
+        }
+    }
+
     /**
      * Display the specified resource.
      */
