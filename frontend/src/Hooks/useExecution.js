@@ -38,7 +38,19 @@ const useExecution = () => {
 
     const getFileURL = `http://127.0.0.1:8000/storage/evidences/`;
       
-      
+    const deleteEvidence = async (evidenceId) => {
+        setLoading(true);
+        try {
+            const response = await api.delete(`/evidences/delete-evidence/${evidenceId}`);
+           // toast.success("Evidence deleted successfully");
+            return response.status;
+        } catch (error) {
+            setError(error);
+            toast.error("Failed to delete evidence");
+        } finally {
+            setLoading(false);
+        }
+    };
  useEffect(() => {
     fetchOptions();
   }, []);
@@ -47,7 +59,8 @@ const useExecution = () => {
     error,
    options,
    getExecutionById,
-   getFileURL
+   getFileURL,
+   deleteEvidence,
     
     
     

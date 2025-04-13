@@ -19,13 +19,16 @@ import emailjs from "emailjs-com";
 import { useLocation, useNavigate } from "react-router-dom";
 import { PermissionRoleContext } from "../../Context/permissionRoleContext";
 import useExecution from "../../Hooks/useExecution";
+import DecisionPopUp from "../../components/PopUps/DecisionPopUp";
+import { toast } from "react-toastify";
 // Initialize EmailJS with your userID
 emailjs.init("oAXuwpg74dQwm0C_s"); // Replace 'YOUR_USER_ID' with your actual userID
 
- function ControleExcutionPage() {
+function ControleExcutionPage() {
   // Accédez à userRole et setUserRole via le contexte
   const { userRole, setUserRole } = useContext(PermissionRoleContext);
-  const {loading ,getExecutionById,getFileURL}=useExecution();
+  const { loading, getExecutionById, getFileURL, deleteEvidence } =
+    useExecution();
   const location = useLocation();
   const controleData = location.state?.controleData || {};
   console.log(controleData);
@@ -35,35 +38,41 @@ emailjs.init("oAXuwpg74dQwm0C_s"); // Replace 'YOUR_USER_ID' with your actual us
   useEffect(() => {
     const fetchData = async () => {
       const data = await getExecutionById(controleData.executionId);
-  
+
       if (data && Array.isArray(data)) {
-        const parsedData = data.map(item => ({
+        const parsedData = data.map((item) => ({
           ...item,
           steps: JSON.parse(item.steps),
-          evidences: JSON.parse(item.evidences)
+          evidences: JSON.parse(item.evidences),
         }));
-  
+
         setExecutionData(parsedData);
       }
     };
-  
+
     if (controleData.executionId) {
       fetchData();
     }
   }, [controleData.executionId]);
-const [evidences, setEvidences] = useState([]);
-const [steps, setSteps] = useState([]);
-useEffect(() => {
-  console.log("Execution Data:", executionData);
-  const allEvidences = executionData?.[0]?.evidences || [];
-  const filteredEvidences = allEvidences.filter(file => file.is_f_test === false);
-  const filteredTestFiles = allEvidences.filter(file => file.is_f_test === true);
+  const [evidences, setEvidences] = useState([]);
+  const [steps, setSteps] = useState([]);
+  useEffect(() => {
+    console.log("Execution Data:", executionData);
+    const allEvidences = executionData?.[0]?.evidences || [];
+    const filteredEvidences = allEvidences.filter(
+      (file) => file.is_f_test === false
+    );
+    const filteredTestFiles = allEvidences.filter(
+      (file) => file.is_f_test === true
+    );
 
-  setEvidences(filteredEvidences);
-  setTestFiles(filteredTestFiles);
-  setSteps(executionData?.[0]?.steps || []);
-}, [executionData]);
-  const [commentaire, setCommentaire] = useState(controleData.commentaire || ""); 
+    setEvidences(filteredEvidences);
+    setTestFiles(filteredTestFiles);
+    setSteps(executionData?.[0]?.steps || []);
+  }, [executionData]);
+  const [commentaire, setCommentaire] = useState(
+    controleData.commentaire || ""
+  );
   const [isEditing, setIsEditing] = useState(true);
   const statusOptions = ["Terminé", "En_cours", "Non_commencee"];
   const statusColors = {
@@ -77,7 +86,6 @@ useEffect(() => {
     console.log("Selected Multi:", selectedMulti);
   }, [selectedMulti]); // Log the selectedMulti whenever it changes
 
-
   const [showRemediation, setShowRemediation] = useState(false);
   const [showPopup, setShowPopup] = useState(false);
   const [description, setDescription] = useState(
@@ -85,26 +93,24 @@ useEffect(() => {
   );
   const [testScript, setTestScript] = useState(controleData.testScript || "");
   const [type, setType] = useState(controleData.typeName || "");
-  const [controlOwner, setControlOwner] = useState(controleData.executionControlOwner
-    || "");
+  const [controlOwner, setControlOwner] = useState(
+    controleData.executionControlOwner || ""
+  );
   const [majorProcess, setMajorProcess] = useState(
     controleData.majorProcess || ""
   );
   const [subProcess, setSubProcess] = useState(controleData.subProcess || "");
   const [controleID, setControleID] = useState(controleData.controlCode || "");
-  const [selections,setSelections] = useState({
-    IPE: controleData.ipe,           
-    Design: controleData.design,      
-    Effectiveness: controleData.effectiveness  
+  const [selections, setSelections] = useState({
+    IPE: controleData.ipe,
+    Design: controleData.design,
+    Effectiveness: controleData.effectiveness,
   });
 
   const handleStatesChange = (selections) => {
     console.log("Depuis ControlExecution :", selections);
     setSelections(selections);
   };
-
-  
-
 
   const updateStatusBasedOnSuivi = () => {
     setAction((prevActions) =>
@@ -339,12 +345,42 @@ useEffect(() => {
       });
     }
   };
-
+  const [openDeletePopup, setOpenDeletePopup] = useState(false);
+  const [deletedEvidence, setDeletedEvidence] = useState(null);
+  const [deletedTestFile, setDeletedTestFile] = useState(null);
+  const handleDeleteConfirm = async () => {
+    setOpenDeletePopup(false); // Fermer la popup de confirmation
+    if (activePanel === "evidence") {
+    const response = await deleteEvidence(deletedEvidence.evidence_id);
+    if (response === 200) {
+      setEvidences((prevFiles) =>
+        prevFiles.filter(
+          (file) => file.evidence_id !== deletedEvidence.evidence_id
+        )
+      );
+    }} else if (activePanel === "test") {
+      console.log("ID du test file supprimé :", deletedTestFile.evidence_id);
+      const response = await deleteEvidence(deletedTestFile.evidence_id);
+      if (response === 200) {
+        setTestFiles((prevFiles) =>
+          prevFiles.filter(
+            (file) => file.evidence_id !== deletedTestFile.evidence_id
+          )
+        );
+      }
+    }
+  };
   const handleDelete = (index) => {
     if (activePanel === "evidence") {
-      setEvidenceFiles((prevFiles) => prevFiles.filter((_, i) => i !== index));
+      setDeletedEvidence(evidences[index]); // Récupérer l’élément à supprimer
+
+      setOpenDeletePopup(true);
+      // setEvidences((prevFiles) => prevFiles.filter((_, i) => i !== index));
     } else if (activePanel === "test") {
-      setTestFiles((prevFiles) => prevFiles.filter((_, i) => i !== index));
+      setDeletedTestFile(testFiles[index]);
+      console.log("ID du test file supprimé :", deletedTestFile.evidence_id);
+      setOpenDeletePopup(true);
+      // setTestFiles((prevFiles) => prevFiles.filter((_, i) => i !== index));
     }
   };
 
@@ -581,7 +617,7 @@ useEffect(() => {
   };
 
   const navigate = useNavigate();
-  
+
   const handleRowClick = (rowData) => {
     // Naviguer vers la page de détails avec l'ID du contrôle dans l'URL
     navigate(`/remediation/${rowData.id}`, {
@@ -647,6 +683,15 @@ useEffect(() => {
           controlOwner={controlOwner}
           onTestScriptChange={handleTestScriptChange} // Transmettre la fonction de rappel
         />
+        {openDeletePopup && (
+          <DecisionPopUp
+            //loading={loading}
+            handleDeny={() => setOpenDeletePopup(false)}
+            handleConfirm={handleDeleteConfirm}
+            text="Confirmation de suppression"
+            name="Êtes-vous sûr de vouloir supprimer ce fichier ?"
+          />
+        )}
         <div className=" max-h-screen min-h-screen">
           <EvidencesSection
             handleSelectionChange={handleSelectionChange}
@@ -659,7 +704,7 @@ useEffect(() => {
             setActivePanel={setActivePanel}
             handleTabChange={handleTabChange}
             selections={selections}
-            onStatesChange={handleStatesChange} 
+            onStatesChange={handleStatesChange}
             getFile={getFileURL}
           />
         </div>
@@ -694,7 +739,6 @@ useEffect(() => {
           isAddingAnother={isAddingAnother}
           controleID={controleID}
           onClose={onClose}
-          
         />
         {showPopup && (
           <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-md z-50">

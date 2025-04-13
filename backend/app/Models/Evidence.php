@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Evidence extends Model
 {
-    protected $table = 'execution_evidences';
+    protected $table = 'executions_evidences';
     protected $fillable=[
         "file_name",
         "stored_name",

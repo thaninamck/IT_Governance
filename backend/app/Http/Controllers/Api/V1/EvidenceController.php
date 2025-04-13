@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Evidence;
 use Illuminate\Http\Request;
 use App\Services\V1\EvidenceService;
+use Log;
 class EvidenceController extends BaseController
 {
     
@@ -23,7 +24,7 @@ public function __construct(EvidenceService $evidenceService)
             $this->evidenceService->deleteFile($evidenceId);
             return $this->sendResponse("File deleted successfully","");
         } catch (\Exception $e) {
-            return $this->sendError($e->getMessage());
+            Log::error('Error deleting file: ' . $e->getMessage());
             }
         
     }

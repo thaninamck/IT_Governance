@@ -23,7 +23,6 @@ function EvidencesSection({
   onStatesChange,
   getFile
 }) {
-  console.log("EvidencesSection", evidenceFiles, testFiles);
   return (
     <div >
       <div className="mr-6 mb-8 ">

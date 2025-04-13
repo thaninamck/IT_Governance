@@ -163,7 +163,7 @@ Route::middleware(['auth:sanctum', TesterMiddleware::class])
 
         });
         Route::controller(EvidenceController::class)->group(function () {
-            Route::delete('/evidences/delete-execution/{delete}', 'deleteEvidence');
+            Route::delete('/evidences/delete-evidence/{evidenceId}', 'destroy');
 
         });
     });
