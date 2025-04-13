@@ -24,7 +24,7 @@ const handleDelete = (index) => {
         <div key={index} className="flex overflow-y-auto relative w-[95%] flex-col mt-2 justify-center  bg-white border border-gray-300 rounded-lg p-2">
           {/* Détails du fichier */}
           <div className="flex justify-between mx-4">
-            <p className="font-medium text-sm">{file.name}</p> {/* Utilisation du nom du fichier */}
+            <p className="font-medium text-sm">{file.file_name}</p> {/* Utilisation du nom du fichier */}
             {/* ici on va traiter la suppression durant la programmmation */}
             <DeleteIcon
               sx={{ color: "red", cursor: "pointer" }}
@@ -33,9 +33,9 @@ const handleDelete = (index) => {
           </div>
 
           {/* Taille du fichier */}
-          <p className="text-xs text-subfont-gray mx-4">
-            {(file.size / 1024 / 1024).toFixed(2)} MB {/* Calcul de la taille en Mo */}
-          </p>
+          {/* <p className="text-xs text-subfont-gray mx-4">
+            {(file.size / 1024 / 1024).toFixed(2)} MB {/* Calcul de la taille en Mo 
+          </p> */}
         </div>
       ))}
     </>

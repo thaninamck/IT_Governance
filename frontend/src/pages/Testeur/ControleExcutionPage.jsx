@@ -51,11 +51,16 @@ emailjs.init("oAXuwpg74dQwm0C_s"); // Replace 'YOUR_USER_ID' with your actual us
       fetchData();
     }
   }, [controleData.executionId]);
-const [evideces, setEvidences] = useState([]);
+const [evidences, setEvidences] = useState([]);
 const [steps, setSteps] = useState([]);
 useEffect(() => {
   console.log("Execution Data:", executionData);
-  setEvidences(executionData?.[0]?.evidences || []);
+  const allEvidences = executionData?.[0]?.evidences || [];
+  const filteredEvidences = allEvidences.filter(file => file.is_f_test === false);
+  const filteredTestFiles = allEvidences.filter(file => file.is_f_test === true);
+
+  setEvidences(filteredEvidences);
+  setTestFiles(filteredTestFiles);
   setSteps(executionData?.[0]?.steps || []);
 }, [executionData]);
   const [commentaire, setCommentaire] = useState(controleData.commentaire || ""); 
@@ -646,7 +651,7 @@ useEffect(() => {
             files={files}
             handleSaveFiles={handleSaveFiles}
             handleDelete={handleDelete}
-            evidenceFiles={evidenceFiles}
+            evidenceFiles={evidences}
             testFiles={testFiles}
             activePanel={activePanel}
             setActivePanel={setActivePanel}
