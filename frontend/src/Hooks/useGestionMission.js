@@ -8,7 +8,7 @@ import useAuth from "./useAuth";
 
 
 
-const useGestionMission = (user) => {
+const useGestionMission = (user,viewMode) => {
  // const { user } = useAuth();
   const [rowsData2, setRowsData2] = useState([]);
   const [filteredRows, setFilteredRows] = useState([]);
@@ -222,8 +222,10 @@ const useGestionMission = (user) => {
   //const getRowLink = (row) => `/tablemission/${row.mission}`;
   const handleRowClick = (rowData) => {
     // Naviguer vers la page de détails avec l'ID du contrôle dans l'URL
+    if((user?.role=== 'admin' && viewMode ==='user')|| user?.role==='user'){
     navigate(`/missions/${rowData.missionName}`, { state: { missionData: rowData } });
     console.log('Détails du contrôle sélectionné:', rowData);
+    }
   };
   // Gérer la navigation vers le rapport d'une mission
   const handleViewReport = (selectedRow) => {

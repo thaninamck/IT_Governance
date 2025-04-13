@@ -201,4 +201,32 @@ $system->load('layers');
     return $this->systemRepository->deleteSystem($id);
 }
 
+public function getsystemInfo($systemId)
+{
+    $system=$this->systemRepository->getsystemInfo($systemId);
+   
+    if (!$system) {
+        return null; // ou lancer une exception
+    }
+
+     return 
+     //$system;
+    [
+        'id' => $system->id,
+        'systemName' => $system->name,
+        'description' => $system->description,
+        'missionId' => $system->mission_id,
+        'ownerId' => $system->owner_id,
+        'ownerName'=>$system->owner->full_name,
+        'ownerEmail' => $system->owner->email,  
+        'layers' => $system->layers->map(function ($layer) {
+                    return [
+                        'id' => $layer->id,
+                        'name' => $layer->name
+                    ];
+                })->toArray()
+            
+    ];
+}
+
 }

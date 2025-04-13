@@ -49,6 +49,15 @@ class SystemRepository
 
         return $system_name;
     }
+    public function getsystemInfo($systemId)
+    {
+        $system = System::with(['owner','layers'])->find($systemId);
+    
+       
+        
+    
+        return $system;
+    }
 
     
 }

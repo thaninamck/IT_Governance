@@ -39,9 +39,19 @@ public function getExecutionById($executionId)
     {
         return $this->statusRepository->getExecutionStatusOptions();
     }
+    public function getExecutionsByApp($appId)
+    {
+        return $this->executionRepository->getExecutionsByApp($appId);
+    }
+
     public function getExecutionsByMissionAndTester($missionId,$userId)
     {
         return $this->executionRepository->getExecutionsByMissionAndTester($missionId,$userId);
+    }
+
+    public function getExecutionsByMissionAndSystemAndTester($missionId,$userId,$appId)
+    {
+        return $this->executionRepository->getExecutionsByMissionAndSystemAndTester($missionId,$userId,$appId);
     }
 
     public function createExecutions(array $data): Execution
@@ -93,8 +103,37 @@ public function getExecutionById($executionId)
     public function deleteExecutions($executionsIds){
         return $this->executionRepository->deleteExecutions($executionsIds);
 
-    }
-    public function updateExecution($executionId, $data)
+    }  
+//     public function updateExecution($executionId, $data)
+// {
+//     $executionData = [
+//         'id' => $executionId,
+//         'cntrl_modification' => $data['description'],
+//         'ipe' => $data['ipe'],
+//         'design' => $data['design'],
+//         'effectiveness' => $data['effectiveness'],
+//         'status_id' => $data['status_id'],
+//         'comment' => $data['comment'],
+//     ];
+
+//     // Mise à jour de l'exécution
+//     $execution = $this->executionRepository->updateExecution($executionId, $executionData);
+
+//     if ($execution) {
+//         // Si des fichiers sont envoyés, on les traite
+//         if (isset($data['files'])) {
+//             // Ajouter `execution_id` à chaque fichier
+//             foreach ($data['files'] as &$fileData) {
+//                 $fileData['execution_id'] = $executionId; // Ajout de l'ID d'exécution à chaque fichier
+//             }
+
+//             // On envoie les fichiers au service de stockage
+//             $this->evidenceService->storeFiles($data['files']);
+//         }
+//     }
+// }
+
+public function updateExecution($executionId, $data)
 {
     $executionData = [
         'id' => $executionId,

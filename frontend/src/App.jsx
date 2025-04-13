@@ -67,6 +67,8 @@ import InstructionSplitter from './components/InstructionSplitter';
 import AdminActionsPanel from './pages/AdminActionsPanel';
 import DisplayControleAppID from './pages/Testeur/DisplayControleAppID';
 import AppReport from './pages/Manager/AppReport';
+import { ProfileProvider } from './Context/ProfileContext';
+import UserViewMode from './pages/UserViewMode';
 function App() {
   const getRowLink = (row) => `/tablemission/${row.mission}`;
   
@@ -148,6 +150,7 @@ const rowsData3 = [
     <>
     
        <div className="App">
+       <ProfileProvider> 
         <BreadcrumbProvider>
       {/* Afficher Breadcrumbs uniquement si le chemin est dans la liste 
        {breadcrumbRoutes.some(route => location.pathname.startsWith(route)) && <Breadcrumbs />}*/}
@@ -206,11 +209,12 @@ const rowsData3 = [
           <Route path='/login' element={<Login  />}></Route>
           <Route path='/myprofile' element={<MyProfile/>}></Route>
           <Route path='/missions' element={<GestionMission/>}></Route>
+          <Route path='/missionsUserViewMode' element={<UserViewMode/>}></Route>
           
           
           <Route path="/missions/:mission" element={<MissionDetail />} />
           <Route path='/rapportmissions/:mission' element={<MissionReport/>}></Route>
-          <Route path="/missions/:mission/:nomApp" element={<DisplayControleAppID />} />
+          <Route path="/missions/:mission/:name" element={<DisplayControleAppID />} />
 
           <Route path='/utilisateurs' element={<GestionUtilisateur/>}></Route>
           <Route path='/clients' element={<GestionClient/>}></Route>
@@ -242,6 +246,7 @@ const rowsData3 = [
           
         </Routes>
         </BreadcrumbProvider>
+        </ProfileProvider>
         
        </div>
       

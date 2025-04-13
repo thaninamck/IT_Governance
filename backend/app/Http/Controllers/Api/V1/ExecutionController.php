@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 use App\Services\V1\ExecutionService;
 use App\Http\Resources\Api\V1\ExecutionResource;
 use Log;
+
 class ExecutionController extends BaseController
 {
 
@@ -60,7 +61,6 @@ class ExecutionController extends BaseController
             $this->executionService->createExecutions($request->all());
 
             return $this->sendResponse("Execution created successfully", [], 201);
-
         } catch (\Exception $e) {
             return $this->sendError("An error occurred", ["error" => $e->getMessage()], 500);
         }
@@ -86,11 +86,12 @@ class ExecutionController extends BaseController
                 $executions,
                 'Liste des exécutions récupérée avec succès.'
             );
-
         } catch (\Exception $e) {
             return $this->sendError('Erreur lors de la récupération des exécutions.', ['error' => $e->getMessage()], 500);
         }
     }
+
+
 
     public function getExecutionsByMissionAndTester($missionId)
     {
@@ -106,201 +107,285 @@ class ExecutionController extends BaseController
                 $executions,
                 'Liste des exécutions récupérée avec succès.'
             );
+        } catch (\Exception $e) {
+            return $this->sendError('Erreur lors de la récupération des exécutions.', ['error' => $e->getMessage()], 500);
+        }
+    }
+    public function getExecutionById($executionId)
+    {
+        $returnedExecution = $this->executionService->getExecutionById($executionId);
+        if ($returnedExecution) {
+            return $this->sendResponse(
+                $returnedExecution,
+                'Execution retrieved successfully'
+            );
+        } else {
+            return $this->sendError('Execution not found', [], 404);
+        }
+    }
 
+    /**
+     * Update the specified resource in storage.
+     */
+    public function updateExecution1(Request $request, $executionId)
+    {
+        Log::info('executionId:', [$executionId]);
+
+        Log::info('Request all:', $request->all());
+        Log::info('Request raw content:', [$request->getContent()]);
+        Log::info('All inputs:', $request->input());
+        Log::info('All files:', $request->file('files'));
+        $rules = [
+            'description' => 'required|string',
+            'files' => 'sometimes|array',
+
+            'files.*.file' => 'file|max:10240', // Validation pour chaque fichier
+            'files.*.is_f_test' => 'required|boolean', // Validation pour chaque champ 'is_f_test'
+            'comment' => 'sometimes|string',
+            'status_id' => 'sometimes|integer',
+            'effectiveness' => 'sometimes|boolean',
+            'design' => 'sometimes|boolean',
+            'ipe' => 'sometimes|boolean',
+        ];
+
+        // Validation des données
+        $validator = Validator::make($request->all(), $rules);
+
+        if ($validator->fails()) {
+            return $this->sendError("Validation of data failed", $validator->errors(), 422);
+        }
+
+
+        $data = $validator->validated();
+        Log::info("data", $data);
+
+        try {
+            // Appel au service pour mettre à jour l'exécution
+            $this->executionService->updateExecution($executionId, $data);
+            return $this->sendResponse(
+                "Execution updated successfully",
+                [],
+                200
+            );
+        } catch (\Exception $e) {
+            return $this->sendError("Error while updating execution", ['error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function getExecutionsByApp($appId)
+    {
+        try {
+
+            $executions = ExecutionResource::collection($this->executionService->getExecutionsByApp($appId));
+            if ($executions->isEmpty()) {
+                return $this->sendError('Aucune exécution trouvée pour cette system.', [], 404);
+            }
+
+            return $this->sendResponse(
+                $executions,
+                'Liste des exécutions récupérée avec succès.'
+            );
         } catch (\Exception $e) {
             return $this->sendError('Erreur lors de la récupération des exécutions.', ['error' => $e->getMessage()], 500);
         }
     }
 
-public function getExecutionById($executionId)
-{
-    $returnedExecution = $this->executionService->getExecutionById($executionId);
-    if ($returnedExecution) {
-        return $this->sendResponse(
-            $returnedExecution,
-            'Execution retrieved successfully'
-        );
-    } else {
-        return $this->sendError('Execution not found', [], 404);
+    public function getExecutionsByMissionAndSystemAndTester($missionId, $appId)
+    {
+        try {
+            $userId = auth()->user()->id;
+
+            $executions = ExecutionResource::collection($this->executionService->getExecutionsByMissionAndSystemAndTester($missionId, $userId, $appId));
+            if ($executions->isEmpty()) {
+                return $this->sendError('Aucune exécution trouvée pour cette mission et system et testeur.', [], 404);
+            }
+
+            return $this->sendResponse(
+                $executions,
+                'Liste des exécutions récupérée avec succès.'
+            );
+        } catch (\Exception $e) {
+            return $this->sendError('Erreur lors de la récupération des exécutions.', ['error' => $e->getMessage()], 500);
+        }
     }
-}
+
     /**
      * Update the specified resource in storage.
      */
-    public function updateExecution1(Request $request,$executionId)
-{
-    Log::info('executionId:', [$executionId]);
-    
-    Log::info('Request all:', $request->all());
-Log::info('Request raw content:', [$request->getContent()]);
-Log::info('All inputs:', $request->input());
-Log::info('All files:', $request->file('files'));
-    $rules = [
-        'description' => 'required|string',
-       'files' => 'sometimes|array',
-    
-    'files.*.file' => 'file|max:10240', // Validation pour chaque fichier
-    'files.*.is_f_test' => 'required|boolean', // Validation pour chaque champ 'is_f_test'
-        'comment' => 'sometimes|string',
-        'status_id'=> 'sometimes|integer',
-        'effectiveness'=>'sometimes|boolean',
-        'design'=> 'sometimes|boolean',
-        'ipe'=>'sometimes|boolean',
-    ];
+    //     public function updateExecution(Request $request,$executionId)
+    // {
+    //     Log::info('executionId:', [$executionId]);
 
-    // Validation des données
-    $validator = Validator::make($request->all(), $rules);
+    //     Log::info('Request all:', $request->all());
+    // Log::info('Request raw content:', [$request->getContent()]);
+    // Log::info('All inputs:', $request->input());
+    // Log::info('All files:', $request->file('files'));
+    //     $rules = [
+    //         'description' => 'required|string',
+    //        'files' => 'sometimes|array',
 
-    if ($validator->fails()) {
-        return $this->sendError("Validation of data failed", $validator->errors(), 422);
-    }
+    //     'files.*.file' => 'file|max:10240', // Validation pour chaque fichier
+    //     'files.*.is_f_test' => 'required|boolean', // Validation pour chaque champ 'is_f_test'
+    //         'comment' => 'sometimes|string',
+    //         'status_id'=> 'sometimes|integer',
+    //         'effectiveness'=>'sometimes|boolean',
+    //         'design'=> 'sometimes|boolean',
+    //         'ipe'=>'sometimes|boolean',
+    //     ];
 
-    
-    $data = $validator->validated();
-    Log::info("data", $data);
+    //     // Validation des données
+    //     $validator = Validator::make($request->all(), $rules);
 
-    try {
-        // Appel au service pour mettre à jour l'exécution
-        $this->executionService->updateExecution($executionId, $data);
-        return $this->sendResponse(
-            "Execution updated successfully",
-            [],
-            200
-        );
-    } catch (\Exception $e) {
-        return $this->sendError("Error while updating execution", ['error' => $e->getMessage()], 500);
-    }
-}
+    //     if ($validator->fails()) {
+    //         return $this->sendError("Validation of data failed", $validator->errors(), 422);
+    //     }
 
 
-public function updateExecution(Request $request,$executionId)
-{
-    Log::info('executionId:', [$executionId]);
-    
-    Log::info('Request all:', $request->all());
-    $rules = [
-        'description' => 'required|string',
-       'riskModification' => 'sometimes|string',
-       'riskOwner' => 'sometimes|string',
-       'controlOwner' => 'sometimes|string',
-        'comment' => 'sometimes|string',
-        'status_id'=> 'sometimes|integer',
-        'effectiveness'=>'sometimes|boolean',
-        'design'=> 'sometimes|boolean',
-        'ipe'=>'sometimes|boolean',
-        'controlTester' => 'sometimes|integer',
-    ];
+    //     $data = $validator->validated();
+    //     Log::info("data", $data);
 
-    // Validation des données
-    $validator = Validator::make($request->all(), $rules);
+    //     try {
+    //         // Appel au service pour mettre à jour l'exécution
+    //         $this->executionService->updateExecution($executionId, $data);
+    //         return $this->sendResponse(
+    //             "Execution updated successfully",
+    //             [],
+    //             200
+    //         );
+    //     } catch (\Exception $e) {
+    //         return $this->sendError("Error while updating execution", ['error' => $e->getMessage()], 500);
+    //     }
+    // }
 
-    if ($validator->fails()) {
-        return $this->sendError("Validation of data failed", $validator->errors(), 422);
-    }
+    public function updateExecution(Request $request, $executionId)
+    {
+        Log::info('executionId:', [$executionId]);
 
-    
-    $data = $validator->validated();
-    Log::info("data", $data);
+        Log::info('Request all:', $request->all());
+        $rules = [
+            'description' => 'required|string',
+            'riskModification' => 'sometimes|string',
+            'riskOwner' => 'sometimes|string',
+            'controlOwner' => 'sometimes|string',
+            'comment' => 'sometimes|string',
+            'status_id' => 'sometimes|integer',
+            'effectiveness' => 'sometimes|boolean',
+            'design' => 'sometimes|boolean',
+            'ipe' => 'sometimes|boolean',
+            'controlTester' => 'sometimes|integer',
+        ];
 
-    try {
-        // Appel au service pour mettre à jour l'exécution
-        $this->executionService->updateExecution($executionId, $data);
-        return $this->sendResponse(
-            "Execution updated successfully",
-            [],
-            200
-        );
-    } catch (\Exception $e) {
-        return $this->sendError("Error while updating execution", ['error' => $e->getMessage()], 500);
-    }
-}
+        // Validation des données
+        $validator = Validator::make($request->all(), $rules);
 
-
-public function updateMultipleExecutions(Request $request)
-{
-    $rules = [
-        'executions' => 'required|array',
-        'executions.*.id' => 'required|integer|exists:executions,id',
-        'executions.*.description' => 'required|string',
-        'executions.*.comment' => 'sometimes|string',
-        'executions.*.status_id' => 'sometimes|integer',
-        'executions.*.effectiveness' => 'sometimes|boolean',
-        'executions.*.design' => 'sometimes|boolean',
-        'executions.*.ipe' => 'sometimes|boolean',
-        'executions.*.controlTester' => 'sometimes|integer',
-        'executions.*.riskOwner' => 'sometimes|string',
-        'executions.*.controlOwner' => 'sometimes|string',
-        'executions.*.riskModification' => 'sometimes|string',
-    ];
-
-    $validator = Validator::make($request->all(), $rules);
-
-    if ($validator->fails()) {
-        return $this->sendError("Validation failed", $validator->errors(), 422);
-    }
-
-    try {
-        $this->executionService->updateMultipleExecutions($request->input('executions'));
-
-        return $this->sendResponse("Executions updated successfully", [], 200);
-    } catch (\Exception $e) {
-        return $this->sendError("Error while updating executions", ['error' => $e->getMessage()], 500);
-    }
-}
-
-public function deleteExecutions(Request $request)
-{
-    try {
-        // Récupérer les IDs des exécutions depuis la requête
-        $executionsIds = $request->input('executionsIds');
-
-        // Vérifier que les IDs ont bien été fournis
-        if (empty($executionsIds)) {
-            return $this->sendError("Aucun ID d'exécution fourni", [], 400);
+        if ($validator->fails()) {
+            return $this->sendError("Validation of data failed", $validator->errors(), 422);
         }
 
-        // Appeler le service pour supprimer les exécutions
-        $undeletableIds = $this->executionService->deleteExecutions($executionsIds);
 
-        // Si certaines exécutions n'ont pas pu être supprimées
-        if (!empty($undeletableIds)) {
+        $data = $validator->validated();
+        Log::info("data", $data);
+
+        try {
+            // Appel au service pour mettre à jour l'exécution
+            $this->executionService->updateExecution($executionId, $data);
             return $this->sendResponse(
-                [
-                    'undeletable_ids' => $undeletableIds
-                ],
-                'Certaines exécutions n\'ont pas pu être supprimées (elles ont des données liées).',
-                400
+                "Execution updated successfully",
+                [],
+                200
             );
+        } catch (\Exception $e) {
+            return $this->sendError("Error while updating execution", ['error' => $e->getMessage()], 500);
+        }
+    }
+
+
+    public function updateMultipleExecutions(Request $request)
+    {
+        $rules = [
+            'executions' => 'required|array',
+            'executions.*.id' => 'required|integer|exists:executions,id',
+            'executions.*.description' => 'required|string',
+            'executions.*.comment' => 'sometimes|string',
+            'executions.*.status_id' => 'sometimes|integer',
+            'executions.*.effectiveness' => 'sometimes|boolean',
+            'executions.*.design' => 'sometimes|boolean',
+            'executions.*.ipe' => 'sometimes|boolean',
+            'executions.*.controlTester' => 'sometimes|integer',
+            'executions.*.riskOwner' => 'sometimes|string',
+            'executions.*.controlOwner' => 'sometimes|string',
+            'executions.*.riskModification' => 'sometimes|string',
+        ];
+
+        $validator = Validator::make($request->all(), $rules);
+
+        if ($validator->fails()) {
+            return $this->sendError("Validation failed", $validator->errors(), 422);
         }
 
-        // Si tout s'est bien passé
-        return $this->sendResponse(
-            "Toutes les exécutions ont été supprimées avec succès.",
-            [],
-            200
-        );
-    } catch (\Exception $e) {
-        // Gestion des erreurs en cas de problème
-        return $this->sendError("Erreur lors de la suppression des exécutions.", ['error' => $e->getMessage()], 500);
-    }
-}
+        try {
+            $this->executionService->updateMultipleExecutions($request->input('executions'));
 
-public function getExecutionStatusOptions(){
-    try {
-        $data = $this->executionService->getExecutionStatusOptions();
-        return $this->sendResponse($data, "Execution status options retrieved successfully", 200);
-    } catch (\Exception $e) {
-        return $this->sendError("Error while retrieving execution status options", ['error' => $e->getMessage()], 500);
+            return $this->sendResponse("Executions updated successfully", [], 200);
+        } catch (\Exception $e) {
+            return $this->sendError("Error while updating executions", ['error' => $e->getMessage()], 500);
+        }
     }
-}
-public function launchExecution($executionId){
-    try {
-       return $this->executionService->launchExecution($executionId) ? $this->sendResponse("Execution launched successfully", [], 200) : $this->sendError("launching execution failed", [], 404)
-         ;
-    } catch (\Exception $e) {
-        return $this->sendError("Error while launching execution", ['error' => $e->getMessage()], 500);
+
+    public function deleteExecutions(Request $request)
+    {
+        try {
+            // Récupérer les IDs des exécutions depuis la requête
+            $executionsIds = $request->input('executionsIds');
+
+            // Vérifier que les IDs ont bien été fournis
+            if (empty($executionsIds)) {
+                return $this->sendError("Aucun ID d'exécution fourni", [], 400);
+            }
+
+            // Appeler le service pour supprimer les exécutions
+            $undeletableIds = $this->executionService->deleteExecutions($executionsIds);
+
+            // Si certaines exécutions n'ont pas pu être supprimées
+            if (!empty($undeletableIds)) {
+                return $this->sendResponse(
+                    [
+                        'undeletable_ids' => $undeletableIds
+                    ],
+                    'Certaines exécutions n\'ont pas pu être supprimées (elles ont des données liées).',
+                    400
+                );
+            }
+
+            // Si tout s'est bien passé
+            return $this->sendResponse(
+                "Toutes les exécutions ont été supprimées avec succès.",
+                [],
+                200
+            );
+        } catch (\Exception $e) {
+            // Gestion des erreurs en cas de problème
+            return $this->sendError("Erreur lors de la suppression des exécutions.", ['error' => $e->getMessage()], 500);
+        }
     }
-}
+
+    public function getExecutionStatusOptions()
+    {
+        try {
+            $data = $this->executionService->getExecutionStatusOptions();
+            return $this->sendResponse($data, "Execution status options retrieved successfully", 200);
+        } catch (\Exception $e) {
+            return $this->sendError("Error while retrieving execution status options", ['error' => $e->getMessage()], 500);
+        }
+    }
+    public function launchExecution($executionId)
+    {
+        try {
+            return $this->executionService->launchExecution($executionId) ? $this->sendResponse("Execution launched successfully", [], 200) : $this->sendError("launching execution failed", [], 404);
+        } catch (\Exception $e) {
+            return $this->sendError("Error while launching execution", ['error' => $e->getMessage()], 500);
+        }
+    }
 
     public function storeFile(Request $request)
     {
@@ -326,7 +411,7 @@ public function launchExecution($executionId){
         try {
             // Appel au service pour stocker le fichier et les données associées
             $this->evidenceService->storeFile($data, $request->file('file'));
-    
+
             return $this->sendResponse("File uploaded successfully", [], 201);
         } catch (\Exception $e) {
             // Gestion des erreurs si le service échoue
@@ -350,14 +435,16 @@ public function launchExecution($executionId){
                 'controls' => $this->controlService->getAllControls() // Collection
             ];
 
+            if ($data['systems'] instanceof \Illuminate\Http\JsonResponse) {
+                $data['systems'] = $data['systems']->getData(true);
+            }
             return $this->sendResponse(
                 (new ExecutionResource(null))->formatWorkplanOptions($data),
                 'Workplan options retrieved successfully.'
             );
-
         } catch (\Exception $e) {
+            Log::error('Erreur getWorkplanOptionsByMission: ' . $e->getMessage());
             return $this->sendError('Failed to retrieve workplan options.', ['error' => $e->getMessage()], 500);
         }
     }
-
 }

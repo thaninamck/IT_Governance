@@ -11,21 +11,31 @@ function SideBarStdr({user}) {
     const [isExpanded, setIsExpanded] = useState(false);
     const [selectedItem, setSelectedItem] = useState(null);
     const navigate = useNavigate();
-     const { logout } = useAuth();
+     const { logout,changeViewMode } = useAuth();
   
-    const menuItems = [
-          { key: "profile", label: "Profile", path: "/myprofile" },
-          { key: "missions", label: "Mes missions", path: "/missions" },
-          { key: "notification", label: "Notification", path: "/notification" },
-      
-        ]
+     const menuItems = user?.role === 'admin' ? [
+      { key: "profile", label: "Profile", path: "/myprofile" },
+      { key: "missions", label: "Mes missions", path: "/missionsUserViewMode" },
+      { key: "notification", label: "Notification", path: "/notification" },
+      { key: "Return", label: "Retour", path: "/missions" },
+    ] : [
+      { key: "profile", label: "Profile", path: "/myprofile" },
+      { key: "missions", label: "Mes missions", path: "/missions" },
+      { key: "notification", label: "Notification", path: "/notification" },
+    ];
+    
       
       // Récupération du menu avec fallback sur 'default' si le rôle n'existe pas
       const userMenu = menuItems;
 
         const LogoutIcon = icons["logout"];
       
-        const handleNavigation = (path) => {
+       
+
+        const handleNavigation = (path, key) => {
+          if (user?.role === "admin" && key === "Return") {
+            changeViewMode("admin");
+          }
           setSelectedItem(path); // Marquer l'élément sélectionné
           navigate(path); // Naviguer vers la page correspondante
         };
@@ -64,7 +74,7 @@ function SideBarStdr({user}) {
                       className={`menu-item ${
                         selectedItem === item.path ? "active" : ""
                       }`}
-                      onClick={() => handleNavigation(item.path)}
+                      onClick={() => handleNavigation(item.path,item.key)}
                     >
                       {IconComponent && <IconComponent className="menu-icon" />}
                       <span>{item.label}</span>

@@ -104,7 +104,7 @@ class MissionRepository
         }
         
          // Mettre à jour le statut de la mission
-         $mission->status_id = 8;
+         $mission->status_id = 12; //CLOSE
          $mission->save();
 
         return $mission;
@@ -119,7 +119,7 @@ class MissionRepository
         }
         
          // Mettre à jour le statut de la mission
-         $mission->status_id = 1;
+         $mission->status_id = 13; // archivé
          $mission->save();
 
         return $mission;
@@ -127,7 +127,7 @@ class MissionRepository
 
     public function getArchivedMissions()
     {
-        return Mission::where('status_id',1)->get();
+        return Mission::where('status_id',13)->get();
     }
 
     public function cancelMission(int $id):?Mission
@@ -139,7 +139,7 @@ class MissionRepository
         }
         
          // Mettre à jour le statut de la mission
-         $mission->status_id = 6;
+         $mission->status_id = 14; //annulé
          $mission->save();
 
         return $mission;
@@ -174,7 +174,7 @@ class MissionRepository
     $previousStatusId = $mission->status_id;
 
     // Mettre à jour le statut de la mission pour la mettre en pause
-    $mission->status_id = 10; // Statut "temporaire"
+    $mission->status_id = 15; // Statut "temporaire"
     $mission->save();
 
     return [
@@ -214,7 +214,7 @@ public function resumeMission(int $id, int $previousStatusId, string $newStartDa
     }
 
     // Vérifier si la mission est en pause
-    if ($mission->status_id !== 10) {
+    if ($mission->status_id !== 15) {
         throw new \Exception("La mission n'est pas en pause.");
     }
 
@@ -267,7 +267,7 @@ private function getAutomaticStatus($startDate, $endDate)
 }
 
 
-public function getSystemsByMissionID(int $missionId)
+public function getSystemsByMissionID(int $missionId )
 {
     // Trouver la mission avec ses systèmes
     $mission = Mission::with('systems.owner')->find($missionId);

@@ -5,27 +5,13 @@ import DisplayEquipe from "./DisplayEquipe";
 import { api } from "../../Api";
 
 const MissionInfo = ({ dataFormat, user , missionId}) => {
-  // Charger les données depuis localStorage si `dataFormat` n'est pas fourni
- // États initiaux
+ 
  const [loading, setLoading] = useState(true);
  const [error, setError] = useState(null);
 
- const [missionData, setMissionData] = useState(
-//   () => {
-//   const savedData = localStorage.getItem("missionData");
-//   return dataFormat || (savedData ? JSON.parse(savedData) : null);
-// }
-);
+ const [missionData, setMissionData] = useState();
 
- const [equipe, setEquipe] = useState(
-//   () => {
-//    const savedEquipe = localStorage.getItem("equipeData");
-//    if (savedEquipe) return JSON.parse(savedEquipe);
-//    return dataFormat ? [{ membre: dataFormat.manager || "Non défini", role: "Manager" }] : [];
-//  }
-);
-
-
+ const [equipe, setEquipe] = useState();
 
    // Fonction pour charger les données
    const fetchMissionData = async () => {
@@ -113,7 +99,7 @@ const MissionInfo = ({ dataFormat, user , missionId}) => {
        />
 
       {/* Ajout d'équipe uniquement pour les administrateurs et managers */}
-      {(user?.role === "admin" /*|| userRole === "manager"*/ ) && (
+      {(user?.role === "admin" || dataFormat.profileName === "manager") && (
         <AddEquipe  
         missionId={missionData.id}
         onMemberAdded={handleTeamUpdate}
