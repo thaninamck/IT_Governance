@@ -35,6 +35,10 @@ const useExecution = () => {
         setLoading(false);
         }
     };
+
+    const getFileURL = `http://127.0.0.1:8000/storage/evidences/`;
+      
+      
  useEffect(() => {
     fetchOptions();
   }, []);
@@ -42,7 +46,8 @@ const useExecution = () => {
     loading,
     error,
    options,
-   getExecutionById
+   getExecutionById,
+   getFileURL
     
     
     

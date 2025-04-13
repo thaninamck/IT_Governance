@@ -25,7 +25,7 @@ emailjs.init("oAXuwpg74dQwm0C_s"); // Replace 'YOUR_USER_ID' with your actual us
  function ControleExcutionPage() {
   // Accédez à userRole et setUserRole via le contexte
   const { userRole, setUserRole } = useContext(PermissionRoleContext);
-  const {loading ,getExecutionById}=useExecution();
+  const {loading ,getExecutionById,getFileURL}=useExecution();
   const location = useLocation();
   const controleData = location.state?.controleData || {};
   console.log(controleData);
@@ -102,6 +102,8 @@ useEffect(() => {
     console.log("Depuis ControlExecution :", selections);
     setSelections(selections);
   };
+
+  
 
 
   const updateStatusBasedOnSuivi = () => {
@@ -658,6 +660,7 @@ useEffect(() => {
             handleTabChange={handleTabChange}
             selections={selections}
             onStatesChange={handleStatesChange} 
+            getFile={getFileURL}
           />
         </div>
 

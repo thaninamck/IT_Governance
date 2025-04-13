@@ -1,7 +1,7 @@
 import React from 'react';
 import DeleteIcon from "@mui/icons-material/Delete";
 
-const EvidenceList = ({ files, onDelete }) => {
+const EvidenceList = ({ files, onDelete,getFile }) => {
 
   /* Fonction de suppression déjà définie dans la page parente commme ca 
   const [files, setFiles] = useState([
@@ -24,7 +24,10 @@ const handleDelete = (index) => {
         <div key={index} className="flex overflow-y-auto relative w-[95%] flex-col mt-2 justify-center  bg-white border border-gray-300 rounded-lg p-2">
           {/* Détails du fichier */}
           <div className="flex justify-between mx-4">
-            <p className="font-medium text-sm">{file.file_name}</p> {/* Utilisation du nom du fichier */}
+            <a href={`${getFile}${file.stored_name}`}
+            target="_blank"
+  rel="noopener noreferrer"
+             className='hover:underline'><p className="font-medium text-sm">{file.file_name}</p></a> {/* Utilisation du nom du fichier */}
             {/* ici on va traiter la suppression durant la programmmation */}
             <DeleteIcon
               sx={{ color: "red", cursor: "pointer" }}

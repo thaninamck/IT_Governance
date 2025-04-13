@@ -9,6 +9,7 @@ class Evidence extends Model
     protected $table = 'execution_evidences';
     protected $fillable=[
         "file_name",
+        "stored_name",
         "is_f_test",
         "execution_id",
         

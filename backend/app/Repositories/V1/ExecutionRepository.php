@@ -146,6 +146,7 @@ public function getExecutionById($executionId)
     json_agg(DISTINCT jsonb_build_object(
         'evidence_id', ev.id,
         'file_name', ev.file_name,
+        'stored_name', ev.stored_name,
         'is_f_test', ev.is_f_test
     )) AS evidences
 

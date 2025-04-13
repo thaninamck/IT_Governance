@@ -20,7 +20,8 @@ function EvidencesSection({
   setActivePanel,
   handleTabChange,
   selections,
-  onStatesChange
+  onStatesChange,
+  getFile
 }) {
   console.log("EvidencesSection", evidenceFiles, testFiles);
   return (
@@ -74,7 +75,7 @@ function EvidencesSection({
                   />
                 </div>
                 <div className="flex flex-col items-center w-full my-6">
-                  <EvidenceList files={evidenceFiles} onDelete={handleDelete} />
+                  <EvidenceList files={evidenceFiles} onDelete={handleDelete} getFile={getFile} />
                 </div>
                 {evidenceFiles.length === 0 && (
                   <p className="text-center text-gray-500 mt-4">
@@ -94,7 +95,7 @@ function EvidencesSection({
                   />
                 </div>
                 <div className="flex flex-col items-center w-full my-6">
-                  <EvidenceList files={testFiles} onDelete={handleDelete} />
+                  <EvidenceList files={testFiles} onDelete={handleDelete} getFile={getFile}/>
                 </div>
                 {testFiles.length === 0 && (
                   <p className="text-center text-gray-500 mt-4">
