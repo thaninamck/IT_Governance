@@ -16,6 +16,10 @@ class ParticipationService
         $this->participationRepository = $participationRepository;
     }
 
+    public function createParticipation(array $data): Participation
+    {
+        return $this->participationRepository->createParticipation($data);
+    }
 
     public function addMembersToMission(int $missionId, array $members): array
     {

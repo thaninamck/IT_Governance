@@ -93,7 +93,7 @@ public function getMissionSystemsById($id){
 
     public function createMission(array $data): Mission
     {
-        $data['status_id'] = 16;
+        $data['status_id'] = 10; //NON commencée
         return $this->missionRepository->createMission($data);
     }
 
@@ -153,7 +153,7 @@ public function getMissionSystemsById($id){
         // }
         // Ajouter status_id à chaque mission
         $missionsData = array_map(function ($missionData) {
-            $missionData['status_id'] = 9; // Définir le statut par défaut
+            $missionData['status_id'] = 10; // Définir le statut par défaut NON commencée
             return $missionData;
         }, $missionsData);
 
