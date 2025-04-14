@@ -27,7 +27,9 @@ emailjs.init("oAXuwpg74dQwm0C_s"); // Replace 'YOUR_USER_ID' with your actual us
 function ControleExcutionPage() {
   // Accédez à userRole et setUserRole via le contexte
   const { userRole, setUserRole } = useContext(PermissionRoleContext);
-  const { loading, getExecutionById, getFileURL, deleteEvidence } =
+  const { loading, getExecutionById, getFileURL, deleteEvidence,uploadEvidences
+
+   } =
     useExecution();
   const location = useLocation();
   const controleData = location.state?.controleData || {};
@@ -309,13 +311,6 @@ function ControleExcutionPage() {
     setCommentaire(newComment);
   };
 
-  // const handleSaveFiles = (formData) => {
-  //   const newFiles = [];
-  //   for (const [key, file] of formData.entries()) {
-  //     newFiles.push({ name: file.name, size: file.size });
-  //   }
-  //   setFiles((prevFiles) => [...prevFiles, ...newFiles]);
-  // };
 
   // État pour suivre l'onglet actif
   const [activePanel, setActivePanel] = useState("evidence");
@@ -324,27 +319,40 @@ function ControleExcutionPage() {
   const handleTabChange = (event, newValue) => {
     setActivePanel(newValue === 0 ? "evidence" : "test");
   };
-  const handleSaveFiles = (formData) => {
-    const newFiles = [];
+  
+  
+  const handleSaveFiles = async (formData) => {
+    const formDataToSend = new FormData();
+    const execution_id = executionData[0].execution_id;
+    const is_f_test = activePanel === "test";
 
+    // Ajouter chaque fichier avec ses métadonnées
+    let index = 0;
     for (const [key, file] of formData.entries()) {
-      newFiles.push({ name: file.name, size: file.size });
+        formDataToSend.append(`files[${index}]`, file); // Le fichier lui-même
+        formDataToSend.append(`files[${index}][execution_id]`, execution_id);
+        formDataToSend.append(`files[${index}][is_f_test]`, is_f_test);
+        index++;
     }
 
-    if (activePanel === "evidence") {
-      setEvidenceFiles((prevFiles) => {
-        const updatedFiles = [...prevFiles, ...newFiles];
-        console.log("ev", updatedFiles);
-        return updatedFiles;
-      });
-    } else if (activePanel === "test") {
-      setTestFiles((prevFiles) => {
-        const updatedFiles = [...prevFiles, ...newFiles];
-        console.log("test", updatedFiles);
-        return updatedFiles;
-      });
+    // Vérification du contenu de FormData (pour debug)
+    for (let pair of formDataToSend.entries()) {
+        console.log(pair[0], pair[1]);
     }
-  };
+
+    const response = await uploadEvidences(formDataToSend);
+    console.log("response data",response.data)
+    if (response.status === 200) {
+       if(activePanel === "evidence") {
+        setEvidences((prevFiles) => [...prevFiles, ...response.data]);
+    }else if(activePanel === "test") {
+      console.log("actual yest files",testFiles)
+      console.log("test file",formData)
+        setTestFiles((prevFiles) => [...prevFiles, ...response.data]);
+    }
+  }
+};
+  
   const [openDeletePopup, setOpenDeletePopup] = useState(false);
   const [deletedEvidence, setDeletedEvidence] = useState(null);
   const [deletedTestFile, setDeletedTestFile] = useState(null);

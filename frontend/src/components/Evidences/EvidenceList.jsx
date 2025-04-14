@@ -24,7 +24,7 @@ const handleDelete = (index) => {
           className="flex overflow-y-auto relative w-[95%] flex-col mt-2 justify-center  bg-white border border-gray-300 rounded-lg p-2"
         >
           {/* Détails du fichier */}
-          <div className="flex justify-between mx-4">
+          <div className="flex justify-between mx-4 ">
             <a
               href={`${getFile}${file.stored_name}`}
               target="_blank"

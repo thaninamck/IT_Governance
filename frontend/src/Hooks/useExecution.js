@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { api } from "../Api"; // Instance Axios
+import { api,fileApi } from "../Api"; // Instance Axios
 import { useAuth } from "../Context/AuthContext"; // Contexte d'authentification
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
@@ -30,7 +30,7 @@ const useExecution = () => {
         return response.data;
         } catch (error) {
         setError(error);
-        toast.error("Failed to fetch execution");
+        //toast.error("Failed to fetch execution");
         } finally {
         setLoading(false);
         }
@@ -51,6 +51,20 @@ const useExecution = () => {
             setLoading(false);
         }
     };
+
+    const uploadEvidences = async (data) => {
+        setLoading(true);
+        try {
+            const response = await fileApi.post(`/evidences/upload`, data);
+            toast.success("Evidences ajoutés avec succees");
+            return response;
+        } catch (error) {
+            setError(error);
+            toast.error("Failed to upload evidence");
+        } finally {
+            setLoading(false);
+        }
+    };
  useEffect(() => {
     fetchOptions();
   }, []);
@@ -61,7 +75,7 @@ const useExecution = () => {
    getExecutionById,
    getFileURL,
    deleteEvidence,
-    
+    uploadEvidences,
     
     
 

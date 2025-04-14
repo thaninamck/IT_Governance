@@ -6,7 +6,12 @@ const api = axios.create({
     "Content-Type": "application/json",
   },
 });
-
+const fileApi = axios.create({
+  baseURL: "http://127.0.0.1:8000/api/v1",
+  headers: {
+    "Content-Type": "multipart/form-data",
+  },
+});
 const authApi = axios.create({
   baseURL: "http://127.0.0.1:8000/api",
   headers: {
@@ -14,4 +19,4 @@ const authApi = axios.create({
   },
 });
 
-export { api, authApi };
+export { api, authApi , fileApi };
