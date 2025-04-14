@@ -58,14 +58,14 @@ const DisplayEquipe = ({ equipe: initialEquipe, missionId, onTeamUpdate, user })
   };
 
   return (
-    <div className="flex flex-col sm:flex-row sm:items-center mt-4">
-      <label htmlFor="Equipe" className="text-font-gray font-medium w-full sm:w-[300px] mb-2 sm:mb-0">
+    <div className="flex flex-col sm:flex-row sm:items-start">
+      <label htmlFor="Equipe" className=" block text-s text-gray-500 mb-1 pl-8 font-medium w-full sm:w-[300px] mb-2 sm:mb-0">
         Équipe:
       </label>
 
       <div className="flex flex-col sm:flex-wrap gap-4 sm:gap-x-6">
         {localEquipe.map((membre, index) => (
-          <div key={index} className="flex flex-col sm:flex-row gap-2 sm:gap-6 items-start sm:items-center">
+          <div key={index} className=" flex flex-col sm:flex-row gap-2   sm:justify-between items-start sm:items-end sm:w-[300px] ">
             <InfoDisplayComponent 
               BoxContent={membre.full_name} 
               borderWidth="220px" 
