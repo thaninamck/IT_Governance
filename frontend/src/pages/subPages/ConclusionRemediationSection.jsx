@@ -36,7 +36,9 @@ function ConclusionRemediationSection({
   controleID,
   onClose,
   handleSaveModifications,
-  loading
+  loading,
+  isToReview,
+  isToValidate,
 }) {
   const { options } = useExecution();
   const statuses = options.map((status) => ({
@@ -47,6 +49,7 @@ function ConclusionRemediationSection({
   const fallbackStatuses = [
     { label: "Aucun status trouvé pour le moment ", value: 0 },
   ];
+  const showSave = isToReview || isToValidate;
 
   return (
     <div>
@@ -84,14 +87,17 @@ function ConclusionRemediationSection({
         />
       </div>
       <div className="flex justify-end mt-16">
-        <button
-className={`bg-[var(--blue-menu)] text-white px-4 py-2 ${
-  loading ? "opacity-50 cursor-not-allowed" : ""
-}`}          disabled={loading}
-          onClick={handleSaveModifications}
-        >
-          Enregistrer les modifications
-        </button>
+        {showSave && (
+          <button
+            className={`bg-[var(--blue-menu)] text-white px-4 py-2 ${
+              loading ? "opacity-50 cursor-not-allowed" : ""
+            }`}
+            disabled={loading}
+            onClick={handleSaveModifications}
+          >
+            Enregistrer les modifications
+          </button>
+        )}
       </div>
       {showDecisionPopup && (
         <div className="absolute top-25 left-1/2 -translate-x-1/2 translate-y-1/4 z-50 ">
@@ -121,12 +127,14 @@ className={`bg-[var(--blue-menu)] text-white px-4 py-2 ${
             <Separator text={"Remédiation"} />
           </div>
           <div className="flex justify-end m-3 py-6 gap-5">
-            <button
-              onClick={() => setShowRemediation((prevState) => !prevState)}
-              className="text-[var(--blue-menu)] px-3 py-2 border-[var(--blue-menu)]"
-            >
-              Créer une remédiation <AddCircleOutlineRoundedIcon />
-            </button>
+            {showSave && (
+              <button
+                onClick={() => setShowRemediation((prevState) => !prevState)}
+                className="text-[var(--blue-menu)] px-3 py-2 border-[var(--blue-menu)]"
+              >
+                Créer une remédiation <AddCircleOutlineRoundedIcon />
+              </button>
+            )}
 
             {action.length === 0 && (
               <button
@@ -173,15 +181,19 @@ className={`bg-[var(--blue-menu)] text-white px-4 py-2 ${
           </div>
           {action.length > 0 && (
             <div className="flex justify-end mt-5">
-              <button
-                className={`bg-[var(--blue-menu)] text-white px-4 py-2 ${
-                  isValidateDisabled ||loading ? "opacity-50 cursor-not-allowed" : ""
-                }`}
-                disabled={isValidateDisabled || loading}
-                onClick={handleSubmit}
-              >
-                Envoyer pour revue{" "}
-              </button>
+              {showSave && (
+                <button
+                  className={`bg-[var(--blue-menu)] text-white px-4 py-2 ${
+                    isValidateDisabled || loading
+                      ? "opacity-50 cursor-not-allowed"
+                      : ""
+                  }`}
+                  disabled={isValidateDisabled || loading}
+                  onClick={handleSubmit}
+                >
+                  Envoyer pour revue{" "}
+                </button>
+              )}
             </div>
           )}
         </>

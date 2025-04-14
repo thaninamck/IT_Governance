@@ -37,6 +37,15 @@ public function getExecutionById($executionId)
 {
     return $this->executionRepository->getExecutionById($executionId);
 }
+
+public function submitExecutionForReview($executionId)
+{
+    return $this->executionRepository->updateExecutionStatus($executionId,true,false);
+}
+public function submitExecutionForValidation($executionId)
+{
+    return $this->executionRepository->updateExecutionStatus($executionId,false,true);
+}
     public function getExecutionStatusOptions()
     {
         return $this->statusRepository->getExecutionStatusOptions();

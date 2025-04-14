@@ -79,6 +79,37 @@ const useExecution = () => {
             setLoading(false);
         }
     }
+
+
+
+    const submitExecutionForReview = async (executionId) => {
+        setLoading(true);
+        try {
+          const response = await api.patch(`/executions/submit-execution-for-review/${executionId}`);
+          toast.success("Soumis pour revue !");
+          return response.data;
+        } catch (error) {
+          setError(error);
+          toast.error("Échec de la soumission pour revue");
+        } finally {
+          setLoading(false);
+        }
+      };
+      
+      const submitExecutionForValidation = async (executionId) => {
+        setLoading(true);
+        try {
+          const response = await api.patch(`/executions/submit-execution-for-validation/${executionId}`);
+          toast.success("Soumis pour validation !");
+          return response.data;
+        } catch (error) {
+          setError(error);
+          toast.error("Échec de la soumission pour validation");
+        } finally {
+          setLoading(false);
+        }
+      };
+      
  useEffect(() => {
     fetchOptions();
   }, []);
@@ -91,6 +122,8 @@ const useExecution = () => {
    deleteEvidence,
     uploadEvidences,
     updateExecution,
+    submitExecutionForReview,
+    submitExecutionForValidation,
     
 
 };

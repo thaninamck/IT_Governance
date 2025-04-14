@@ -28,9 +28,9 @@ function ControleExcutionPage() {
   // Accédez à userRole et setUserRole via le contexte
   const { userRole, setUserRole } = useContext(PermissionRoleContext);
   const { loading, getExecutionById, getFileURL, deleteEvidence,uploadEvidences,updateExecution
-
    } =
     useExecution();
+
   const location = useLocation();
   const controleData = location.state?.controleData || {};
   console.log(controleData);
@@ -58,6 +58,9 @@ function ControleExcutionPage() {
   }, [controleData.executionId]);
   const [evidences, setEvidences] = useState([]);
   const [steps, setSteps] = useState([]);
+  const [isToReview, setIsToReview] = useState(false);
+  const [isToValidate, setIsToValidate] = useState(false);
+
   useEffect(() => {
     console.log("Execution Data:", executionData);
     const allEvidences = executionData?.[0]?.evidences || [];
@@ -71,6 +74,10 @@ function ControleExcutionPage() {
     setEvidences(filteredEvidences);
     setTestFiles(filteredTestFiles);
     setSteps(executionData?.[0]?.steps || []);
+    setIsToReview(executionData?.[0]?.execution_is_to_review );
+    setIsToValidate(executionData?.[0]?.execution_is_to_validate);
+
+
   }, [executionData]);
   const [commentaire, setCommentaire] = useState(
     controleData.commentaire || ""
@@ -679,6 +686,9 @@ const handleSaveModifications = async () => {
 
   return (
     <div className=" ">
+      {isToReview || isToValidate && (
+        <div className="fixed top-0 left-0 w-full h-full bg-transparent z-50 pointer-events-auto" />
+      )}
       <Header />
       <div className="ml-8 mr-6 pb-9">
         {location.pathname.includes("") && <Breadcrumbs />}
@@ -762,6 +772,9 @@ const handleSaveModifications = async () => {
           onClose={onClose}
           handleSaveModifications={handleSaveModifications}
           loading={loading}
+          isToReview={isToReview}
+          isToValidate={isToValidate}
+          
         />
         {showPopup && (
           <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-md z-50">

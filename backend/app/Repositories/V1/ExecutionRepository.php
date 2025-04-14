@@ -19,6 +19,8 @@ class ExecutionRepository
         'user_id' => $executionData['controlTester'],
         'layer_id' => $executionData['layerId'],
         'status_id' => null,
+        'is_to_validate' => false,
+        'is_to_review' => false,
     ]);
 
     // Récupération des steps liés à ce control
@@ -135,6 +137,8 @@ public function getExecutionById($executionId)
        SELECT 
     e.id AS execution_id,
     sts.control_id,
+    e.is_to_review AS execution_is_to_review,
+    e.is_to_validate AS execution_is_to_validate,
 
     json_agg(DISTINCT jsonb_build_object(
         'step_execution_id', se.id,
@@ -159,8 +163,8 @@ LEFT JOIN public.executions_evidences ev ON ev.execution_id = e.id
 WHERE e.id = ?
 
 GROUP BY 
-    e.id, 
-    sts.control_id;
+    e.id,
+	sts.control_id;
 
     ", [$executionId]);
 }
@@ -492,7 +496,21 @@ public function getExecutionsByMissionAndSystemAndTester($missionId, $userId, $a
     return $execution;
 }
 
+public function updateExecutionStatus($executionId, $toReview , $toValidate )
+{
+    $execution = Execution::find($executionId); 
 
+    if (!$execution) {
+        return false;
+    }
+
+    $execution->is_to_review = $toReview;
+    $execution->is_to_validate = $toValidate;
+    $execution->touch(); 
+    $execution->save();
+
+    return true;
+}
 
   
 

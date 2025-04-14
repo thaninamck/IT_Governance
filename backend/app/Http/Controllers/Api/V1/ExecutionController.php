@@ -342,6 +342,23 @@ class ExecutionController extends BaseController
         }
     }
 
+    public function submitExecutionForReview($executionId)
+    {
+        try {
+            return $this->executionService->submitExecutionForReview($executionId) ? $this->sendResponse("Execution submitted successfully", [], 200) : $this->sendError("submitting execution failed", [], 404);
+        } catch (\Exception $e) {
+            return $this->sendError("Error while submitting execution", ['error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function submitExecutionForValidation($executionId)
+    {
+        try {
+            return $this->executionService->submitExecutionForValidation($executionId) ? $this->sendResponse("Execution submitted successfully", [], 200) : $this->sendError("submitting execution failed", [], 404);
+        } catch (\Exception $e) {
+            return $this->sendError("Error while submitting execution", ['error' => $e->getMessage()], 500);
+        }
+    }
     public function storeFile(Request $request)
     {
         $rules = [

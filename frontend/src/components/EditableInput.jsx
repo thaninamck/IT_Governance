@@ -12,6 +12,7 @@ const EditableTextarea = ({ placeholder = 'Saisir un commentaire ...', onSave })
   const handleSave = () => {
     onSave(value);
     setShowButton(false);
+    setValue("")
   };
 
   return (
