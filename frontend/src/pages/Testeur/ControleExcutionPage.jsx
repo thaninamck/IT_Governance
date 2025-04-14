@@ -104,13 +104,11 @@ function ControleExcutionPage() {
   const [description, setDescription] = useState(
     controleData.controlDescription || ""
   );
-
   const [testScript, setTestScript] = useState(controleData.testScript || "");
   const [type, setType] = useState(controleData.typeName || "");
   const [controlOwner, setControlOwner] = useState(
     controleData.executionControlOwner || ""
   );
-
   const [majorProcess, setMajorProcess] = useState(
     controleData.majorProcess || ""
   );

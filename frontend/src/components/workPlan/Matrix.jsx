@@ -342,7 +342,38 @@ function Matrix({
       </Select>
     ) 
   },
+
+  // renderCell: (params) => {
+  //   const controlTester = testerValues[params.row.id];
+  //  // console.log('testeur',controlTester)
   
+  //   return controlTester ? (
+  //     <span>{controlTester}</span>
+  //   ) : 
+  //     <Select
+  //       value={testerValues[params.row.id] || params.row.controlTester || ""}
+  //       onChange={(event) => {
+  //         const selectedTesterId = event.target.value;
+  //         handleTesterChange(params.row.id, selectedTesterId)(event);
+  //       }}
+  //       fullWidth
+  //       variant="outlined"
+  //       size="small"
+  //     >
+  //       {loading ? (
+  //         <MenuItem disabled>Chargement...</MenuItem>
+  //       ) : testers.length > 0 ? (
+  //         testers.map((tester) => (
+  //           <MenuItem key={tester.id} value={tester.id}>
+  //             {tester.designation}
+  //           </MenuItem>
+  //         ))
+  //       ) : (
+  //         <MenuItem disabled>Aucun testeur trouvé</MenuItem>
+  //       )}
+  //     </Select>
+    
+  // },
 },
 
   ];

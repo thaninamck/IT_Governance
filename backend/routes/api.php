@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\V1\EvidenceController;
+use App\Http\Controllers\Api\V1\ExecutionController;
 use App\Http\Controllers\Api\V1\ParticipationController;
 use App\Http\Middleware\AdminMiddleware;
 
@@ -14,7 +15,6 @@ use App\Http\Controllers\Api\V1\UserController;
 use App\Http\Controllers\Api\V1\ControlController;
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\ClientController;
-use App\Http\Controllers\Api\V1\ExecutionController;
 use App\Http\Controllers\Api\V1\LayerController;
 use App\Http\Controllers\Api\V1\LogController;
 use App\Http\Controllers\Api\V1\NotificationController;
@@ -86,7 +86,7 @@ Route::middleware(['auth:sanctum', AdminMiddleware::class])
             // Route::put('/cancelmission/{id}', 'cancelMission');
             // Route::put('/stopmission/{id}', 'stopMission');
             // Route::put('/resumemission/{id}', 'resumeMission');
-            //Route::get('/archivedmissions', 'getArchivedMissions');
+            Route::get('/archivedmissions', 'getArchivedMissions');
         });
     });
 
@@ -139,8 +139,6 @@ Route::middleware(['auth:sanctum', ManagerMiddleware::class])
         // Route::controller(MissionController::class)->group(function () {
         //     Route::get('/missions/{mission}/members', 'getMembersByMission');
         // });
-
-      
     });
 
 //  Route::controller(ParticipationController::class)->group(function () {
@@ -236,16 +234,6 @@ Route::middleware('auth:sanctum')->prefix('v1')->group(function () {
     Route::controller(ExecutionController::class)->group(function () {
         Route::get('/missions/{missionId}/{appId}/getexecutionsListForTesteur', 'getExecutionsByMissionAndSystemAndTester');
     });
-
-    Route::controller(MissionController::class)->group(function () {
-        Route::put('/missions/{id}/requestcancelmission', 'RequestCancelMission');
-    });
-    Route::controller(MissionController::class)->group(function () {
-        Route::put('/missions/{id}/requestCloseMission', 'RequestCloseMission');
-    });
-    Route::controller(MissionController::class)->group(function () {
-        Route::put('/missions/{id}/requestArchiveMission', 'RequestArchiveMission');
-    });
 });
 
 
@@ -318,28 +306,7 @@ Route::prefix('v1')->controller(MissionController::class)->group(function () {
     Route::put('/stopmission/{id}', 'stopMission');
 });
 Route::prefix('v1')->controller(MissionController::class)->group(function () {
-    Route::put('/missions/{id}/cancelmission', 'cancelMission');
-});
-// Route::prefix('v1')->controller(MissionController::class)->group(function () {
-//     Route::put('/missions/{id}/requestcancelmission', 'RequestCancelMission');
-// });
-// Route::prefix('v1')->controller(MissionController::class)->group(function () {
-//     Route::put('/missions/{id}/requestCloseMission', 'RequestCloseMission');
-// });
-// Route::prefix('v1')->controller(MissionController::class)->group(function () {
-//     Route::put('/missions/{id}/requestArchiveMission', 'RequestArchiveMission');
-// });
-Route::prefix('v1')->controller(MissionController::class)->group(function () {
-    Route::get('/missions/getrequeststatusmission', 'getRequestStatusForMissions');
-});
-Route::prefix('v1')->controller(MissionController::class)->group(function () {
-    Route::get('/missions/getarchivedmissions', 'getArchivedMissions');
-});
-Route::prefix('v1')->controller(MissionController::class)->group(function () {
-    Route::put('/acceptrequeststatus/{id}', 'AcceptRequestStatus');
-});
-Route::prefix('v1')->controller(MissionController::class)->group(function () {
-    Route::put('/refuseRequestStatus/{id}', 'RefuseRequestStatus');
+    Route::put('/cancelmission/{id}', 'cancelMission');
 });
 Route::prefix('v1')->controller(MissionController::class)->group(function () {
     Route::put('/closemission/{id}', 'closeMission');
