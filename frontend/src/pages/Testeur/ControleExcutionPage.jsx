@@ -660,29 +660,37 @@ const handleSaveModifications = async () => {
     action.every((remediation) => remediation.status === "Terminé") &&
     selectedMulti != "";
 
-  // Determine the status of the control
-  const controlStatus = isAllRemediationDone ? "Terminé" : "En_cours";
+  // Déterminer le statut du contrôle
+let controlStatus = "En cours";
 
-  const controlIcon =
-    controlStatus === "Terminé" ? (
-      <CheckCircleIcon
-        style={{
-          color: "var( --success-green)",
-          animation: "fadeIn 1s ease",
-          width: "25px",
-          height: "25px",
-        }}
-      />
-    ) : (
-      <AccessTimeFilledIcon
-        style={{
-          color: "var(--await-orange)",
-          animation: "fadeIn 1s ease",
-          width: "25px",
-          height: "25px",
-        }}
-      />
-    );
+if (isToReview || isToValidate) {
+  controlStatus = "En cours de revue";
+} else if (isAllRemediationDone) {
+  controlStatus = "Terminé";
+}
+
+// Déterminer l'icône à afficher
+const controlIcon =
+  controlStatus === "Terminé" ? (
+    <CheckCircleIcon
+      style={{
+        color: "var(--success-green)",
+        animation: "fadeIn 1s ease",
+        width: "25px",
+        height: "25px",
+      }}
+    />
+  ) : (
+    <AccessTimeFilledIcon
+      style={{
+        color: "var(--await-orange)",
+        animation: "fadeIn 1s ease",
+        width: "25px",
+        height: "25px",
+      }}
+    />
+  );
+
 
   return (
     <div className=" ">
