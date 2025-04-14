@@ -23,6 +23,10 @@ return new class extends Migration {
             //$table->foreignId('control_id')->constrained('controls');
             $table->foreignId('status_id')->nullable()->constrained('statuses');
             $table->foreignId('layer_id')->constrained('layers');
+            $table->boolean('is_to_validate')->default(false);
+            $table->boolean('is_to_review')->default(false);
+
+
 
             $table->timestamps();
         });

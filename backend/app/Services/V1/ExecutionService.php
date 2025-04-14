@@ -5,6 +5,7 @@ use App\Models\execution;
 use App\Repositories\V1\ExecutionRepository;
 use App\Repositories\V1\CntrlRiskCovRepository;
 use App\Repositories\V1\StatusRepository;
+use App\Repositories\V1\StepTestScriptRepository;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 class ExecutionService
@@ -13,14 +14,15 @@ class ExecutionService
     protected CntrlRiskCovRepository $covRepository;
     protected EvidenceService $evidenceService;
     protected $statusRepository;
+    protected $stepRepository;
 
 
     public function __construct( EvidenceService $evidenceService,ExecutionRepository $executionRepository, 
-    CntrlRiskCovRepository $covRepository , StatusRepository $statusRepository)
+    CntrlRiskCovRepository $covRepository , StatusRepository $statusRepository,StepTestScriptRepository $stepRepository)
     {
     
         $this->statusRepository = $statusRepository;
-
+$this->stepRepository = $stepRepository;
         $this->executionRepository =$executionRepository;
         $this->covRepository =$covRepository;
         $this->evidenceService = $evidenceService;
@@ -34,6 +36,15 @@ class ExecutionService
 public function getExecutionById($executionId)
 {
     return $this->executionRepository->getExecutionById($executionId);
+}
+
+public function submitExecutionForReview($executionId)
+{
+    return $this->executionRepository->updateExecutionStatus($executionId,true,false);
+}
+public function submitExecutionForValidation($executionId)
+{
+    return $this->executionRepository->updateExecutionStatus($executionId,false,true);
 }
     public function getExecutionStatusOptions()
     {
@@ -104,34 +115,6 @@ public function getExecutionById($executionId)
         return $this->executionRepository->deleteExecutions($executionsIds);
 
     }  
-//     public function updateExecution($executionId, $data)
-// {
-//     $executionData = [
-//         'id' => $executionId,
-//         'cntrl_modification' => $data['description'],
-//         'ipe' => $data['ipe'],
-//         'design' => $data['design'],
-//         'effectiveness' => $data['effectiveness'],
-//         'status_id' => $data['status_id'],
-//         'comment' => $data['comment'],
-//     ];
-
-//     // Mise à jour de l'exécution
-//     $execution = $this->executionRepository->updateExecution($executionId, $executionData);
-
-//     if ($execution) {
-//         // Si des fichiers sont envoyés, on les traite
-//         if (isset($data['files'])) {
-//             // Ajouter `execution_id` à chaque fichier
-//             foreach ($data['files'] as &$fileData) {
-//                 $fileData['execution_id'] = $executionId; // Ajout de l'ID d'exécution à chaque fichier
-//             }
-
-//             // On envoie les fichiers au service de stockage
-//             $this->evidenceService->storeFiles($data['files']);
-//         }
-//     }
-// }
 
 public function updateExecution($executionId, $data)
 {
@@ -154,6 +137,20 @@ public function updateExecution($executionId, $data)
     $riskFilteredData = array_filter($riskData, function ($value) {
         return !is_null($value);
     });
+
+    if(!empty($data['steps'])) {
+        Log::info('Steps Data:', $data['steps']);
+       foreach ($data['steps'] as $step) {
+            $stepData = [
+               
+                'checked' => $step['step_checked'],
+                'comment' => $step['step_comment'] ?? null,
+            ];
+            Log::info('Step Data:', $stepData);
+            $this->stepRepository->update($stepData, $step['step_execution_id']);
+
+        }
+    }
 
     if (!empty($riskFilteredData) ) {
        $this->covRepository->updateCoverage($executionId, $riskFilteredData);
