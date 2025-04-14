@@ -20,16 +20,21 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { PermissionRoleContext } from "../../Context/permissionRoleContext";
 import useExecution from "../../Hooks/useExecution";
 import DecisionPopUp from "../../components/PopUps/DecisionPopUp";
-import { toast } from "react-toastify";
+import VisibilityIcon from "@mui/icons-material/Visibility"; // ou RateReviewIcon
 // Initialize EmailJS with your userID
 emailjs.init("oAXuwpg74dQwm0C_s"); // Replace 'YOUR_USER_ID' with your actual userID
 
 function ControleExcutionPage() {
   // Accédez à userRole et setUserRole via le contexte
   const { userRole, setUserRole } = useContext(PermissionRoleContext);
-  const { loading, getExecutionById, getFileURL, deleteEvidence,uploadEvidences,updateExecution
-   } =
-    useExecution();
+  const {
+    loading,
+    getExecutionById,
+    getFileURL,
+    deleteEvidence,
+    uploadEvidences,
+    updateExecution,
+  } = useExecution();
 
   const location = useLocation();
   const controleData = location.state?.controleData || {};
@@ -60,6 +65,7 @@ function ControleExcutionPage() {
   const [steps, setSteps] = useState([]);
   const [isToReview, setIsToReview] = useState(false);
   const [isToValidate, setIsToValidate] = useState(false);
+  const sourceNames = controleData.sources.map(s => s.source_name).join(', ');
 
   useEffect(() => {
     console.log("Execution Data:", executionData);
@@ -74,10 +80,8 @@ function ControleExcutionPage() {
     setEvidences(filteredEvidences);
     setTestFiles(filteredTestFiles);
     setSteps(executionData?.[0]?.steps || []);
-    setIsToReview(executionData?.[0]?.execution_is_to_review );
+    setIsToReview(executionData?.[0]?.execution_is_to_review);
     setIsToValidate(executionData?.[0]?.execution_is_to_validate);
-
-
   }, [executionData]);
   const [commentaire, setCommentaire] = useState(
     controleData.commentaire || ""
@@ -318,7 +322,6 @@ function ControleExcutionPage() {
     setCommentaire(newComment);
   };
 
-
   // État pour suivre l'onglet actif
   const [activePanel, setActivePanel] = useState("evidence");
 
@@ -326,8 +329,7 @@ function ControleExcutionPage() {
   const handleTabChange = (event, newValue) => {
     setActivePanel(newValue === 0 ? "evidence" : "test");
   };
-  
-  
+
   const handleSaveFiles = async (formData) => {
     const formDataToSend = new FormData();
     const execution_id = executionData[0].execution_id;
@@ -336,44 +338,45 @@ function ControleExcutionPage() {
     // Ajouter chaque fichier avec ses métadonnées
     let index = 0;
     for (const [key, file] of formData.entries()) {
-        formDataToSend.append(`files[${index}]`, file); // Le fichier lui-même
-        formDataToSend.append(`files[${index}][execution_id]`, execution_id);
-        formDataToSend.append(`files[${index}][is_f_test]`, is_f_test);
-        index++;
+      formDataToSend.append(`files[${index}]`, file); // Le fichier lui-même
+      formDataToSend.append(`files[${index}][execution_id]`, execution_id);
+      formDataToSend.append(`files[${index}][is_f_test]`, is_f_test);
+      index++;
     }
 
     // Vérification du contenu de FormData (pour debug)
     for (let pair of formDataToSend.entries()) {
-        console.log(pair[0], pair[1]);
+      console.log(pair[0], pair[1]);
     }
 
     const response = await uploadEvidences(formDataToSend);
-    console.log("response data",response.data)
+    console.log("response data", response.data);
     if (response.status === 200) {
-       if(activePanel === "evidence") {
+      if (activePanel === "evidence") {
         setEvidences((prevFiles) => [...prevFiles, ...response.data]);
-    }else if(activePanel === "test") {
-      console.log("actual yest files",testFiles)
-      console.log("test file",formData)
+      } else if (activePanel === "test") {
+        console.log("actual yest files", testFiles);
+        console.log("test file", formData);
         setTestFiles((prevFiles) => [...prevFiles, ...response.data]);
+      }
     }
-  }
-};
-  
+  };
+
   const [openDeletePopup, setOpenDeletePopup] = useState(false);
   const [deletedEvidence, setDeletedEvidence] = useState(null);
   const [deletedTestFile, setDeletedTestFile] = useState(null);
   const handleDeleteConfirm = async () => {
     setOpenDeletePopup(false); // Fermer la popup de confirmation
     if (activePanel === "evidence") {
-    const response = await deleteEvidence(deletedEvidence.evidence_id);
-    if (response === 200) {
-      setEvidences((prevFiles) =>
-        prevFiles.filter(
-          (file) => file.evidence_id !== deletedEvidence.evidence_id
-        )
-      );
-    }} else if (activePanel === "test") {
+      const response = await deleteEvidence(deletedEvidence.evidence_id);
+      if (response === 200) {
+        setEvidences((prevFiles) =>
+          prevFiles.filter(
+            (file) => file.evidence_id !== deletedEvidence.evidence_id
+          )
+        );
+      }
+    } else if (activePanel === "test") {
       console.log("ID du test file supprimé :", deletedTestFile.evidence_id);
       const response = await deleteEvidence(deletedTestFile.evidence_id);
       if (response === 200) {
@@ -630,20 +633,17 @@ function ControleExcutionPage() {
     };
     setShowPopup(true);
   };
-const handleSaveModifications = async () => {
-  const payload = {
-    
-    ipe: selections.IPE,
-    design: selections.Design,
-    effectiveness: selections.Effectiveness,
-    comment:commentaire,
-    steps: testScriptData,
-    status_id: selectedMulti,
+  const handleSaveModifications = async () => {
+    const payload = {
+      ipe: selections.IPE,
+      design: selections.Design,
+      effectiveness: selections.Effectiveness,
+      comment: commentaire,
+      steps: testScriptData,
+      status_id: selectedMulti,
+    };
+    await updateExecution(controleData.executionId, payload);
   };
-  await updateExecution(controleData.executionId, payload);
-
- 
-}
   const navigate = useNavigate();
 
   const handleRowClick = (rowData) => {
@@ -654,58 +654,64 @@ const handleSaveModifications = async () => {
     // navigate('/controle', { state: { controleData: rowData } });
     console.log("Détails du contrôle sélectionné:", rowData);
   };
+  
+
 
   // Check if all remediations are done
   const isAllRemediationDone =
     action.every((remediation) => remediation.status === "Terminé") &&
     selectedMulti != "";
 
-  // Déterminer le statut du contrôle
-let controlStatus = "En cours";
+  const controlStatus = isAllRemediationDone
+    ? "Terminé"
+    : isToReview || isToValidate
+    ? "En cours de revue"
+    : "En cours";
 
-if (isToReview || isToValidate) {
-  controlStatus = "En cours de revue";
-} else if (isAllRemediationDone) {
-  controlStatus = "Terminé";
-}
-
-// Déterminer l'icône à afficher
-const controlIcon =
-  controlStatus === "Terminé" ? (
-    <CheckCircleIcon
-      style={{
-        color: "var(--success-green)",
-        animation: "fadeIn 1s ease",
-        width: "25px",
-        height: "25px",
-      }}
-    />
-  ) : (
-    <AccessTimeFilledIcon
-      style={{
-        color: "var(--await-orange)",
-        animation: "fadeIn 1s ease",
-        width: "25px",
-        height: "25px",
-      }}
-    />
-  );
-
+  const controlIcon =
+    controlStatus === "Terminé" ? (
+      <CheckCircleIcon
+        style={{
+          color: "var(--success-green)",
+          animation: "fadeIn 1s ease",
+          width: "25px",
+          height: "25px",
+        }}
+      />
+    ) : controlStatus === "En cours de revue" ? (
+      <VisibilityIcon
+        style={{
+          color: "#3b82f6",
+          animation: "fadeIn 1s ease",
+          width: "25px",
+          height: "25px",
+        }}
+      />
+    ) : (
+      <AccessTimeFilledIcon
+        style={{
+          color: "var(--await-orange)",
+          animation: "fadeIn 1s ease",
+          width: "20px",
+          height: "20px",
+        }}
+      />
+    );
 
   return (
     <div className=" ">
-      {isToReview || isToValidate && (
-        <div className="fixed top-0 left-0 w-full h-full bg-transparent z-50 pointer-events-auto" />
-      )}
+      {isToReview ||isToValidate && (
+          <div className="fixed top-0 left-0 w-full h-full bg-transparent z-50 pointer-events-auto" />
+        )}
       <Header />
-      <div className="ml-8 mr-6 pb-9">
-        {location.pathname.includes("") && <Breadcrumbs />}
-        {/*ajout ici animation and icons*/}
-        {/* Display Control Status with Icon */}
-        <div className="flex items-center gap-2 justify-end pr-12">
-          <h1 className=" font-medium text-lg">
-            Statut du controle: {controlStatus}
-          </h1>
+
+      <div className="ml-8 mr-6 pb-9 relative">
+        <div className="flex justify-between items-center px-4 py-2">
+          {location.pathname.includes("") && <Breadcrumbs />}
+        </div>
+
+        <div className="absolute right-4 top-11 flex items-center gap-2 z-10">
+          <h1 className="font-medium text-base">Statut : {controlStatus}</h1>
           {controlIcon}
         </div>
 
@@ -720,6 +726,7 @@ const controlIcon =
           majorProcess={majorProcess}
           subProcess={subProcess}
           controlOwner={controlOwner}
+          sources={sourceNames}
           onTestScriptChange={handleTestScriptChange} // Transmettre la fonction de rappel
         />
         {openDeletePopup && (
@@ -782,7 +789,6 @@ const controlIcon =
           loading={loading}
           isToReview={isToReview}
           isToValidate={isToValidate}
-          
         />
         {showPopup && (
           <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-md z-50">

@@ -49,15 +49,16 @@ function ConclusionRemediationSection({
   const fallbackStatuses = [
     { label: "Aucun status trouvé pour le moment ", value: 0 },
   ];
-  const showSave = isToReview || isToValidate;
+  const showSave = !(isToReview || isToValidate);
 
   return (
     <div>
-      <div className="mr-5">
+      <div className="min-h-screen">
+      <div className="mr-5 ml-8">
         <Separator text={"Conclusion"} />
       </div>
-      <div className="flex flex-row items-center gap-14 py-7 ml-5">
-        <label className="mr-20 font-medium">Status</label>
+      <div className="flex flex-row items-center gap-14 py-7 ml-9">
+        <label className="mr-20 ml-8 font-medium">Status</label>
         <SelectInput
           label=""
           options={statuses.length > 0 ? statuses : fallbackStatuses}
@@ -77,19 +78,22 @@ function ConclusionRemediationSection({
           </div>
         )}
       </div>
-      <p className="mt-4 font-medium ml-5  ">Commentaire: {commentaire}</p>
+      <p className="mt-4 font-medium ml-16    ">Commentaire: {commentaire}</p>
 
-      <div className="flex flex-row items-center mt-8 ml-5 ">
-        <label className=" font-medium ">modifier le commentaire</label>
-        <EditableTextarea
-          placeholder="Saisir un commentaire ..."
-          onSave={(newComment) => setCommentaire(newComment)}
-        />
+      <div className="flex flex-row items-center mt-8 ml-8 ">
+        <label className=" font-medium  ml-8">modifier le commentaire</label>
+
+        <div className=" w-full pr-10  mr-8">
+          <EditableTextarea
+            placeholder="Saisir un commentaire ..."
+            onSave={(newComment) => setCommentaire(newComment)}
+          />
+        </div>
       </div>
       <div className="flex justify-end mt-16">
         {showSave && (
           <button
-            className={`bg-[var(--blue-menu)] text-white px-4 py-2 ${
+            className={`bg-[var(--blue-menu)] text-white px-4 mr-16 mt-20 py-2 ${
               loading ? "opacity-50 cursor-not-allowed" : ""
             }`}
             disabled={loading}
@@ -98,6 +102,7 @@ function ConclusionRemediationSection({
             Enregistrer les modifications
           </button>
         )}
+      </div>
       </div>
       {showDecisionPopup && (
         <div className="absolute top-25 left-1/2 -translate-x-1/2 translate-y-1/4 z-50 ">
@@ -122,15 +127,15 @@ function ConclusionRemediationSection({
 
       {/* Table for Remédiations */}
       {action.length > 0 && (
-        <>
-          <div className="mr-5">
+        <div className="min-h-screen">
+          <div className="mr-5  ml-9">
             <Separator text={"Remédiation"} />
           </div>
           <div className="flex justify-end m-3 py-6 gap-5">
             {showSave && (
               <button
                 onClick={() => setShowRemediation((prevState) => !prevState)}
-                className="text-[var(--blue-menu)] px-3 py-2 border-[var(--blue-menu)]"
+                className="text-[var(--blue-menu)] px-3  mr-16  py-2 border-[var(--blue-menu)]"
               >
                 Créer une remédiation <AddCircleOutlineRoundedIcon />
               </button>
@@ -149,7 +154,7 @@ function ConclusionRemediationSection({
             )}
           </div>
           <div
-            className={`mt-6 flex-1 overflow-x-auto overflow-y-auto h-[400px] transition-all }`}
+            className={`mt-6 flex-1 overflow-x-auto overflow-y-auto h-[400px] mx-10 transition-all }`}
           >
             {isDeletePopupOpen && (
               <div className="absolute top-50 left-1/2 -translate-x-1/2 z-50 mt-6">
@@ -164,6 +169,7 @@ function ConclusionRemediationSection({
                 />
               </div>
             )}
+            
             <Table
               key={JSON.stringify(action)}
               columnsConfig={columnsConfig}
@@ -183,7 +189,7 @@ function ConclusionRemediationSection({
             <div className="flex justify-end mt-5">
               {showSave && (
                 <button
-                  className={`bg-[var(--blue-menu)] text-white px-4 py-2 ${
+                  className={`bg-[var(--blue-menu)] mr-16  text-white px-4 py-2 ${
                     isValidateDisabled || loading
                       ? "opacity-50 cursor-not-allowed"
                       : ""
@@ -196,7 +202,7 @@ function ConclusionRemediationSection({
               )}
             </div>
           )}
-        </>
+        </div>
       )}
     </div>
   );

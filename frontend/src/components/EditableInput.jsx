@@ -16,7 +16,7 @@ const EditableTextarea = ({ placeholder = 'Saisir un commentaire ...', onSave })
   };
 
   return (
-    <div className="relative flex items-center border border-gray-300 rounded-lg overflow-hidden w-[89%]">
+    <div className="relative flex items-center border border-gray-300 rounded-lg overflow-hidden w-full">
       <textarea
         value={value}
         onChange={handleChange}

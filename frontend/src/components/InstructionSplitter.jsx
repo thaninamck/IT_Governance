@@ -82,13 +82,13 @@ function InstructionSplitter({ steps, onChange }) {
   const disabledSteps = computeDisabledStates();
 
   return (
-    <div>
-      <label className="text-font-gray font-medium">Test Scripts</label>
-      <div className="max-h-80 overflow-y-auto space-y-2 my-1">
+    <div >
+      <label className="text-font-gray font-medium">Étapes du test</label>
+      <div className="max-h-80 overflow-y-auto  mr-3 pr-6 space-y-2 my-1">
         {phrases.map((phrase, index) => (
           <div
             key={index}
-            className="pb-1 px-3 border border-gray-300 rounded-lg shadow-sm relative flex flex-col gap-1 ml-4 max-h-64 overflow-y-auto"
+            className="pb-1 px-3 border   border-gray-300 rounded-lg shadow-sm relative flex flex-col gap-1  max-h-64 overflow-y-auto"
           >
             <div className="flex gap-2">
               <input

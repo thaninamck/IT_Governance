@@ -1,13 +1,19 @@
 /* General container styles */
 .header_container {
+    position: sticky;           /* Le rend fixe pendant le scroll */
+    top: 0;                     /* Colle le header en haut */
+    z-index: 1000;              /* S'assure qu'il reste au-dessus des autres éléments */
     background-color: var(--blue-nav);
     height: 70px;
     margin: 0;
-    padding: 0% 4% 0% 2%;
+    padding: 0 4% 0 2%;
     display: flex;
     align-items: center;
     justify-content: space-between;
-}
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    flex-wrap: wrap;
+  }
+  
 
 .headerbis_container {
     height: 70px;
