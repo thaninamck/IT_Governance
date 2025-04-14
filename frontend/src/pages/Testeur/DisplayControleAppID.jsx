@@ -77,7 +77,8 @@ function DisplayControleAppID() {
 
  const fetchAppData = async () => {
   try {
-    const endpoint = (user?.role === "admin"|| profile==='manager' ) ? `/missions/${AppData.id}/getexecutionsList` : `/missions/${AppData.missionId}/${AppData.id}/getexecutionsListForTesteur`;
+    const endpoint = (user?.role === "admin"|| profile==='manager' ) ? `/missions/${AppData.id}/getexecutionsList`
+     : `/missions/${AppData.missionId}/${AppData.id}/getexecutionsListForTesteur`;
     const response = await api.get(endpoint);
     console.log('list',response.data)
     setAppData(response.data);
@@ -87,6 +88,26 @@ function DisplayControleAppID() {
     setLoading(false);
   }
 };
+
+// const fetchAppData = async () => {
+//   if (!user?.role || !profile) return; // éviter les erreurs silencieuses
+
+//   try {
+//     const isAdminOrManager = user.role === "admin" || profile === "manager";
+//     const endpoint = isAdminOrManager
+//       ? `/missions/${AppData.id}/getexecutionsList`
+//       : `/missions/${AppData.missionId}/${AppData.id}/getexecutionsListForTesteur`;
+
+//     const response = await api.get(endpoint);
+//     console.log('list', response.data);
+//     setAppData(response.data);
+//   } catch (err) {
+//     setError(err.message);
+//   } finally {
+//     setLoading(false);
+//   }
+// };
+
 
 // const fetchAppData = async () => {
 //     try {
@@ -101,10 +122,17 @@ function DisplayControleAppID() {
 //   };
  // Chargement initial
  useEffect(() => {
-  if (AppData.id) {
+  if (user?.role || profile) {
     fetchAppData();
   }
-}, [AppData.id]);
+}, [user?.role,profile]);
+
+// useEffect(() => {
+//   if (AppData?.id && user?.role && profile) {
+//     fetchAppData();
+//   }
+// }, [AppData?.id, user?.role, profile]);
+
   return (
     <div className=" ">
 
