@@ -236,11 +236,17 @@ function GestionMission() {
         </div>
         <div className="flex justify-end items-center gap-4 pr-10 mb-6">
           <ImportCsvButton onDataImported={handleDataImported} />
-          <ExportButton
+          {/* <ExportButton
             rowsData={filteredRows}
             headers={columnsConfig2.map((col) => col.headerName)}
             fileName="missions"
-          />
+          /> */}
+          <ExportButton
+  rowsData={filteredRows}
+  columns={columnsConfig2}
+  fileName="missions"
+/>
+
         </div>
 
         {/* Boutons pour basculer entre les vues */}

@@ -18,6 +18,7 @@ const MissionInfo = ({ dataFormat, user , missionId}) => {
     try {
       const response = await api.get(`/missions/${missionId}/members`);
       setMissionData(response.data);
+      console.log("missionData",missionData)
     } catch (err) {
       setError(err.message);
     } finally {

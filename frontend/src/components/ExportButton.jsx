@@ -5,13 +5,11 @@ import * as XLSX from "xlsx"; // Import Excel
 import jsPDF from "jspdf"; // Import PDF
 import "jspdf-autotable"; // Plugin pour gérer les tableaux
 
-function ExportButton({ rowsData, headers, fileName }) {
+function ExportButton({ rowsData,/* headers*/columns, fileName }) {
   const [anchorEl, setAnchorEl] = useState(null);
 
   // Ouvrir le menu
-  const handleClick = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
+  const handleClick = (event) => {setAnchorEl(event.currentTarget); };
 
   // Fermer le menu et appeler l'exportation choisie
   const handleClose = (format) => {
@@ -20,19 +18,42 @@ function ExportButton({ rowsData, headers, fileName }) {
     if (format === "excel") exportToExcel();
     if (format === "pdf") exportToPDF();
   };
-
+  const getExportableColumns = () => {
+    return columns
+      .filter((col) => col.field !== "actions" && col.field !== "request")
+      .flatMap((col) => {
+        if (col.field === "auditPeriod") {
+          return [
+            { field: "auditStartDate", headerName: "Début période auditée" },
+            { field: "auditEndDate", headerName: "Fin période auditée" },
+          ];
+        }
+        return col;
+      });
+  };
   // Exporter en CSV
   const exportToCSV = () => {
     if (!rowsData || rowsData.length === 0) return;
 
+   
+    const exportableCols = getExportableColumns();
+    const headers = exportableCols.map((col) => col.headerName);
+    const fields = exportableCols.map((col) => col.field);
+
+   
     const csvRows = rowsData.map((row) =>
-      headers.map((header) => row[header.toLowerCase()]).join(",")
+      fields.map((field) => {
+        if (field === "auditStartDate" || field === "auditEndDate") {
+          return `"${new Date(row[field]).toLocaleDateString("fr-FR")}"`;
+        }
+        return `"${row[field] ?? ''}"`;
+      }).join(",")
     );
+
 
     const csvContent = [headers.join(","), ...csvRows].join("\n");
     const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
-
     const link = document.createElement("a");
     link.href = url;
     link.setAttribute("download", `${fileName}.csv`);
@@ -45,7 +66,25 @@ function ExportButton({ rowsData, headers, fileName }) {
   const exportToExcel = () => {
     if (!rowsData || rowsData.length === 0) return;
 
-    const worksheet = XLSX.utils.json_to_sheet(rowsData);
+    const exportableCols = getExportableColumns();
+    const fields = exportableCols.map((col) => col.field);
+    const headers = exportableCols.map((col) => col.headerName);
+
+    const formattedData = rowsData.map((row) => {
+      const newRow = {};
+      fields.forEach((field, i) => {
+        if (field === "auditStartDate" || field === "auditEndDate") {
+          newRow[headers[i]] = new Date(row[field]).toLocaleDateString("fr-FR");
+        } else {
+          newRow[headers[i]] = row[field];
+        }
+      });
+      return newRow;
+    });
+
+
+
+    const worksheet = XLSX.utils.json_to_sheet(formattedData);
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, fileName);
     XLSX.writeFile(workbook, `${fileName}.xlsx`);
@@ -58,8 +97,18 @@ function ExportButton({ rowsData, headers, fileName }) {
     const doc = new jsPDF();
     doc.text(fileName, 10, 10);
     
-    // Transformer les données en tableau
-    const tableData = rowsData.map((row) => headers.map((header) => row[header.toLowerCase()]));
+    const exportableCols = getExportableColumns();
+    const headers = exportableCols.map((col) => col.headerName);
+    const fields = exportableCols.map((col) => col.field);
+
+    const tableData = rowsData.map((row) =>
+      fields.map((field) => {
+        if (field === "auditStartDate" || field === "auditEndDate") {
+          return new Date(row[field]).toLocaleDateString("fr-FR");
+        }
+        return row[field] ?? "";
+      })
+    );
     
     doc.autoTable({
       head: [headers], // En-têtes

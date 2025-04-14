@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { useParams } from "react-router-dom";
 const useWorkplan = () => {
   const {id}=useParams();
+  console.log('id',id)
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [saveloading, setSaveLoading] = useState(false);

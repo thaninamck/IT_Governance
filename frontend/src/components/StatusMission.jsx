@@ -88,7 +88,7 @@ function StatusMission({ status }) {
                 color: 'white',
                 fontWeight: "bold",
                 fontSize:'12px',
-                width:"180px",
+                width:"195px",
                 height:'35px',
                /* marginTop:"7px"*/
             }}

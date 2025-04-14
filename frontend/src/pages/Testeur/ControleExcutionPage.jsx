@@ -43,7 +43,7 @@ function ControleExcutionPage() {
   const [description, setDescription] = useState(
     controleData.controlDescription || ""
   );
-  const [testScript, setTestScript] = useState(controleData.testScript || "");
+  const [testScript, setTestScript] = useState( "1. Obtain the access management policy,1.1. Ensure that the policy is validated, signed and reviewed on a regular basis,2. Obtain HR list of departures during the audited period,3. Obtain the 3rd part list of leavers during the audited period,"|| {/*controleData.testScript */});
   const [type, setType] = useState(controleData.type || "");
   const [majorProcess, setMajorProcess] = useState(
     controleData.majorProcess || ""

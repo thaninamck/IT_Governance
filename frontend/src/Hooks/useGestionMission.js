@@ -388,8 +388,22 @@ const handlePauseRow = async (selectedRow) => {
       setFilteredRows((prevRows) =>
         prevRows.filter((row) => row.id !== selectedMissionId)
       );
-    } catch (error) {
+    } 
+    catch (error) {
       console.error("Erreur lors de la suppression de la mission:", error);
+  
+      // Extraire le message d'erreur du backend
+      const backendMessage =
+        error.response?.data?.data?.error || // message  côté Laravel
+        "Une erreur s'est produite lors de la suppression de la mission.";
+  
+        console.log("back",error.response?.data?.data?.error )
+      // Si l'erreur est liée à la date de fin dépassée
+      const finalMessage = backendMessage
+  
+      // Afficher le message dans le snackbar
+      setSnackbarMessage(finalMessage);
+      setSnackbarOpen(true);
     }
     setIsDeletePopupOpen(false);
     setSelectedMissionId(null);
