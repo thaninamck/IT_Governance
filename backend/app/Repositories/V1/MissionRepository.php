@@ -69,8 +69,8 @@ class MissionRepository
 
     public function hasRelatedData(Mission $mission): bool
     {
-        return $mission->executions()->exists() ||
-        $mission->remediations()->exists();
+        return $mission->systems()->exists() ;
+       // $mission->executions()->exists()||$mission->remediations()->exists();
 
     }
     public function deleteMission(int $id): ?string

@@ -38,14 +38,14 @@ class Mission extends Model
     {
         return $this->hasMany(Participation::class);
     }
-    public function executions(): HasMany
-    {
-        return $this->hasMany(Execution::class);
-    }
-    public function remediations(): HasMany
-    {
-        return $this->hasMany(Remediation::class);
-    }
+    // public function executions(): HasMany
+    // {
+    //     return $this->hasMany(Execution::class);
+    // }
+    // public function remediations(): HasMany
+    // {
+    //     return $this->hasMany(Remediation::class);
+    // }
 
     public function systems(){
         return $this->hasMany(System::class);
