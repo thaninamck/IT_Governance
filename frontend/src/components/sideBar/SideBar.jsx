@@ -10,7 +10,7 @@ function SideBar({ user }) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
   const navigate = useNavigate();
-  const { logout } = useAuth();
+  const { logout ,viewMode, changeViewMode } = useAuth();
 
   const menuItems = {
     admin: [
@@ -22,7 +22,7 @@ function SideBar({ user }) {
       { key: "clients", label: "Clients", path: "/clients" },
       { key: "notification", label: "Notification", path: "/notification" },
       { key: "settings", label: "Settings", path: "/settings" },
-      { key: "platforme", label: "Platforme", path: "/platforme" },
+      { key: "platforme", label: "Platforme", path: "/missionsUserViewMode" },
     ],
     testeur: [
       { key: "profile", label: "Profile", path: "/myprofile" },
@@ -53,7 +53,10 @@ function SideBar({ user }) {
   const userMenu = menuItems[user?.role] || menuItems.default;
       const LogoutIcon = icons["logout"];
     
-      const handleNavigation = (path) => {
+      const handleNavigation = (path, key) => {
+        if (user?.role === "admin" && key === "platforme") {
+          changeViewMode("user");
+        }
         setSelectedItem(path); // Marquer l'élément sélectionné
         navigate(path); // Naviguer vers la page correspondante
       };
@@ -91,7 +94,8 @@ function SideBar({ user }) {
                     className={`menu-item ${
                       selectedItem === item.path ? "active" : ""
                     }`}
-                    onClick={() => handleNavigation(item.path)}
+                    //onClick={() => handleNavigation(item.path)}
+                    onClick={() => handleNavigation(item.path, item.key)}
                   >
                     {IconComponent && <IconComponent className="menu-icon" />}
                     <span>{item.label}</span>

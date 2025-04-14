@@ -4,6 +4,8 @@ namespace App\Services\V1;
 use App\Models\execution;
 use App\Repositories\V1\ExecutionRepository;
 use App\Repositories\V1\CntrlRiskCovRepository;
+use App\Repositories\V1\StatusRepository;
+use App\Repositories\V1\StepTestScriptRepository;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 class ExecutionService
@@ -11,10 +13,16 @@ class ExecutionService
     protected ExecutionRepository $executionRepository;
     protected CntrlRiskCovRepository $covRepository;
     protected EvidenceService $evidenceService;
+    protected $statusRepository;
+    protected $stepRepository;
 
 
-    public function __construct( EvidenceService $evidenceService,ExecutionRepository $executionRepository, CntrlRiskCovRepository $covRepository)
+    public function __construct( EvidenceService $evidenceService,ExecutionRepository $executionRepository, 
+    CntrlRiskCovRepository $covRepository , StatusRepository $statusRepository,StepTestScriptRepository $stepRepository)
     {
+    
+        $this->statusRepository = $statusRepository;
+$this->stepRepository = $stepRepository;
         $this->executionRepository =$executionRepository;
         $this->covRepository =$covRepository;
         $this->evidenceService = $evidenceService;
@@ -25,10 +33,36 @@ class ExecutionService
     {
         return $this->executionRepository->getExecutionsByMission($missionId);
     }
+public function getExecutionById($executionId)
+{
+    return $this->executionRepository->getExecutionById($executionId);
+}
+
+public function submitExecutionForReview($executionId)
+{
+    return $this->executionRepository->updateExecutionStatus($executionId,true,false);
+}
+public function submitExecutionForValidation($executionId)
+{
+    return $this->executionRepository->updateExecutionStatus($executionId,false,true);
+}
+    public function getExecutionStatusOptions()
+    {
+        return $this->statusRepository->getExecutionStatusOptions();
+    }
+    public function getExecutionsByApp($appId)
+    {
+        return $this->executionRepository->getExecutionsByApp($appId);
+    }
 
     public function getExecutionsByMissionAndTester($missionId,$userId)
     {
         return $this->executionRepository->getExecutionsByMissionAndTester($missionId,$userId);
+    }
+
+    public function getExecutionsByMissionAndSystemAndTester($missionId,$userId,$appId)
+    {
+        return $this->executionRepository->getExecutionsByMissionAndSystemAndTester($missionId,$userId,$appId);
     }
 
     public function createExecutions(array $data): Execution
@@ -80,8 +114,9 @@ class ExecutionService
     public function deleteExecutions($executionsIds){
         return $this->executionRepository->deleteExecutions($executionsIds);
 
-    }
-    public function updateExecution($executionId, $data)
+    }  
+
+public function updateExecution($executionId, $data)
 {
     $executionData = [
         'id' => $executionId,
@@ -102,6 +137,20 @@ class ExecutionService
     $riskFilteredData = array_filter($riskData, function ($value) {
         return !is_null($value);
     });
+
+    if(!empty($data['steps'])) {
+        Log::info('Steps Data:', $data['steps']);
+       foreach ($data['steps'] as $step) {
+            $stepData = [
+               
+                'checked' => $step['step_checked'],
+                'comment' => $step['step_comment'] ?? null,
+            ];
+            Log::info('Step Data:', $stepData);
+            $this->stepRepository->update($stepData, $step['step_execution_id']);
+
+        }
+    }
 
     if (!empty($riskFilteredData) ) {
        $this->covRepository->updateCoverage($executionId, $riskFilteredData);

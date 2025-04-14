@@ -21,11 +21,11 @@ class EvidenceService
     public function storeFile($data, $file)
     {
         // Générer un nom unique
-        $fileName = uniqid() . '.' . $file->getClientOriginalExtension();
-
+        $storedName = uniqid() . '.' . $file->getClientOriginalExtension();
+        $fileName = $file->getClientOriginalName();
         // Stocker le fichier
-        $file->storeAs('evidences', $fileName, 'public'); // dans storage/app/public/evidences
-       return $createdEvidence=$this->evidenceRepository->storeEvidence($data, $fileName);
+        $file->storeAs('evidences', $storedName, 'public'); // dans storage/app/public/evidences
+       return $createdEvidence=$this->evidenceRepository->storeEvidence($data, $storedName,$fileName);
 
     }
 

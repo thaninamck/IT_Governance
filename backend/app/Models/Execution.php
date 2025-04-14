@@ -16,9 +16,9 @@ class Execution extends Model
         'effectiveness',
         'design',
         'user_id',
-        'control_id',
+        //'control_id',
         'status_id',
-        'mission_id',
+       
         'layer_id'
     ];
     
@@ -26,10 +26,10 @@ class Execution extends Model
     {
         return $this->belongsTo(User::class);
     }
-    public function control()
-    {
-        return $this->belongsTo(Control::class);
-    }
+    // public function control()
+    // {
+    //     return $this->belongsTo(Control::class);
+    // }
     public function coverage(){
         return $this->hasMany(CntrlRiskCov::class);
     }
@@ -41,5 +41,12 @@ class Execution extends Model
         return $this->hasManyTo(Remediation::class);
     }
 
+    public function evidences(){    
+        return $this->hasManyTo(Evidence::class);
+    }
     
+    public function steps()
+    {
+        return $this->belongsToMany(StepTestScript::class, 'step_executions', 'execution_id', 'step_id');
+    }
 }

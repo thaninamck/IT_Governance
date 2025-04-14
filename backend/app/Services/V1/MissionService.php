@@ -63,20 +63,19 @@ public function getSystemsByMissionID($missionId)
     if (!$mission) {
         return null; // ou lancer une exception
     }
+    
 
-     
-
-    return [
-        'id' => $mission->id,
-        'mission_name' => $mission->mission_name,
-        'systems' => $mission->systems->map(function ($system) {
+    return response()->json([
+        'systems' => $mission->systems->map(function ($system) use ($mission) {
             return [
+                'missionId' => $mission->id,
+                'missionName' => $mission->mission_name,
                 'id' => $system->id,
                 'name' => $system->name,
                 'description' => $system->description,
-                'ownerId'=>$system->owner->id,
-                'ownerName'=>$system->owner->full_name,
-                'ownerContact' => $system->owner->email,
+                'ownerId' => $system->owner->id ?? null,
+                'ownerName' => $system->owner->full_name ?? null,
+                'ownerContact' => $system->owner->email ?? null,
                 'layers' => $system->layers->map(function ($layer) {
                     return [
                         'id' => $layer->id,
@@ -85,7 +84,7 @@ public function getSystemsByMissionID($missionId)
                 })->toArray()
             ];
         })->toArray()
-    ];
+    ]);
 }
 
 public function getMissionSystemsById($id){
@@ -95,7 +94,7 @@ public function getMissionSystemsById($id){
 
     public function createMission(array $data): Mission
     {
-        $data['status_id'] = 16;
+        $data['status_id'] = 10; //NON commencée
         return $this->missionRepository->createMission($data);
     }
 
@@ -155,7 +154,7 @@ public function getMissionSystemsById($id){
         // }
         // Ajouter status_id à chaque mission
         $missionsData = array_map(function ($missionData) {
-            $missionData['status_id'] = 9; // Définir le statut par défaut
+            $missionData['status_id'] = 10; // Définir le statut par défaut NON commencée
             return $missionData;
         }, $missionsData);
 

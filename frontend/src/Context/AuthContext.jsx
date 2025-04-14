@@ -1,6 +1,6 @@
 import { createContext, useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { authApi, api } from "../Api"; // Importer l'instance Axios pour les requêtes authentifiées
+import { authApi, api,fileApi } from "../Api"; // Importer l'instance Axios pour les requêtes authentifiées
 import { toast } from "react-toastify";
 import { useRef, useEffect } from "react";
 
@@ -27,6 +27,7 @@ const configureInterceptors = () => {
   // Configuration permanente des intercepteurs
   authApi.interceptors.request.use(injectToken);
   api.interceptors.request.use(injectToken);
+  fileApi.interceptors.request.use(injectToken);
 };
 
 // Appel initial de configuration
@@ -94,6 +95,8 @@ export const AuthProvider = ({ children }) => {
         const expirationTime = new Date().getTime() + 120 * 60 * 1000;
         localStorage.setItem("token", response.data.token);
         localStorage.setItem("token_expiry", expirationTime);
+       
+
        // setUser(response.data.user || null);
 
        const userData = {
@@ -108,6 +111,8 @@ export const AuthProvider = ({ children }) => {
       console.log(response.data)
       localStorage.setItem("user", JSON.stringify(userData));
       setUser(userData);
+      setViewMode(userData.role);
+      localStorage.setItem("viewMode", userData.role);
       }
       return response.data;
     } catch (error) {
@@ -138,6 +143,8 @@ export const AuthProvider = ({ children }) => {
         localStorage.removeItem("token");
         localStorage.removeItem("token_expiry");
        // localStorage.removeItem("flattenedData");
+       localStorage.removeItem("userProfile");
+       localStorage.removeItem("viewMode");
         
         localStorage.removeItem("user");
         setUser(null);
@@ -205,7 +212,14 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
- 
+  const [viewMode, setViewMode] = useState(() => {
+    return localStorage.getItem("viewMode") || "admin"; // par défaut en mode admin
+  });
+  
+  const changeViewMode = (mode) => {
+    setViewMode(mode);
+    localStorage.setItem("viewMode", mode);
+  };
  
   
 
@@ -225,6 +239,8 @@ export const AuthProvider = ({ children }) => {
         loading,
         error,
         forgotPasswordChange,
+        viewMode,         
+    changeViewMode, 
       }}
     >
       {children}

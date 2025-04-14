@@ -14,77 +14,82 @@ function DescriptionTestScriptSection({
   type,
   majorProcess,
   subProcess,
+  controlOwner,
+  sources,
   onTestScriptChange, // Fonction pour récupérer les données du test script en temps réel
 }) {
   return (
-    <div className="">
-      <div className="mr-6" >
-      <Separator text={"Description"} />
-
-      </div>
-      
-      <div className="flex flex-row justify-between w-full my-5 py-4  ">
-          <InputForm
-            type="text"
-            label="Type"
-            placeholder=""
-            width="55%"
-            flexDirection="flex-row gap-4 items-center mb-2"
-            value={type}
-            readOnly
-          />
+    <div className="min-h-screen">
+      <div className="grid  grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 w-full my-6  px-6 py-6 bg-white  rounded-xl">
+        <InputForm
+          type="text"
+          label="Type"
+          placeholder=""
+          width="100%"
+          flexDirection="flex-col"
+          value={type}
+          readOnly
+        />
+        <InputForm
+          type="text"
+          label="Owner"
+          placeholder=""
+          width="100%"
+          flexDirection="flex-col"
+          value={controlOwner}
+          readOnly
+        />
+        <InputForm
+          type="text"
+          label="Sources"
+          placeholder=""
+          width="100%"
+          flexDirection="flex-col"
+          value={sources}
+          readOnly
+          multiline={true}
+        />
+        
+        
+        <InputForm
+          type="text"
+          label="Sub Process"
+          placeholder=""
+          width="100%"
+          flexDirection="flex-col"
+          value={subProcess}
+          readOnly
+          multiline={true}
+        />
+        <InputForm
+          type="text"
+          label="Description"
+          placeholder=""
+          width="100%"
+          flexDirection="flex-col"
+          value={description}
+          readOnly
+          multiline={true}
+        />
         
         <InputForm
           type="text"
           label="Major Process"
           placeholder=""
-          width="55%"
-          flexDirection="flex-row gap-4 items-center mb-2"
+          width="100%"
+          flexDirection="flex-col"
           value={majorProcess}
           readOnly
+          multiline={true}
         />
-        <InputForm
-          type="text"
-          label="Sub Process"
-          placeholder=""
-          width="55%"
-          flexDirection="flex-row gap-4 items-center mb-2"
-          value={subProcess}
-          readOnly
-        />
-      </div>
-      <div className=" flex flex-row    gap-1 ">
-        <label htmlFor="Description" className="text-font-gray font-medium">
-          Description:
-        </label>
-        <div className="w-full mr-6 ">
-          <TextDisplay
-            content={description}
-            isEditing={isEditing}
-            onSave={handleSave}
-            onContentChange={setDescription}
-            borderWidth="100%"
-            labelWidth="120px"
-            flexDirection="column"
-          />
-        </div>
+        
       </div>
 
-      <div className=" mt-2 flex flex-col gap-2  w-[98%]  ">
-        {/* <TextDisplay
-          label="Test Script"
-          content={testScript}
-          isEditing={isEditing}
-          onContentChange={setTestScript}
-          onSave={handleSave}
-          borderWidth="95%"
-          labelWidth="120px"
-          flexDirection="column"
-          marginLeft="15px"
-        /> */}
+      <div className=" my-16 mx-8 flex flex-col   w-[98%]  ">
+      
 
         <InstructionSplitter
-          instructions={testScript}
+          steps={testScript}
           onChange={onTestScriptChange} // Passer la fonction de rappel
         />
       </div>

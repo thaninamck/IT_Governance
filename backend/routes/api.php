@@ -158,10 +158,15 @@ Route::middleware(['auth:sanctum', TesterMiddleware::class])
             Route::get('/missions/{mission}/executions-for-tester', 'getExecutionsByMissionAndTester');
             Route::put('/executions/update-execution/{execution}', 'updateExecution');
             Route::put('/executions/launch-execution/{execution}', 'launchExecution');
+            Route::get('/executions/get-options', 'getExecutionStatusOptions');
+            Route::get('/executions/get-execution/{execution}', 'getExecutionById');
+            Route::patch('/executions/submit-execution-for-review/{executionID}', 'submitExecutionForReview');
+            Route::patch('/executions/submit-execution-for-validation/{executionID}', 'submitExecutionForValidation');
 
         });
         Route::controller(EvidenceController::class)->group(function () {
-            Route::delete('/evidences/delete-execution/{delete}', 'deleteEvidence');
+            Route::delete('/evidences/delete-evidence/{evidenceId}', 'destroy');
+            Route::post('/evidences/upload', 'storeMultiple');
 
         });
     });
@@ -183,8 +188,7 @@ Route::post('/notifications/read-all', [NotificationController::class, 'markAllA
 Route::post('/notifications/{id}/read', [NotificationController::class, 'markNotificationAsRead'])->middleware('auth:sanctum');
 
 // Route::post('/insert-executions', [ExecutionController::class, 'createExecutions'])->middleware(ManagerMiddleware::class,'auth:sanctum');
-//Route::get('/missions/{mission}/executions', [ExecutionController::class, 'getExecutionsByMission'])->middleware(ManagerMiddleware::class,'auth:sanctum');
-//Route::get('/missions/{mission}/members', [MissionController::class, 'getMembersByMission']);
+Route::get('/missions/{mission}/executions', [ExecutionController::class, 'getExecutionsByMission']);
 Route::post('/reset-password', [AuthController::class, 'resetPassword']);
 
 
@@ -219,6 +223,16 @@ Route::prefix('v1')->controller(ParticipationController::class)->group(function 
 Route::prefix('v1')->group(function () {
     Route::controller(ExecutionController::class)->group(function () {
         Route::get('/missions/{missionId}/getmatrix', 'getExecutionsByMission');
+    });
+});
+Route::prefix('v1')->group(function () {
+    Route::controller(ExecutionController::class)->group(function () {
+        Route::get('/missions/{appId}/getexecutionsList', 'getExecutionsByApp');
+    });
+});
+Route::middleware('auth:sanctum')->prefix('v1')->group(function () {
+    Route::controller(ExecutionController::class)->group(function () {
+        Route::get('/missions/{missionId}/{appId}/getexecutionsListForTesteur', 'getExecutionsByMissionAndSystemAndTester');
     });
 });
 
@@ -260,6 +274,10 @@ Route::prefix('v1')->group(function () {
     Route::controller(SystemController::class)->group(function () {
         Route::delete('/deletesystemId/{id}', 'deleteSystem');
     });
+});
+
+Route::prefix('v1')->controller(SystemController::class)->group(function () {
+    Route::get('/systems/{systemId}', 'getsystemInfo');
 });
 
 // Route::prefix('v1')->group(function () {

@@ -116,7 +116,7 @@ function Matrix({
         });
       });
     });
-    console.log("Données transformées:", result); // Ajouter un log pour déboguer
+  //  console.log("Données transformées:", result); // Ajouter un log pour déboguer
     return result;
   };
 
@@ -313,69 +313,69 @@ function Matrix({
       editable: lockModification,
     },
     {
-      field: "controlTester",
-      headerName: "Testeur",
-      width: 150,
-      // renderCell: (params) => {
-      //   return  (
-      //     <Select
-      //       value={testerValues[params.row.id] || params.row.controlTester || ""}
-      //       onChange={(event) => {
-      //         const selectedTesterId = event.target.value;
-      //         handleTesterChange(params.row.id, selectedTesterId)(event);
-      //       }}
-      //       fullWidth
-      //       variant="outlined"
-      //       size="small"
-      //     >
-      //       {loading ? (
-      //         <MenuItem disabled>Chargement...</MenuItem>
-      //       ) : testers.length > 0 ? (
-      //         testers.map((tester) => (
-      //           <MenuItem key={tester.id} value={tester.id}>
-      //             {tester.designation}
-      //           </MenuItem>
-      //         ))
-      //       ) : (
-      //         <MenuItem disabled>Aucun testeur trouvé</MenuItem>
-      //       )}
-      //     </Select>
-      //   )
-      // },
-      renderCell: (params) => {
-        const controlTester = testerValues[params.row.id];
-        console.log("testeur", controlTester);
-
-        return controlTester ? (
-          <span>{controlTester}</span>
+  field: "controlTester",
+  headerName: "Testeur",
+  width: 150,
+  renderCell: (params) => {
+    return  (
+      <Select
+        value={testerValues[params.row.id] || params.row.controlTester || ""}
+        onChange={(event) => {
+          const selectedTesterId = event.target.value;
+          handleTesterChange(params.row.id, selectedTesterId)(event);
+        }}
+        fullWidth
+        variant="outlined"
+        size="small"
+      >
+        {loading ? (
+          <MenuItem disabled>Chargement...</MenuItem>
+        ) : testers.length > 0 ? (
+          testers.map((tester) => (
+            <MenuItem key={tester.id} value={tester.id}>
+              {tester.designation}
+            </MenuItem>
+          ))
         ) : (
-          <Select
-            value={
-              testerValues[params.row.id] || params.row.controlTester || ""
-            }
-            onChange={(event) => {
-              const selectedTesterId = event.target.value;
-              handleTesterChange(params.row.id, selectedTesterId)(event);
-            }}
-            fullWidth
-            variant="outlined"
-            size="small"
-          >
-            {loading ? (
-              <MenuItem disabled>Chargement...</MenuItem>
-            ) : testers.length > 0 ? (
-              testers.map((tester) => (
-                <MenuItem key={tester.id} value={tester.id}>
-                  {tester.designation}
-                </MenuItem>
-              ))
-            ) : (
-              <MenuItem disabled>Aucun testeur trouvé</MenuItem>
-            )}
-          </Select>
-        );
-      },
-    },
+          <MenuItem disabled>Aucun testeur trouvé</MenuItem>
+        )}
+      </Select>
+    ) 
+  },
+
+  // renderCell: (params) => {
+  //   const controlTester = testerValues[params.row.id];
+  //  // console.log('testeur',controlTester)
+  
+  //   return controlTester ? (
+  //     <span>{controlTester}</span>
+  //   ) : 
+  //     <Select
+  //       value={testerValues[params.row.id] || params.row.controlTester || ""}
+  //       onChange={(event) => {
+  //         const selectedTesterId = event.target.value;
+  //         handleTesterChange(params.row.id, selectedTesterId)(event);
+  //       }}
+  //       fullWidth
+  //       variant="outlined"
+  //       size="small"
+  //     >
+  //       {loading ? (
+  //         <MenuItem disabled>Chargement...</MenuItem>
+  //       ) : testers.length > 0 ? (
+  //         testers.map((tester) => (
+  //           <MenuItem key={tester.id} value={tester.id}>
+  //             {tester.designation}
+  //           </MenuItem>
+  //         ))
+  //       ) : (
+  //         <MenuItem disabled>Aucun testeur trouvé</MenuItem>
+  //       )}
+  //     </Select>
+    
+  // },
+},
+
   ];
 
   const handleUpdateTesters = (selectedTester) => {
@@ -416,7 +416,7 @@ function Matrix({
 
   // Gestion des cases à cocher pour les contrôles
   const handleControlCheckboxChange = (id) => (event) => {
-    console.log("id slcted", id);
+   // console.log("id slcted", id);
     const type = "control";
     setSelectedItems((prev) => {
       if (event.target.checked) {
@@ -469,7 +469,7 @@ function Matrix({
 
   // Gestion des cases à cocher pour les risques
   const handleRiskCheckboxChange = (id) => (event) => {
-    console.log("id slcted", id);
+   // console.log("id slcted", id);
     const type = "risk";
     setSelectedItems((prev) => {
       if (event.target.checked) {
@@ -487,7 +487,7 @@ function Matrix({
   };
 
   const handleSave = async () => {
-    console.log("flattenedData", flattenedData);
+   // console.log("flattenedData", flattenedData);
     const dataToSend = {
       executions: flattenedData.map((item) => ({
         layerId: item.layerId,

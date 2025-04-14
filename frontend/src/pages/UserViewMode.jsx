@@ -28,7 +28,7 @@ import SideBarStdr from "../components/sideBar/SideBarStdr";
 
 
 
-function GestionMission() {
+function UserViewMode() {
   const navigate = useNavigate();
  const { user,viewMode} = useAuth();
  
@@ -75,10 +75,7 @@ function GestionMission() {
   const columnsConfig2 = [
     { field: "clientName", headerName: "Client", width: 170 },
     { field: "missionName", headerName: "Mission", width: 170 },
-    ...(user?.role === "admin" 
-      ? [{ field: "manager", headerName: "Manager", width: 200 }]
-      : [{ field: "profileName", headerName: "Profile", width: 150 }]
-  ),
+    { field: "manager", headerName: "Manager", width: 200 },
     { field: "startDate", headerName: "Date de début", width: 150 },
     { field: "endDate", headerName: "Date fin", width: 150 },
     {
@@ -104,71 +101,6 @@ function GestionMission() {
 
   // Actions sur les lignes de la table
   const rowActions = [
-    ...(user?.role === "admin" 
-      ? [
-          {
-            icon: <ArchiveRoundedIcon sx={{ marginRight: "5px" }} />,
-            label: "archivée",
-            onClick: handleArchiverRow,
-            disabled: (selectedRow) =>
-              !selectedRow || !["clôturée", "en_retard"].includes(selectedRow.status),
-          },
-        ]
-      : []),
-    {
-      icon: <LockOpenRoundedIcon sx={{ marginRight: "5px" }} />,
-      label: "Clôturée",
-      onClick: handleCloturerRow,
-      disabled: (selectedRow) =>
-        !selectedRow || !["en_cours", "en_retard"].includes(selectedRow.status),
-    },
-    ...(user?.role === "admin" 
-      ? [
-          {
-            icon: <HighlightOffRoundedIcon sx={{ marginRight: "5px" }} />,
-            label: "Annulée",
-            onClick: handleCancelRow,
-            disabled: (selectedRow) =>
-              !selectedRow ||
-              !["non_commencee", "en_cours", "en_attente"].includes(selectedRow.status),
-          },
-        ]
-      : []),
-    ...(user?.role === "admin" 
-      ? [
-          {
-            icon: (selectedRow) =>
-              selectedRow?.status === "en_attente" ? (
-                <PlayCircleOutlineRoundedIcon sx={{ marginRight: "5px" }} />
-              ) : (
-                <PauseCircleOutlineRoundedIcon sx={{ marginRight: "5px" }} />
-              ),
-            label: (selectedRow) =>
-              selectedRow?.status === "en_attente" ? "Reprendre" : "Pause",
-            onClick: handlePauseRow,
-            disabled: (selectedRow) =>
-              !selectedRow || !["en_cours", "en_attente"].includes(selectedRow.status),
-          },
-        ]
-      : []),
-    {
-      icon: <SquarePen className="mr-2" />,
-      label: "Modifier",
-      onClick: handleEditRow,
-    },
-    ...(user?.role === "admin" 
-      ? [
-          {
-            icon: (
-              <DeleteOutlineRoundedIcon
-                sx={{ color: "var(--alert-red)", marginRight: "5px" }}
-              />
-            ),
-            label: "Supprimer mission",
-            onClick: handleDeleteRow,
-          },
-        ]
-      : []),
     {
       icon: (
         <VisibilityIcon sx={{ color: "var(--font-gray)", marginRight: "5px" }} />
@@ -181,18 +113,13 @@ function GestionMission() {
   console.log(missionsToDisplay)
   return (
     <div className="flex">
-      {user?.role === "admin" ? (
-        <SideBar user={user} />
-      ) : (
-        <SideBarStdr user={user} />
-      )}
-      
+    
+       
+        <SideBarStdr user={user} />      
       <div className="flex-1 flex flex-col h-screen overflow-y-auto">
         <HeaderBis />
         <HeaderWithAction
           title="Missions"
-          buttonLabel="Créer une mission"
-           onButtonClick={() => setIsModalOpen(true)}
         user={user}
         />
         <div className="flex items-center justify-center mb-6">
@@ -203,36 +130,12 @@ function GestionMission() {
           />
         </div>
         <div className="flex justify-end items-center gap-4 pr-10 mb-6">
-          <ImportCsvButton onDataImported={handleDataImported} />
           <ExportButton
             rowsData={filteredRows}
             headers={columnsConfig2.map((col) => col.headerName)}
             fileName="missions"
           />
         </div>
-
-        {/* Boutons pour basculer entre les vues */}
-        {user?.role === "admin"  &&
-          <div className="flex border-b-2 border-gray-300 mb-3 ml-8 ">
-            <button
-              className={`px-4 py-2 ${activeView === "active"
-                  ? "rounded-l rounded-r-none border-none bg-gray-200 text-gray-700 "
-                  : "rounded-none text-[var(--subfont-gray)] border-none "
-                } `}
-              onClick={() => setActiveView("active")}
-            >
-              Missions Actives
-            </button>
-            <button
-              className={`px-4 py-2 ${activeView === "archived"
-                  ? " rounded-r rounded-l-none  border-none bg-gray-200 text-gray-700"
-                  : "rounded-none text-[var(--subfont-gray)] border-none"
-                } `}
-              onClick={() => setActiveView("archived")}
-            >
-              Missions Archivées
-            </button>
-          </div>}
 
         <div
           className={`flex-1 overflow-x-auto overflow-y-auto h-[400px] transition-all ${isDeletePopupOpen ? "blur-sm" : ""
@@ -248,84 +151,30 @@ function GestionMission() {
               key={JSON.stringify(missionsToDisplay)}
 
               columnsConfig={columnsConfig2}
-              // rowsData={filteredRows}
               rowsData={missionsToDisplay}
               checkboxSelection={false}
-              // getRowLink={getRowLink}
               onRowClick={handleRowClick}
               headerTextBackground={"white"}
               headerBackground="var(--blue-menu)"
-              // rowActions={rowActions}
               rowActions={rowActions.filter((action) =>
                 activeView === "archived" ? action.label !== "archivée" : true
               )}
             />
           )}
-          {/* <AdminActionsPanel
-        pendingActions={pendingActions}
-        onValidateAction={handleValidateAction}
-        onRejectAction={handleRejectAction}
-      /> */}
+         
         </div>
 
       </div>
-      {/*  <AddRisqueForm
-      title="Créer un nouveau risque"
-      isOpen={isModalOpen}
-      onClose={closeModal}
-      onRisqueCreated={handleMissionCreation}
-    />*/}
-      {/* <AddControleForm
-      title="Créer un nouveau risque"
-      isOpen={isModalOpen}
-      onClose={closeModal}
-      onControleCreated={handleMissionCreation}
-    /> */}
-      <AddMissionForm
-        title={"Ajouter une mission"}
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        onMissionCreated={handleMissionCreation}
-      />
-
+     
       <Snackbar
         open={snackbarOpen}
         autoHideDuration={6000}
         onClose={() => setSnackbarOpen(false)}
         message={snackbarMessage}
       />
-      {isMissionCreated && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-md z-50">
-          <PopUp text="Mission créée" redirectionURL={handlePopupClose} />
-        </div>
-      )}
-      {isEditModalOpen && (
-        <AddMissionForm
-          title={"Modifier une mission"}
-          isOpen={isEditModalOpen}
-          onClose={() => setIsEditModalOpen(false)}
-          initialValues={selectedMission}
-          onMissionCreated={handleUpdateMission}
-        />
-      )}
-      {isDeletePopupOpen && (
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1">
-          {" "}
-          <DecisionPopUp
-            name={
-              filteredRows.find((row) => row.id === selectedMissionId)
-                ?.missionName || "cette mission"
-            }
-            text="Êtes-vous sûr(e) de vouloir supprimer la mission "
-            handleConfirm={confirmDeleteMission}
-            handleDeny={() => setIsDeletePopupOpen(false)}
-          />
-        </div>
-      )}
-
-
+      
     </div>
   );
 }
 
-export default GestionMission;
+export default UserViewMode;

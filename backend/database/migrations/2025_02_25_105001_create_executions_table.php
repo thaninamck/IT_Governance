@@ -20,9 +20,13 @@ return new class extends Migration {
             $table->boolean('effectiveness')->default(false);
             $table->boolean('design')->default(false);
             $table->foreignId('user_id')->constrained('users');
-            $table->foreignId('control_id')->constrained('controls');
+            //$table->foreignId('control_id')->constrained('controls');
             $table->foreignId('status_id')->nullable()->constrained('statuses');
             $table->foreignId('layer_id')->constrained('layers');
+            $table->boolean('is_to_validate')->default(false);
+            $table->boolean('is_to_review')->default(false);
+
+
 
             $table->timestamps();
         });

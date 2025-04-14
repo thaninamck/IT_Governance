@@ -10,4 +10,9 @@ class StepTestScript extends Model
    public function control(){
        return $this->belongsTo(Control::class);
    }
+
+   public function executions()
+   {
+       return $this->belongsToMany(Execution::class, 'step_executions', 'step_id', 'execution_id');
+   }
 }

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { api } from '../Api';
 
 
-export const useSystem = (missionId, user, showForm, onToggleForm) => {
+export const useSystem = (missionId, user, showForm, onToggleForm,missionName) => {
   const [applications, setApplications] = useState([]);
   const [isDeletePopupOpen, setIsDeletePopupOpen] = useState(false);
   const [selectedAppId, setSelectedAppId] = useState(null);
@@ -15,8 +15,8 @@ export const useSystem = (missionId, user, showForm, onToggleForm) => {
     const fetchMissionSystems = async () => {
       try {
         const response = await api.get(`/mission/${missionId}/getsystems`);
-        console.log('resp',response.data.systems)
-        setApplications(response.data.systems);
+        console.log('resp',response.data.original.systems)
+        setApplications(response.data.original.systems);
       } catch (error) {
         console.error("Erreur lors de la récupération des systems:", error);
       } 

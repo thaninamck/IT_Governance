@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Evidence;
 use Illuminate\Http\Request;
 use App\Services\V1\EvidenceService;
+use Log;
 class EvidenceController extends BaseController
 {
     
@@ -23,8 +24,42 @@ public function __construct(EvidenceService $evidenceService)
             $this->evidenceService->deleteFile($evidenceId);
             return $this->sendResponse("File deleted successfully","");
         } catch (\Exception $e) {
-            return $this->sendError($e->getMessage());
+            Log::error('Error deleting file: ' . $e->getMessage());
             }
         
     }
+
+
+    public function storeMultiple(Request $request)
+{
+    Log::info('Request data: ', $request->all());
+    Log::info('Uploaded files: ', $request->file());
+
+    try {
+        $filesData = [];
+        
+        if ($request->hasFile('files')) {
+            foreach ($request->file('files') as $index => $file) {
+                $filesData[] = [
+                    'file' => $file,
+                    'execution_id' => $request->input("files.$index.execution_id"),
+                    'is_f_test' => $request->input("files.$index.is_f_test"),
+                ];
+            }
+        }
+
+        $evidences=$this->evidenceService->storeFiles($filesData);
+
+        return $this->sendResponse($evidences, 'All files uploaded successfully.');
+    } catch (\Exception $e) {
+        Log::error('Multiple upload error: ' . $e->getMessage());
+        return $this->sendError('Upload failed', [], 500);
+    }
+}
+    
+    
+    
+
+
+
 }

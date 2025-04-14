@@ -1,94 +1,38 @@
 import React, { useState, useEffect } from "react";
 import AddCommentRoundedIcon from "@mui/icons-material/AddCommentRounded";
 
-function InstructionSplitter({ instructions: initialInstructions, onChange }) {
+function InstructionSplitter({ steps, onChange }) {
   const [phrases, setPhrases] = useState([]);
   const [comments, setComments] = useState({});
   const [validatedSteps, setValidatedSteps] = useState({});
   const [showComments, setShowComments] = useState({});
 
-  // Diviser les instructions en phrases lors du montage ou de la mise à jour des instructions
   useEffect(() => {
-    if (initialInstructions) {
-      console.log('instruction :' ,initialInstructions)
-      splitInstructions(initialInstructions);
-      console.log('instructionafter :' ,initialInstructions)
+    if (steps.length > 0) {
+      const initialPhrases = steps.map((step) => step.step_text);
+      setPhrases(initialPhrases);
 
+      const initialComments = {};
+      const initialValidated = {};
+
+      steps.forEach((step, index) => {
+        initialComments[index] = step.step_comment || "";
+        initialValidated[index] = step.step_checked || false;
+      });
+
+      setComments(initialComments);
+      setValidatedSteps(initialValidated);
+
+      emitChanges(initialComments, initialValidated, initialPhrases);
     }
-  }, [initialInstructions]);
+  }, [steps]);
 
-   // Fonction pour diviser les instructions en phrases
-   const splitInstructions = (instructions) => {
-    try {
-      if (!instructions || typeof instructions !== "string") {
-        throw new Error("Invalid instructions format");
-      }
-  
-      // Diviser les instructions en phrases en utilisant une expression régulière pour détecter les numéros
-      const phrases = instructions.split(/(\d+\.)/g).filter(Boolean);
-  
-      // Combiner les numéros avec leurs phrases correspondantes
-      const result = [];
-      for (let i = 0; i < phrases.length; i += 2) {
-        const numberPart = phrases[i].trim(); // Partie du numéro (ex: "1.")
-        const textPart = phrases[i + 1] ? phrases[i + 1].trim() : ""; // Partie du texte (ex: "Obtain the access management policy")
-        result.push(`${numberPart} ${textPart}`);
-      }
-  
-      console.log("Phrases after splitting:", result);
-      setPhrases(result);
-  
-      // Initialiser testScriptData avec des valeurs par défaut
-      const defaultTestScriptData = result.map((phrase) => ({
-        phrase,
-        isChecked: false,
-        comment: "",
-      }));
-      console.log("Default test script data:", defaultTestScriptData);
-      onChange(defaultTestScriptData);
-    } catch (error) {
-      console.error("Error splitting instructions:", error);
-    }
+  const toggleValidation = (index) => {
+    const updated = { ...validatedSteps, [index]: !validatedSteps[index] };
+    setValidatedSteps(updated);
+    emitChanges(comments, updated, phrases);
   };
-  // const splitInstructions = (instructions) => {
-  //   const lines = instructions.split(/\n/);
-  //   const result = [];
-  //   let currentPhrase = "";
 
-  //   lines.forEach((line) => {
-  //     if (/^\d+(\.\d+)*([.)-]|\s)/.test(line.trim())) {
-  //       if (currentPhrase) result.push(currentPhrase.trim());
-  //       currentPhrase = line;
-  //     } else if (line.trim()) {
-  //       currentPhrase += "\n" + line;
-  //     }
-  //   });
-
-  //   if (currentPhrase) result.push(currentPhrase.trim());
-  //   setPhrases(result);
-
-  //   // Initialiser testScriptData avec des valeurs par défaut
-  //   const defaultTestScriptData = result.map((phrase) => ({
-  //       phrase,
-  //       isChecked: false, // Par défaut, la validation est "Non"
-  //       comment: "", // Par défaut, le commentaire est vide
-  //     }));
-  //     onChange(defaultTestScriptData); // Transmettre les données par défaut au parent
-  // };
-
-//   const updateComment = (index, value) => {
-//     setComments((prev) => ({
-//       ...prev,
-//       [index]: value,
-//     }));
-//   };
-
-   // Mettre à jour un commentaire
-   const updateComment = (index, value) => {
-    const newComments = { ...comments, [index]: value };
-    setComments(newComments);
-    emitChanges(newComments, validatedSteps); // Transmettre les changements au parent
-  };
   const toggleComment = (index) => {
     setShowComments((prev) => ({
       ...prev,
@@ -96,118 +40,97 @@ function InstructionSplitter({ instructions: initialInstructions, onChange }) {
     }));
   };
 
-//   const toggleValidation = (index) => {
-//     setValidatedSteps((prev) => ({
-//       ...prev,
-//       [index]: !prev[index],
-//     }));
-//   };
-
- // Basculer l'état de validation d'une étape
- const toggleValidation = (index) => {
-    const newValidatedSteps = { ...validatedSteps, [index]: !validatedSteps[index] };
-    setValidatedSteps(newValidatedSteps);
-    emitChanges(comments, newValidatedSteps); // Transmettre les changements au parent
+  const updateComment = (index, value) => {
+    const updated = { ...comments, [index]: value };
+    setComments(updated);
+    emitChanges(updated, validatedSteps, phrases);
   };
 
-  const saveComment = (index) => {
-    console.log(`Commentaire pour l'étape ${index + 1}:`, comments[index]);
-  };
-
-  const removeTestScript = (index) => {
-    setPhrases((prev) => prev.filter((_, i) => i !== index));
-    setComments((prev) => {
-      const newComments = { ...prev };
-      delete newComments[index];
-      return newComments;
-    });
-    setValidatedSteps((prev) => {
-      const newValidated = { ...prev };
-      delete newValidated[index];
-      return newValidated;
-    });
-  };
-
-//   const handleSave = () => {
-//     const testScriptData = phrases.map((phrase, index) => ({
-//       phrase,
-//       isChecked: validatedSteps[index] || false,
-//       comment: comments[index] || "",
-//     }));
-//     onSave(testScriptData); // Transmettre les données au parent
-//   };
- // Transmettre les changements au parent
- const emitChanges = (comments, validatedSteps) => {
-    const testScriptData = phrases.map((phrase, index) => ({
-      phrase,
-      isChecked: validatedSteps[index] || false,
-      comment: comments[index] || "",
+  const emitChanges = (commentsMap, validatedMap, phrasesList, stepsList = steps) => {
+    const result = phrasesList.map((phrase, index) => ({
+      step_text: phrase,
+      step_checked: validatedMap[index] || false,
+      step_comment: commentsMap[index] || "",
+      step_execution_id: stepsList[index]?.step_execution_id ?? null,
     }));
-   
-    onChange(testScriptData); // Appeler la fonction de rappel du parent
-    console.log('data test', testScriptData)
+
+    onChange(result);
   };
 
+  // Fonction qui calcule si une étape doit être désactivée
+  const computeDisabledStates = () => {
+    const disabledStates = {};
+    let locked = false;
+
+    for (let i = 0; i < phrases.length; i++) {
+      if (locked) {
+        disabledStates[i] = true;
+      } else {
+        const checked = validatedSteps[i];
+        const commented = (comments[i] || "").trim() !== "";
+
+        if (!checked && !commented) {
+          locked = true;
+        }
+        disabledStates[i] = false;
+      }
+    }
+
+    return disabledStates;
+  };
+
+  const disabledSteps = computeDisabledStates();
 
   return (
-    <div className=" ">
-        <label className="text-font-gray font-medium ">Test Scripts</label>
-        <div className="max-h-80 overflow-y-auto space-y-2 my-1">
-      {phrases.map((phrase, index) => (
-        <div key={index} className=" pb-1 px-3 border border-gray-300 rounded-lg shadow-sm relative flex flex-col gap-1 ml-4 max-h-64 overflow-y-auto">
-          <div className="flex gap-2">
-            <input
-              type="checkbox"
-              checked={validatedSteps[index] || false}
-              onChange={() => toggleValidation(index)}
-              className="w-5 h-5 accent-green-500 mt-3"
-            />
-            <textarea
-              className="w-full px-2 pt-4 pb-1 mr-12 rounded-lg"
-              rows={phrase.split("\n").length}
-              value={phrase}
-              readOnly
-            />
-          </div>
+    <div >
+      <label className="text-font-gray font-medium">Étapes du test</label>
+      <div className="max-h-80 overflow-y-auto  mr-3 pr-6 space-y-2 my-1">
+        {phrases.map((phrase, index) => (
+          <div
+            key={index}
+            className="pb-1 px-3 border   border-gray-300 rounded-lg shadow-sm relative flex flex-col gap-1  max-h-64 overflow-y-auto"
+          >
+            <div className="flex gap-2">
+              <input
+                type="checkbox"
+                checked={validatedSteps[index] || false}
+                onChange={() => toggleValidation(index)}
+                disabled={disabledSteps[index]}
+                title={
+                  disabledSteps[index]
+                    ? "Les étapes précédentes doivent être validées ou commentées."
+                    : ""
+                }
+                className="w-5 h-5 accent-green-500 mt-3"
+              />
+              <textarea
+                className="w-full px-2 pt-4 pb-1 mr-12 rounded-lg"
+                rows={phrase.split("\n").length}
+                value={phrase}
+                readOnly
+              />
+            </div>
 
-          <div className="flex items-center gap-2">
-            {showComments[index] && (
-              <>
+            <div className="flex items-center gap-2">
+              {showComments[index] && (
                 <input
                   type="text"
                   value={comments[index] || ""}
                   onChange={(e) => updateComment(index, e.target.value)}
+                  disabled={disabledSteps[index]}
                   className="w-full text-sm p-2 border border-gray-300 rounded-lg focus:outline-none"
                   placeholder="Ajoutez un commentaire..."
                 />
-                {/* <button
-                  onClick={() => saveComment(index)}
-                  className="bg-[var(--success-green)] text-white p-2 border-none rounded-lg text-xs"
-                >
-                  Enregistrer
-                </button> */}
-              </>
-            )}
-            
+              )}
+            </div>
+
+            <AddCommentRoundedIcon
+              className="absolute top-3 right-8 cursor-pointer text-blue-500"
+              onClick={() => toggleComment(index)}
+            />
           </div>
-         
-
-          <AddCommentRoundedIcon
-            className="absolute top-3 right-8 cursor-pointer text-blue-500"
-            onClick={() => toggleComment(index)}
-          />
-
-          <button
-            type="button"
-            onClick={() => removeTestScript(index)}
-            className="absolute top-0 right-0 text-red-500 text-xl border-none"
-          >
-            &times;
-          </button>
-          
-        </div>
-      ))}
-       </div>
+        ))}
+      </div>
     </div>
   );
 }

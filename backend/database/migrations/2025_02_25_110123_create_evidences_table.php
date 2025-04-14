@@ -14,6 +14,8 @@ return new class extends Migration
         Schema::create('executions_evidences', function (Blueprint $table) {
             $table->id();
             $table->string('file_name', 255)->nullable();
+            $table->string('stored_name', 255)->nullable();
+
             $table->boolean('is_f_test')->default(false);
             $table->foreignId('execution_id')->nullable()->constrained('executions','id');
 
