@@ -4,7 +4,7 @@ import { DataGrid } from "@mui/x-data-grid/DataGrid";
 import { User, ChevronDown } from "lucide-react";
 import { toast } from "react-toastify";
 import useWorkplan from "../../Hooks/useWorkplan";
-import Spinner from "../Spinner";
+import { useNavigationType } from 'react-router-dom';import Spinner from "../Spinner";
 import { Trash } from "lucide-react";
 import DecisionPopUp from "../PopUps/DecisionPopUp"; //import SaveIcon from '@mui/icons-material/Save';
 
@@ -27,7 +27,7 @@ function Matrix({
   onRowClick,
   handleSaveexecutions,
   fromScopeModification,
-  lockModification,
+  unlockModification,
 }) {
   const { createExecutions, loading, testers, saveloading, deleteExecutions } =
     useWorkplan();
@@ -43,7 +43,7 @@ function Matrix({
   const [selectedTester, setSelectedTester] = useState([]);
   const [editMessage, setEditMessage] = useState("");
   const atLeastOneApp = flattenedData.length > 0;
-  const [modify, setModify] = useState(lockModification);
+  const [modify, setModify] = useState(true);
   const navigate = useNavigate();
   //const [selectedTester, setSelectedTester] = useState(testers[0]);
   const [isOpen, setIsOpen] = useState(false);
@@ -109,14 +109,16 @@ function Matrix({
                 controlOwner: control.owner,
                 // controlTester: "",
                 executionId: control.executionId,
+                covId:control.covId,
                 controlTester: control.testeur,
+                modifiable: !fromScopeModification,
               });
             }
           });
         });
       });
     });
-  //  console.log("Données transformées:", result); // Ajouter un log pour déboguer
+    //  console.log("Données transformées:", result); // Ajouter un log pour déboguer
     return result;
   };
 
@@ -163,7 +165,7 @@ function Matrix({
       return updatedData;
     });
   };
-
+  const [controlsToUpdate, setControlsToUpdate] = useState([]); // État pour stocker les contrôles à mettre à jour
   const columns = [
     // Application
 
@@ -222,7 +224,7 @@ function Matrix({
       field: "riskDescription",
       headerName: "Risk Description",
       width: 350,
-      editable: lockModification,
+      editable: true,
     },
     // ...((userRole === 'manager' || userRole === 'admin')
     // ? [{ field: "riskDescription",
@@ -237,7 +239,7 @@ function Matrix({
       field: "riskOwner",
       headerName: "Risk Owner",
       width: 150,
-      editable: lockModification,
+      editable: true,
     },
 
     // Contrôles
@@ -280,7 +282,7 @@ function Matrix({
       field: "controlDescription",
       headerName: "Control Description",
       width: 200,
-      editable: lockModification,
+      editable: true,
     },
     {
       field: "majorProcess",
@@ -304,78 +306,79 @@ function Matrix({
       field: "testScript",
       headerName: "Test Script",
       width: 150,
-      editable: !lockModification ? true : false,
+      editable:  false,
     },
     {
       field: "controlOwner",
       headerName: "Control Owner",
       width: 150,
-      editable: lockModification,
+      editable: true,
     },
     {
-  field: "controlTester",
-  headerName: "Testeur",
-  width: 150,
-  renderCell: (params) => {
-    return  (
-      <Select
-        value={testerValues[params.row.id] || params.row.controlTester || ""}
-        onChange={(event) => {
-          const selectedTesterId = event.target.value;
-          handleTesterChange(params.row.id, selectedTesterId)(event);
-        }}
-        fullWidth
-        variant="outlined"
-        size="small"
-      >
-        {loading ? (
-          <MenuItem disabled>Chargement...</MenuItem>
-        ) : testers.length > 0 ? (
-          testers.map((tester) => (
-            <MenuItem key={tester.id} value={tester.id}>
-              {tester.designation}
-            </MenuItem>
-          ))
-        ) : (
-          <MenuItem disabled>Aucun testeur trouvé</MenuItem>
-        )}
-      </Select>
-    ) 
-  },
+      field: "controlTester",
+      headerName: "Testeur",
+      width: 150,
+      renderCell: (params) => {
+        return (
+          <Select
+            value={
+              testerValues[params.row.id] || params.row.controlTester || ""
+            }
+            onChange={(event) => {
+              const selectedTesterId = event.target.value;
+              handleTesterChange(params.row.id, selectedTesterId)(event);
+            }}
+            fullWidth
+            variant="outlined"
+            size="small"
+          >
+            {loading ? (
+              <MenuItem disabled>Chargement...</MenuItem>
+            ) : testers.length > 0 ? (
+              testers.map((tester) => (
+                <MenuItem key={tester.id} value={tester.id}>
+                  {tester.designation}
+                </MenuItem>
+              ))
+            ) : (
+              <MenuItem disabled>Aucun testeur trouvé</MenuItem>
+            )}
+          </Select>
+        );
+      },
 
-  // renderCell: (params) => {
-  //   const controlTester = testerValues[params.row.id];
-  //  // console.log('testeur',controlTester)
-  
-  //   return controlTester ? (
-  //     <span>{controlTester}</span>
-  //   ) : 
-  //     <Select
-  //       value={testerValues[params.row.id] || params.row.controlTester || ""}
-  //       onChange={(event) => {
-  //         const selectedTesterId = event.target.value;
-  //         handleTesterChange(params.row.id, selectedTesterId)(event);
-  //       }}
-  //       fullWidth
-  //       variant="outlined"
-  //       size="small"
-  //     >
-  //       {loading ? (
-  //         <MenuItem disabled>Chargement...</MenuItem>
-  //       ) : testers.length > 0 ? (
-  //         testers.map((tester) => (
-  //           <MenuItem key={tester.id} value={tester.id}>
-  //             {tester.designation}
-  //           </MenuItem>
-  //         ))
-  //       ) : (
-  //         <MenuItem disabled>Aucun testeur trouvé</MenuItem>
-  //       )}
-  //     </Select>
-    
-  // },
-},
+      // renderCell: (params) => {
+      //   const controlTester = testerValues[params.row.id];
+      //  // console.log('testeur',controlTester)
 
+      //   return controlTester ? (
+      //     <span>{controlTester}</span>
+      //   ) :
+      //     <Select
+      //       value={testerValues[params.row.id] || params.row.controlTester || ""}
+      //       onChange={(event) => {
+      //         const selectedTesterId = event.target.value;
+      //         handleTesterChange(params.row.id, selectedTesterId)(event);
+      //       }}
+      //       fullWidth
+      //       variant="outlined"
+      //       size="small"
+      //     >
+      //       {loading ? (
+      //         <MenuItem disabled>Chargement...</MenuItem>
+      //       ) : testers.length > 0 ? (
+      //         testers.map((tester) => (
+      //           <MenuItem key={tester.id} value={tester.id}>
+      //             {tester.designation}
+      //           </MenuItem>
+      //         ))
+      //       ) : (
+      //         <MenuItem disabled>Aucun testeur trouvé</MenuItem>
+      //       )}
+      //     </Select>
+
+      // },
+    },
   ];
 
   const handleUpdateTesters = (selectedTester) => {
@@ -416,7 +419,7 @@ function Matrix({
 
   // Gestion des cases à cocher pour les contrôles
   const handleControlCheckboxChange = (id) => (event) => {
-   // console.log("id slcted", id);
+    // console.log("id slcted", id);
     const type = "control";
     setSelectedItems((prev) => {
       if (event.target.checked) {
@@ -469,7 +472,7 @@ function Matrix({
 
   // Gestion des cases à cocher pour les risques
   const handleRiskCheckboxChange = (id) => (event) => {
-   // console.log("id slcted", id);
+    // console.log("id slcted", id);
     const type = "risk";
     setSelectedItems((prev) => {
       if (event.target.checked) {
@@ -487,7 +490,7 @@ function Matrix({
   };
 
   const handleSave = async () => {
-   // console.log("flattenedData", flattenedData);
+    // console.log("flattenedData", flattenedData);
     const dataToSend = {
       executions: flattenedData.map((item) => ({
         layerId: item.layerId,
@@ -544,33 +547,42 @@ function Matrix({
   }, [testers]);
   // Charger les données depuis localStorage au montage du composant
   useEffect(() => {
-    const savedData = localStorage.getItem("flattenedData");
-    if (savedData) {
-      const parsedData = JSON.parse(savedData);
-      setFlattenedData(parsedData); // Mettre à jour flattenedData avec les données sauvegardées
-      console.log("savedData", parsedData); // Vérifier les données chargées
+    if (!fromScopeModification) {
+      const savedData = localStorage.getItem("flattenedData");
+      if (savedData) {
+        const parsedData = JSON.parse(savedData);
+        setFlattenedData(parsedData); // Mettre à jour flattenedData avec les données sauvegardées
+        console.log("savedData", parsedData); // Vérifier les données chargées
+      }
     }
+   
   }, []);
 
   // Mettre à jour flattenedData lorsque data change
   useEffect(() => {
-    if (data) {
-      const transformedData = transformData(data);
-      console.log("mm", transformedData);
-      // Utiliser une fonction de mise à jour pour éviter les dépendances cycliques
-      setFlattenedData((prevFlattenedData) => {
-        const mergedData = mergeData(transformedData, prevFlattenedData);
-        console.log("mergedData", mergedData); // Vérifier les données fusionnées
-        return mergedData;
-      });
+    if (!fromScopeModification) {
+      if (data) {
+        const transformedData = transformData(data);
+        console.log("mm", transformedData);
+        // Utiliser une fonction de mise à jour pour éviter les dépendances cycliques
+        setFlattenedData((prevFlattenedData) => {
+          const mergedData = mergeData(transformedData, prevFlattenedData);
+          console.log("mergedData", mergedData); // Vérifier les données fusionnées
+          return mergedData;
+        });
+      }
     }
+    
   }, [data]); // Dépend uniquement de data
 
   // Sauvegarder les données dans localStorage à chaque mise à jour de flattenedData
   useEffect(() => {
-    if (flattenedData.length > 0) {
-      localStorage.setItem("flattenedData", JSON.stringify(flattenedData));
+    if (!fromScopeModification) {
+      //if (flattenedData.length > 0) {
+        localStorage.setItem("flattenedData", JSON.stringify(flattenedData));
+      //}
     }
+    
   }, [flattenedData]);
 
   useEffect(() => {
@@ -612,20 +624,73 @@ function Matrix({
   };
 
   const handleModifyLines = () => {
-    setModify(true);
-  
-    const updatedData = flattenedData.map(row => {
-      if (selectedRows.includes(row.id)) {
-        return { ...row, modifiable: true }; // ou autre champ si déjà existant
-      }
-      return row;
-    });
-  
-    setFlattenedData(updatedData);
-  
-    console.log("selectedControls for update", selectedRows); // a continuer ........
+    // Marquer les lignes sélectionnées comme modifiables
+    setFlattenedData((prevData) =>
+      prevData.map((row) => {
+        if (selectedControls.includes(row.id)) {
+          return { ...row, modifiable: true }; // Rendre la ligne modifiable
+        }
+        return { ...row, modifiable: false }; // Les autres lignes restent non modifiables
+      })
+    );
+    setModify(false);
+    console.log("selectedControls for update", selectedControls);
   };
+
+  const navigationType = useNavigationType();
+
+  useEffect(() => {
+    console.log('Page rechargée, effacement des données',navigationType);
+
+    if (navigationType !== 'POP') {
+      setFlattenedData([]);
+    }
+  }, [navigationType]);
+
+  const handleSaveModifictaion = () => {
+
+     // Étape 1 : filtrer les lignes modifiables
+  const filtered = flattenedData.filter((row) => row.modifiable === true);
+
+  // Étape 2 : ne garder que les champs demandés
+  const controlsToUpdate = filtered.map((row) => ({
+    executionId: row.executionId,
+    covId: row.covId,
+    controlModified: row.controlModified,
+    controlDescription: row.controlDescription,
+    controlOwner: row.controlOwner,
+    controlTester: row.controlTester,
+    riskModified: row.riskModified,
+    riskDescription: row.riskDescription,
+    riskOwner: row.riskOwner,
+  }));
   
+ 
+  // Stocker les lignes extraites dans ton état
+  setControlsToUpdate(controlsToUpdate);
+    setFlattenedData((prevData) =>
+      prevData.map((row) => {
+        if (selectedControls.includes(row.id)) {
+          return { ...row, modifiable: false }; // Rendre la ligne  non mmodifiable
+        }
+        return { ...row, modifiable: false }; // Les autres lignes restent non modifiables
+      })
+    );
+    
+    
+    setSelectedRows([]);
+    setSelectedControls([]);
+    localStorage.removeItem("flattenedData");
+    setModify(true);
+  };
+
+  useEffect(() => {
+    console.log("flattenedData", flattenedData);
+  }, [flattenedData]);
+  useEffect(() => {
+    console.log("hhjdkdkdkd", controlsToUpdate);
+  }, [controlsToUpdate]);
+
   return (
     <>
       <div className="flex  items-center justify-start mb-6"></div>
@@ -718,30 +783,42 @@ function Matrix({
           )}
         </div>
       </div>
+     { selectedRows.length > 0 && (
+  
+    <button
+      className="bg-alert-red text-white px-4 py-2 rounded-md hover:bg-red-700 flex items-center gap-2"
+      onClick={
+        fromScopeModification
+          ? handleFromScopeDelete
+          : handleAtWorkplanDelete
+      }
+    >
+      <Trash size={18} />
+      Supprimer
+    </button>)}
+      {fromScopeModification && selectedRows.length > 0 && (
+  <>
+    
 
-      {selectedRows.length > 0 && (
-        <>
-          <button
-            className="bg-alert-red text-white px-4 py-2 rounded-md hover:bg-red-700 flex items-center gap-2"
-            onClick={
-              fromScopeModification
-                ? handleFromScopeDelete
-                : handleAtWorkplanDelete
-            }
-          >
-            <Trash size={18} />
-            Supprimer
-          </button>
+    {modify ? (
+      <button
+        className="bg-blue-conf text-white px-4 py-2 rounded-md hover:bg-red-700 flex items-center gap-2"
+        onClick={handleModifyLines}
+      >
+        <Trash size={18} />
+        Modifier
+      </button>
+    ) : (
+      <button
+        className="bg-blue-conf text-white px-4 py-2 rounded-md flex items-center gap-2"
+        onClick={handleSaveModifictaion}
+      >
+        Enregistrer les modifications
+      </button>
+    )}
+  </>
+)}
 
-          <button
-            className="bg-blue-conf text-white px-4 py-2 rounded-md hover:bg-red-700 flex items-center gap-2"
-            onClick={handleModifyLines}
-          >
-            <Trash size={18} />
-            modifier
-          </button>
-        </>
-      )}
       {saveWork && (
         <DecisionPopUp
           handleConfirm={handleSave}
@@ -805,7 +882,14 @@ function Matrix({
                       // rows={searchResults}
                       columns={columns}
                       pageSize={5}
-                      checkboxSelection
+                      checkboxSelection={unlockModification}
+                      isCellEditable={(params) => {
+                        console.log("fromScopeModification", fromScopeModification);
+                        
+                        const row = flattenedData.find((row) => row.id === params.row.id);
+                        return row?.modifiable || false;
+                      }}
+                     
                       disableRowSelectionOnClick
                       onRowSelectionModelChange={(newSelection) => {
                         setSelectedControls(newSelection);

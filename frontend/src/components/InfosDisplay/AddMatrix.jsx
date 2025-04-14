@@ -7,7 +7,7 @@ import { api } from '../../Api';
 function AddMatrix({ user,missionId ,dataFormat}) {
   
   const [controleListe, setControleListe] = useState([]);
-
+const [modifActivated, setModifActivated] = useState(false);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate()
   const handleAddMatrix = () => {
@@ -20,7 +20,9 @@ function AddMatrix({ user,missionId ,dataFormat}) {
     console.log('Détails du contrôle sélectionné:', rowData);
   };
 
-
+ const  handleActivateModification =() => {
+    setModifActivated(true);
+  }
   useEffect(() => {
     const fetchMatrixData = async () => {
       try {
@@ -57,6 +59,7 @@ useEffect(()=>{
       const riskId = exec.riskId;
       const controlId = exec.controlId;
       const executionId=exec.executionId;
+      const covId=exec.coverageId;
   
       // Si l'application n'existe pas, on l'ajoute
       if (!applications[appId]) {
@@ -99,6 +102,7 @@ useEffect(()=>{
       risk.controls.push({
         id: controlId,
         executionId: executionId,
+        covId: covId,
         description: exec.controlDescription,
         majorProcess:exec.majorProcess, // à récupérer si disponible
         subProcess: "N/A", // idem
@@ -122,35 +126,53 @@ useEffect(()=>{
   
   return (
     <div className="p-4 mb-1">
-    <div className="flex items-center gap-2 mb-4">
-      <PlusCircle className="text-[var(--blue-menu)] w-5 h-5" />
-      <h2 className="text-l font-semibold text-[var(--blue-menu)]">Scope Contrôle</h2>
-      <hr className="flex-grow border-t border-[var(--blue-menu)]" />
-    </div>
+  {/* Titre avec icône */}
+  <div className="flex items-center gap-2 mb-4">
+    <PlusCircle className="text-[var(--blue-menu)] w-5 h-5" />
+    <h2 className="text-l font-semibold text-[var(--blue-menu)]">Scope Contrôle</h2>
+    <hr className="flex-grow border-t border-[var(--blue-menu)]" />
+  </div>
 
-    <div className="pl-6">
-      {loading ? (
-        <p>Chargement...</p>
-      ) : controleListe && controleListe?.length > 0 ? (
-        <>
-          {(user?.role === 'admin') && (
-            <div className='flex justify-end pr-5'>
-              <button
-                onClick={handleAddMatrix}
-                className="px-4 py-2 border-none bg-[var(--blue-menu)] text-white text-sm font-medium rounded"
-              >
-                Modifier
-              </button>
-            </div>
-          )}
-          <Matrix data={{ applications: controleListe }} user={user} onRowClick={handleRowClick} fromScopeModification={true} lockModification={true} />
-        </>
-      ) : (
-        <div className='flex flex-row items-center gap-4 pl-6'>
+  <div className="pl-6">
+    {loading ? (
+      <p>Chargement...</p>
+    ) : controleListe && controleListe.length > 0 ? (
+      <>
+        {/* Boutons Modifier + Ajouter */}
+        {user?.role === 'admin' && (
+          <div className="flex justify-end pr-5 gap-4 mb-2">
+            <button
+              onClick={handleActivateModification}
+              className="px-4 py-2 border-none bg-[var(--blue-menu)] text-white text-sm font-medium rounded"
+            >
+              Modifier
+            </button>
+            <button
+              onClick={handleAddMatrix}
+              className="px-4 py-2 border-none bg-[var(--blue-menu)] text-white text-sm font-medium rounded"
+            >
+              Ajouter
+            </button>
+          </div>
+        )}
+
+        {/* Matrice */}
+        <Matrix
+          data={{ applications: controleListe }}
+          user={user}
+          onRowClick={handleRowClick}
+          fromScopeModification={modifActivated}
+          unlockModification={modifActivated}
+        />
+      </>
+    ) : (
+      <>
+        {/* Message + bouton Ajouter si aucune donnée */}
+        <div className="flex items-center gap-4">
           <p className="text-[var(--status-gray)] text-s">
             Aucune matrice ajoutée pour le moment
           </p>
-          {(user?.role === 'admin') && (
+          {user?.role === 'admin' && (
             <button
               onClick={handleAddMatrix}
               className="px-4 py-2 border-none bg-[var(--blue-menu)] text-white text-sm font-medium rounded"
@@ -159,9 +181,11 @@ useEffect(()=>{
             </button>
           )}
         </div>
-      )}
-    </div>
+      </>
+    )}
   </div>
+</div>
+
 );
 }
 

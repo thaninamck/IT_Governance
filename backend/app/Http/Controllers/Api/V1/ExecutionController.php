@@ -320,6 +320,7 @@ class ExecutionController extends BaseController
             );
         } catch (\Exception $e) {
             // Gestion des erreurs en cas de problème
+            Log::error('Erreur lors de la suppression des exécutions : ' . $e->getMessage());
             return $this->sendError("Erreur lors de la suppression des exécutions.", ['error' => $e->getMessage()], 500);
         }
     }

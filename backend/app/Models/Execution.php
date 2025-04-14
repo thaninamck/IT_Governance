@@ -38,11 +38,11 @@ class Execution extends Model
     }
 
     public function remediations(){    
-        return $this->hasManyTo(Remediation::class);
+        return $this->hasMany(Remediation::class);
     }
 
     public function evidences(){    
-        return $this->hasManyTo(Evidence::class);
+        return $this->hasMany(Evidence::class);
     }
     
     public function steps()

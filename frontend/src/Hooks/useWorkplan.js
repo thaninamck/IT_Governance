@@ -88,7 +88,7 @@ const useWorkplan = () => {
      return []
     } catch (err) {
       setError(err);
-      console.error("Erreur lors de la suppression des exécutions:", err);
+      //console.error("Erreur lors de la suppression des exécutions:", err);
     } 
   };
   
