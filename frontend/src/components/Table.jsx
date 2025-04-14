@@ -327,97 +327,97 @@ function Table({
             : undefined
         }
         
-        // sx={{
-        //   border: "1px solid #ccc",
-
-        //   "& .MuiDataGrid-cell": {
-        //     borderRight: "1px solid #ddd",
-        //     borderBottom: "1px solid #ddd",
-        //     whiteSpace: "normal",
-        //     wordWrap: "break-word",
-        //     overflow: "visible",
-        //     textOverflow: "clip",
-        //     alignItems: "center", // Centrer le contenu verticalement
-        //     display: "flex",
-        //   },
-        //   "& .MuiDataGrid-columnHeader": {
-        //     backgroundColor: headerBackground,
-        //     color: headerTextBackground, // Texte blanc
-        //     fontSize: "16px",
-        //     fontWeight: "bold",
-        //     borderBottom: "2px solid #ddd",
-        //   },
-        //   "& .MuiDataGrid-row:hover": {
-        //     backgroundColor: "#f1f1f1",
-        //   },
-        //   "& .MuiDataGrid-cell:focus": {
-        //     outline: "2px solid #1565c0",
-        //   },
-
-        //   ...(isZebraStriping && {
-        //     // Applique le style au tableau des elements uniquement si activé
-        //     "& .MuiDataGrid-row:nth-of-type(odd)": {
-        //       backgroundColor: oddRowColor,
-        //     },
-        //     "& .MuiDataGrid-row:nth-of-type(even)": {
-        //       backgroundColor: evenRowColor,
-        //     },
-        //   }),
-        // }}
-
         sx={{
-          border: "none",
-          fontSize: "14px",
-        
-          "& .MuiDataGrid-root": {
-            borderRadius: "12px",
-          },
-          "& .MuiDataGrid-columnHeaders": {
-            backgroundColor: headerBackground,
-        color: headerTextBackground,
-            fontWeight: 600,
-            fontSize: "15px",
-            borderBottom: "1px solid #cbd5e1",
-          },
-        
-          "& .MuiDataGrid-columnSeparator": {
-            display: "none",
-          },
-        
+          border: "1px solid #ccc",
+
           "& .MuiDataGrid-cell": {
-            borderBottom: "1px solid #e2e8f0",
-            padding: "10px",
+            borderRight: "1px solid #ddd",
+            borderBottom: "1px solid #ddd",
             whiteSpace: "normal",
             wordWrap: "break-word",
-            alignItems: "center",
+            overflow: "visible",
+            textOverflow: "clip",
+            alignItems: "center", // Centrer le contenu verticalement
             display: "flex",
-            color: "#0f172a", // Slate 900
-            backgroundColor: "#ffffff",
-            transition: "background 0.3s ease",
           },
-        
-          "& .MuiDataGrid-row:hover .MuiDataGrid-cell": {
-            backgroundColor: "#f1f5f9", // Slate 100
+          "& .MuiDataGrid-columnHeader": {
+            backgroundColor: headerBackground,
+            color: headerTextBackground, // Texte blanc
+            fontSize: "16px",
+            fontWeight: "bold",
+            borderBottom: "2px solid #ddd",
           },
-        
-          "& .MuiDataGrid-row.Mui-selected, .MuiDataGrid-row.Mui-selected:hover": {
-            backgroundColor: "#dbeafe !important", // Blue-100
+          "& .MuiDataGrid-row:hover": {
+            backgroundColor: "#f1f1f1",
           },
-        
           "& .MuiDataGrid-cell:focus": {
-            outline: "none",
+            outline: "2px solid #1565c0",
           },
-        
-          // Zebra striping
+
           ...(isZebraStriping && {
-            "& .MuiDataGrid-row:nth-of-type(odd) .MuiDataGrid-cell": {
-              backgroundColor: "#f8fafc", // Slate-50
+            // Applique le style au tableau des elements uniquement si activé
+            "& .MuiDataGrid-row:nth-of-type(odd)": {
+              backgroundColor: oddRowColor,
             },
-            "& .MuiDataGrid-row:nth-of-type(even) .MuiDataGrid-cell": {
-              backgroundColor: "#ffffff",
+            "& .MuiDataGrid-row:nth-of-type(even)": {
+              backgroundColor: evenRowColor,
             },
           }),
         }}
+
+        // sx={{
+        //   border: "none",
+        //   fontSize: "14px",
+        
+        //   "& .MuiDataGrid-root": {
+        //     borderRadius: "12px",
+        //   },
+        //   "& .MuiDataGrid-columnHeaders": {
+        //     backgroundColor: headerBackground,
+        // color: headerTextBackground,
+        //     fontWeight: 600,
+        //     fontSize: "15px",
+        //     borderBottom: "1px solid #cbd5e1",
+        //   },
+        
+        //   "& .MuiDataGrid-columnSeparator": {
+        //     display: "none",
+        //   },
+        
+        //   "& .MuiDataGrid-cell": {
+        //     borderBottom: "1px solid #e2e8f0",
+        //     padding: "10px",
+        //     whiteSpace: "normal",
+        //     wordWrap: "break-word",
+        //     alignItems: "center",
+        //     display: "flex",
+        //     color: "#0f172a", // Slate 900
+        //     backgroundColor: "#ffffff",
+        //     transition: "background 0.3s ease",
+        //   },
+        
+        //   "& .MuiDataGrid-row:hover .MuiDataGrid-cell": {
+        //     backgroundColor: "#f1f5f9", // Slate 100
+        //   },
+        
+        //   "& .MuiDataGrid-row.Mui-selected, .MuiDataGrid-row.Mui-selected:hover": {
+        //     backgroundColor: "#dbeafe !important", // Blue-100
+        //   },
+        
+        //   "& .MuiDataGrid-cell:focus": {
+        //     outline: "none",
+        //   },
+        
+        //   // Zebra striping
+        //   ...(isZebraStriping && {
+        //     "& .MuiDataGrid-row:nth-of-type(odd) .MuiDataGrid-cell": {
+        //       backgroundColor: "#f8fafc", // Slate-50
+        //     },
+        //     "& .MuiDataGrid-row:nth-of-type(even) .MuiDataGrid-cell": {
+        //       backgroundColor: "#ffffff",
+        //     },
+        //   }),
+        // }}
         
       />
        <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose}>

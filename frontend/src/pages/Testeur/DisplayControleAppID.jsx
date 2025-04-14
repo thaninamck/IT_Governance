@@ -53,9 +53,9 @@ function DisplayControleAppID() {
   };
   const columnsConfig2 = [
     { field: "riskCode", headerName: "risk Code", width: 100 },
-    { field: "riskDescription", headerName: "risk description", width: 200 },
+    { field: "riskDescription", headerName: "risk description", width: 200,expandable: true  },
     { field: "controlCode", headerName: "controle Code", width: 100 },
-    { field: "controlDescription", headerName: "description", width: 170 },
+    { field: "controlDescription", headerName: "description", width: 170,expandable: true  },
     { field: "executionControlOwner", headerName: "owner", width: 150 },
     { field: "layerName", headerName: "couche", width: 150 },
     { field: "etat", headerName: "Etat", width: 150 },
