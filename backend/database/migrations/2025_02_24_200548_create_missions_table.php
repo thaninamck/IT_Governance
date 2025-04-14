@@ -6,31 +6,18 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
-        Schema::create('missions', function (Blueprint $table) {
-            $table->id();
-            
-           
-            $table->string('mission_name', 255); 
-            $table->date('start_date'); 
-            $table->date('end_date');
-            $table->date('audit_start_date');
-            $table->date('audit_end_date'); 
-            $table->foreignId('client_id')->constrained('clients');
-            $table->foreignId('status_id')->constrained('statuses');
-            $table->timestamps();
+        Schema::table('missions', function (Blueprint $table) {
+            $table->foreignId('previous_status_id')->nullable()->constrained('statuses');
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
-        Schema::dropIfExists('missions');
+        Schema::table('missions', function (Blueprint $table) {
+            $table->dropForeign(['previous_status_id']);
+            $table->dropColumn('previous_status_id');
+        });
     }
 };

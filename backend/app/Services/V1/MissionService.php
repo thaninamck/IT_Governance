@@ -34,6 +34,8 @@ class MissionService
         'mission_name' => $mission->mission_name,
         'start_date' => $mission->start_date,
         'end_date' => $mission->end_date,
+        'auditStartDate' => $mission->audit_start_date,
+        'auditEndDate' => $mission->audit_end_date,
         'client_id' => $mission->client_id,
         'clientName' => $mission->client->commercial_name,
         'status_id' => $mission->status_id,
@@ -94,7 +96,7 @@ public function getMissionSystemsById($id){
 
     public function createMission(array $data): Mission
     {
-        $data['status_id'] = 10; //NON commencée
+        $data['status_id'] = 7; //NON commencée
         return $this->missionRepository->createMission($data);
     }
 
@@ -110,19 +112,45 @@ public function getMissionSystemsById($id){
     {
         return $this->missionRepository->cancelMission($id);
     }
-    public function stopMission(int $id): array
+    public function requestCancelMission(int $id):Mission
+    {
+        return $this->missionRepository->requestCancelMission($id);
+    }
+    public function requestCloseMission(int $id):Mission
+    {
+        return $this->missionRepository->requestCloseMission($id);
+    }
+    public function requestArchiveMission(int $id):Mission
+    {
+        return $this->missionRepository->requestArchiveMission($id);
+    }
+   
+    public function acceptrequestStatus(int $id):Mission
+    {
+        return $this->missionRepository->acceptrequestStatus($id);
+    }
+    public function refuseRequestStatus(int $id):Mission
+    {
+        return $this->missionRepository->refuseRequestStatus($id);
+    }
+   
+    public function stopMission(int $id): Mission
     {
         return $this->missionRepository->stopMission($id);
     }
     
-    public function resumeMission(int $id, int $previousStatusId, string $newStartDate): ?Mission
+    public function resumeMission(int $id): ?Mission
 {
-    return $this->missionRepository->resumeMission($id, $previousStatusId, $newStartDate );
+    return $this->missionRepository->resumeMission($id);
 }
 
     public function getArchivedMissions()
 {
     return $this->missionRepository->getArchivedMissions();
+}
+public function getRequestStatusForMissions()
+{
+    return $this->missionRepository->getRequestStatusForMissions();
 }
 
     public function updateMission($id, array $data): ?Mission
@@ -154,7 +182,7 @@ public function getMissionSystemsById($id){
         // }
         // Ajouter status_id à chaque mission
         $missionsData = array_map(function ($missionData) {
-            $missionData['status_id'] = 10; // Définir le statut par défaut NON commencée
+            $missionData['status_id'] = 7; // Définir le statut par défaut NON commencée
             return $missionData;
         }, $missionsData);
 
