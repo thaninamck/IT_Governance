@@ -65,6 +65,20 @@ const useExecution = () => {
             setLoading(false);
         }
     };
+
+    const updateExecution = async (executionId,data) => {
+        setLoading(true);
+        try {
+            const response = await api.put(`/executions/update-execution/${executionId}`, data);
+            toast.success("Mis à jour avec succées");
+            return response;
+        } catch (error) {
+            setError(error);
+            toast.error("Erreur lors de sauvegarde des modifications veuillez réssayer");
+        } finally {
+            setLoading(false);
+        }
+    }
  useEffect(() => {
     fetchOptions();
   }, []);
@@ -76,7 +90,7 @@ const useExecution = () => {
    getFileURL,
    deleteEvidence,
     uploadEvidences,
-    
+    updateExecution,
     
 
 };

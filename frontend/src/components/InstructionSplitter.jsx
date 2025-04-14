@@ -1,14 +1,13 @@
 import React, { useState, useEffect } from "react";
 import AddCommentRoundedIcon from "@mui/icons-material/AddCommentRounded";
 
-function InstructionSplitter({ steps , onChange }) {
+function InstructionSplitter({ steps, onChange }) {
   const [phrases, setPhrases] = useState([]);
   const [comments, setComments] = useState({});
   const [validatedSteps, setValidatedSteps] = useState({});
   const [showComments, setShowComments] = useState({});
 
   useEffect(() => {
-    console.log("steps",steps)
     if (steps.length > 0) {
       const initialPhrases = steps.map((step) => step.step_text);
       setPhrases(initialPhrases);
@@ -47,23 +46,6 @@ function InstructionSplitter({ steps , onChange }) {
     emitChanges(updated, validatedSteps, phrases);
   };
 
-  const removeTestScript = (index) => {
-    const newPhrases = phrases.filter((_, i) => i !== index);
-    setPhrases(newPhrases);
-
-    const updatedComments = { ...comments };
-    delete updatedComments[index];
-    setComments(updatedComments);
-
-    const updatedValidated = { ...validatedSteps };
-    delete updatedValidated[index];
-    setValidatedSteps(updatedValidated);
-
-    // Supprimer également l'élément dans `steps` pour garder les `step_execution_id` synchronisés
-    const newSteps = steps.filter((_, i) => i !== index);
-    emitChanges(updatedComments, updatedValidated, newPhrases, newSteps);
-  };
-
   const emitChanges = (commentsMap, validatedMap, phrasesList, stepsList = steps) => {
     const result = phrasesList.map((phrase, index) => ({
       step_text: phrase,
@@ -73,8 +55,31 @@ function InstructionSplitter({ steps , onChange }) {
     }));
 
     onChange(result);
-    //console.log("Data test:", result);
   };
+
+  // Fonction qui calcule si une étape doit être désactivée
+  const computeDisabledStates = () => {
+    const disabledStates = {};
+    let locked = false;
+
+    for (let i = 0; i < phrases.length; i++) {
+      if (locked) {
+        disabledStates[i] = true;
+      } else {
+        const checked = validatedSteps[i];
+        const commented = (comments[i] || "").trim() !== "";
+
+        if (!checked && !commented) {
+          locked = true;
+        }
+        disabledStates[i] = false;
+      }
+    }
+
+    return disabledStates;
+  };
+
+  const disabledSteps = computeDisabledStates();
 
   return (
     <div>
@@ -90,6 +95,12 @@ function InstructionSplitter({ steps , onChange }) {
                 type="checkbox"
                 checked={validatedSteps[index] || false}
                 onChange={() => toggleValidation(index)}
+                disabled={disabledSteps[index]}
+                title={
+                  disabledSteps[index]
+                    ? "Les étapes précédentes doivent être validées ou commentées."
+                    : ""
+                }
                 className="w-5 h-5 accent-green-500 mt-3"
               />
               <textarea
@@ -106,6 +117,7 @@ function InstructionSplitter({ steps , onChange }) {
                   type="text"
                   value={comments[index] || ""}
                   onChange={(e) => updateComment(index, e.target.value)}
+                  disabled={disabledSteps[index]}
                   className="w-full text-sm p-2 border border-gray-300 rounded-lg focus:outline-none"
                   placeholder="Ajoutez un commentaire..."
                 />
@@ -116,8 +128,6 @@ function InstructionSplitter({ steps , onChange }) {
               className="absolute top-3 right-8 cursor-pointer text-blue-500"
               onClick={() => toggleComment(index)}
             />
-
-            
           </div>
         ))}
       </div>

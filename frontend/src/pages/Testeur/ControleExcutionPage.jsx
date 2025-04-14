@@ -27,7 +27,7 @@ emailjs.init("oAXuwpg74dQwm0C_s"); // Replace 'YOUR_USER_ID' with your actual us
 function ControleExcutionPage() {
   // Accédez à userRole et setUserRole via le contexte
   const { userRole, setUserRole } = useContext(PermissionRoleContext);
-  const { loading, getExecutionById, getFileURL, deleteEvidence,uploadEvidences
+  const { loading, getExecutionById, getFileURL, deleteEvidence,uploadEvidences,updateExecution
 
    } =
     useExecution();
@@ -623,7 +623,20 @@ function ControleExcutionPage() {
     };
     setShowPopup(true);
   };
+const handleSaveModifications = async () => {
+  const payload = {
+    
+    ipe: selections.IPE,
+    design: selections.Design,
+    effectiveness: selections.Effectiveness,
+    comment:commentaire,
+    steps: testScriptData,
+    status_id: selectedMulti,
+  };
+  await updateExecution(controleData.executionId, payload);
 
+ 
+}
   const navigate = useNavigate();
 
   const handleRowClick = (rowData) => {
@@ -747,6 +760,8 @@ function ControleExcutionPage() {
           isAddingAnother={isAddingAnother}
           controleID={controleID}
           onClose={onClose}
+          handleSaveModifications={handleSaveModifications}
+          loading={loading}
         />
         {showPopup && (
           <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-md z-50">
