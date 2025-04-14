@@ -4,7 +4,8 @@ import { ChevronDown, Check } from 'lucide-react';
 function SelectInput({ label, options, value, onChange, width, flexDirection, customStyle,required=false, multiSelect = false ,mt='mt-20'}) {
   const [isOpen, setIsOpen] = useState(false);
    const [error, setError] = useState(false);
-  
+  console.log('value',value)
+  console.log("options", options)
   // Vérifier si la valeur sélectionnée est un tableau (pour multi-choix)
   const selectedValues = multiSelect ? (Array.isArray(value) ? value : []) : value;
 

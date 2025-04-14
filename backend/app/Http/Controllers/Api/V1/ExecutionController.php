@@ -21,7 +21,7 @@ class ExecutionController extends BaseController
     protected $riskService;
     protected $controlService;
     protected $evidenceService;
-    public function __construct(ExecutionService $executionService, MissionService $missionService, RiskService $riskService, ControlService $controlService, EvidenceService $evidenceService)
+    public function __construct(ExecutionService $executionService ,MissionService $missionService, RiskService $riskService, ControlService $controlService, EvidenceService $evidenceService)
     {
         $this->evidenceService = $evidenceService;
         $this->executionService = $executionService;
@@ -209,53 +209,7 @@ class ExecutionController extends BaseController
         }
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    //     public function updateExecution(Request $request,$executionId)
-    // {
-    //     Log::info('executionId:', [$executionId]);
-
-    //     Log::info('Request all:', $request->all());
-    // Log::info('Request raw content:', [$request->getContent()]);
-    // Log::info('All inputs:', $request->input());
-    // Log::info('All files:', $request->file('files'));
-    //     $rules = [
-    //         'description' => 'required|string',
-    //        'files' => 'sometimes|array',
-
-    //     'files.*.file' => 'file|max:10240', // Validation pour chaque fichier
-    //     'files.*.is_f_test' => 'required|boolean', // Validation pour chaque champ 'is_f_test'
-    //         'comment' => 'sometimes|string',
-    //         'status_id'=> 'sometimes|integer',
-    //         'effectiveness'=>'sometimes|boolean',
-    //         'design'=> 'sometimes|boolean',
-    //         'ipe'=>'sometimes|boolean',
-    //     ];
-
-    //     // Validation des données
-    //     $validator = Validator::make($request->all(), $rules);
-
-    //     if ($validator->fails()) {
-    //         return $this->sendError("Validation of data failed", $validator->errors(), 422);
-    //     }
-
-
-    //     $data = $validator->validated();
-    //     Log::info("data", $data);
-
-    //     try {
-    //         // Appel au service pour mettre à jour l'exécution
-    //         $this->executionService->updateExecution($executionId, $data);
-    //         return $this->sendResponse(
-    //             "Execution updated successfully",
-    //             [],
-    //             200
-    //         );
-    //     } catch (\Exception $e) {
-    //         return $this->sendError("Error while updating execution", ['error' => $e->getMessage()], 500);
-    //     }
-    // }
+    
 
     public function updateExecution(Request $request, $executionId)
     {
@@ -263,16 +217,17 @@ class ExecutionController extends BaseController
 
         Log::info('Request all:', $request->all());
         $rules = [
-            'description' => 'required|string',
+            'description' => 'sometimes|string',
             'riskModification' => 'sometimes|string',
             'riskOwner' => 'sometimes|string',
             'controlOwner' => 'sometimes|string',
-            'comment' => 'sometimes|string',
-            'status_id' => 'sometimes|integer',
-            'effectiveness' => 'sometimes|boolean',
+            'comment' => 'sometimes|nullable|string',
+            'status_id' => 'sometimes|nullable|integer',
+            'effectiveness' => 'sometimes|boolean ',
             'design' => 'sometimes|boolean',
             'ipe' => 'sometimes|boolean',
             'controlTester' => 'sometimes|integer',
+            'steps'=> 'sometimes|array',
         ];
 
         // Validation des données
@@ -295,7 +250,7 @@ class ExecutionController extends BaseController
                 200
             );
         } catch (\Exception $e) {
-            return $this->sendError("Error while updating execution", ['error' => $e->getMessage()], 500);
+            return $this->sendError("Erreur lors de la mise à jour", ['error' => $e->getMessage()], 500);
         }
     }
 
@@ -387,6 +342,23 @@ class ExecutionController extends BaseController
         }
     }
 
+    public function submitExecutionForReview($executionId)
+    {
+        try {
+            return $this->executionService->submitExecutionForReview($executionId) ? $this->sendResponse("Execution submitted successfully", [], 200) : $this->sendError("submitting execution failed", [], 404);
+        } catch (\Exception $e) {
+            return $this->sendError("Error while submitting execution", ['error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function submitExecutionForValidation($executionId)
+    {
+        try {
+            return $this->executionService->submitExecutionForValidation($executionId) ? $this->sendResponse("Execution submitted successfully", [], 200) : $this->sendError("submitting execution failed", [], 404);
+        } catch (\Exception $e) {
+            return $this->sendError("Error while submitting execution", ['error' => $e->getMessage()], 500);
+        }
+    }
     public function storeFile(Request $request)
     {
         $rules = [

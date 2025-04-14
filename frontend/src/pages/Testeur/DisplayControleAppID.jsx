@@ -41,9 +41,11 @@ function DisplayControleAppID() {
   const { name } = useParams([]); // Récupérer les paramètres de l'URL
   console.log("Mission sélectionnée :", mission);
   console.log("App sélectionnée :", name);
-  const [appData, setAppData] = useState(null);
+  
 
+  const [selectedControl, setSelectedControl] = useState([]);
   const handleRowClick = (rowData) => {
+    
     // Naviguer vers la page de détails avec l'ID du contrôle dans l'URL
     navigate(`/missions/${mission}/${name}/${rowData.controlCode}`, { state: { controleData: rowData } });
     // navigate('/controle', { state: { controleData: rowData } });
@@ -74,7 +76,7 @@ function DisplayControleAppID() {
       },
   ];
 
-
+const [appData, setAppData] = useState([]); // État pour stocker les données de l'application
  const fetchAppData = async () => {
   try {
     const endpoint = (user?.role === "admin"|| profile==='manager' ) ? `/missions/${AppData.id}/getexecutionsList`
@@ -125,6 +127,7 @@ function DisplayControleAppID() {
   if (user?.role || profile) {
     fetchAppData();
   }
+
 }, [user?.role,profile]);
 
 // useEffect(() => {
@@ -132,6 +135,7 @@ function DisplayControleAppID() {
 //     fetchAppData();
 //   }
 // }, [AppData?.id, user?.role, profile]);
+
 
   return (
     <div className=" ">
@@ -157,7 +161,7 @@ function DisplayControleAppID() {
         <div
           className="flex-1 overflow-x-auto overflow-y-auto h-[400px] transition-all "
         >
-        {appData ? (
+        {AppData ? (
           // <Matrix
           //   data={{ applications: [{ ...appData, controls }] }}
           //   user={user}

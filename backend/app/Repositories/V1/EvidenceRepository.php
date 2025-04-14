@@ -4,12 +4,13 @@ namespace App\Repositories\V1;
 use App\Models\Evidence;
 class EvidenceRepository
 {
-    public function storeEvidence(array $data,$fileName)
+    public function storeEvidence(array $data,$storedName,$fileName)
     {
         
         // Créer l'enregistrement en BDD
         return Evidence::firstOrCreate([
             'file_name' => $fileName,
+            'stored_name'=> $storedName,
             'is_f_test' => $data['is_f_test'] ?? false,
             'execution_id' => $data['execution_id'] ?? null,
         ]);
@@ -37,7 +38,7 @@ class EvidenceRepository
 
     
     Evidence::destroy($evidenceId);
-    return $evidence->file_name;
+    return $evidence->stored_name;
 }
 
 
