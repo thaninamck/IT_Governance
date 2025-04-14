@@ -11,11 +11,17 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('mission_systems', function (Blueprint $table) {
+        Schema::create('missions', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('mission_id')->constrained('missions');
-            $table->foreignId('system_id')->constrained('systems');
-
+            
+           
+            $table->string('mission_name', 255); 
+            $table->date('start_date'); 
+            $table->date('end_date');
+            $table->date('audit_start_date');
+            $table->date('audit_end_date'); 
+            $table->foreignId('client_id')->constrained('clients');
+            $table->foreignId('status_id')->constrained('statuses');
             $table->timestamps();
         });
     }
@@ -25,6 +31,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('mission_system');
+        Schema::dropIfExists('missions');
     }
 };

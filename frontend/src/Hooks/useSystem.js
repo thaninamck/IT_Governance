@@ -11,17 +11,17 @@ export const useSystem = (missionId, user, showForm, onToggleForm,missionName) =
   const [isAddingAnother, setIsAddingAnother] = useState(false);
 
   // Récupérer les systèmes de la mission
-  useEffect(() => {
-    const fetchMissionSystems = async () => {
-      try {
-        const response = await api.get(`/mission/${missionId}/getsystems`);
-        console.log('resp',response.data.original.systems)
-        setApplications(response.data.original.systems);
-      } catch (error) {
-        console.error("Erreur lors de la récupération des systems:", error);
-      } 
-    };
+  const fetchMissionSystems = async () => {
+    try {
+      const response = await api.get(`/mission/${missionId}/getsystems`);
+      console.log('resp', response.data.original.systems);
+      setApplications(response.data.original.systems);
+    } catch (error) {
+      console.error("Erreur lors de la récupération des systems:", error);
+    }
+  };
 
+  useEffect(() => {
     if (missionId) {
       fetchMissionSystems();
     }
@@ -30,28 +30,30 @@ export const useSystem = (missionId, user, showForm, onToggleForm,missionName) =
   const handleAddApp = async (app) => {
     try {
       if (selectedApp) {
-         // Mise à jour de l'application existante
-        const response = await api.put(`/updatesystemId/${app.id}`, app);
-        setApplications(prevApps => 
-          prevApps.map(row => row.id === app.id ? response.data : row)
-        );
+        // Mise à jour
+       await api.put(`/updatesystemId/${app.id}`, app);
+        // setApplications(prevApps =>
+        //   prevApps.map(row => row.id === app.id ? response.data : row)
+        // );
+        await fetchMissionSystems();
         setSelectedApp(null);
         onToggleForm();
       } else {
-        console.log('add  app',app)
-          // Ajout d'une nouvelle application
-        const response = await api.post(`/mission/${missionId}/createsystem`, app);
-        setApplications(prev => [...prev, response.data]);
-        console.log(response.data)
+        // Création
+        console.log('add  app', app);
+        // const response = await api.post(`/mission/${missionId}/createsystem`, app);
+        
+        // setApplications(prev => [...prev, response.data]);
+        await api.post(`/mission/${missionId}/createsystem`, app);
+await fetchMissionSystems();
+       // console.log(response.data);
         setShowDecisionPopup(true);
-       
       }
     } catch (error) {
       console.error("Erreur lors de la création/mise à jour d'une application:", error);
       throw error;
     }
   };
-
   const handleDeleteRow = (selectedRow) => {
     setSelectedAppId(selectedRow.id);
     setIsDeletePopupOpen(true);

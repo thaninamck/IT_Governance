@@ -18,7 +18,8 @@ class Mission extends Model
         'start_date',
         'end_date',
         'audit_start_date',
-        'audit_end_date' 
+        'audit_end_date' ,
+        'previous_status_id',
     ];
 
     protected $dates = ['start_date', 'end_date'];
@@ -37,14 +38,14 @@ class Mission extends Model
     {
         return $this->hasMany(Participation::class);
     }
-    public function executions(): HasMany
-    {
-        return $this->hasMany(Execution::class);
-    }
-    public function remediations(): HasMany
-    {
-        return $this->hasMany(Remediation::class);
-    }
+    // public function executions(): HasMany
+    // {
+    //     return $this->hasMany(Execution::class);
+    // }
+    // public function remediations(): HasMany
+    // {
+    //     return $this->hasMany(Remediation::class);
+    // }
 
     public function systems(){
         return $this->hasMany(System::class);

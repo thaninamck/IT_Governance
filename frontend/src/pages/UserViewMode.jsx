@@ -25,13 +25,14 @@ import useGestionMission from "../Hooks/useGestionMission";
 import { useAuth } from "../Context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import SideBarStdr from "../components/sideBar/SideBarStdr";
+import { useProfile } from "../Context/ProfileContext";
 
 
 
 function UserViewMode() {
   const navigate = useNavigate();
  const { user,viewMode} = useAuth();
- 
+  const { profile } = useProfile();
 
   const {
     rowsData2,
@@ -68,7 +69,7 @@ function UserViewMode() {
     handlePopupClose,
     isMissionCreated,
     handleRowClick,
-  } = useGestionMission(user,viewMode);
+  } = useGestionMission(user,viewMode,profile);
 
   console.log(user)
   // Colonnes de la table
@@ -108,6 +109,18 @@ function UserViewMode() {
       label: "Voir rapport",
       onClick: handleViewReport,
     },
+    ...(user?.role === "admin" 
+      ? [
+          {
+            icon: <HighlightOffRoundedIcon sx={{ marginRight: "5px" }} />,
+            label: "Annulée",
+            onClick: handleCancelRow,
+            disabled: (selectedRow) =>
+              !selectedRow ||
+              !["non_commencee", "en_cours", "en_attente"].includes(selectedRow.status),
+          },
+        ]
+      : []),
   ];
 
   console.log(missionsToDisplay)

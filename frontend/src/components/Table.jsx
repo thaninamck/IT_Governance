@@ -186,38 +186,6 @@ function Table({
         // Ajoute une condition spécifique en fonction du champ
         if (colConfig.field === "status") {
           return (
-            // <FormControl sx={{ width: "100%" }}>
-            //   <Select
-            //     value={params.row.status}
-            //     onChange={(e) => handleStatusChange(e, params.row.id)}
-            //     disabled // Désactive le Select
-            //     displayEmpty
-            //     renderValue={(selected) => {
-            //       const color = statusColors[selected] || "gray"; // Détermine la couleur du statut sélectionné
-            //       return (
-            //         <span style={{ color: color }}>
-            //           {selected || "Choisir un statut"}
-            //         </span>
-            //       );
-            //     }}
-            //     sx={{
-            //       fontSize: "14px",
-            //       height: "40px",
-            //       backgroundColor: "#fff",
-            //       borderRadius: "4px",
-            //     }}
-            //   >
-            //     {statusOptions.map((status, color) => (
-            //       <MuiMenuItem
-            //         key={status}
-            //         value={status}
-            //         style={{ color: statusColors[status] || "gray" }}
-            //       >
-            //         {status}
-            //       </MuiMenuItem>
-            //     ))}
-            //   </Select>
-            // </FormControl>
 
             <Typography sx={{ color: statusColors[params.row.status] || "gray" }}>
   {params.row.status || "Aucun statut"}
@@ -225,32 +193,8 @@ function Table({
           );
 
         }
-        if (colConfig.field === "dateField") {
-          // Formater la date en "DEC 27, 2024"
-          const date = new Date(params.value);
-          const formattedDate = date
-            .toLocaleString("en-US", {
-              month: "short",
-              day: "2-digit",
-              year: "numeric",
-            })
-            .toUpperCase();
-
-          return <span>{formattedDate}</span>;
-        }
-        if (colConfig.field === "dateField1") {
-          // Formater la date en "DEC 27, 2024"
-          const date = new Date(params.value);
-          const formattedDate = date
-            .toLocaleString("en-US", {
-              month: "short",
-              day: "2-digit",
-              year: "numeric",
-            })
-            .toUpperCase();
-
-          return <span>{formattedDate}</span>;
-        }
+        
+       
         if (colConfig.field === "rapport") {
           return (
             <IconButton
@@ -342,7 +286,17 @@ function Table({
   };
 
   return (
-    <Paper sx={{ margin: "0% 3%", width: "max-content" }}>
+     <Paper 
+    // sx={{ margin: "0% 3%", width: "max-content" }}
+    elevation={2}
+    sx={{
+      margin: "20px auto",
+      padding: "20px",
+      borderRadius: "16px",
+      backgroundColor: "#f9fafb", // light background
+      boxShadow: "0 2px 8px rgba(0, 0, 0, 0.05)",
+      maxWidth: "98%",
+    }}>
       <DataGrid
         rows={rows}
         columns={columns}
@@ -373,43 +327,98 @@ function Table({
             : undefined
         }
         
-        sx={{
-          border: "1px solid #ccc",
+        // sx={{
+        //   border: "1px solid #ccc",
 
+        //   "& .MuiDataGrid-cell": {
+        //     borderRight: "1px solid #ddd",
+        //     borderBottom: "1px solid #ddd",
+        //     whiteSpace: "normal",
+        //     wordWrap: "break-word",
+        //     overflow: "visible",
+        //     textOverflow: "clip",
+        //     alignItems: "center", // Centrer le contenu verticalement
+        //     display: "flex",
+        //   },
+        //   "& .MuiDataGrid-columnHeader": {
+        //     backgroundColor: headerBackground,
+        //     color: headerTextBackground, // Texte blanc
+        //     fontSize: "16px",
+        //     fontWeight: "bold",
+        //     borderBottom: "2px solid #ddd",
+        //   },
+        //   "& .MuiDataGrid-row:hover": {
+        //     backgroundColor: "#f1f1f1",
+        //   },
+        //   "& .MuiDataGrid-cell:focus": {
+        //     outline: "2px solid #1565c0",
+        //   },
+
+        //   ...(isZebraStriping && {
+        //     // Applique le style au tableau des elements uniquement si activé
+        //     "& .MuiDataGrid-row:nth-of-type(odd)": {
+        //       backgroundColor: oddRowColor,
+        //     },
+        //     "& .MuiDataGrid-row:nth-of-type(even)": {
+        //       backgroundColor: evenRowColor,
+        //     },
+        //   }),
+        // }}
+
+        sx={{
+          border: "none",
+          fontSize: "14px",
+        
+          "& .MuiDataGrid-root": {
+            borderRadius: "12px",
+          },
+          "& .MuiDataGrid-columnHeaders": {
+            backgroundColor: headerBackground,
+        color: headerTextBackground,
+            fontWeight: 600,
+            fontSize: "15px",
+            borderBottom: "1px solid #cbd5e1",
+          },
+        
+          "& .MuiDataGrid-columnSeparator": {
+            display: "none",
+          },
+        
           "& .MuiDataGrid-cell": {
-            borderRight: "1px solid #ddd",
-            borderBottom: "1px solid #ddd",
+            borderBottom: "1px solid #e2e8f0",
+            padding: "10px",
             whiteSpace: "normal",
             wordWrap: "break-word",
-            overflow: "visible",
-            textOverflow: "clip",
-            alignItems: "center", // Centrer le contenu verticalement
+            alignItems: "center",
             display: "flex",
+            color: "#0f172a", // Slate 900
+            backgroundColor: "#ffffff",
+            transition: "background 0.3s ease",
           },
-          "& .MuiDataGrid-columnHeader": {
-            backgroundColor: headerBackground,
-            color: headerTextBackground, // Texte blanc
-            fontSize: "16px",
-            fontWeight: "bold",
-            borderBottom: "2px solid #ddd",
+        
+          "& .MuiDataGrid-row:hover .MuiDataGrid-cell": {
+            backgroundColor: "#f1f5f9", // Slate 100
           },
-          "& .MuiDataGrid-row:hover": {
-            backgroundColor: "#f1f1f1",
+        
+          "& .MuiDataGrid-row.Mui-selected, .MuiDataGrid-row.Mui-selected:hover": {
+            backgroundColor: "#dbeafe !important", // Blue-100
           },
+        
           "& .MuiDataGrid-cell:focus": {
-            outline: "2px solid #1565c0",
+            outline: "none",
           },
-
+        
+          // Zebra striping
           ...(isZebraStriping && {
-            // Applique le style au tableau des elements uniquement si activé
-            "& .MuiDataGrid-row:nth-of-type(odd)": {
-              backgroundColor: oddRowColor,
+            "& .MuiDataGrid-row:nth-of-type(odd) .MuiDataGrid-cell": {
+              backgroundColor: "#f8fafc", // Slate-50
             },
-            "& .MuiDataGrid-row:nth-of-type(even)": {
-              backgroundColor: evenRowColor,
+            "& .MuiDataGrid-row:nth-of-type(even) .MuiDataGrid-cell": {
+              backgroundColor: "#ffffff",
             },
           }),
         }}
+        
       />
        <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose}>
   {(rowActions || []).map((action, index) => {
