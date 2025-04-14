@@ -5,61 +5,65 @@ import { api } from '../../Api';
 import useUser from '../../Hooks/useNotification';
 
 const AddEquipe = ({ missionId, onMemberAdded }) => {
-  const [collaborators, setCollaborators] = useState([]);
+  const [collaborators, setCollaborators] = useState([]); // Liste des collaborateurs
   const [errors, setErrors] = useState({});
+
+  // Données pour les membres et les rôles
   const [members, setMembers] = useState([]);
+
   const [profiles, setProfiles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setLoading(true);
-        
-        const usersResponse = await api.get('/users');
-        const formattedMembers = usersResponse.data.map(user => [
-          user.id,
-          `${user.firstName} ${user.lastName}`
-        ]);
-        setMembers(formattedMembers);
-        
-        const profilesResponse = await api.get('/getprofils');
-        const formattedProfiles = profilesResponse.data.map(profile => [
-          profile.id,
-          profile.profileName || profile.profile_name
-        ]);
-        setProfiles(formattedProfiles);
-        
-      } catch (err) {
-        setError(err.message);
-        console.error("Erreur lors du chargement des données:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
+useEffect(() => {
+  const fetchData = async () => {
+    try {
+      setLoading(true);
+      
+      // 1. Récupérer les utilisateurs
+      const usersResponse = await api.get('/users');
+      const formattedMembers = usersResponse.data.map(user => [
+        user.id,
+        `${user.firstName} ${user.lastName}` // Format: [id, "Prénom Nom"]
+      ]);
+      setMembers(formattedMembers);
+      
+      // 2. Récupérer les profils
+      const profilesResponse = await api.get('/getprofils');
+      const formattedProfiles = profilesResponse.data.map(profile => [
+        profile.id,
+        profile.profileName || profile.profile_name
+      ]);
+      setProfiles(formattedProfiles);
+      
+    } catch (err) {
+      setError(err.message);
+      console.error("Erreur lors du chargement des données:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    fetchData();
-  }, []);
+  fetchData();
+}, []);
 
+  // Ajouter un collaborateur vide à la liste
   const handleAddCollaborator = () => {
     setCollaborators([...collaborators, { member: null, role: null }]);
   };
 
-  const handleCancel = () => {
-    setCollaborators([]);
-    setErrors({});
-  };
-
+    // Vérifier les erreurs en temps réel
   const validateCollaborators = (updatedCollaborators) => {
     const newErrors = {};
 
     updatedCollaborators.forEach((collab, index) => {
+      // Vérifier si les champs sont vides
       if (!collab.member) {
         newErrors[index] = "Sélectionnez un membre.";
       } else if (!collab.role) {
         newErrors[index] = "Sélectionnez un rôle.";
       } else {
+        // Vérifier les doublons
         const isDuplicate = updatedCollaborators.some(
           (otherCollab, otherIndex) =>
             index !== otherIndex &&
@@ -76,6 +80,7 @@ const AddEquipe = ({ missionId, onMemberAdded }) => {
     setErrors(newErrors);
   };
 
+  // Mettre à jour la sélection d'un membre pour un collaborateur spécifique
   const handleMemberChange = (index, id, name) => {
     const updatedCollaborators = [...collaborators];
     updatedCollaborators[index].member = { id, name };
@@ -83,6 +88,7 @@ const AddEquipe = ({ missionId, onMemberAdded }) => {
     validateCollaborators(updatedCollaborators);
   };
 
+  // Mettre à jour la sélection d'un rôle pour un collaborateur spécifique
   const handleRoleChange = (index, id, name) => {
     const updatedCollaborators = [...collaborators];
     updatedCollaborators[index].role = { id, name };
@@ -90,63 +96,85 @@ const AddEquipe = ({ missionId, onMemberAdded }) => {
     validateCollaborators(updatedCollaborators);
   };
 
-  const handleSubmit = async () => {
-    if (Object.keys(errors).length > 0) {
-      alert("Corrigez les erreurs avant de soumettre.");
-      return;
-    }
+  
+// Soumission des collaborateurs
+const handleSubmit = async () => {
 
-    if (collaborators.some(c => !c.member || !c.role)) {
-      alert("Veuillez remplir tous les champs.");
-      return;
-    }
+  if (Object.keys(errors).length > 0) {
+    alert("Corrigez les erreurs avant de soumettre.");
+    return;
+  }
 
-    try {
-      const membersToAdd = collaborators.map(c => ({
-        user_id: c.member.id,
-        profile_id: c.role.id
-      }));
+  if (collaborators.some(c => !c.member || !c.role)) {
+    alert("Veuillez remplir tous les champs.");
+    return;
+  }
 
-      const response = await api.post(`/missions/${missionId}/createmembers`, {
-        members: membersToAdd
-      });
+  // const formattedCollaborators = collaborators.map(c => ({
+  //   membre: c.member.name,
+  //   role: c.role.name,
+  // }));
 
-      const newMembers = response.data.map(member => ({
-        full_name: member.full_name,
-        profile: {
-          profile_name: member.profile_name
-        }
-      }));
+  try {
+    const membersToAdd = collaborators.map(c => ({
+      user_id: c.member.id,
+      profile_id: c.role.id
+    }));
 
-      newMembers.forEach(member => {
-        onMemberAdded(member);
-      });
+    const response = await api.post(`/missions/${missionId}/createmembers`, {
+      members: membersToAdd
+    });
 
-      setCollaborators([]);
-      setErrors({});
-      
-    } catch (error) {
-      console.error("Erreur:", error);
-      alert("Erreur lors de l'ajout");
-    }
+    // Formatage correct pour DisplayEquipe
+    const newMembers = response.data.map(member => ({
+      full_name: member.full_name, // ou autre champ selon la réponse
+      profile: {
+        profile_name: member.profile_name
+      }
+    }));
+
+    // Ajout des nouveaux membres
+    newMembers.forEach(member => {
+      onMemberAdded(member);
+    });
+
+    setCollaborators([]);
+    setErrors({});
+    
+  } catch (error) {
+    console.error("Erreur:", error);
+    alert("Erreur lors de l'ajout");
+  }
   };
   
+  
+
   return (
     <>
-      <div className="flex items-center ml-72 mt-4">
-        <div className="flex items-center gap-2">
-          <div className='flex flex-col gap-x-2 items-left'>
+      {/* Section pour l'équipe */}
+      <div className="flex items-center ml-72  mt-4 ">
+         {/* <label htmlFor="Equipe" className="text-font-gray font-medium w-[300px] ">
+          Équipe:
+        </label>  */}
+    
+
+        <div className="flex items-center gap-2  ">
+          <div className='flex flex-col gap-x-2  items-left'>
+            {/* Affiche "Ajouter des collaborateurs" au début seulement */}
             {collaborators.length === 0 && (
               <div className='flex gap-x-2 items-center cursor-pointer' onClick={handleAddCollaborator}>
                 <AddCircleOutlineIcon
-                  sx={{ color: 'var(--blue-menu)', width: '20px', height: '20px', cursor: 'pointer' }}
+                  sx={{ color: 'var(--blue-menu)', width: '30px', height: '30px', cursor: 'pointer' }}
+                  
                 />
                 <p className="text-blue-menu text-base font-medium">Ajouter des collaborateurs</p>
               </div>
             )}
 
-            {collaborators.map((collaborator, index) => (
-              <div key={index} className="flex flex-col gap-1 ">
+            {/* Affiche les collaborateurs ajoutés */}
+           {/* Affichage des collaborateurs */}
+           {collaborators.map((collaborator, index) => (
+              <div key={index} className="flex flex-col gap-1">
                 <div className="flex gap-x-2 items-center">
                   <SingleOptionSelect
                     placeholder="Membre"
@@ -169,32 +197,32 @@ const AddEquipe = ({ missionId, onMemberAdded }) => {
                     />
                   )}
                 </div>
+                {/* Message d'erreur */}
                 {errors[index] && (
                   <p className="text-[var(--alert-red)] text-xs">{errors[index]}</p>
                 )}
               </div>
             ))}
 
-            {collaborators.length !== 0 && (
-              <div className="flex justify-between w-[94%] mt-4  p-4">
-                <button
-                  onClick={handleCancel}
-                  className="px-4  w-[45%] bg-[var(--alert-red)] text-white border-none rounded-xl hover:bg-gray-300 transition-colors"
-                >
-                  Annuler
-                </button>
-                <button
-                  onClick={handleSubmit}
-                  className="px-4 w-[45%]  py-2 bg-blue-menu text-white rounded-xl  border-none hover:bg-blue-700 transition-colors"
-                >
-                  Soumettre
-                </button>
-                
-              </div>
-            )}
+
+
+
+      
+            {/* Bouton pour soumettre les données */}
+           { collaborators.length !== 0 && (
+      <button
+        onClick={handleSubmit}
+        className="mt-4 px-4 py-2 bg-blue-menu text-white rounded-xl"
+      >
+        Soumettre
+      </button>)}
           </div>
         </div>
+
+
       </div>
+
+      
     </>
   );
 };

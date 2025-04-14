@@ -79,8 +79,7 @@ function DisplayControleAppID() {
 const [appData, setAppData] = useState([]); // État pour stocker les données de l'application
  const fetchAppData = async () => {
   try {
-    const endpoint = (user?.role === "admin"|| profile==='manager' ) ? `/missions/${AppData.id}/getexecutionsList`
-     : `/missions/${AppData.missionId}/${AppData.id}/getexecutionsListForTesteur`;
+    const endpoint = (user?.role === "admin"|| profile==='manager' ) ? `/missions/${AppData.id}/getexecutionsList` : `/missions/${AppData.missionId}/${AppData.id}/getexecutionsListForTesteur`;
     const response = await api.get(endpoint);
     console.log('list',response.data)
     setAppData(response.data);
@@ -90,26 +89,6 @@ const [appData, setAppData] = useState([]); // État pour stocker les données d
     setLoading(false);
   }
 };
-
-// const fetchAppData = async () => {
-//   if (!user?.role || !profile) return; // éviter les erreurs silencieuses
-
-//   try {
-//     const isAdminOrManager = user.role === "admin" || profile === "manager";
-//     const endpoint = isAdminOrManager
-//       ? `/missions/${AppData.id}/getexecutionsList`
-//       : `/missions/${AppData.missionId}/${AppData.id}/getexecutionsListForTesteur`;
-
-//     const response = await api.get(endpoint);
-//     console.log('list', response.data);
-//     setAppData(response.data);
-//   } catch (err) {
-//     setError(err.message);
-//   } finally {
-//     setLoading(false);
-//   }
-// };
-
 
 // const fetchAppData = async () => {
 //     try {
@@ -124,18 +103,14 @@ const [appData, setAppData] = useState([]); // État pour stocker les données d
 //   };
  // Chargement initial
  useEffect(() => {
-  if (user?.role || profile) {
+  if (AppData.id) {
     fetchAppData();
   }
-
-}, [user?.role,profile]);
-
-// useEffect(() => {
-//   if (AppData?.id && user?.role && profile) {
-//     fetchAppData();
-//   }
-// }, [AppData?.id, user?.role, profile]);
-
+  
+}, [AppData.id]);
+useEffect(() => {
+  console.log("appData:", appData);
+}, [appData]);
 
   return (
     <div className=" ">

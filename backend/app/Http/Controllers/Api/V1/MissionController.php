@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\MissionResource;
 use App\Models\Mission;
 use App\Models\Participation;
-use App\Models\User;
 use App\Repositories\V1\MissionRepository;
 use App\Services\LogService;
 use App\Services\V1\MissionService;
@@ -74,7 +73,7 @@ class MissionController extends BaseController
 
             // Données validées
             $missionData = $validator->validated();
-            $missionData['status_id'] = 7; // Définir le statut par défaut non commencée
+            $missionData['status_id'] = 10; // Définir le statut par défaut non commencée
 
             // Création de la mission
             $mission = $this->missionService->createMission($missionData);
@@ -89,7 +88,7 @@ class MissionController extends BaseController
             // Création de la participation du manager
             $this->participationService->createParticipation($participantData);
 
-           
+            /*do this 
             
            $this->notificationService->sendNotification(
      $missionData['manager_id'],
@@ -97,7 +96,7 @@ class MissionController extends BaseController
      json_encode(['type' => 'mission', 'id' => $mission->id]), // Convertir en JSON
      'mission'
  );
- 
+ */
 
             // Log de l'action
             $this->logService->logUserAction(
@@ -270,7 +269,7 @@ class MissionController extends BaseController
 
                     // Données validées
                     $validatedData = $validator->validated();
-                    $validatedData['status_id'] = 7; // Définir le statut par défaut NOn commencée
+                    $validatedData['status_id'] = 10; // Définir le statut par défaut NOn commencée
 
                     // Création de la mission
                     $mission = $this->missionService->createMission($validatedData);
@@ -378,6 +377,8 @@ class MissionController extends BaseController
             return $this->sendError("An error occurred", ["error" => $e->getMessage()], 500);
         }
     }
+
+
     public function cancelMission($id): JsonResponse
     {
         try {
@@ -403,193 +404,31 @@ class MissionController extends BaseController
         }
     }
    
-    public function getRequestStatusForMissions(): JsonResponse
-    {
-        try {
-           
-            $missions = $this->missionService->getRequestStatusForMissions();
 
-            if ($missions->isEmpty()) {
-                return $this->sendError("No arequest status missions found", []);
-            }
+// public function stopMission($id): JsonResponse
+// {
+//     try {
+//         // Fermer la mission
+//         $mission = $this->missionService->stopMission($id);
 
-            // Réponse JSON
-            return $this->sendResponse(MissionResource::collection($missions), "requested status mission missions retrieved successfully");
-        } catch (\Exception $e) {
-            return $this->sendError("An error occurred", ["error" => $e->getMessage()], 500);
-        }
-    }
-    public function RequestCancelMission($id): JsonResponse
-    {
-        try {
-            $user = auth()->user();
+//         if (!$mission) {
+//             return $this->sendError("Mission not found", [], 404);
+//         }
 
-        if (!$user) {
-            return $this->sendError("Utilisateur non authentifié", [], 401);
-        }
-            // Fermer la mission
-            $mission = $this->missionService->requestCancelMission($id);
+//         // Log de l'action
+//         $this->logService->logUserAction(
+//             auth()->user()->email ?? 'Unknown',
+//             'Admin',
+//             "stop de la mission : {$mission->mission_name}",
+//             ""
+//         );
 
-            if (!$mission) {
-                return $this->sendError("Mission not found", [], 404);
-            }
-
-              
-          //Récupérer tous les admins
-        $admins = User::where('role', 1)->get();
-
-        foreach ($admins as $admin) {
-            $this->notificationService->sendNotification(
-                $admin->id,
-                "L'utilisateur " . $user->first_name . ' ' . $user->last_name . " a demandé l'annulation de la mission '{$mission->mission_name}'.",
-                json_encode(['type' => 'mission', 'id' => $mission->id]),
-                'mission'
-            );
-        }
-            // Log de l'action
-            $this->logService->logUserAction(
-                auth()->user()->email ?? 'Unknown',
-                'manager',
-                "demande annulé  la mission : {$mission->mission_name}",
-                ""
-            );
-
-            // Réponse JSON
-            return $this->sendResponse(new MissionResource($mission), "Mission archived successfully");
-        } catch (\Exception $e) {
-            return $this->sendError("An error occurred", ["error" => $e->getMessage()], 500);
-        }
-    }
-    public function RequestCloseMission($id): JsonResponse
-    {
-        try {
-            $user = auth()->user();
-
-            if (!$user) {
-                return $this->sendError("Utilisateur non authentifié", [], 401);
-            }
-            // Fermer la mission
-            $mission = $this->missionService->requestCloseMission($id);
-
-            if (!$mission) {
-                return $this->sendError("Mission not found", [], 404);
-            }
-             //Récupérer tous les admins
-        $admins = User::where('role', 1)->get();
-
-        foreach ($admins as $admin) {
-            $this->notificationService->sendNotification(
-                $admin->id,
-                "L'utilisateur " . $user->first_name . ' ' . $user->last_name . " a demandé de cloturé la mission '{$mission->mission_name}'.",
-                json_encode(['type' => 'mission', 'id' => $mission->id]),
-                'mission'
-            );
-        }
-
-            // Log de l'action
-            $this->logService->logUserAction(
-                auth()->user()->email ?? 'Unknown',
-                'manager',
-                "demande cloturé  la mission : {$mission->mission_name}",
-                ""
-            );
-
-            // Réponse JSON
-            return $this->sendResponse(new MissionResource($mission), "close Mission  request  successfully");
-        } catch (\Exception $e) {
-            return $this->sendError("An error occurred", ["error" => $e->getMessage()], 500);
-        }
-    }
-    public function RequestArchiveMission($id): JsonResponse
-    {
-        try {
-            $user = auth()->user();
-
-            if (!$user) {
-                return $this->sendError("Utilisateur non authentifié", [], 401);
-            }
-            // Fermer la mission
-            $mission = $this->missionService->requestArchiveMission($id);
-
-            if (!$mission) {
-                return $this->sendError("Mission not found", [], 404);
-            }
-            $admins = User::where('role', 1)->get();
-
-            foreach ($admins as $admin) {
-                $this->notificationService->sendNotification(
-                    $admin->id,
-                    "L'utilisateur " . $user->first_name . ' ' . $user->last_name . " a demandé d'archivé' la mission '{$mission->mission_name}'.",
-                    json_encode(['type' => 'mission', 'id' => $mission->id]),
-                    'mission'
-                );
-            }
-
-            // Log de l'action
-            $this->logService->logUserAction(
-                auth()->user()->email ?? 'Unknown',
-                'manager',
-                "demande d'archivage  la mission : {$mission->mission_name}",
-                ""
-            );
-
-            // Réponse JSON
-            return $this->sendResponse(new MissionResource($mission), "archive Mission request  successfully");
-        } catch (\Exception $e) {
-            return $this->sendError("An error occurred", ["error" => $e->getMessage()], 500);
-        }
-    }
-   
-    public function AcceptRequestStatus($id): JsonResponse
-    {
-        try {
-            // Fermer la mission
-            $mission = $this->missionService->acceptrequestStatus($id);
-
-            if (!$mission) {
-                return $this->sendError("Mission not found", [], 404);
-            }
-
-            // Log de l'action
-            $this->logService->logUserAction(
-                auth()->user()->email ?? 'Unknown',
-                'Admin',
-                "accept la demande de changer le status de  la mission : {$mission->mission_name}",
-                ""
-            );
-
-            // Réponse JSON
-            return $this->sendResponse(new MissionResource($mission), " status Mission  changed successfully");
-        } catch (\Exception $e) {
-            return $this->sendError("An error occurred", ["error" => $e->getMessage()], 500);
-        }
-    }
-    public function RefuseRequestStatus($id): JsonResponse
-    {
-        try {
-            // Fermer la mission
-            $mission = $this->missionService->refuseRequestStatus($id);
-
-            if (!$mission) {
-                return $this->sendError("Mission not found", [], 404);
-            }
-
-            // Log de l'action
-            $this->logService->logUserAction(
-                auth()->user()->email ?? 'Unknown',
-                'Admin',
-                "deny la demande de changer le status de la mission : {$mission->mission_name}",
-                ""
-            );
-
-            // Réponse JSON
-            return $this->sendResponse(new MissionResource($mission), "Mission canceled successfully");
-        } catch (\Exception $e) {
-            return $this->sendError("An error occurred", ["error" => $e->getMessage()], 500);
-        }
-    }
-
- 
+//         // Réponse JSON
+//         return $this->sendResponse(new MissionResource($mission), "Mission archived successfully");
+//     } catch (\Exception $e) {
+//         return $this->sendError("An error occurred", ["error" => $e->getMessage()], 500);
+//     }
+// }
 
  public function stopMission($id): JsonResponse
  {
@@ -597,7 +436,7 @@ class MissionController extends BaseController
         // Mettre la mission en pause
         $result = $this->missionService->stopMission($id);
 
-        if (!$result) {
+        if (!$result['mission']) {
             return $this->sendError("Mission not found", [], 404);
         }
 
@@ -605,42 +444,84 @@ class MissionController extends BaseController
         $this->logService->logUserAction(
             auth()->user()->email ?? 'Unknown',
             'Admin',
-            "Mise en pause de la mission : {$result->mission_name}",
+            "Mise en pause de la mission : {$result['mission']->mission_name}",
             ""
         );
 
-       // Réponse JSON
-       return $this->sendResponse(new MissionResource($result), "Mission paused successfully");
-        
+        // Réponse JSON avec le statut précédent
+        return $this->sendResponse([
+            'mission' => new MissionResource($result['mission']),
+            'previous_status_id' => $result['previous_status_id'],
+        ], "Mission paused successfully");
     } catch (\Exception $e) {
         return $this->sendError("An error occurred", ["error" => $e->getMessage()], 500);
     }
  }
 
+// public function resumeMission(Request $request, $id): JsonResponse
+// {
+//     try {
+//         // Récupérer le statut précédent depuis la requête
+//         $previousStatusId = $request->input('previous_status_id');
 
- public function resumeMission($id): JsonResponse
+//         if (!$previousStatusId) {
+//             return $this->sendError("Previous status ID is required", [], 400);
+//         }
+
+//         // Reprendre la mission
+//         $mission = $this->missionService->resumeMission($id, $previousStatusId);
+
+//         if (!$mission) {
+//             return $this->sendError("Mission not found", [], 404);
+//         }
+
+//         // Log de l'action
+//         $this->logService->logUserAction(
+//             auth()->user()->email ?? 'Unknown',
+//             'Admin',
+//             "Reprise de la mission : {$mission->mission_name}",
+//             ""
+//         );
+
+//         // Réponse JSON
+//         return $this->sendResponse(new MissionResource($mission), "Mission resumed successfully");
+//     } catch (\Exception $e) {
+//         return $this->sendError("An error occurred", ["error" => $e->getMessage()], 500);
+//     }
+// }
+
+public function resumeMission(Request $request, $id): JsonResponse
  {
-     try {
-         $mission = $this->missionService->resumeMission($id);
- 
-         if (!$mission) {
-             return $this->sendError("Mission not found", [], 404);
-         }
- 
-         // Log de l'action
-         $this->logService->logUserAction(
-             auth()->user()->email ?? 'Unknown',
-             'Admin',
-             "Reprise de la mission : {$mission->mission_name}",
-             ""
-         );
- 
-         return $this->sendResponse(new MissionResource($mission), "Mission resumed successfully");
-     } catch (\Exception $e) {
-         return $this->sendError("An error occurred", ["error" => $e->getMessage()], 500);
-     }
+    try {
+        // Récupérer le statut précédent et la nouvelle date de début depuis la requête
+        $previousStatusId = $request->input('previous_status_id');
+        $newStartDate = $request->input('new_start_date');
+
+        if (!$previousStatusId || !$newStartDate) {
+            return $this->sendError("Previous status ID and new start date are required", [], 400);
+        }
+
+        // Reprendre la mission
+        $mission = $this->missionService->resumeMission($id, $previousStatusId, $newStartDate);
+
+        if (!$mission) {
+            return $this->sendError("Mission not found", [], 404);
+        }
+
+        // Log de l'action
+        $this->logService->logUserAction(
+            auth()->user()->email ?? 'Unknown',
+            'Admin',
+            "Reprise de la mission : {$mission->mission_name}",
+            ""
+        );
+
+        // Réponse JSON
+        return $this->sendResponse(new MissionResource($mission), "Mission resumed successfully");
+    } catch (\Exception $e) {
+        return $this->sendError("An error occurred", ["error" => $e->getMessage()], 500);
+    }
  }
- 
     /**
      * Display the specified resource.
      */

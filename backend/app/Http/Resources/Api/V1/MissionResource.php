@@ -38,7 +38,7 @@ class MissionResource extends JsonResource
             'auditEndDate' => $this->audit_end_date,
             'status' => $this->status->status_name,
             'clientName' => $this->client->commercial_name,
-            'statusId' => $this->status_id,
+            // 'statusId' => $this->status_id,
             'clientId' => $this->client_id,
 
         ];
