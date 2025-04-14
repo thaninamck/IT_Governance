@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { api } from "../Api"; // Instance Axios
+import { api,fileApi } from "../Api"; // Instance Axios
 import { useAuth } from "../Context/AuthContext"; // Contexte d'authentification
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
@@ -18,11 +18,98 @@ const useExecution = () => {
       setOptions(response.data);
     } catch (error) {
       setError(error);
-      toast.error("Failed to fetch status options");
     } finally {
       setLoading(false);
     }
   }
+
+  const getExecutionById =  async ($id) => {
+        setLoading(true);
+        try {
+        const response = await api.get(`/executions/get-execution/${$id}`);
+        return response.data;
+        } catch (error) {
+        setError(error);
+        //toast.error("Failed to fetch execution");
+        } finally {
+        setLoading(false);
+        }
+    };
+
+    const getFileURL = `http://127.0.0.1:8000/storage/evidences/`;
+      
+    const deleteEvidence = async (evidenceId) => {
+        setLoading(true);
+        try {
+            const response = await api.delete(`/evidences/delete-evidence/${evidenceId}`);
+           // toast.success("Evidence deleted successfully");
+            return response.status;
+        } catch (error) {
+            setError(error);
+            toast.error("Failed to delete evidence");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const uploadEvidences = async (data) => {
+        setLoading(true);
+        try {
+            const response = await fileApi.post(`/evidences/upload`, data);
+            toast.success("Evidences ajoutés avec succees");
+            return response;
+        } catch (error) {
+            setError(error);
+            toast.error("Failed to upload evidence");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const updateExecution = async (executionId,data) => {
+        setLoading(true);
+        try {
+            const response = await api.put(`/executions/update-execution/${executionId}`, data);
+            toast.success("Mis à jour avec succées");
+            return response;
+        } catch (error) {
+            setError(error);
+            toast.error("Erreur lors de sauvegarde des modifications veuillez réssayer");
+        } finally {
+            setLoading(false);
+        }
+    }
+
+
+
+    const submitExecutionForReview = async (executionId) => {
+        setLoading(true);
+        try {
+          const response = await api.patch(`/executions/submit-execution-for-review/${executionId}`);
+          toast.success("Soumis pour revue !");
+          return response.data;
+        } catch (error) {
+          setError(error);
+          toast.error("Échec de la soumission pour revue");
+        } finally {
+          setLoading(false);
+        }
+      };
+      
+      const submitExecutionForValidation = async (executionId) => {
+        setLoading(true);
+        try {
+          const response = await api.patch(`/executions/submit-execution-for-validation/${executionId}`);
+          toast.success("Soumis pour validation !");
+          return response.data;
+        } catch (error) {
+          setError(error);
+          toast.error("Échec de la soumission pour validation");
+        } finally {
+          setLoading(false);
+        }
+      };
+      
  useEffect(() => {
     fetchOptions();
   }, []);
@@ -30,8 +117,13 @@ const useExecution = () => {
     loading,
     error,
    options,
-    
-    
+   getExecutionById,
+   getFileURL,
+   deleteEvidence,
+    uploadEvidences,
+    updateExecution,
+    submitExecutionForReview,
+    submitExecutionForValidation,
     
 
 };

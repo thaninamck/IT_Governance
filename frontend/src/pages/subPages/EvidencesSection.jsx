@@ -19,18 +19,23 @@ function EvidencesSection({
   activePanel,
   setActivePanel,
   handleTabChange,
+  selections,
+  onStatesChange,
+  getFile
 }) {
   return (
-    <div >
-      <div className="mr-6 mb-8 ">
+    <div className="min-h-screen flex flex-col gap-14">
+      <div className="mr-6  ml-6 ">
         <Separator text={"Evidences"} />
       </div>
-      <div className="flex items-center justify-center mt-16 mb-12">
-        <ToggleButton onSelectionChange={handleSelectionChange} />
+      <div className="flex items-center justify-center mt-4 ">
+        <ToggleButton selections={selections}
+        onSelectionChange={handleSelectionChange}
+        onStatesChange={onStatesChange} />
       </div>
 
       {/* Contenu des onglets */}
-      <div className="w-full flex-1  p-5 relative">
+      <div className="w-full flex-1  p-5 relative  mt-3 mb-3 ml-5 pr-14 ">
         <Tabs
           color="success"
           aria-label="Basic tabs"
@@ -40,6 +45,7 @@ function EvidencesSection({
             "--Tabs-spacing": "5px",
             "& .css-ed3i2m-JoyTabList-root": {
               backgroundColor: "transparent",
+              bgcolor:"white"
             },
           }}
         >
@@ -47,7 +53,7 @@ function EvidencesSection({
             {/* Liens en haut */}
             <TabList className="w-full border-b">
               <Tab
-                sx={{ "--Tab-indicatorThickness": "2px", paddingRight: "8px" }}
+                sx={{ "--Tab-indicatorThickness": "2px", paddingRight: "8px",bgcolor:"white" }}
               >
                 Evidences
               </Tab>
@@ -57,9 +63,10 @@ function EvidencesSection({
             </TabList>
           </div>
 
-          <div className="flex justify-center ml-2 mt-2">
+          <div className="flex justify-center bg-white  ">
             {/* Contenu des onglets */}
-            <TabPanel value={0} className="h-full flex-1 w-full">
+            <TabPanel sx={{bgcolor:"white"}} value={0} className="h-full flex-1 bg-white max-h-80  overflow-auto  w-full" 
+           >
               <div style={{ overflow: "auto", maxHeight: "800px" }}>
                 <div className="py-6 ">
                   <FileUploader
@@ -68,8 +75,8 @@ function EvidencesSection({
                     }
                   />
                 </div>
-                <div className="flex flex-col items-center w-full my-6">
-                  <EvidenceList files={evidenceFiles} onDelete={handleDelete} />
+                <div className="flex flex-col items-center  w-full my-6">
+                  <EvidenceList files={evidenceFiles} onDelete={handleDelete} getFile={getFile} />
                 </div>
                 {evidenceFiles.length === 0 && (
                   <p className="text-center text-gray-500 mt-4">
@@ -79,7 +86,7 @@ function EvidencesSection({
               </div>
             </TabPanel>
 
-            <TabPanel value={1} className="h-full flex-1 w-full">
+            <TabPanel value={1} className="h-full flex-1 w-full bg-white max-h-80  overflow-auto ">
               <div style={{ overflow: "auto", maxHeight: "800px" }}>
                 <div className="py-6">
                   <FileUploader
@@ -89,7 +96,7 @@ function EvidencesSection({
                   />
                 </div>
                 <div className="flex flex-col items-center w-full my-6">
-                  <EvidenceList files={testFiles} onDelete={handleDelete} />
+                  <EvidenceList files={testFiles} onDelete={handleDelete} getFile={getFile}/>
                 </div>
                 {testFiles.length === 0 && (
                   <p className="text-center text-gray-500 mt-4">

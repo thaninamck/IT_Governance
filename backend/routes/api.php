@@ -160,10 +160,13 @@ Route::middleware(['auth:sanctum', TesterMiddleware::class])
             Route::put('/executions/launch-execution/{execution}', 'launchExecution');
             Route::get('/executions/get-options', 'getExecutionStatusOptions');
             Route::get('/executions/get-execution/{execution}', 'getExecutionById');
+            Route::patch('/executions/submit-execution-for-review/{executionID}', 'submitExecutionForReview');
+            Route::patch('/executions/submit-execution-for-validation/{executionID}', 'submitExecutionForValidation');
 
         });
         Route::controller(EvidenceController::class)->group(function () {
-            Route::delete('/evidences/delete-execution/{delete}', 'deleteEvidence');
+            Route::delete('/evidences/delete-evidence/{evidenceId}', 'destroy');
+            Route::post('/evidences/upload', 'storeMultiple');
 
         });
     });

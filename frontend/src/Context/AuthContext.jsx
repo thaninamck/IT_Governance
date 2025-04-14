@@ -1,6 +1,6 @@
 import { createContext, useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { authApi, api } from "../Api"; // Importer l'instance Axios pour les requêtes authentifiées
+import { authApi, api,fileApi } from "../Api"; // Importer l'instance Axios pour les requêtes authentifiées
 import { toast } from "react-toastify";
 import { useRef, useEffect } from "react";
 
@@ -27,6 +27,7 @@ const configureInterceptors = () => {
   // Configuration permanente des intercepteurs
   authApi.interceptors.request.use(injectToken);
   api.interceptors.request.use(injectToken);
+  fileApi.interceptors.request.use(injectToken);
 };
 
 // Appel initial de configuration

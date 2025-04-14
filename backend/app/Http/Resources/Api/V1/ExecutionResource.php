@@ -19,7 +19,7 @@ class ExecutionResource extends JsonResource
         'id' => $this->execution_id,
         'executionId' => $this->execution_id,
         'executionModification' => $this->execution_modification,
-        'executionRemark' => $this->execution_remark,
+        'executionComment' => $this->execution_comment,
         'executionControlOwner' => $this->execution_control_owner,
         'executionLaunchedAt' => $this->execution_launched_at,
         'executionIpe' => $this->execution_ipe,

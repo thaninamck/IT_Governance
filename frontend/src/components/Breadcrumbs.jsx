@@ -11,6 +11,7 @@ function Breadcrumbs() {
         <nav style={{
             borderBottom: '1px solid var(--blue-nav)',
             margin: '3% 0%',
+            width: '100%',
             fontWeight: 'bold'
         }}>
             {breadcrumbs.map((breadcrumb, index) => {
