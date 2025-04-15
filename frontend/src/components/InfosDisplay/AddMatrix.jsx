@@ -8,6 +8,8 @@ function AddMatrix({ user,missionId ,dataFormat}) {
   
   const [controleListe, setControleListe] = useState([]);
 const [modifActivated, setModifActivated] = useState(false);
+const [viewOnly, setViewOnly] = useState(true);
+
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate()
   const handleAddMatrix = () => {
@@ -169,6 +171,7 @@ useEffect(()=>{
           fromScopeModification={modifActivated}
           unlockModification={modifActivated}
           stopModification={() => setModifActivated(false)}
+          viewOnly={viewOnly}
                   />
       </>
     ) : (

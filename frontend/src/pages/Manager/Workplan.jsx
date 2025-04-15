@@ -224,7 +224,7 @@ const Workplan = () => {
     setAppNodes([]);
     setEdges([]);
     setApplication({});
-  };
+    };
 
   const handleopenConfirmationDialog = () => {
     setopenConfirmationDialog(true);
@@ -533,6 +533,7 @@ const Workplan = () => {
           handleSaveexecutions={handleSaveexecutions}
           fromScopeModification={false}
           unlockModification={true}
+          viewOnly={false}
         ></Matrix>
       </div>
     </main>

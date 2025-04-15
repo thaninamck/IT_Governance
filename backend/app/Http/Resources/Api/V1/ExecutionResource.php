@@ -39,7 +39,7 @@ class ExecutionResource extends JsonResource
         'riskId' => $this->risk_id,
         'riskName' => $this->risk_name,
         'riskCode' => $this->risk_code,
-        'riskDescription' => $this->risk_description,
+        'riskDescription' => $this->risk_modification ? :$this->risk_description,
         'riskOwner' => $this->risk_owner,
 
         'coverageId' => $this->coverage_id,

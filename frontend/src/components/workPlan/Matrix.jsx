@@ -4,7 +4,8 @@ import { DataGrid } from "@mui/x-data-grid/DataGrid";
 import { User, ChevronDown } from "lucide-react";
 import { toast } from "react-toastify";
 import useWorkplan from "../../Hooks/useWorkplan";
-import { useNavigationType } from 'react-router-dom';import Spinner from "../Spinner";
+import { useNavigationType } from "react-router-dom";
+import Spinner from "../Spinner";
 import { Trash } from "lucide-react";
 import DecisionPopUp from "../PopUps/DecisionPopUp"; //import SaveIcon from '@mui/icons-material/Save';
 
@@ -29,9 +30,16 @@ function Matrix({
   fromScopeModification,
   unlockModification,
   stopModification,
+  viewOnly,
 }) {
-  const { createExecutions, loading, testers, saveloading, deleteExecutions,updateMultipleExecutions } =
-    useWorkplan();
+  const {
+    createExecutions,
+    loading,
+    testers,
+    saveloading,
+    deleteExecutions,
+    updateMultipleExecutions,
+  } = useWorkplan();
   const [saveWork, setSaveWork] = useState(false);
   const [flattenedData, setFlattenedData] = useState([]);
   const [selectedControls, setSelectedControls] = useState([]);
@@ -54,7 +62,7 @@ function Matrix({
   const [riskModified, setRiskModified] = useState(false);
 
   const transformData = (data) => {
-    console.log("datapp", data);
+    console.warn("dattaaaaa", data);
     const result = [];
     if (!data || !Array.isArray(data.applications)) {
       console.error(
@@ -110,9 +118,9 @@ function Matrix({
                 controlOwner: control.owner,
                 // controlTester: "",
                 executionId: control.executionId,
-                covId:control.covId,
+                covId: control.covId,
                 controlTester: control.testeur,
-                modifiable: fromScopeModification ,
+                modifiable: !viewOnly,
               });
             }
           });
@@ -123,30 +131,42 @@ function Matrix({
     return result;
   };
 
+
+ 
+  
+  
   // Fonction pour fusionner les nouvelles données avec flattenedData existant
   const mergeData = (newData, existingData) => {
     const mergedData = [...existingData];
-
+  
     newData.forEach((newItem) => {
       const existingItemIndex = mergedData.findIndex(
         (item) => item.id === newItem.id
       );
-
+  
       if (existingItemIndex !== -1) {
-        // Si l'élément existe déjà, conservez les modifications de l'utilisateur
-        mergedData[existingItemIndex] = {
-          ...newItem,
-          controlOwner: mergedData[existingItemIndex].controlOwner, // Conservez le propriétaire existant
-          controlTester: mergedData[existingItemIndex].controlTester, // Conservez le testeur existant
-        };
+        const existingItem = mergedData[existingItemIndex];
+  
+        // Vérifier s'il y a une différence entre existingItem et newItem
+        const hasDifference = Object.keys(newItem).some((key) => {
+          return newItem[key] !== existingItem[key];
+        });
+  
+        if (!hasDifference) {
+          // Si aucune différence, tu peux décider de garder l'existant ou le remplacer
+          // mergedData[existingItemIndex] = newItem; // optionnel
+        }
+  
+        // Sinon (s'il y a une différence), on garde existingItem tel quel (rien à faire)
       } else {
-        // Si l'élément n'existe pas, ajoutez-le à mergedData
+        // Si c’est un nouvel élément, on l’ajoute
         mergedData.push(newItem);
       }
     });
-
+  
     return mergedData;
   };
+  
 
   const handleEditStop = (params, event) => {
     console.log("Edition terminée sur la cellule", params);
@@ -307,7 +327,7 @@ function Matrix({
       field: "testScript",
       headerName: "Test Script",
       width: 150,
-      editable:  false,
+      editable: false,
     },
     {
       field: "controlOwner",
@@ -521,8 +541,10 @@ function Matrix({
 
     console.log("dataToSend", dataToSend);
     await createExecutions(dataToSend);
+    setSaveWork(false);
     localStorage.removeItem("flattenedData");
-    // navigate(-1);
+    setFlattenedData([]);
+    navigate(-1);
   };
 
   useEffect(() => {
@@ -547,43 +569,81 @@ function Matrix({
     }
   }, [testers]);
   // Charger les données depuis localStorage au montage du composant
+
+  const navigationType = useNavigationType();
+
   useEffect(() => {
-    if (!fromScopeModification) {
+    console.log(
+      "Page rechargée, effacement des données",
+      navigationType,
+      !fromScopeModification,
+      !viewOnly
+    );
+
+    if (
+      (navigationType === "PUSH" && !fromScopeModification && !viewOnly) ||
+      navigationType === "POP"
+    ) {
+      console.log("jexecute");
+      setFlattenedData([]);
+    }
+  }, [navigationType]);
+
+  useEffect(() => {
+    if (!fromScopeModification && !viewOnly) {
+      console.log("je recupere les sonnees de local storage ");
       const savedData = localStorage.getItem("flattenedData");
       if (savedData) {
         const parsedData = JSON.parse(savedData);
+        console.log("je mets a jour car saved data est pas vide");
         setFlattenedData(parsedData); // Mettre à jour flattenedData avec les données sauvegardées
         console.log("savedData", parsedData); // Vérifier les données chargées
       }
     }
-   
   }, []);
 
   // Mettre à jour flattenedData lorsque data change
   useEffect(() => {
-    if (!fromScopeModification) {
-      if (data) {
-        const transformedData = transformData(data);
-        console.log("mm", transformedData);
-        // Utiliser une fonction de mise à jour pour éviter les dépendances cycliques
-        setFlattenedData((prevFlattenedData) => {
-          const mergedData = mergeData(transformedData, prevFlattenedData);
-          console.log("mergedData", mergedData); // Vérifier les données fusionnées
-          return mergedData;
-        });
-      }
+    // if (!fromScopeModification && !viewOnly) {
+    if (data) {
+      const transformedData = transformData(data);
+      console.log("mm", transformedData);
+      console.log("je met a jour flattened data  lorsqu data change ", data);
+      // Utiliser une fonction de mise à jour pour éviter les dépendances cycliques
+
+      let mergedData = [];
+
+      setFlattenedData((prevFlattenedData) => {
+        console.log("prev flattened data dans le if", prevFlattenedData);
+
+        // if ( viewOnly === true) {
+        //   //alert("je suis dans le if")
+          mergedData = mergeData(transformedData, prevFlattenedData);
+          // if (fromScopeModification===true) {
+          //   mergedData = mergeData(prevFlattenedData, prevFlattenedData);
+
+          // }
+        // } else{
+        //   mergedData = mergeData(transformedData, prevFlattenedData);
+
+        // }
+
+        console.log("mergedData", mergedData); // Vérifier les données fusionnées
+        return mergedData;
+      });
+
+      //}
     }
-    
   }, [data]); // Dépend uniquement de data
 
   // Sauvegarder les données dans localStorage à chaque mise à jour de flattenedData
   useEffect(() => {
-    if (!fromScopeModification) {
+    if (fromScopeModification === false && viewOnly === false) {
       //if (flattenedData.length > 0) {
-        localStorage.setItem("flattenedData", JSON.stringify(flattenedData));
+      console.log("je set dans localstorage");
+      localStorage.setItem("flattenedData", JSON.stringify(flattenedData));
       //}
     }
-    
   }, [flattenedData]);
 
   useEffect(() => {
@@ -614,7 +674,10 @@ function Matrix({
             undeletableIds.includes(row.executionId)
         )
       );
+      ;
     }
+    window.location.reload()
+
   };
 
   const handleAtWorkplanDelete = () => {
@@ -634,31 +697,21 @@ function Matrix({
         return { ...row, modifiable: false }; // Les autres lignes restent non modifiables
       })
     );
+
     setModify(false);
     console.log("selectedControls for update", selectedControls);
   };
 
-  const navigationType = useNavigationType();
-
-  useEffect(() => {
-    console.log('Page rechargée, effacement des données',navigationType);
-
-    if (navigationType === 'POP'  || navigationType === 'PUSH' ) {
-      setFlattenedData([]);
-    }
-  }, [navigationType]);
-
   const handleSaveModifictaion = async () => {
     // Étape 1 : filtrer les lignes modifiables
     const filtered = flattenedData.filter((row) => row.modifiable === true);
-  
+
     // Étape 2 : ne garder que les champs demandés
     const controlsToUpdate = filtered.map((row) => ({
       id: row.executionId,
       covId: row.covId,
       ...(row.controlModified && {
         controlModification: row.controlDescription,
-        
       }),
       controlOwner: row.controlOwner,
       ...(row.riskModified && {
@@ -668,26 +721,29 @@ function Matrix({
 
       //controlTester: row.controlTester,
     }));
-  
+
     // Stocker les lignes extraites dans ton état
     setControlsToUpdate(controlsToUpdate);
-  
+
     setFlattenedData((prevData) =>
       prevData.map((row) => ({
         ...row,
-        modifiable: false
+        modifiable: false,
       }))
     );
-  
+
     setSelectedRows([]);
     setSelectedControls([]);
-    await updateMultipleExecutions(controlsToUpdate)
+    await updateMultipleExecutions(controlsToUpdate);
     localStorage.removeItem("flattenedData");
     setModify(true);
-    stopModification()
+    stopModification();
   };
-  
 
+  const [showExecutionDeleteConfirmation,setShowExecutionDeleteConfirmation]=useState(false)
+ const  handleShowDeleteExecutionConfirmation=()=>{
+setShowExecutionDeleteConfirmation(true)
+  }
   useEffect(() => {
     console.log("flattenedData", flattenedData);
   }, [flattenedData]);
@@ -787,41 +843,39 @@ function Matrix({
           )}
         </div>
       </div>
-     { selectedRows.length > 0 && (
-  
-    <button
-      className="bg-alert-red text-white px-4 py-2 rounded-md hover:bg-red-700 flex items-center gap-2"
-      onClick={
-        fromScopeModification
-          ? handleFromScopeDelete
-          : handleAtWorkplanDelete
-      }
-    >
-      <Trash size={18} />
-      Supprimer
-    </button>)}
+      <div className="flex justify-end mr-4 gap-2">
+      {selectedRows.length > 0 && (
+        <button
+          className="bg-alert-red text-white px-4 py-2 rounded-md hover:bg-red-700 flex items-center gap-2"
+          onClick={
+            fromScopeModification
+              ? handleShowDeleteExecutionConfirmation
+              : handleAtWorkplanDelete
+          }
+        >
+          <Trash size={18} />
+          Supprimer
+        </button>
+      )}
       {fromScopeModification && selectedRows.length > 0 && (
-  <>
-    
-
-    {modify ? (
-      <button
-        className="bg-blue-conf text-white px-4 py-2 rounded-md hover:bg-red-700 flex items-center gap-2"
-        onClick={handleModifyLines}
-      >
-        <Trash size={18} />
-        Modifier
-      </button>
-    ) : (
-      <button
-        className="bg-blue-conf text-white px-4 py-2 rounded-md flex items-center gap-2"
-        onClick={handleSaveModifictaion}
-      >
-        Enregistrer les modifications
-      </button>
-    )}
-  </>
-)}
+        <>
+          {modify ? (
+            <button
+              className="bg-blue-conf text-white px-4 py-2 rounded-md hover:bg-red-700 flex items-center gap-2"
+              onClick={handleModifyLines}
+            >
+              Modifier
+            </button>
+          ) : (
+            <button
+              className="bg-blue-conf text-white px-4 py-2 rounded-md flex items-center gap-2"
+              onClick={handleSaveModifictaion}
+            >
+              Enregistrer les modifications
+            </button>
+          )}
+        </>
+      )}</div>
 
       {saveWork && (
         <DecisionPopUp
@@ -830,6 +884,16 @@ function Matrix({
           name="Confirmation"
           text="Êtes-vous sûr de vouloir valider les modifications ?"
           loading={saveloading}
+        />
+      )}
+      {showExecutionDeleteConfirmation && (
+        <DecisionPopUp
+          handleConfirm={handleFromScopeDelete}
+          handleDeny={() => setShowExecutionDeleteConfirmation(false)}
+          name="Confirmation"
+          text="Êtes-vous sûr de vouloir supprimer ces contrôles ? Cette action est irréversible."
+
+          loading={loading}
         />
       )}
       <div className="m-3">
@@ -888,12 +952,16 @@ function Matrix({
                       pageSize={5}
                       checkboxSelection={unlockModification}
                       isCellEditable={(params) => {
-                        console.log("fromScopeModification", fromScopeModification);
-                        
-                        const row = flattenedData.find((row) => row.id === params.row.id);
+                        console.log(
+                          "fromScopeModification",
+                          fromScopeModification
+                        );
+
+                        const row = flattenedData.find(
+                          (row) => row.id === params.row.id
+                        );
                         return row?.modifiable || false;
                       }}
-                     
                       disableRowSelectionOnClick
                       onRowSelectionModelChange={(newSelection) => {
                         setSelectedControls(newSelection);
