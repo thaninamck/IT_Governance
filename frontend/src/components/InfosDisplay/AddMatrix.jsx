@@ -25,7 +25,7 @@ function AddMatrix({ user,missionId ,dataFormat}) {
     const fetchMatrixData = async () => {
       try {
          const response = await api.get(`/missions/${missionId}/getmatrix`);
-      //  console.log('resp',response.data)
+       console.log('resp',response.data)
         // setControleListe(mapToFrontendStructure(response.data));
         const rows = transformExecutionsToAppStructure(response.data);
        // console.log('data',rows)

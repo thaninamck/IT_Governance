@@ -126,7 +126,7 @@ function ConclusionRemediationSection({
       )}
 
       {/* Table for Remédiations */}
-      {action.length > 0 && (
+      {action?.length > 0 && (
         <div className="min-h-screen">
           <div className="mr-5  ml-9">
             <Separator text={"Remédiation"} />

@@ -21,6 +21,8 @@ import { PermissionRoleContext } from "../../Context/permissionRoleContext";
 import useExecution from "../../Hooks/useExecution";
 import DecisionPopUp from "../../components/PopUps/DecisionPopUp";
 import VisibilityIcon from "@mui/icons-material/Visibility"; // ou RateReviewIcon
+import { useAuth } from "../../Context/AuthContext";
+import { api } from "../../Api";
 // Initialize EmailJS with your userID
 emailjs.init("oAXuwpg74dQwm0C_s"); // Replace 'YOUR_USER_ID' with your actual userID
 
@@ -39,7 +41,7 @@ function ControleExcutionPage() {
   const location = useLocation();
   const controleData = location.state?.controleData || {};
   console.log(controleData);
-
+const { user} = useAuth();
   const [executionData, setExecutionData] = useState(null);
 
   useEffect(() => {
@@ -125,18 +127,18 @@ function ControleExcutionPage() {
     setSelections(selections);
   };
 
-  const updateStatusBasedOnSuivi = () => {
-    setAction((prevActions) =>
-      prevActions.map((action) => ({
-        ...action,
-        status: action.suivi.trim() !== "" ? "En_cours" : "Non_commencee",
-      }))
-    );
-  };
+  // const updateStatusBasedOnSuivi = () => {
+  //   setAction((prevActions) =>
+  //     prevActions.map((action) => ({
+  //       ...action,
+  //       status: action.suivi.trim() !== "" ? "En_cours" : "Non_commencee",
+  //     }))
+  //   );
+  // };
 
-  useEffect(() => {
-    updateStatusBasedOnSuivi();
-  }, []);
+  // useEffect(() => {
+  //   updateStatusBasedOnSuivi();
+  // }, []);
 
   const columnsConfig = [
     { field: "id", headerName: "ID", width: 250, editable: true },
@@ -146,7 +148,7 @@ function ControleExcutionPage() {
       editable: true,
       width: 300,
     },
-    { field: "contact", headerName: "Contact", width: 250 },
+    { field: "ownerContact", headerName: "Contact", width: 250 },
     { field: "dateField", headerName: "Date début", width: 200 },
     { field: "dateField1", headerName: "Date Fin", width: 200 },
     {
@@ -173,54 +175,51 @@ function ControleExcutionPage() {
     { label: "Not Tested", value: "Not Tested" },
     { label: "Not Applicable", value: "Not Applicable" },
   ];
-  const [action, setAction] = useState([
-    {
-      id: 1,
-      description: "llllll",
-      contact: "km_mohandouali@esi.dz",
-      dateField: "2025-02-01",
-      dateField1: "2025-02-06",
-      suivi: "",
-      status: "Terminé",
-    },
-    {
-      id: 2,
-      description: "llllll",
-      contact: "manelmohandouali@gmail.com",
-      dateField: "2025-02-05",
-      dateField1: "2025-02-10",
-      suivi: "lll",
-      status: "En_cours",
-    },
-    {
-      id: 3,
-      description: "llllll",
-      contact: "manel.mohandouali@mazars.dz",
-      dateField: "2025-01-11",
-      dateField1: "2025-01-21",
-      suivi: "mll",
-      status: "Non_commencee",
-    },
-    {
-      id: 4,
-      description: "llllll",
-      contact: "farid@gmail.com",
-      dateField: "2025-02-05",
-      dateField1: "2025-02-10",
-      suivi: "lll",
-      status: "En_cours",
-    },
-    {
-      id: 5,
-      description: "llllll",
-      contact: "farid@gmail.com",
-      dateField: "2025-01-11",
-      dateField1: "2025-01-21",
-      suivi: "mll",
-      status: "Non_commencee",
-    },
-  ]);
 
+
+  // const [action, setAction] = useState([
+  //   {
+  //     id: 1,
+  //     description: "llllll",
+  //     contact: "km_mohandouali@esi.dz",
+  //     dateField: "2025-02-01",
+  //     dateField1: "2025-02-06",
+  //     suivi: "",
+  //     status: "Terminé",
+  //   },
+  //   {
+  //     id: 2,
+  //     description: "llllll",
+  //     contact: "manelmohandouali@gmail.com",
+  //     dateField: "2025-02-05",
+  //     dateField1: "2025-02-10",
+  //     suivi: "lll",
+  //     status: "En_cours",
+  //   },
+  // ]);
+  // const [loading, setLoading] = useState(true);
+        const [error, setError] = useState(null);
+  const [action, setAction] = useState()
+
+const fetchRemediations = async () => {
+  try {
+    const response = await api.get(`/execution/${controleData.executionId}/getremediations`);
+    console.log('executionid',controleData.executionId )
+    console.log('listremediation',response.data)
+    setAction(response.data);
+  } catch (err) {
+    setError(err.message);
+  // } finally {
+  //   setLoading(false);
+  // }
+};
+}
+useEffect(() => {
+  if (controleData.executionId) {
+    fetchRemediations();
+  }
+  
+}, [controleData.executionId]);
   const [selectedActionId, setSelectedActionId] = useState("");
   const [isDeletePopupOpen, setIsDeletePopupOpen] = useState(false);
   const [isAddingAnother, setIsAddingAnother] = useState(false);
@@ -233,15 +232,27 @@ function ControleExcutionPage() {
     console.log(selectedActionId);
     setIsDeletePopupOpen(true);
   };
-  const confirmDeleteMission = () => {
+  const confirmDeleteMission = async () => {
+    try{
+
     if (selectedActionId !== null) {
+      await api.delete(`/execution/deleteRemediation/${selectedActionId}`);
       setAction((prev) => prev.filter((row) => row.id !== selectedActionId));
     }
+  }catch (error) {
+    console.error("Erreur lors de la suppression de remediation:", error);
+    
+  } 
     setIsDeletePopupOpen(false);
     setSelectedActionId(null);
   };
   const handleEditRow = (selectedRow) => {
-    setSelectedActionId(selectedRow);
+    const transformedremediation = {
+      id: selectedRow.id,
+      description: selectedRow.description,
+      owner_cntct: selectedRow.ownerContact,
+    };
+    setSelectedActionId(transformedremediation);
     if (!showRemediation) setShowRemediation((prev) => !prev);
   };
 
@@ -416,21 +427,31 @@ function ControleExcutionPage() {
     !selectedMulti || !commentaire || shouldShowRemediation;
   const [showDecisionPopup, setShowDecisionPopup] = useState(false);
 
-  const handleAdd = (remediation) => {
+  const handleAdd = async (remediation) => {
+    try{
     if (selectedActionId) {
+      console.log('yuo',selectedActionId)
       // Mise à jour de l'application existante
+      console.log('update  remediation',remediation)
+      const response = await api.put(`/execution/updateRemediation/${remediation.id}`, remediation);
+      console.log("remediation mis a jour avec succé", response.data)
       setAction((prevApps) =>
-        prevApps.map((row) => (row.id === remediation.id ? remediation : row))
+        prevApps.map((row) => (row.id === remediation.id ? response.data  : row))
       );
       setSelectedActionId(null);
       setShowRemediation((prev) => !prev);
     } else {
-      setAction((prev) => [
-        ...prev,
-        { id: prev.length + 1, ...remediation }, // Add the remediation to the list
-      ]);
+      console.log('add  remediation',remediation)
+      console.log('contrt',controleData.executionId)
+      const response = await api.post(`/execution/${controleData.executionId}/createremediation`,remediation)
+      setAction(prev => [...prev, response.data]); // Add the remediation to the list
+      console.log("remediation ajouté avec succé", response.data)
       setShowDecisionPopup(true);
     }
+  } catch (error) {
+    console.error("Erreur lors de la création/mise à jour d'une remediation:", error);
+    throw error;
+  }
   };
   const handleValidate = () => {
     // Lorsque vous cliquez sur "Valider", affichez le popup
@@ -657,62 +678,61 @@ function ControleExcutionPage() {
   
 
 
-  // Check if all remediations are done
-  const isAllRemediationDone =
-    action.every((remediation) => remediation.status === "Terminé") &&
-    selectedMulti != "";
+  // Check if all remediations are done  hadi welilha manel mategel3ihech
+  // const isAllRemediationDone =
+  //   action.every((remediation) => remediation?.status === "Terminé") &&
+  //   selectedMulti != "";
 
-  const controlStatus = isAllRemediationDone
-    ? "Terminé"
-    : isToReview || isToValidate
-    ? "En cours de revue"
-    : "En cours";
+  // const controlStatus = isAllRemediationDone
+  //   ? "Terminé"
+  //   : isToReview || isToValidate
+  //   ? "En cours de revue"
+  //   : "En cours";
 
-  const controlIcon =
-    controlStatus === "Terminé" ? (
-      <CheckCircleIcon
-        style={{
-          color: "var(--success-green)",
-          animation: "fadeIn 1s ease",
-          width: "25px",
-          height: "25px",
-        }}
-      />
-    ) : controlStatus === "En cours de revue" ? (
-      <VisibilityIcon
-        style={{
-          color: "#3b82f6",
-          animation: "fadeIn 1s ease",
-          width: "25px",
-          height: "25px",
-        }}
-      />
-    ) : (
-      <AccessTimeFilledIcon
-        style={{
-          color: "var(--await-orange)",
-          animation: "fadeIn 1s ease",
-          width: "20px",
-          height: "20px",
-        }}
-      />
-    );
+  // const controlIcon =
+  //   controlStatus === "Terminé" ? (
+  //     <CheckCircleIcon
+  //       style={{
+  //         color: "var(--success-green)",
+  //         animation: "fadeIn 1s ease",
+  //         width: "25px",
+  //         height: "25px",
+  //       }}
+  //     />
+  //   ) : controlStatus === "En cours de revue" ? (
+  //     <VisibilityIcon
+  //       style={{
+  //         color: "#3b82f6",
+  //         animation: "fadeIn 1s ease",
+  //         width: "25px",
+  //         height: "25px",
+  //       }}
+  //     />
+  //   ) : (
+  //     <AccessTimeFilledIcon
+  //       style={{
+  //         color: "var(--await-orange)",
+  //         animation: "fadeIn 1s ease",
+  //         width: "20px",
+  //         height: "20px",
+  //       }}
+  //     />
+  //   );
 
   return (
     <div className=" ">
       {isToReview ||isToValidate && (
           <div className="fixed top-0 left-0 w-full h-full bg-transparent z-50 pointer-events-auto" />
         )}
-      <Header />
-
+     <Header user={user} />
       <div className="ml-8 mr-6 pb-9 relative">
         <div className="flex justify-between items-center px-4 py-2">
           {location.pathname.includes("") && <Breadcrumbs />}
         </div>
 
         <div className="absolute right-4 top-11 flex items-center gap-2 z-10">
-          <h1 className="font-medium text-base">Statut : {controlStatus}</h1>
-          {controlIcon}
+          {/* <h1 className="font-medium text-base">Statut : {controlStatus}</h1>
+          {controlIcon} */}
         </div>
 
         <DescriptionTestScriptSection
