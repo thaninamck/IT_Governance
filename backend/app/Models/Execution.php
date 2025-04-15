@@ -37,8 +37,11 @@ class Execution extends Model
         return $this->belongsTo(Layer::class);
     }
 
+    // public function remediations(){    
+    //     return $this->hasManyTo(Remediation::class);
+    // }
     public function remediations(){    
-        return $this->hasManyTo(Remediation::class);
+        return $this->hasMany(Remediation::class);
     }
 
     public function evidences(){    

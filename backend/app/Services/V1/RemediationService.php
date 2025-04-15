@@ -14,17 +14,23 @@ class RemediationService
         $this->remediationRepository=$remediationRepository;
     }
 
-    public function getAllRemediationByControl()
+    public function getAllRemediationsByExecution($executionId)
     {
-        return $this->remediationRepository->getAllRemediationByControl();
+        return $this->remediationRepository->getAllRemediationsByExecution($executionId);
     }
    
-    public function createRemediationForControl(array $data): Remediation
+    public function createRemediationForExecution(array $data,int $executionId): Remediation
 {
-        $remediation = $this->remediationRepository->createRemediationForControl($data);
+        $remediation = $this->remediationRepository->createRemediationForControl([
+            'description'=>$data['description'],
+            'owner_cntct'=>$data['owner_cntct'],
+           // 'follow_up'=>$data['follow_up'],
+            'execution_id'=>$executionId,
+        ]);
 
         return $remediation;
 }
+
     public function updateRemediatio($id, array $data): ?Remediation
     {
         $remediation = $this->remediationRepository->findRemediationById($id);
@@ -44,5 +50,15 @@ class RemediationService
     }
     return $this->remediationRepository->deleteRemediation($id);
 }
+
+public function getRemediationInfo($remediationId)
+    {
+        $remediation =$this->remediationRepository->getRemediationInfo($remediationId);
+
+        if (! $remediation) {
+            return null; // ou lancer une exception
+        }
+        return $remediation;
+    }
 
 }

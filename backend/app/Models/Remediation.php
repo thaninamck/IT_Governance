@@ -10,8 +10,14 @@ class Remediation extends Model
         'execution_id','follow_up','owner_cntct','description'
     ];
 
-    public function control(){
+    public function execution(){
         return $this->belongsTo(Execution::class);
     }
-   
+
+    public function status(){
+        return $this->belongsTo(Status::class);
+    }
+    public function remediationEvidence(){    
+        return $this->hasMany(RemediationEvidence::class);
+    }
 }

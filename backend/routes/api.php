@@ -21,6 +21,7 @@ use App\Http\Controllers\Api\V1\NotificationController;
 use App\Http\Controllers\Api\V1\MissionController;
 use App\Http\Controllers\Api\V1\OwnerController;
 use App\Http\Controllers\Api\V1\ProfileController;
+use App\Http\Controllers\Api\V1\RemediationController;
 use App\Http\Controllers\Api\V1\SystemController;
 use App\Http\Controllers\Api\V1\RiskController;
 use App\Models\Profile;
@@ -342,8 +343,23 @@ Route::prefix('v1')->controller(ClientController::class)->group(function () {
 });
 
 
+//gestion remediation 
+Route::prefix('v1')->controller(RemediationController::class)->group(function () {
+    Route::post('/execution/{executionid}/createremediation', 'storeRemediationForExecution');
+});
 
-
+Route::prefix('v1')->controller(RemediationController::class)->group(function () {
+    Route::get('/execution/{executionid}/getremediations', 'getAllRemediationsByExecution');
+});
+Route::prefix('v1')->controller(RemediationController::class)->group(function () {
+    Route::put('/execution/updateRemediation/{remediationId}', 'updateRemediation');
+});
+Route::prefix('v1')->controller(RemediationController::class)->group(function () {
+    Route::delete('/execution/deleteRemediation/{remediationId}', 'deleteRemediation');
+});
+Route::prefix('v1')->controller(RemediationController::class)->group(function () {
+    Route::get('/execution/getRemediation/{remediationId}', 'getRemediationInfo');
+});
 
 
 // Route::middleware(['auth:sanctum', AdminMiddleware::class])

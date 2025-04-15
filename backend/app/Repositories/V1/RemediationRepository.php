@@ -6,8 +6,12 @@ use App\Models\Remediation;
 
 class RemediationRepository
 {
-    public function getAllRemediationByControl(){
-        return Remediation::with(['control'])->get();
+    public function getAllRemediationsByExecution(int $executionId){
+      // return  Remediation::with('execution')->where('execution_id', $executionId)->get();
+
+      return Remediation::with(['execution.user', 'execution.layer']) // Ajoute ici ce que tu veux charger
+        ->where('execution_id', $executionId)
+        ->get();
     }
 
     public function createRemediationForControl(array $data):Remediation
@@ -46,5 +50,10 @@ class RemediationRepository
 
         return $remediation_id;
     }
-
+    public function getRemediationInfo($remediationId)
+    {
+        $remediation= Remediation::with(['remediationEvidence'])->find($remediationId);
+    
+        return $remediation;
+    }
 }
