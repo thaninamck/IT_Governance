@@ -17,6 +17,8 @@ const useUser = () => {
     switch (notification.url?.type) {
       case "mission":
         return `/missions/${notification.url.id}`;
+      case "affectation_cntrl":
+        return `/missions`;
       case "meeting":
         return `/meetings/${notification.url.id}`;
       case "security":

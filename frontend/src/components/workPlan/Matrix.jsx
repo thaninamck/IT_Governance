@@ -520,6 +520,7 @@ function Matrix({
         riskModified: item.riskModified,
         riskOwner: item.riskOwner,
         controlId: item.controlId,
+        missionName:JSON.parse(localStorage.getItem("missionData")).missionName ||"non définie",
         controlDescription: item.controlDescription,
         controlModified: item.controlModified,
         controlOwner: item.controlOwner,
@@ -718,6 +719,7 @@ function Matrix({
         riskModification: row.riskDescription,
       }),
       riskOwner: row.riskOwner,
+      missionName:JSON.parse(localStorage.getItem("missionData")).missionName ||"non définie",
 
       //controlTester: row.controlTester,
     }));

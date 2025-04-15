@@ -6,6 +6,7 @@ use App\Repositories\V1\ExecutionRepository;
 use App\Repositories\V1\CntrlRiskCovRepository;
 use App\Repositories\V1\StatusRepository;
 use App\Repositories\V1\StepTestScriptRepository;
+use App\Services\NotificationService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 class ExecutionService
@@ -13,17 +14,20 @@ class ExecutionService
     protected ExecutionRepository $executionRepository;
     protected CntrlRiskCovRepository $covRepository;
     protected EvidenceService $evidenceService;
+    protected NotificationService $notificationService;
     protected $statusRepository;
     protected $stepRepository;
 
 
-    public function __construct( EvidenceService $evidenceService,ExecutionRepository $executionRepository, 
+    public function __construct( EvidenceService $evidenceService, NotificationService $notificationService ,ExecutionRepository $executionRepository, 
     CntrlRiskCovRepository $covRepository , StatusRepository $statusRepository,StepTestScriptRepository $stepRepository)
     {
     
         $this->statusRepository = $statusRepository;
-$this->stepRepository = $stepRepository;
+        $this->stepRepository = $stepRepository;
         $this->executionRepository =$executionRepository;
+        $this->notificationService =$notificationService;
+
         $this->covRepository =$covRepository;
         $this->evidenceService = $evidenceService;
         
@@ -85,10 +89,19 @@ public function submitExecutionForValidation($executionId)
 
                 $lastExecution = $this->executionRepository->createExecution($executionToInsert);
 
+                
                 if (!$lastExecution) {
                     throw new \Exception("Failed to create execution");
-                }
+                };
+                if ($executionToInsert['controlTester']) {
 
+                    $this->notificationService->sendNotification(
+                        $executionToInsert['controlTester'],
+                        "Vous avez été assigné(e) à des contrôles pour la mission {$execution['missionName']}.",
+                        ['type' => 'affectation_cntrl', 'id' => '#'],
+                        "affectation_cntrl"
+                    );
+                 };
                 $coverageToInsert['riskDescription'] = $execution['riskModified'] ? $execution['riskDescription'] : null;
 
 
@@ -137,7 +150,15 @@ public function updateExecution($executionId, $data)
     $riskFilteredData = array_filter($riskData, function ($value) {
         return !is_null($value);
     });
+    if ($executionData['user_id']) {
 
+        $this->notificationService->sendNotification(
+            $executionData['user_id'],
+            "Vous avez été assigné(e) à des contrôles pour la mission {$data['missionName']}.",
+            ['type' => 'affectation_cntrl', 'id' => '#'],
+            "affectation_cntrl"
+        );
+     };
     if(!empty($data['steps'])) {
         Log::info('Steps Data:', $data['steps']);
        foreach ($data['steps'] as $step) {
