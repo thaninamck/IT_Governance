@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('cntrl_risk_covs', function (Blueprint $table) {
             $table->id();
             $table->foreignId('risk_id')->constrained('risks');
-            $table->foreignId('execution_id')->constrained('executions');
+            $table->foreignId('execution_id')->constrained('executions')->onDelete('cascade');;
             $table->string('risk_owner', 255)->nullable();
             $table->string('risk_modification', 255)->nullable();
 
