@@ -141,12 +141,17 @@ useEffect(()=>{
         {/* Boutons Modifier + Ajouter */}
         {user?.role === 'admin' && (
           <div className="flex justify-end pr-5 gap-4 mb-2">
-            <button
+            
+            {!modifActivated && (
+              <button
               onClick={handleActivateModification}
               className="px-4 py-2 border-none bg-[var(--blue-menu)] text-white text-sm font-medium rounded"
             >
               Modifier
             </button>
+            )
+
+            }
             <button
               onClick={handleAddMatrix}
               className="px-4 py-2 border-none bg-[var(--blue-menu)] text-white text-sm font-medium rounded"
@@ -163,7 +168,8 @@ useEffect(()=>{
           onRowClick={handleRowClick}
           fromScopeModification={modifActivated}
           unlockModification={modifActivated}
-        />
+          stopModification={() => setModifActivated(false)}
+                  />
       </>
     ) : (
       <>

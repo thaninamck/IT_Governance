@@ -28,8 +28,9 @@ function Matrix({
   handleSaveexecutions,
   fromScopeModification,
   unlockModification,
+  stopModification,
 }) {
-  const { createExecutions, loading, testers, saveloading, deleteExecutions } =
+  const { createExecutions, loading, testers, saveloading, deleteExecutions,updateMultipleExecutions } =
     useWorkplan();
   const [saveWork, setSaveWork] = useState(false);
   const [flattenedData, setFlattenedData] = useState([]);
@@ -111,7 +112,7 @@ function Matrix({
                 executionId: control.executionId,
                 covId:control.covId,
                 controlTester: control.testeur,
-                modifiable: !fromScopeModification,
+                modifiable: fromScopeModification ,
               });
             }
           });
@@ -642,47 +643,50 @@ function Matrix({
   useEffect(() => {
     console.log('Page rechargée, effacement des données',navigationType);
 
-    if (navigationType !== 'POP') {
+    if (navigationType === 'POP'  || navigationType === 'PUSH' ) {
       setFlattenedData([]);
     }
   }, [navigationType]);
 
-  const handleSaveModifictaion = () => {
-
-     // Étape 1 : filtrer les lignes modifiables
-  const filtered = flattenedData.filter((row) => row.modifiable === true);
-
-  // Étape 2 : ne garder que les champs demandés
-  const controlsToUpdate = filtered.map((row) => ({
-    executionId: row.executionId,
-    covId: row.covId,
-    controlModified: row.controlModified,
-    controlDescription: row.controlDescription,
-    controlOwner: row.controlOwner,
-    controlTester: row.controlTester,
-    riskModified: row.riskModified,
-    riskDescription: row.riskDescription,
-    riskOwner: row.riskOwner,
-  }));
+  const handleSaveModifictaion = async () => {
+    // Étape 1 : filtrer les lignes modifiables
+    const filtered = flattenedData.filter((row) => row.modifiable === true);
   
- 
-  // Stocker les lignes extraites dans ton état
-  setControlsToUpdate(controlsToUpdate);
+    // Étape 2 : ne garder que les champs demandés
+    const controlsToUpdate = filtered.map((row) => ({
+      id: row.executionId,
+      covId: row.covId,
+      ...(row.controlModified && {
+        controlModification: row.controlDescription,
+        
+      }),
+      controlOwner: row.controlOwner,
+      ...(row.riskModified && {
+        riskModification: row.riskDescription,
+      }),
+      riskOwner: row.riskOwner,
+
+      //controlTester: row.controlTester,
+    }));
+  
+    // Stocker les lignes extraites dans ton état
+    setControlsToUpdate(controlsToUpdate);
+  
     setFlattenedData((prevData) =>
-      prevData.map((row) => {
-        if (selectedControls.includes(row.id)) {
-          return { ...row, modifiable: false }; // Rendre la ligne  non mmodifiable
-        }
-        return { ...row, modifiable: false }; // Les autres lignes restent non modifiables
-      })
+      prevData.map((row) => ({
+        ...row,
+        modifiable: false
+      }))
     );
-    
-    
+  
     setSelectedRows([]);
     setSelectedControls([]);
+    await updateMultipleExecutions(controlsToUpdate)
     localStorage.removeItem("flattenedData");
     setModify(true);
+    stopModification()
   };
+  
 
   useEffect(() => {
     console.log("flattenedData", flattenedData);

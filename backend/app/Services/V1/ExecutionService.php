@@ -120,7 +120,7 @@ public function updateExecution($executionId, $data)
 {
     $executionData = [
         'id' => $executionId,
-        'cntrl_modification' => $data['description'] ?? null,
+        'cntrl_modification' => $data['controlModification'] ?? null,
         'control_owner'=> $data['controlOwner'] ?? null,
         'ipe' => $data['ipe'] ?? null,
         'design' => $data['design'] ?? null,
@@ -130,7 +130,7 @@ public function updateExecution($executionId, $data)
         'user_id' => $data['controlTester'] ?? null,
     ];
     $riskData = [
-       
+
         'risk_modification' => $data['riskModification'] ?? null,
         'risk_owner' => $data['riskOwner'] ?? null,
     ];
@@ -152,8 +152,8 @@ public function updateExecution($executionId, $data)
         }
     }
 
-    if (!empty($riskFilteredData) ) {
-       $this->covRepository->updateCoverage($executionId, $riskFilteredData);
+    if (!empty($data['covId'])&&!empty($riskFilteredData)) {
+       $this->covRepository->updateCoverage($data['covId'], $riskFilteredData);
     }
 
     $filteredData = array_filter($executionData, function ($value) {
@@ -173,11 +173,11 @@ public function updateMultipleExecutions(array $executionsData)
     try {
         foreach ($executionsData as $executionData) {
             // Assure-toi que chaque élément a un ID d'exécution
-            if (!isset($executionData['executionId'])) {
+            if (!isset($executionData['id'])) {
                 throw new \Exception("Execution ID is required for update.");
             }
 
-            $this->updateExecution($executionData['executionId'], $executionData);
+            $this->updateExecution($executionData['id'], $executionData);
         }
 
         DB::commit();

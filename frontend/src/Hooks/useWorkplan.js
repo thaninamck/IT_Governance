@@ -27,7 +27,7 @@ const useWorkplan = () => {
       setControls(data.controls);
 
     } catch (err) {
-      setError(err);
+      //setError(err);
       //toast.error("Erreur lors de la récupération des options du plan de travail.");
     } finally {
       setLoading(false);
@@ -92,6 +92,25 @@ const useWorkplan = () => {
     } 
   };
   
+
+  const updateMultipleExecutions = async (executionsData) => {
+    setLoading(true);
+    try {
+      const response = await api.post('/executions/update-executions', {
+        executions: executionsData
+      });
+      toast.success("Contrôles mis à jour avec succès.");
+      return response.data;
+    } catch (err) {
+      setError(err);
+      console.log(err)
+      toast.error("Erreur lors de l'enregistrement des modifications.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+
   return {
     loading,
     error,
@@ -102,6 +121,7 @@ const useWorkplan = () => {
     testers,
     createExecutions,
     deleteExecutions,
+    updateMultipleExecutions,
   };
 };
 

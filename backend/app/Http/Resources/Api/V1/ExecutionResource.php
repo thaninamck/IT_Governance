@@ -18,7 +18,7 @@ class ExecutionResource extends JsonResource
     return [
         'id' => $this->execution_id,
         'executionId' => $this->execution_id,
-        'executionModification' => $this->execution_modification,
+        //'executionModification' => $this->execution_modification,
         'executionComment' => $this->execution_comment,
         'executionControlOwner' => $this->execution_control_owner,
         'executionLaunchedAt' => $this->execution_launched_at,
@@ -33,7 +33,7 @@ class ExecutionResource extends JsonResource
         'missionName' => $this->mission_name,
 
         'controlId' => $this->control_id,
-        'controlDescription' => $this->control_description,
+        'controlDescription' => $this->execution_modification ? : $this->control_description ,
         'controlCode' => $this->control_code,
 
         'riskId' => $this->risk_id,
