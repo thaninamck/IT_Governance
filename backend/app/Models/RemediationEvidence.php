@@ -8,10 +8,10 @@ use Illuminate\Database\Eloquent\Model;
 class RemediationEvidence extends Model
 {
     protected $table = 'remediation_evidences';
-    
+
     use HasFactory;
     protected $fillable=[
-        "file_name", "remediation_id"
+        "file_name", "remediation_id","stored_name"
     ];
 
     public function remediation(){
