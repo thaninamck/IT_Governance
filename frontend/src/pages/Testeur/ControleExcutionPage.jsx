@@ -16,17 +16,20 @@ import { saveAs } from "file-saver";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import emailjs from "emailjs-com";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { PermissionRoleContext } from "../../Context/permissionRoleContext";
 import useExecution from "../../Hooks/useExecution";
 import DecisionPopUp from "../../components/PopUps/DecisionPopUp";
 import VisibilityIcon from "@mui/icons-material/Visibility"; // ou RateReviewIcon
 import { useAuth } from "../../Context/AuthContext";
 import { api } from "../../Api";
+import useRemediation from "../../Hooks/useRemediation";
 // Initialize EmailJS with your userID
-emailjs.init("oAXuwpg74dQwm0C_s"); // Replace 'YOUR_USER_ID' with your actual userID
+// emailjs.init("oAXuwpg74dQwm0C_s"); // Replace 'YOUR_USER_ID' with your actual userID
 
 function ControleExcutionPage() {
+  const location = useLocation();
+  const controleData = location.state?.controleData || {};
   // Accédez à userRole et setUserRole via le contexte
   const { userRole, setUserRole } = useContext(PermissionRoleContext);
   const {
@@ -38,11 +41,88 @@ function ControleExcutionPage() {
     updateExecution,
   } = useExecution();
 
-  const location = useLocation();
-  const controleData = location.state?.controleData || {};
+  const {
+    action,
+    error,
+    showRemediation,
+    setShowRemediation,
+    fetchRemediations,
+    handleAdd,
+    handleEditRow,
+    handleDeleteRow,
+    confirmDeleteRemediation,
+    handleCloseRow,
+    handleSendAction,
+    showDecisionPopup,
+    setShowDecisionPopup,
+    handleDecisionResponse,
+    isDeletePopupOpen,
+    setIsDeletePopupOpen,
+    selectedActionId,
+    setSelectedActionId,
+    isAddingAnother,
+    
+  } = useRemediation(controleData.executionId, controleData.controlCode);
+
+  
+  const navigate = useNavigate();
+  const { mission } = useParams([]); // Récupérer les paramètres de l'URL
+  const { name } = useParams([]);
+  const { controlCode } = useParams([]);
+
   console.log(controleData);
-const { user} = useAuth();
+  const { user } = useAuth();
+  const handleRowClick = (rowData) => {
+    navigate(`/missions/${mission}/${name}/${controlCode}/remediation/${rowData.actionName}`, {
+      state: { remediationData: rowData },
+    });
+  };
+  const [testScriptData, setTestScriptData] = useState([]); 
+  const [localSelections, setLocalSelections] = useState({}); // Renommé ici
+  const [openDeletePopup, setOpenDeletePopup] = useState(false);
+  const [deletedEvidence, setDeletedEvidence] = useState(null);
+  const [deletedTestFile, setDeletedTestFile] = useState(null);
+  const [activePanel, setActivePanel] = useState("evidence");
+  const [multiSelectStatus, setMultiSelectStatus] = useState({});
   const [executionData, setExecutionData] = useState(null);
+  const [evidences, setEvidences] = useState([]);
+  const [steps, setSteps] = useState([]);
+  const [isToReview, setIsToReview] = useState(false);
+  const [isToValidate, setIsToValidate] = useState(false);
+  const sourceNames = controleData.sources.map(s => s.source_name).join(', ');
+  const [isEditing, setIsEditing] = useState(true);
+  const [selectedMulti, setSelectedMulti] = useState(controleData.statusId);
+
+  const statusOptions = ["Terminé", "en cours", "Non commencée"];
+  const statusColors = {
+    Terminé: "green",
+    En_cours: "orange",
+    Non_Commencée: "gray",
+  };
+ // const [isAddingAnother, setIsAddingAnother] = useState(false);
+  const [evidenceFiles, setEvidenceFiles] = useState([]);
+  const [testFiles, setTestFiles] = useState([]);
+  const [showPopup, setShowPopup] = useState(false);
+  const [description, setDescription] = useState(controleData.controlDescription || "");
+  const [testScript, setTestScript] = useState(controleData.testScript || "");
+  const [type, setType] = useState(controleData.typeName || "");
+  const [controlOwner, setControlOwner] = useState(controleData.executionControlOwner || "");
+  const [majorProcess, setMajorProcess] = useState(controleData.majorProcess || "");
+  const [subProcess, setSubProcess] = useState(controleData.subProcess || "");
+  const [controleID, setControleID] = useState(controleData.controlCode || "");
+  const [selections, setSelections] = useState({
+    IPE: controleData.ipe,
+    Design: controleData.design,
+    Effectiveness: controleData.effectiveness,
+  });
+  const [files, setFiles] = useState([]);
+  const options = [
+    { label: "Applied", value: "Applied" },
+    { label: "Partially Applied", value: "Partially Applied" },
+    { label: "Not Applied", value: "Not Applied" },
+    { label: "Not Tested", value: "Not Tested" },
+    { label: "Not Applicable", value: "Not Applicable" },
+  ];
 
   useEffect(() => {
     const fetchData = async () => {
@@ -63,11 +143,6 @@ const { user} = useAuth();
       fetchData();
     }
   }, [controleData.executionId]);
-  const [evidences, setEvidences] = useState([]);
-  const [steps, setSteps] = useState([]);
-  const [isToReview, setIsToReview] = useState(false);
-  const [isToValidate, setIsToValidate] = useState(false);
-  const sourceNames = controleData.sources.map(s => s.source_name).join(', ');
 
   useEffect(() => {
     console.log("Execution Data:", executionData);
@@ -88,39 +163,10 @@ const { user} = useAuth();
   const [commentaire, setCommentaire] = useState(
     controleData.commentaire || ""
   );
-  const [isEditing, setIsEditing] = useState(true);
-  const statusOptions = ["Terminé", "En_cours", "Non_commencee"];
-  const statusColors = {
-    Terminé: "green",
-    En_cours: "orange",
-    Non_Commencée: "gray",
-  };
-  const [selectedMulti, setSelectedMulti] = useState(controleData.statusId);
 
   useEffect(() => {
     console.log("Selected Multi:", selectedMulti);
   }, [selectedMulti]); // Log the selectedMulti whenever it changes
-
-  const [showRemediation, setShowRemediation] = useState(false);
-  const [showPopup, setShowPopup] = useState(false);
-  const [description, setDescription] = useState(
-    controleData.controlDescription || ""
-  );
-  const [testScript, setTestScript] = useState(controleData.testScript || "");
-  const [type, setType] = useState(controleData.typeName || "");
-  const [controlOwner, setControlOwner] = useState(
-    controleData.executionControlOwner || ""
-  );
-  const [majorProcess, setMajorProcess] = useState(
-    controleData.majorProcess || ""
-  );
-  const [subProcess, setSubProcess] = useState(controleData.subProcess || "");
-  const [controleID, setControleID] = useState(controleData.controlCode || "");
-  const [selections, setSelections] = useState({
-    IPE: controleData.ipe,
-    Design: controleData.design,
-    Effectiveness: controleData.effectiveness,
-  });
 
   const handleStatesChange = (selections) => {
     console.log("Depuis ControlExecution :", selections);
@@ -140,8 +186,16 @@ const { user} = useAuth();
   //   updateStatusBasedOnSuivi();
   // }, []);
 
+  // const [loading, setLoading] = useState(true);
+
+ // const [error, setError] = useState(null);
+  //const [action, setAction] = useState()
+  // const [selectedActionId, setSelectedActionId] = useState("");
+  // const [isDeletePopupOpen, setIsDeletePopupOpen] = useState(false);
+  // const [showRemediation, setShowRemediation] = useState(false);
+  // const [showDecisionPopup, setShowDecisionPopup] = useState(false);
   const columnsConfig = [
-    { field: "id", headerName: "ID", width: 250, editable: true },
+    { field: "actionName", headerName: "Nom", width: 250, editable: true },
     {
       field: "description",
       headerName: "Description",
@@ -149,166 +203,184 @@ const { user} = useAuth();
       width: 300,
     },
     { field: "ownerContact", headerName: "Contact", width: 250 },
-    { field: "dateField", headerName: "Date début", width: 200 },
-    { field: "dateField1", headerName: "Date Fin", width: 200 },
+    { field: "startDate", headerName: "Date début", width: 200 },
+    { field: "endDate", headerName: "Date Fin", width: 200 },
     {
       field: "suivi",
       headerName: "Suivi",
       editable: true,
       width: 300,
     },
-    { field: "status", headerName: "Status", width: 180 },
+    {
+      field: "alert",
+      headerName: "Alerte",
+      width: 300,
+      customRenderCell: (params) => {
+        const { statusName, suivi } = params.row;
+        const isAlert = statusName === "en cours" && (!suivi || suivi.trim() === "");
+
+        return isAlert ? (
+          <div style={{ color: "red", fontWeight: "bold", fontSize: "12px" }}>
+            Cette remédiation n’a pas encore été traitée
+          </div>
+        ) : null;
+      }
+    },
+
+    { field: "statusName", headerName: "Status", width: 180 },
     { field: "actions", headerName: "Action", width: 80 },
   ];
 
-  const [files, setFiles] = useState([
-    // { name: 'document.pdf', size: 1024000 },
-    // { name: 'image.png', size: 2048000 },
-    // { name: 'presentation.pptx', size: 512000 }
-  ]);
-
-  // Options et couleurs de statut utilisateur
-  const options = [
-    { label: "Applied", value: "Applied" },
-    { label: "Partially Applied", value: "Partially Applied" },
-    { label: "Not Applied", value: "Not Applied" },
-    { label: "Not Tested", value: "Not Tested" },
-    { label: "Not Applicable", value: "Not Applicable" },
-  ];
-
-
-  // const [action, setAction] = useState([
-  //   {
-  //     id: 1,
-  //     description: "llllll",
-  //     contact: "km_mohandouali@esi.dz",
-  //     dateField: "2025-02-01",
-  //     dateField1: "2025-02-06",
-  //     suivi: "",
-  //     status: "Terminé",
-  //   },
-  //   {
-  //     id: 2,
-  //     description: "llllll",
-  //     contact: "manelmohandouali@gmail.com",
-  //     dateField: "2025-02-05",
-  //     dateField1: "2025-02-10",
-  //     suivi: "lll",
-  //     status: "En_cours",
-  //   },
-  // ]);
-  // const [loading, setLoading] = useState(true);
-        const [error, setError] = useState(null);
-  const [action, setAction] = useState()
-
-const fetchRemediations = async () => {
-  try {
-    const response = await api.get(`/execution/${controleData.executionId}/getremediations`);
-    console.log('executionid',controleData.executionId )
-    console.log('listremediation',response.data)
-    setAction(response.data);
-  } catch (err) {
-    setError(err.message);
-  // } finally {
-  //   setLoading(false);
+  // const fetchRemediations = async () => {
+  //   try {
+  //     const response = await api.get(`/execution/${controleData.executionId}/getremediations`);
+  //     console.log('executionid', controleData.executionId)
+  //     console.log('listremediation', response.data)
+  //     setAction(response.data);
+  //   }
+  //   catch (err) {
+  //     setError(err.message);
+  //   };
   // }
-};
-}
-useEffect(() => {
-  if (controleData.executionId) {
-    fetchRemediations();
-  }
-  
-}, [controleData.executionId]);
-  const [selectedActionId, setSelectedActionId] = useState("");
-  const [isDeletePopupOpen, setIsDeletePopupOpen] = useState(false);
-  const [isAddingAnother, setIsAddingAnother] = useState(false);
-  // États pour stocker les fichiers séparément
-  const [evidenceFiles, setEvidenceFiles] = useState([]);
-  const [testFiles, setTestFiles] = useState([]);
-
-  const handleDeleteRow = (selectedRow) => {
-    setSelectedActionId(selectedRow.id);
-    console.log(selectedActionId);
-    setIsDeletePopupOpen(true);
-  };
-  const confirmDeleteMission = async () => {
-    try{
-
-    if (selectedActionId !== null) {
-      await api.delete(`/execution/deleteRemediation/${selectedActionId}`);
-      setAction((prev) => prev.filter((row) => row.id !== selectedActionId));
-    }
-  }catch (error) {
-    console.error("Erreur lors de la suppression de remediation:", error);
-    
-  } 
-    setIsDeletePopupOpen(false);
-    setSelectedActionId(null);
-  };
-  const handleEditRow = (selectedRow) => {
-    const transformedremediation = {
-      id: selectedRow.id,
-      description: selectedRow.description,
-      owner_cntct: selectedRow.ownerContact,
-    };
-    setSelectedActionId(transformedremediation);
-    if (!showRemediation) setShowRemediation((prev) => !prev);
-  };
-
-  const handleDecisionResponse = (response) => {
-    setShowDecisionPopup(false);
-    if (response) {
-      setIsAddingAnother(true);
-    } else {
-      setIsAddingAnother(false);
-      setShowRemediation((prev) => !prev);
-    }
-  };
-  const onClose = () => {
-    setShowDecisionPopup(false);
-  };
-  // Configurez EmailJS avec votre userID
-  //emailjs.init('YOUR_USER_ID');
-
-  const handlesendAction = (selectedRow) => {
-    if (!selectedRow || !selectedRow.contact) {
-      alert("Aucune adresse e-mail trouvée pour cet élément !");
-      return;
+  useEffect(() => {
+    if (controleData.executionId) {
+      fetchRemediations();
     }
 
-    const templateParams = {
-      to_email: selectedRow.contact,
-      description: selectedRow.description,
-      dateField: selectedRow.dateField,
-      dateField1: selectedRow.dateField1,
-    };
+  }, [controleData.executionId]);
 
-    console.log("Envoi de l'email avec les paramètres :", templateParams);
+  // const handleAdd = async (remediation) => {
+  //   try {
+  //     if (selectedActionId) {
+  //       console.log('yuo', selectedActionId)
+  //       // Mise à jour de l'application existante
+  //       console.log('update  remediation', remediation)
+  //       const response = await api.put(`/execution/updateRemediation/${remediation.id}`, remediation);
+  //       console.log("remediation mis a jour avec succé", response.data)
+  //       setAction((prevApps) =>
+  //         prevApps.map((row) => (row.id === remediation.id ? response.data : row))
+  //       );
+  //       setSelectedActionId(null);
+  //       setShowRemediation((prev) => !prev);
+  //     } else {
+  //       console.log('add  remediation', remediation)
+  //       console.log('contrt', controleData.executionId)
+  //       const response = await api.post(`/execution/${controleData.executionId}/${controleData.controlCode}/createremediation`, remediation)
+  //       setAction(prev => [...prev, response.data]);
+  //       console.log("remediation ajouté avec succé", response.data)
+  //       setShowDecisionPopup(true);
+  //     }
+  //   } catch (error) {
+  //     console.error("Erreur lors de la création/mise à jour d'une remediation:", error);
+  //     throw error;
+  //   }
+  // };
 
-    emailjs
-      .send("service_dg6av6d", "template_f4ojiam", templateParams)
-      .then((response) => {
-        console.log(
-          "E-mail envoyé avec succès!",
-          response.status,
-          response.text
-        );
-        alert(`E-mail envoyé avec succès à ${selectedRow.contact} !`);
-      })
-      .catch((error) => {
-        console.error("Erreur lors de l'envoi de l'e-mail:", error);
-        alert("Erreur lors de l'envoi de l'e-mail. Veuillez réessayer.");
-      });
-  };
+  // const handleCloseRow = async (selectedRow) => {
+  //   try {
+  //     await api.put(`/closeremediation/${selectedRow.id}`);
+  //     await fetchRemediations();
+  //   } catch (error) {
+  //     console.error("Erreur lors de la cloture de la remediation:", error);
+  //     alert("Erreur lors de la cloture de la remediation. Veuillez réessayer.");
+  //   }
+  // };
+  // const handleDeleteRow = (selectedRow) => {
+  //   setSelectedActionId(selectedRow.id);
+  //   console.log(selectedActionId);
+  //   setIsDeletePopupOpen(true);
+  // };
+  // const confirmDeleteRemediation = async () => {
+  //   try {
 
+  //     if (selectedActionId !== null) {
+  //       await api.delete(`/execution/deleteRemediation/${selectedActionId}`);
+  //       setAction((prev) => prev.filter((row) => row.id !== selectedActionId));
+  //     }
+  //   } catch (error) {
+  //     console.error("Erreur lors de la suppression de remediation:", error);
+
+  //   }
+  //   setIsDeletePopupOpen(false);
+  //   setSelectedActionId(null);
+  // };
+  // const handleEditRow = (selectedRow) => {
+  //   const transformedremediation = {
+  //     id: selectedRow.id,
+  //     description: selectedRow.description,
+  //     owner_cntct: selectedRow.ownerContact,
+  //     start_date: selectedRow.startDate,
+  //     end_date: selectedRow.endDate,
+  //   };
+  //   setSelectedActionId(transformedremediation);
+  //   if (!showRemediation) setShowRemediation((prev) => !prev);
+  // };
+  // const handleDecisionResponse = (response) => {
+  //   setShowDecisionPopup(false);
+  //   if (response) {
+  //     setIsAddingAnother(true);
+  //   } else {
+  //     setIsAddingAnother(false);
+  //     setShowRemediation((prev) => !prev);
+  //   }
+  // };
+  // const handleSendAction = async (selectedRow) => {
+
+  //   if (!selectedRow || !selectedRow.ownerContact) {
+  //     alert("Aucune adresse e-mail trouvée pour cet élément !");
+  //     return;
+  //   }
+  //   const ccEmail = selectedRow.ownerSystem_email || ""
+
+  //   const templateParams = {
+  //     to_email: selectedRow.ownerContact,
+  //     cc_email: ccEmail,
+  //     controlCode: selectedRow.controlCode,
+  //     SystemName: selectedRow.SystemName,
+  //     missionName: selectedRow.missionName,
+  //     description: selectedRow.description,
+  //     suivi: selectedRow.suivi,
+  //     startDate: selectedRow.startDate,
+  //     endDate: selectedRow.endDate,
+  //   };
+
+  //   console.log("Envoi de l'email avec les paramètres :", templateParams);
+  //   try {
+  //     const response = await emailjs.send(
+  //       "service_dg6av6d",
+  //       "template_f4ojiam",
+  //       templateParams);
+  //     alert(`E-mail envoyé avec succès à ${selectedRow.ownerContact} !`);
+
+  //     await api.put(`/updatestatusremediation/${selectedRow.id}`);
+
+  //     await fetchRemediations();
+
+  //   }
+  //   catch (error) {
+  //     console.error("Erreur lors de l'envoi de l'e-mail:", error);
+  //     alert("Erreur lors de l'envoi de l'e-mail. Veuillez réessayer.");
+  //   };
+  // };
   const rowActions = [
     {
       icon: (
         <SendIcon sx={{ marginRight: "5px", width: "20px", height: "20px" }} />
       ),
       label: "Envoyer",
-      onClick: (selectedRow) => handlesendAction(selectedRow),
+      onClick: (selectedRow) => handleSendAction(selectedRow),
+    },
+    {
+      icon: (
+        <DeleteOutlineRoundedIcon
+          sx={{ color: "var(--alert-red)", marginRight: "5px" }}
+        />
+      ),
+      label: "cloturé",
+      onClick: (selectedRow) => handleCloseRow(selectedRow),
+      disabled: (selectedRow) =>
+        selectedRow.statusName === "en cours" &&
+        (!selectedRow.suivi || selectedRow.suivi.trim() === ""),
     },
     {
       icon: <SquarePen className="mr-2 w-[20px] h-[20px]" />,
@@ -326,16 +398,13 @@ useEffect(() => {
     },
   ];
 
-  const [multiSelectStatus, setMultiSelectStatus] = useState({});
-
+  const onClose = () => {
+    setShowDecisionPopup(false);
+  };
   const handleCommentSave = (newComment) => {
     console.log("Nouveau commentaire:", newComment);
     setCommentaire(newComment);
   };
-
-  // État pour suivre l'onglet actif
-  const [activePanel, setActivePanel] = useState("evidence");
-
   // Fonction pour gérer le changement d'onglet
   const handleTabChange = (event, newValue) => {
     setActivePanel(newValue === 0 ? "evidence" : "test");
@@ -373,9 +442,6 @@ useEffect(() => {
     }
   };
 
-  const [openDeletePopup, setOpenDeletePopup] = useState(false);
-  const [deletedEvidence, setDeletedEvidence] = useState(null);
-  const [deletedTestFile, setDeletedTestFile] = useState(null);
   const handleDeleteConfirm = async () => {
     setOpenDeletePopup(false); // Fermer la popup de confirmation
     if (activePanel === "evidence") {
@@ -413,8 +479,6 @@ useEffect(() => {
     }
   };
 
-  const [localSelections, setLocalSelections] = useState({}); // Renommé ici
-
   // Fonction pour gérer les changements de sélection dans MultiSelectButtons
   const handleSelectionChange = (newSelection) => {
     setLocalSelections(newSelection); // Met à jour l'état des sélections
@@ -425,34 +489,8 @@ useEffect(() => {
     selectedMulti === "Partially Applied" || selectedMulti === "Not Applied";
   const isValidateDisabled =
     !selectedMulti || !commentaire || shouldShowRemediation;
-  const [showDecisionPopup, setShowDecisionPopup] = useState(false);
 
-  const handleAdd = async (remediation) => {
-    try{
-    if (selectedActionId) {
-      console.log('yuo',selectedActionId)
-      // Mise à jour de l'application existante
-      console.log('update  remediation',remediation)
-      const response = await api.put(`/execution/updateRemediation/${remediation.id}`, remediation);
-      console.log("remediation mis a jour avec succé", response.data)
-      setAction((prevApps) =>
-        prevApps.map((row) => (row.id === remediation.id ? response.data  : row))
-      );
-      setSelectedActionId(null);
-      setShowRemediation((prev) => !prev);
-    } else {
-      console.log('add  remediation',remediation)
-      console.log('contrt',controleData.executionId)
-      const response = await api.post(`/execution/${controleData.executionId}/createremediation`,remediation)
-      setAction(prev => [...prev, response.data]); // Add the remediation to the list
-      console.log("remediation ajouté avec succé", response.data)
-      setShowDecisionPopup(true);
-    }
-  } catch (error) {
-    console.error("Erreur lors de la création/mise à jour d'une remediation:", error);
-    throw error;
-  }
-  };
+
   const handleValidate = () => {
     // Lorsque vous cliquez sur "Valider", affichez le popup
     console.log("handleValidate called");
@@ -460,7 +498,7 @@ useEffect(() => {
   };
   const handlePopupClose = () => setShowPopup(false);
 
-  const [testScriptData, setTestScriptData] = useState([]); // État pour stocker les données du test script
+
   const handleTestScriptChange = (data) => {
     console.log("Test Script Data:", data);
     setTestScriptData(data); // Mettre à jour les données du test script en temps réel
@@ -611,10 +649,6 @@ useEffect(() => {
 
     setShowPopup(true);
 
-    // // Télécharger automatiquement le PDF
-    // doc.save('rapport_controle.pdf');
-    // setShowPopup(true);
-
     console.log(
       "Type:",
       type,
@@ -665,17 +699,6 @@ useEffect(() => {
     };
     await updateExecution(controleData.executionId, payload);
   };
-  const navigate = useNavigate();
-
-  const handleRowClick = (rowData) => {
-    // Naviguer vers la page de détails avec l'ID du contrôle dans l'URL
-    navigate(`/remediation/${rowData.id}`, {
-      state: { remediationData: rowData },
-    });
-    // navigate('/controle', { state: { controleData: rowData } });
-    console.log("Détails du contrôle sélectionné:", rowData);
-  };
-  
 
 
   // Check if all remediations are done  hadi welilha manel mategel3ihech
@@ -721,10 +744,10 @@ useEffect(() => {
 
   return (
     <div className=" ">
-      {isToReview ||isToValidate && (
-          <div className="fixed top-0 left-0 w-full h-full bg-transparent z-50 pointer-events-auto" />
-        )}
-     <Header user={user} />
+      {isToReview || isToValidate && (
+        <div className="fixed top-0 left-0 w-full h-full bg-transparent z-50 pointer-events-auto" />
+      )}
+      <Header user={user} />
       <div className="ml-8 mr-6 pb-9 relative">
         <div className="flex justify-between items-center px-4 py-2">
           {location.pathname.includes("") && <Breadcrumbs />}
@@ -779,8 +802,8 @@ useEffect(() => {
           selectedMulti={selectedMulti}
           setSelectedMulti={setSelectedMulti}
           shouldShowRemediation={
-            selectedMulti === "Partially Applied" ||
-            selectedMulti === "Not Applied"
+            selectedMulti === 6 ||
+            selectedMulti === 3
           }
           commentaire={commentaire}
           setCommentaire={setCommentaire}
@@ -797,7 +820,7 @@ useEffect(() => {
           handleRowClick={handleRowClick}
           rowActions={rowActions}
           isDeletePopupOpen={isDeletePopupOpen}
-          confirmDeleteMission={confirmDeleteMission}
+          confirmDeleteMission={confirmDeleteRemediation}
           setIsDeletePopupOpen={setIsDeletePopupOpen}
           selectedActionId={selectedActionId}
           handleDecisionResponse={handleDecisionResponse}

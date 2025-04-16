@@ -79,7 +79,9 @@ function DisplayControleAppID() {
 const [appData, setAppData] = useState([]); // État pour stocker les données de l'application
  const fetchAppData = async () => {
   try {
-    const endpoint = (user?.role === "admin"|| profile==='manager' ) ? `/missions/${AppData.id}/getexecutionsList` : `/missions/${AppData.missionId}/${AppData.id}/getexecutionsListForTesteur`;
+    const endpoint = (user?.role === "admin"|| profile==='manager' ) ? 
+    `/missions/${AppData.id}/getexecutionsList` :
+     `/missions/${AppData.missionId}/${AppData.id}/getexecutionsListForTesteur`;
     const response = await api.get(endpoint);
     console.log('list',response.data)
     setAppData(response.data);
