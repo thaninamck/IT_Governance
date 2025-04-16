@@ -223,6 +223,7 @@ public function getMissionSystemsById($id){
     return $missions->map(function ($mission) use ($userId) {
         // Trouver la participation de l'utilisateur courant
         $userParticipation = $mission->participations->firstWhere('user_id', $userId);
+        $user = $userParticipation->user;
         $profile_name=$userParticipation->profile;
         
         return [
@@ -237,6 +238,10 @@ public function getMissionSystemsById($id){
             'statusId' => $mission->status_id,
             'status' => $mission->status->status_name,
             'profileName' => $profile_name->profile_name,
+
+            'userId' => $user->id,
+            'userFullName' => $user->first_name . ' ' . $user->last_name,
+            'userRole' => $user->role == 1 ? 'admin' : 'user',
             // Conserver les autres participations si nécessaire
             // 'participations' => $mission->participations->map(function ($participation) {
             //     return [
