@@ -52,28 +52,67 @@ class MissionController extends BaseController
     }
 
     public function getMissionReport($id): JsonResponse
- {
+{
     try {
         $data = ['mission_id' => $id];
 
-        $result = $this->statisticsService->calculate('app_conf_score', $data);;
-        
-        if (!$result) {
-            return $this->sendError("report not found", [], 404);
+        $app_conf = $this->statisticsService->calculate('app_conf_score', $data);
+        $db_conf = $this->statisticsService->calculate('db_conf_score', $data);
+        $os_conf = $this->statisticsService->calculate('os_conf_score', $data);
+        $procedural_conf = $this->statisticsService->calculate('procedural_conf_score', $data);
+        $physical_conf = $this->statisticsService->calculate('physical_conf_score', $data);
+        $global_adv = $this->statisticsService->calculate('global_adv', $data);
+
+        // Construire la structure "systeme"
+        $systeme = [];
+
+        foreach ($app_conf as $app) {
+            $name = $app['name'];
+
+            $appScore = $app['score'];
+            $dbScore = collect($db_conf)->firstWhere('name', $name)['score'] ?? 0;
+            $osScore = collect($os_conf)->firstWhere('name', $name)['score'] ?? 0;
+
+            $globalScore = round(($appScore + $dbScore + $osScore) / 3, 2);
+
+            $systeme[] = [
+                'name' => $name,
+                'score' => $globalScore
+            ];
         }
 
-       
+        // Moyenne des scores pour chaque couche
+        $layer = [
+            'Applicative' => round(collect($app_conf)->avg('score'), 2),
+            'Base de données' => round(collect($db_conf)->avg('score'), 2),
+            'Système d\'exploitation' => round(collect($os_conf)->avg('score'), 2),
+            $physical_conf['name']=>$physical_conf['score'],
+            $procedural_conf['name']=>$procedural_conf['score']
+        ];
 
-        // Réponse JSON avec le statut précédent
+        // Moyenne globale des couches
+        $global_score = round(array_sum($layer) / count($layer), 2);
+
         return $this->sendResponse(
-             $result,
-            
-         "Report generated successfully");
+            [
+                "app" => $app_conf,
+                "db" => $db_conf,
+                "os" => $os_conf,
+                "systeme" => $systeme,
+                "layer" => $layer,
+               "global_score" => $global_score,
+               "mission_adv"=>$global_adv['global_advancement'],
+               "apps_adv"=>$global_adv['apps'],
 
+            ],
+            "Report generated successfully"
+        );
     } catch (\Exception $e) {
         return $this->sendError("An error occurred", ["error" => $e->getMessage()], 500);
     }
- }
+}
+
+
     /**
      * Store a newly created resource in storage.
      */
