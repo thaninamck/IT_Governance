@@ -238,6 +238,12 @@ Route::middleware('auth:sanctum')->prefix('v1')->group(function () {
 });
 
 
+
+Route::middleware('auth:sanctum')->prefix('v1')->group(function () {
+    Route::controller(MissionController::class)->group(function () {
+        Route::get('/mission/{missionid}/getsystems', 'getSystemsByMissionID');
+    });
+});
 //gestion layers
 Route::prefix('v1')->group(function () {
     Route::controller(LayerController::class)->group(function () {
@@ -256,11 +262,11 @@ Route::prefix('v1')->group(function () {
     });
 });
 //gestion systems
-Route::prefix('v1')->group(function () {
-    Route::controller(MissionController::class)->group(function () {
-        Route::get('/mission/{missionid}/getsystems', 'getSystemsByMissionID');
-    });
-});
+// Route::prefix('v1')->group(function () {
+//     Route::controller(MissionController::class)->group(function () {
+//         Route::get('/mission/{missionid}/getsystems', 'getSystemsByMissionID');
+//     });
+// });
 Route::prefix('v1')->group(function () {
     Route::controller(SystemController::class)->group(function () {
         Route::post('/mission/{missionid}/createsystem', 'storeSystemForMission');

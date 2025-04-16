@@ -544,7 +544,10 @@ public function resumeMission(Request $request, $id): JsonResponse
     public function getSystemsByMissionID($missionId):JsonResponse
     {
         try{
-            $systems=$this->missionService->getSystemsByMissionID($missionId);
+            $user = auth()->user();
+
+            // $systems=$this->missionService->getSystemsByMissionID($missionId);
+            $systems = $this->missionService->getSystemsByMissionID($missionId, $user);
 
             if (!isset($systems)) {
                 return $this->sendError('Aucun system trouvé pour cette mission.', [], 404);

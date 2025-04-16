@@ -3,6 +3,7 @@
 namespace App\Services\V1;
 
 use App\Models\Mission;
+use App\Models\User;
 use App\Repositories\V1\MissionRepository;
 
 class MissionService
@@ -54,8 +55,44 @@ class MissionService
     ];
 }
 
-public function getSystemsByMissionID($missionId)
+// public function getSystemsByMissionID($missionId)
+// {
+//     // Chargez la mission avec les systèmes et leurs relations
+//     $mission = $this->missionRepository->getSystemsByMissionID($missionId)
+//     ->load(['systems.layers', 'systems.owner']);
+
+//     if (!$mission) {
+//         return null; // ou lancer une exception
+//     }
+    
+
+//     return response()->json([
+//         'systems' => $mission->systems->map(function ($system) use ($mission) {
+//             return [
+//                 'missionId' => $mission->id,
+//                 'missionName' => $mission->mission_name,
+//                 'id' => $system->id,
+//                 'name' => $system->name,
+//                 'description' => $system->description,
+//                 'ownerId' => $system->owner->id ?? null,
+//                 'ownerName' => $system->owner->full_name ?? null,
+//                 'ownerContact' => $system->owner->email ?? null,
+//                 'layers' => $system->layers->map(function ($layer) {
+//                     return [
+//                         'id' => $layer->id,
+//                         'name' => $layer->name
+//                     ];
+//                 })->toArray()
+//             ];
+//         })->toArray()
+//     ]);
+// }
+
+public function getSystemsByMissionID($missionId, User $user)
 {
+   
+
+
     // Chargez la mission avec les systèmes et leurs relations
     $mission = $this->missionRepository->getSystemsByMissionID($missionId)
     ->load(['systems.layers', 'systems.owner']);
@@ -65,8 +102,11 @@ public function getSystemsByMissionID($missionId)
     }
     
 
+    $participation = $mission->participations->firstWhere('user_id', $user->id);
+    $profileName = $participation?->profile?->profile_name ?? null;
+
     return response()->json([
-        'systems' => $mission->systems->map(function ($system) use ($mission) {
+        'systems' => $mission->systems->map(function ($system) use  ($mission, $user, $profileName) {
             return [
                 'missionId' => $mission->id,
                 'missionName' => $mission->mission_name,
@@ -76,6 +116,8 @@ public function getSystemsByMissionID($missionId)
                 'ownerId' => $system->owner->id ?? null,
                 'ownerName' => $system->owner->full_name ?? null,
                 'ownerContact' => $system->owner->email ?? null,
+                'role' => ($user->role == 1) ? 'admin' : 'user',
+                'profile' => $profileName,
                 'layers' => $system->layers->map(function ($layer) {
                     return [
                         'id' => $layer->id,
@@ -86,7 +128,6 @@ public function getSystemsByMissionID($missionId)
         })->toArray()
     ]);
 }
-
 public function getMissionSystemsById($id){
     $data=$this->missionRepository->getMissionSystemsById($id);
     return $data;	

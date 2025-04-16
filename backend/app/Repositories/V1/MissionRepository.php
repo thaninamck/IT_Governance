@@ -6,9 +6,16 @@ use App\Models\Mission;
 
 class MissionRepository
 {
-     public function getMissionSystemsById($id)
+    //  public function getMissionSystemsById($id)
+    //  {
+    //      return Mission::with(['systems.layers.owner'])->where('id',$id) ->get();
+    //  }
+
+    public function getMissionSystemsById($id)
      {
-         return Mission::with(['systems.layers.owner'])->where('id',$id) ->get();
+         return Mission::with(['systems.layers', 'systems.owner', 'participations.profile'])
+         ->find($id);
+     
      }
 
     public function getAllMissions()
