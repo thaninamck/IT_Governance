@@ -1,0 +1,142 @@
+import { useState } from "react";
+import { api } from "../Api";
+
+import emailjs from "emailjs-com";
+emailjs.init("oAXuwpg74dQwm0C_s");
+export default function useRemediation(executionId, controlCode) {
+  const [action, setAction] = useState([]);
+  const [error, setError] = useState(null);
+  const [isDeletePopupOpen, setIsDeletePopupOpen] = useState(false);
+  const [selectedActionId, setSelectedActionId] = useState(null);
+  const [showRemediation, setShowRemediation] = useState(false);
+  const [showDecisionPopup, setShowDecisionPopup] = useState(false);
+  const [isAddingAnother, setIsAddingAnother] = useState(false);
+
+  const fetchRemediations = async () => {
+    try {
+      const response = await api.get(`/execution/${executionId}/getremediations`);
+      setAction(response.data);
+    } catch (err) {
+      setError(err.message);
+    }
+  };
+
+  const handleAdd = async (remediation) => {
+    try {
+      if (remediation.id) {
+        const response = await api.put(`/execution/updateRemediation/${remediation.id}`, remediation);
+        setAction(prev => prev.map(row => row.id === remediation.id ? response.data : row));
+        setSelectedActionId(null);
+        setShowRemediation(false);
+      } else {
+        const response = await api.post(`/execution/${executionId}/${controlCode}/createremediation`, remediation);
+        setAction(prev => [...prev, response.data]);
+        setShowDecisionPopup(true);
+      }
+    } catch (error) {
+      console.error("Erreur dans l'ajout/màj remediation:", error);
+      throw error;
+    }
+  };
+
+  const handleDeleteRow = (selectedRow) => {
+    setSelectedActionId(selectedRow.id);
+    setIsDeletePopupOpen(true);
+  };
+
+  const confirmDeleteRemediation = async () => {
+    try {
+      if (selectedActionId !== null) {
+        await api.delete(`/execution/deleteRemediation/${selectedActionId}`);
+        setAction(prev => prev.filter(row => row.id !== selectedActionId));
+      }
+    } catch (error) {
+      console.error("Erreur suppression remediation:", error);
+    } finally {
+      setIsDeletePopupOpen(false);
+      setSelectedActionId(null);
+    }
+  };
+
+  const handleEditRow = (selectedRow) => {
+    const transformedremediation = {
+            id: selectedRow.id,
+            description: selectedRow.description,
+            owner_cntct: selectedRow.ownerContact,
+            start_date: selectedRow.startDate,
+            end_date: selectedRow.endDate,
+          };
+          setSelectedActionId(transformedremediation);
+          if (!showRemediation) setShowRemediation((prev) => !prev);
+  };
+
+  const handleCloseRow = async (selectedRow) => {
+    try {
+      await api.put(`/closeremediation/${selectedRow.id}`);
+      await fetchRemediations();
+    } catch (error) {
+      alert("Erreur lors de la clôture de la remediation.");
+    }
+  };
+
+  const handleSendAction = async (selectedRow) => {
+    if (!selectedRow || !selectedRow.ownerContact) {
+      alert("Email manquant pour cet élément !");
+      return;
+    }
+
+    const templateParams = {
+      to_email: selectedRow.ownerContact,
+      cc_email: selectedRow.ownerSystem_email || "",
+      controlCode: selectedRow.controlCode,
+      SystemName: selectedRow.SystemName,
+      missionName: selectedRow.missionName,
+      description: selectedRow.description,
+      suivi: selectedRow.suivi,
+      startDate: selectedRow.startDate,
+      endDate: selectedRow.endDate,
+    };
+
+    try {
+      await emailjs.send("service_dg6av6d", "template_f4ojiam", templateParams);
+      alert(`E-mail envoyé à ${selectedRow.ownerContact} !`);
+      await api.put(`/updatestatusremediation/${selectedRow.id}`);
+      await fetchRemediations();
+    } catch (error) {
+      alert("Erreur lors de l'envoi de l'email.");
+    }
+  };
+
+  const handleDecisionResponse = (response) => {
+    setShowDecisionPopup(false);
+    if (response) setIsAddingAnother(true);
+    else {
+      setIsAddingAnother(false);
+      setShowRemediation(false);
+    }
+  };
+
+  return {
+    action,
+    error,
+    showRemediation,
+    setShowRemediation,
+    fetchRemediations,
+    handleAdd,
+    handleEditRow,
+    handleDeleteRow,
+    confirmDeleteRemediation,
+    handleCloseRow,
+    handleSendAction,
+    showDecisionPopup,
+    setShowDecisionPopup,
+    handleDecisionResponse,
+    isDeletePopupOpen,
+    setIsDeletePopupOpen,
+    selectedActionId,
+    setSelectedActionId,
+    isAddingAnother,
+    handleSendAction
+    
+  };
+}
