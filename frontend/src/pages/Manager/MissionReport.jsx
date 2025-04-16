@@ -213,7 +213,7 @@ const MissionReport = ({
             <h2 className="text-center font-bold">
               Score de conformité par application
             </h2>
-            <ResponsiveContainer width="90%" height={250}>
+            <ResponsiveContainer width="70%" height={200}>
               <BarChart data={dataApplication}>
                 <XAxis dataKey="name" />
                 <YAxis />
@@ -227,7 +227,7 @@ const MissionReport = ({
             <h2 className="text-center font-bold">
               Score de conformité par base de données
             </h2>
-            <ResponsiveContainer width="90%" height={250}>
+            <ResponsiveContainer width="70%" height={200}>
               <BarChart data={dataDatabase}>
                 <XAxis dataKey="name" />
                 <YAxis />
@@ -242,7 +242,7 @@ const MissionReport = ({
             <h2 className="text-center font-bold">
               Score de conformité par Systèmes d'exploitation
             </h2>
-            <ResponsiveContainer width="90%" height={250}>
+            <ResponsiveContainer width="70%" height={200}>
               <BarChart data={dataOS}>
                 <XAxis dataKey="name" />
                 <YAxis />
@@ -257,7 +257,7 @@ const MissionReport = ({
             <h2 className="text-center font-bold">
               Score de conformité global par système
             </h2>
-            <ResponsiveContainer width="90%" height={250}>
+            <ResponsiveContainer width="70%" height={200}>
               <BarChart data={dataSYS}>
                 <XAxis dataKey="name" />
                 <YAxis />
@@ -272,7 +272,7 @@ const MissionReport = ({
             <h2 className="text-center font-bold">
               Score de conformité global par couche
             </h2>
-            <ResponsiveContainer width="90%" height={250}>
+            <ResponsiveContainer width="70%" height={200}>
               <BarChart data={dataLAYER}>
                 <XAxis dataKey="name" />
                 <YAxis />
@@ -287,7 +287,7 @@ const MissionReport = ({
             <h2 className="text-center font-bold">
               Score de conformité / Non conformité
             </h2>
-            <ResponsiveContainer width="90%" height={250}>
+            <ResponsiveContainer width="70%" height={200}>
               <PieChart>
                 <Pie
                   data={pieData}

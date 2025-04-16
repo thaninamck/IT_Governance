@@ -3,6 +3,7 @@
 namespace App\Repositories\V1;
 
 use App\Models\System;
+use DB;
 
 class SystemRepository
 {
@@ -59,5 +60,20 @@ class SystemRepository
         return $system;
     }
 
-    
+    public function getSystemExecutionsWithTheirStatusesByMission($missionId)
+{
+    return DB::table('systems as s')
+        ->join('layers as l', 's.id', '=', 'l.system_id')
+        ->join('executions as e', 'e.layer_id', '=', 'l.id')
+        ->join('statuses as st', 'e.status_id', '=', 'st.id')
+        ->where('s.mission_id', $missionId)
+        ->select(
+            's.name as application',
+            'l.name as couche',
+            'e.cntrl_modification as control',
+            'st.status_name as status'
+        )
+        ->get();
+}
+
 }

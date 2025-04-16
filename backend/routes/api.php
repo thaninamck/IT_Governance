@@ -135,11 +135,12 @@ Route::middleware(['auth:sanctum', ManagerMiddleware::class])
 
         });
 
-        // MissionController Routes
-        // Route::controller(MissionController::class)->group(function () {
-        //     Route::get('/missions/{mission}/members', 'getMembersByMission');
-        // });
+        //MissionController Routes
+        Route::controller(MissionController::class)->group(function () {
+            Route::get('/missions/{mission}/report', 'getMissionReport');
+        });
     });
+    Route::get('/missions/{mission}/report', [MissionController::class,'getMissionReport']);
 
 //  Route::controller(ParticipationController::class)->group(function () {
 //     Route::get('/missions/{mission}/testers', 'getTestersByMissionID');

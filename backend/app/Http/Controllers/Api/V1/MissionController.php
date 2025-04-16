@@ -9,6 +9,8 @@ use App\Models\Participation;
 use App\Repositories\V1\MissionRepository;
 use App\Services\LogService;
 use App\Services\V1\MissionService;
+use App\Services\V1\StatisticsService;
+
 use App\Services\V1\ParticipationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -20,15 +22,17 @@ use function Laravel\Prompts\text;
 class MissionController extends BaseController
 {
     protected $missionService;
+    protected $statisticsService;
     protected $logService;
     protected $participationService;
     protected $notificationService;
 
 
-    public function __construct(MissionService $missionService, LogService $logService, ParticipationService $participationService, NotificationService $notificationService)
+    public function __construct(StatisticsService $statisticsService,MissionService $missionService, LogService $logService, ParticipationService $participationService, NotificationService $notificationService)
     {
         $this->missionService = $missionService;
         $this->logService = $logService;
+        $this->statisticsService = $statisticsService;
         $this->participationService = $participationService;
         $this->notificationService = $notificationService;
     }
@@ -88,15 +92,7 @@ class MissionController extends BaseController
             // Création de la participation du manager
             $this->participationService->createParticipation($participantData);
 
-            /*do this 
-            
-           $this->notificationService->sendNotification(
-     $missionData['manager_id'],
-     "Vous avez été affecté à la mission '{$mission->mission_name}' comme manager.",
-     json_encode(['type' => 'mission', 'id' => $mission->id]), // Convertir en JSON
-     'mission'
- );
- */
+           
 
             // Log de l'action
             $this->logService->logUserAction(
@@ -624,20 +620,29 @@ public function getUserMissions(Request $request)
     
     return response()->json($missions);
 }
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Mission $mission)
-    {
-        //
-    }
+    
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Mission $mission)
-    {
-        //
+public function getMissionReport($id): JsonResponse
+ {
+    try {
+        // Mettre la mission en pause
+        $result = $this->statisticsService->missionReportCalculate($id);
+
+        if (!$result) {
+            return $this->sendError("report not found", [], 404);
+        }
+
+       
+
+        // Réponse JSON avec le statut précédent
+        return $this->sendResponse([
+            'mission' => $result,
+            
+        ], "Report generated successfully");
+
+    } catch (\Exception $e) {
+        return $this->sendError("An error occurred", ["error" => $e->getMessage()], 500);
     }
+ }
 }
 
