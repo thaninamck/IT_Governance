@@ -4,25 +4,39 @@ namespace App\Services\V1;
 
 use App\Repositories\V1\SystemRepository;
 use App\Services\calculations\AppScoreConformityCalculator;
+use App\Services\calculations\CalculationServiceInterface;
 use App\Services\calculations\calculationWeightsStrategies\DefaultStatusWeightStrategy;
 
 class StatisticsService
 {
-    protected AppScoreConformityCalculator $appConformityCalculator;
+    /**
+     * @var CalculationServiceInterface[]
+     */
+    protected array $calculators;
 
     public function __construct()
     {
-        // On instancie d'abord les dépendances
         $systemRepository = new SystemRepository();
-        $strategy = new DefaultStatusWeightStrategy();
 
-        // Puis on instancie le calculateur avec ses dépendances
-        $this->appConformityCalculator = new AppScoreConformityCalculator($systemRepository, $strategy);
+        $this->calculators = [
+            'app_conf_score' => new AppScoreConformityCalculator($systemRepository, new DefaultStatusWeightStrategy()),
+            // 'risk_score' => new RiskScoreCalculator(...),
+            // Tu peux en rajouter d'autres ici
+        ];
     }
 
-    public function missionReportCalculate($missionId)
+    public function calculate(string $type, $data)
     {
-        $data['mission_id'] = $missionId;
-        return $this->appConformityCalculator->calculate($data);
+        if (!isset($this->calculators[$type])) {
+            throw new \InvalidArgumentException("Unknown calculation type: $type");
+        }
+
+        return $this->calculators[$type]->calculate($data);
+    }
+
+    public function listCalculations(): array
+    {
+        return array_keys($this->calculators);
     }
 }
+

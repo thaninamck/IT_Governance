@@ -22,7 +22,7 @@ use function Laravel\Prompts\text;
 class MissionController extends BaseController
 {
     protected $missionService;
-    protected $statisticsService;
+    protected StatisticsService $statisticsService ;
     protected $logService;
     protected $participationService;
     protected $notificationService;
@@ -51,6 +51,29 @@ class MissionController extends BaseController
         return $this->sendResponse(MissionResource::collection($missions), 'missions retrived successfully');
     }
 
+    public function getMissionReport($id): JsonResponse
+ {
+    try {
+        $data = ['mission_id' => $id];
+
+        $result = $this->statisticsService->calculate('app_conf_score', $data);;
+        
+        if (!$result) {
+            return $this->sendError("report not found", [], 404);
+        }
+
+       
+
+        // Réponse JSON avec le statut précédent
+        return $this->sendResponse(
+             $result,
+            
+         "Report generated successfully");
+
+    } catch (\Exception $e) {
+        return $this->sendError("An error occurred", ["error" => $e->getMessage()], 500);
+    }
+ }
     /**
      * Store a newly created resource in storage.
      */
@@ -622,27 +645,6 @@ public function getUserMissions(Request $request)
 }
     
 
-public function getMissionReport($id): JsonResponse
- {
-    try {
-        // Mettre la mission en pause
-        $result = $this->statisticsService->missionReportCalculate($id);
 
-        if (!$result) {
-            return $this->sendError("report not found", [], 404);
-        }
-
-       
-
-        // Réponse JSON avec le statut précédent
-        return $this->sendResponse(
-             $result,
-            
-         "Report generated successfully");
-
-    } catch (\Exception $e) {
-        return $this->sendError("An error occurred", ["error" => $e->getMessage()], 500);
-    }
- }
 }
 
