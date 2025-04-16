@@ -9,7 +9,14 @@ class RemediationRepository
     public function getAllRemediationsByExecution(int $executionId){
       // return  Remediation::with('execution')->where('execution_id', $executionId)->get();
 
-      return Remediation::with(['execution.user', 'execution.layer']) // Ajoute ici ce que tu veux charger
+      return Remediation::with(['execution.user', 
+      'execution.layer',
+      'execution.layer.system.owner',
+      'execution.layer.system',
+      'execution.layer.system.mission', 
+      'execution.coverage', 
+      'execution.steps.control',
+      'status']) // Ajoute ici ce que tu veux charger
         ->where('execution_id', $executionId)
         ->get();
     }
@@ -56,4 +63,33 @@ class RemediationRepository
     
         return $remediation;
     }
+    public function closeRemediation(int $id):?Remediation
+    {
+        $remediation=Remediation::find($id);
+
+        if(!$remediation){
+            return null;
+        }
+        
+         // Mettre à jour le statut de la remediation
+         $remediation->status_id = 1; //close remediation
+         $remediation->save();
+
+        return $remediation;
+    }
+    public function updateStatusRemediation(int $id):?Remediation
+    {
+        $remediation=Remediation::find($id);
+
+        if(!$remediation){
+            return null;
+        }
+        
+         // Mettre à jour le statut de la remediation
+         $remediation->status_id = 17; //close remediation
+         $remediation->save();
+
+        return $remediation;
+    }
+
 }

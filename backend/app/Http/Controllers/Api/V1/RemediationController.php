@@ -35,6 +35,65 @@ class RemediationController extends BaseController
     //     return $this->sendResponse(RemediationResource::collection($remediations),'remediations retrieved successfully');
     // }
 
+    public function closeRemediation($id): JsonResponse
+    {
+        try {
+            // Fermer la mission
+            $remediation = $this->remediationService->closeRemediation($id);
+
+            if (!$remediation) {
+                return $this->sendError("remediation not found", [], 404);
+            }
+
+            // Log de l'action
+            $this->logService->logUserAction(
+                auth()->user()->email ?? 'Unknown',
+                'testeur',
+                "Cloture de la remediation : {$remediation->description}",
+                ""
+            );
+
+            // Réponse JSON
+            return $this->sendResponse(new RemediationResource($remediation), "remediation closed successfully");
+        } catch (\Exception $e) {
+            return $this->sendError("An error occurred", ["error" => $e->getMessage()], 500);
+        }
+    }
+
+    public function UpdateStatusRemediation($id): JsonResponse
+    {
+        try {
+            // Fermer la mission
+            $remediation = $this->remediationService->updateStatusRemediation($id);
+
+            if (!$remediation) {
+                return $this->sendError("remediation not found", [], 404);
+            }
+
+            // Log de l'action
+            $this->logService->logUserAction(
+                auth()->user()->email ?? 'Unknown',
+                'testeur',
+                "update de la remediation : {$remediation->description}",
+                ""
+            );
+
+            // Réponse JSON
+            return $this->sendResponse(new RemediationResource($remediation), "remediation status updated successfully");
+        } catch (\Exception $e) {
+            return $this->sendError("An error occurred", ["error" => $e->getMessage()], 500);
+        }
+    }
+
+    public function getRemediationStatusOptions()
+    {
+        try {
+            $data = $this->remediationService->getRemediationStatusOptions();
+            return $this->sendResponse($data, "remediation status options retrieved successfully", 200);
+        } catch (\Exception $e) {
+            return $this->sendError("Error while retrieving remediation status options", ['error' => $e->getMessage()], 500);
+        }
+    }
     public function getAllRemediationsByExecution($executionId):JsonResponse
     {
         try{
@@ -52,12 +111,15 @@ class RemediationController extends BaseController
     }
 
 
-    public function storeRemediationForExecution(Request $request,$executionId):JsonResponse
+    public function storeRemediationForExecution(Request $request,$executionId,$controlId):JsonResponse
     {
         try{
             $rules=[
                 'description'=>'required|string|max:255',
                 'owner_cntct'=>'required|email|max:255',
+                'start_date'=>'required|date',
+                'end_date' => 'required|date|after:start_date',
+               // 'action_name'=>'required|string|max:255',
                 //'follow_up'=>'sometimes|string|max:255',
             ];
             $validator=Validator::make($request->all(),$rules);
@@ -68,7 +130,8 @@ class RemediationController extends BaseController
 
             $remediation=$this->remediationService->createRemediationForExecution(
                 $validator->validate(),
-                $executionId
+                $executionId,
+                $controlId
             );
 
             $this->logService->logUserAction(
@@ -101,6 +164,9 @@ class RemediationController extends BaseController
                 'description'=>'sometimes|string|max:255',
                 'owner_cntct'=>'sometimes|email|max:255',
                 'follow_up'=>'sometimes|nullable|string|max:255',
+                'start_date' => 'sometimes|date',
+                'end_date' => 'sometimes|date|after:start_date',
+              //  'action_name'=>'sometimes|string|max:255',
             ];
 
             $validator=Validator::make($request->all(),$rules);

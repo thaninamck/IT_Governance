@@ -52,4 +52,22 @@ class Execution extends Model
     {
         return $this->belongsToMany(StepTestScript::class, 'step_executions', 'execution_id', 'step_id');
     }
+
+//     public function control()
+// {
+//     return $this->hasOneThrough(
+//        Control::class,
+//        StepTestScript::class,
+//         'id',               // Foreign key on StepTestScript
+//         'id',               // Foreign key on Control
+//         'id',               // Local key on Execution
+//         'control_id'        // Local key on StepTestScript
+//     );
+// }
+
+public function step()
+{
+    return $this->hasOne(StepTestScript::class, 'id', 'step_id')->with('control');
+}
+
 }
