@@ -345,7 +345,7 @@ Route::prefix('v1')->controller(ClientController::class)->group(function () {
 
 //gestion remediation 
 Route::prefix('v1')->controller(RemediationController::class)->group(function () {
-    Route::post('/execution/{executionid}/createremediation', 'storeRemediationForExecution');
+    Route::post('/execution/{executionid}/{controlCode}/createremediation', 'storeRemediationForExecution');
 });
 
 Route::prefix('v1')->controller(RemediationController::class)->group(function () {
@@ -359,6 +359,21 @@ Route::prefix('v1')->controller(RemediationController::class)->group(function ()
 });
 Route::prefix('v1')->controller(RemediationController::class)->group(function () {
     Route::get('/execution/getRemediation/{remediationId}', 'getRemediationInfo');
+});
+Route::prefix('v1')->controller(RemediationController::class)->group(function () {
+    Route::get('/remediation/get-options', 'getRemediationStatusOptions');
+});
+Route::prefix('v1')->controller(RemediationController::class)->group(function () {
+    Route::put('/closeremediation/{id}', 'closeRemediation');
+});
+Route::prefix('v1')->controller(RemediationController::class)->group(function () {
+    Route::put('/updatestatusremediation/{id}', 'UpdateStatusRemediation');
+});
+Route::prefix('v1')->controller(EvidenceController::class)->group(function () {
+    Route::delete('/remediationevidences/delete-evidence/{evidenceId}', ' destroyRemediation');
+});
+Route::prefix('v1')->controller(EvidenceController::class)->group(function () {
+    Route::post('/remediationevidences/upload', 'storeRemediationMultiple');
 });
 
 
