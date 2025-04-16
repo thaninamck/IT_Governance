@@ -125,6 +125,7 @@ const data =
     },
   ]);
   const handleViewReport = (app) => {
+    console.log("app",app)
     if (!app) {
       console.error("Application non définie !");
       return;
@@ -139,7 +140,7 @@ const data =
       },
       {
         label: app.name,
-        path: `/missions/${missionParam || missionName}/${app.name}`,
+        path: `/missions/${missionParam || missionName}/${app.application_id}`,
       },
     ]);
 
