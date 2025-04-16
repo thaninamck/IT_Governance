@@ -5,7 +5,7 @@ import { api } from '../../Api';
 function AppInfo({ dataFormat,appId }) {
   // Charger les données depuis localStorage si `dataFormat` n'est pas fourni
    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
+   const [error, setError] = useState(null);
   const [appData, setAppData] = useState(() => {
     const savedData = localStorage.getItem("appData");
     return dataFormat || (savedData ? JSON.parse(savedData) : null);
