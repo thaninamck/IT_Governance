@@ -17,42 +17,48 @@ class AppScoreConformityCalculator implements CalculationServiceInterface
     }
 
     public function calculate($data)
-    {
-        $missionId = $data['mission_id'];
-        $executions = $this->systemRepository->getSystemExecutionsWithTheirStatusesByMission($missionId);
-    
-        $appScores = [];
-    
-        // On regroupe par application
-        foreach ($executions as $exec) {
-            $appName = $exec->application;
-            $status = $exec->status;
-            $weight = $this->strategy->getWeight($status);
-    
-            if (!isset($appScores[$appName])) {
-                $appScores[$appName] = [
-                    'total' => 0,
-                    'score' => 0,
-                ];
-            }
-    
-            if ($weight === 0.0) {
-                continue;
-            }
-    
-            $appScores[$appName]['total']++;
-            $appScores[$appName]['score'] += $weight;
+{
+    $missionId = $data['mission_id'];
+    $executions = $this->systemRepository->getSystemExecutionsWithTheirStatusesByMission($missionId);
+
+    $appScores = [];
+
+    foreach ($executions as $exec) {
+        $appName = $exec->application; // conserve le nom tel qu'il est (ex: "SNOC_APP")
+        $status = $exec->status;
+        $weight = $this->strategy->getWeight($status);
+
+        if (!isset($appScores[$appName])) {
+            $appScores[$appName] = [
+                'total' => 0,
+                'score' => 0,
+            ];
         }
-    
-        // Calcul du score final pour chaque app
-        $results = [];
-        foreach ($appScores as $app => $data) {
-            $results[$app] = $data['total'] > 0 
-                ? round($data['score'] / $data['total'], 2) 
-                : 0;
+
+        if ($weight === 0.0) {
+            continue;
         }
-    
-        return $results;
+
+        $appScores[$appName]['total']++;
+        $appScores[$appName]['score'] += $weight;
     }
+
+    // Transformer en tableau d'objets [name => ..., score => ...]
+    $results = [];
+
+    foreach ($appScores as $appName => $data) {
+        $finalScore = $data['total'] > 0
+            ? round(($data['score'] / $data['total']) * 100, 1) // % sur 100
+            : 0;
+
+        $results[] = [
+            'name' => $appName,
+            'score' => $finalScore,
+        ];
+    }
+
+    return $results;
+}
+
     
 }

@@ -635,10 +635,10 @@ public function getMissionReport($id): JsonResponse
        
 
         // Réponse JSON avec le statut précédent
-        return $this->sendResponse([
-            'mission' => $result,
+        return $this->sendResponse(
+             $result,
             
-        ], "Report generated successfully");
+         "Report generated successfully");
 
     } catch (\Exception $e) {
         return $this->sendError("An error occurred", ["error" => $e->getMessage()], 500);
