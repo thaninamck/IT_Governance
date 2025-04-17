@@ -26,9 +26,10 @@ class DatabaseSeeder extends Seeder
         ]);
         
         $this->call([
+            SystemSeeder::class,
             MissionSeeder::class,
             SourceSeeder::class,
-    SystemSeeder::class,
+    
 
             RiskSeeder::class,
 
