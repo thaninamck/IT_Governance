@@ -141,6 +141,7 @@ function ControleExcutionPage() {
         }));
 
         setExecutionData(parsedData);
+        console.log("executionData",executionData)
       }
     };
 

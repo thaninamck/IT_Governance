@@ -49,22 +49,24 @@ function DisplayControleAppID() {
     console.log('Détails du contrôle sélectionné:', rowData);
   };
   const columnsConfig2 = [
-    { field: "riskCode", headerName: "risk Code", width: 100 },
-    { field: "riskDescription", headerName: "risk description", width: 200 },
-    { field: "controlCode", headerName: "controle Code", width: 100 },
-    { field: "controlDescription", headerName: "description", width: 170 },
-    { field: "executionControlOwner", headerName: "owner", width: 150 },
-    { field: "layerName", headerName: "couche", width: 150 },
-    { field: "etat", headerName: "Etat", width: 150 },
-    { field: "statusName", headerName: "status", width: 150 },
-    { field: "userFullName", headerName: "testeur", width: 150 },
-    { field: "remediation", headerName: "Remédiation", width: 150 },
+    { field: "riskCode", headerName: "risk Code", width: 100,expandable: true },
+    { field: "riskDescription", headerName: "risk description", width: 200 ,expandable: true},
+    { field: "controlCode", headerName: "controle Code", width: 100 ,expandable: true},
+    { field: "controlDescription", headerName: "description", width: 170 ,expandable: true},
+    { field: "executionControlOwner", headerName: "owner", width: 150,expandable: true },
+    { field: "layerName", headerName: "couche", width: 150 ,expandable: true},
+    { field: "etat", headerName: "Etat", width: 150 ,expandable: true},
+    { field: "statusName", headerName: "status", width: 150,expandable: true },
+    { field: "userFullName", headerName: "testeur", width: 150 ,expandable: true},
+    { field: "remediation", headerName: "Remédiation", width: 150 ,expandable: true},
     { field: "Lancer",
        headerName: "Lancer",
         width: 115 ,
         customRenderCell: (params) => {
           return (
-            <button className=" flex items-center bg-green-500  hover:bg-green-600 text-white font-semibold  border-none h-[40px] px-5 rounded shadow">
+            <button 
+           // onClick={() =>  navigate(`/missions/${mission}/${name}/${rowData.controlCode}`, { state: { controleData: rowData } })}
+            className=" flex items-center bg-green-500  hover:bg-green-600 text-white font-semibold  border-none h-[40px] px-5 rounded shadow">
               Exécuter
             </button>
           );
@@ -159,7 +161,7 @@ useEffect(() => {
           columnsConfig={columnsConfig2}
           rowsData={appData}
           checkboxSelection={false}    
-              onRowClick={handleRowClick}
+             onRowClick={handleRowClick}
               headerTextBackground={"white"}
               headerBackground="var(--blue-menu)"
           />

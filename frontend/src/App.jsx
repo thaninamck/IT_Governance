@@ -69,6 +69,8 @@ import DisplayControleAppID from './pages/Testeur/DisplayControleAppID';
 import AppReport from './pages/Manager/AppReport';
 import { ProfileProvider } from './Context/ProfileContext';
 import UserViewMode from './pages/UserViewMode';
+import GestionRevue from './pages/Superviseur/GestionRevue';
+import RevueListExecution from './pages/Superviseur/RevueListExecution';
 function App() {
   const getRowLink = (row) => `/tablemission/${row.mission}`;
   
@@ -202,6 +204,8 @@ const rowsData3 = [
           
 
           {/*----------------------------Pages-------------------*/}
+          <Route path='/revue' element={<GestionRevue/>}/>
+          <Route path='/revue/:missionRevue' element={<RevueListExecution/>}/>
           <Route path='/notification' element={<Notification/>}/>
           <Route path='/changePw' element={<ChangePassword/>}/>
           <Route path='/adminHomePage' element={<AdminHomePage/>}/>
