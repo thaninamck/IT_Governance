@@ -2,6 +2,7 @@
 
 namespace App\Repositories\V1;
 use App\Models\Execution;
+use App\Models\Mission;
 use App\Models\Status;
 use App\Models\StepExecution;
 use App\Models\StepTestScript;
@@ -511,8 +512,109 @@ public function updateExecutionStatus($executionId, $toReview , $toValidate )
 
     return true;
 }
+//superviseur
+public function getexecutionReviewBySuperviseur($missionId)
+{
+    return Execution::with([
+        'user',
+        'user.participations.profile',
+        'status',
+        'layer',
+        'layer.system',
+        'layer.system.mission',
+        'coverage',
+        'steps.control'
+    ])
+    ->where('is_to_review', true)
+    ->where('is_to_validate', false)
+    ->whereHas('layer.system.mission', function ($query) use ($missionId) {
+        $query->where('id', $missionId);
+    })
+    ->get();
+}
 
+
+public function getmissionReviewBySuperviseur()
+{
+    return  $missions = Mission::whereHas('systems.layers.executions', function ($query) {
+        $query
+        ->where('is_to_review', true)
+        ->where('is_to_validate', false);
+    })
+    ->with([
+        'client',
+        'status',
+        'participations.user',
+        'participations.profile',
+    ])
+    ->get();
+}
   
+//manager
+public function getexecutionReviewByManager()
+{
+    return Execution::with([
+'user',
+'user.participations.profile',
+'status',
+'layer',
+'layer.system',
+'layer.system.mission',
+'coverage',
+'steps.control'
+    ])  ->where('is_to_review', false)
+    ->where('is_to_validate', true)
+    ->get();
+}
 
+public function getmissionReviewManager()
+{
+    return  $missions = Mission::whereHas('systems.layers.executions', function ($query) {
+        $query
+        ->where('is_to_review', false)
+        ->where('is_to_validate', true);
+    })
+    ->with([
+        'client',
+        'status',
+        'participations.user',
+        'participations.profile',
+    ])
+    ->get();
+}
+  
+//validation finale
+//manager
+public function getexecutionReview()
+{
+    return Execution::with([
+'user',
+'user.participations.profile',
+'status',
+'layer',
+'layer.system',
+'layer.system.mission',
+'coverage',
+'steps.control'
+    ])  ->where('is_to_review', true)
+    ->where('is_to_validate', true)
+    ->get();
+}
+
+public function getmissionReview()
+{
+    return  $missions = Mission::whereHas('systems.layers.executions', function ($query) {
+        $query
+        ->where('is_to_review', true)
+        ->where('is_to_validate', true);
+    })
+    ->with([
+        'client',
+        'status',
+        'participations.user',
+        'participations.profile',
+    ])
+    ->get();
+}
 
 }

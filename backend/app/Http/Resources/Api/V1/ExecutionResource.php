@@ -164,4 +164,62 @@ private function formatSourcesText($sources): ?string
     return $uniqueNames->isNotEmpty() ? $uniqueNames->implode(', ') : null;
 }
 
+
+public static function structuredResponse($executions)
+{
+    return $executions->map(function ($execution) {
+        return [
+            'id'=>$execution->id,
+            'executionId' => $execution->id,
+            'executionModification' => $execution->cntrl_modification,
+            'executionEffectiveness' => $execution->effectiveness,
+            'executionDesign' => $execution->design,
+            'executionLaunchedAt' => $execution->launched_at,
+            'executionIpe' => $execution->ipe,
+            'executionControlOwner' => $execution->control_owner,
+            'executionStatus' => $execution->status->status_name ?? null,
+            'executionStatusId' => $execution->status_id ?? null,
+
+            // Infos de l’utilisateur
+            'testerId' => optional($execution->user)->id,
+           'testerName' => optional($execution->user)->first_name . ' ' . optional($execution->user)->last_name,
+            'testerEmail' => optional($execution->user)->email,
+           // 'testerProfile' => optional(optional($execution->user->participations)->profile)->profile_name,
+
+            // Infos du système
+            'systemId' => optional($execution->layer->system)->id,
+            'systemName' => optional($execution->layer->system)->name,
+            'systemOwner' => optional($execution->layer->system->owner)->full_name,
+            'systemOwnerEmail' => optional($execution->layer->system->owner)->email,
+
+            // Infos du layer
+            'layerId' => optional($execution->layer)->id,
+            'layerName' => optional($execution->layer)->name,
+
+            // Infos de la mission
+            'missionId' => optional($execution->layer->system->mission)->id,
+            'missionName' => optional($execution->layer->system->mission)->mission_name,
+
+            // Infos du contrôle
+            'controlCode' => $execution->steps->first()?->control->code,
+            
+
+            // Infos du risque
+            'riskId' => $execution->coverage->first()->risk_id,
+            // 'riskName' => $execution->coverage->first()->risk_name,
+            // 'riskCode' => $execution->coverage->first()->risk_code,
+            // 'riskDescription' => $execution->coverage->first()->risk_modification,
+            // 'riskOwner' => $execution->coverage->first()->risk_owner,
+
+            // Autres
+            // 'typeName' => $execution->type_name,
+             'majorProcess' =>$execution->steps->first()?->control->majorProcess->description,
+             'subProcess' =>$execution->steps->first()?->control->subProcess->name,
+            // 'sources' => json_decode($execution->sources ?? '[]', true),
+           
+        ];
+    });
+}
+
+
 }

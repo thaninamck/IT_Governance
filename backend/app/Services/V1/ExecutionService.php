@@ -198,4 +198,22 @@ public function launchExecution($executionId)
     ];
     return $this->executionRepository->updateAnExecutionRaw($executionId , $raw);
 }
+
+public function getexecutionReviewBySuperviseur($missionId)
+{
+    return $this->executionRepository->getexecutionReviewBySuperviseur($missionId);
+}
+public function getmissionReviewBySuperviseur()
+{
+    return $this->executionRepository->getmissionReviewBySuperviseur();
+}
+
+public function getexecutionReviewByManager()
+{
+    return $this->executionRepository->getexecutionReviewByManager();
+}
+public function getmissionReviewManager()
+{
+    return $this->executionRepository->getmissionReviewManager();
+}
 }

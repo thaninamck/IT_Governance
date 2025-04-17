@@ -11,6 +11,8 @@ use App\Models\Execution;
 use Illuminate\Http\Request;
 use App\Services\V1\ExecutionService;
 use App\Http\Resources\Api\V1\ExecutionResource;
+use App\Http\Resources\Api\V1\MissionResource;
+use Illuminate\Http\JsonResponse;
 use Log;
 
 class ExecutionController extends BaseController
@@ -21,7 +23,7 @@ class ExecutionController extends BaseController
     protected $riskService;
     protected $controlService;
     protected $evidenceService;
-    public function __construct(ExecutionService $executionService ,MissionService $missionService, RiskService $riskService, ControlService $controlService, EvidenceService $evidenceService)
+    public function __construct(ExecutionService $executionService, MissionService $missionService, RiskService $riskService, ControlService $controlService, EvidenceService $evidenceService)
     {
         $this->evidenceService = $evidenceService;
         $this->executionService = $executionService;
@@ -209,7 +211,7 @@ class ExecutionController extends BaseController
         }
     }
 
-    
+
 
     public function updateExecution(Request $request, $executionId)
     {
@@ -227,7 +229,7 @@ class ExecutionController extends BaseController
             'design' => 'sometimes|boolean',
             'ipe' => 'sometimes|boolean',
             'controlTester' => 'sometimes|integer',
-            'steps'=> 'sometimes|array',
+            'steps' => 'sometimes|array',
         ];
 
         // Validation des données
@@ -419,4 +421,65 @@ class ExecutionController extends BaseController
             return $this->sendError('Failed to retrieve workplan options.', ['error' => $e->getMessage()], 500);
         }
     }
+
+    public function getexecutionReviewBySuperviseur($missionId): JsonResponse
+    {
+        try {
+            $executionReviewed = $this->executionService->getexecutionReviewBySuperviseur($missionId);
+            if (!isset($executionReviewed)) {
+                return $this->sendError('Aucune execution Reviewed trouvé pour cette execution.', [], 404);
+            }
+
+            // return $this->sendResponse($remediations, 'Liste des remediations récupérée avec succès.');
+            return $this->sendResponse( ExecutionResource::structuredResponse($executionReviewed), 'Liste des remediations récupérée avec succès.');
+        } catch (\Exception $e) {
+            return $this->sendError('Erreur lors de la récupération des execution Reviewed.', ['error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function getmissionReviewBySuperviseur(): JsonResponse
+    {
+        try {
+            $executionReviewed = $this->executionService->getmissionReviewBySuperviseur();
+            if (!isset($executionReviewed)) {
+                return $this->sendError('Aucune mission execution Reviewed trouvé pour cette execution.', [], 404);
+            }
+
+            // return $this->sendResponse($remediations, 'Liste des remediations récupérée avec succès.');
+            return $this->sendResponse( MissionResource::collection($executionReviewed), 'Liste des remediations récupérée avec succès.');
+        } catch (\Exception $e) {
+            return $this->sendError('Erreur lors de la récupération des mission execution Reviewed.', ['error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function getexecutionReviewByManager(): JsonResponse
+    {
+        try {
+            $executionReviewed = $this->executionService->getexecutionReviewByManager();
+            if (!isset($executionReviewed)) {
+                return $this->sendError('Aucune execution Reviewed trouvé pour cette execution.', [], 404);
+            }
+
+            // return $this->sendResponse($remediations, 'Liste des remediations récupérée avec succès.');
+            return $this->sendResponse( ExecutionResource::structuredResponse($executionReviewed), 'Liste des remediations récupérée avec succès.');
+        } catch (\Exception $e) {
+            return $this->sendError('Erreur lors de la récupération des execution Reviewed.', ['error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function getmissionReviewManager(): JsonResponse
+    {
+        try {
+            $executionReviewed = $this->executionService->getmissionReviewManager();
+            if (!isset($executionReviewed)) {
+                return $this->sendError('Aucune mission execution Reviewed trouvé pour cette execution.', [], 404);
+            }
+
+            // return $this->sendResponse($remediations, 'Liste des remediations récupérée avec succès.');
+            return $this->sendResponse( MissionResource::collection($executionReviewed), 'Liste des remediations récupérée avec succès.');
+        } catch (\Exception $e) {
+            return $this->sendError('Erreur lors de la récupération des mission execution Reviewed.', ['error' => $e->getMessage()], 500);
+        }
+    }
+
 }

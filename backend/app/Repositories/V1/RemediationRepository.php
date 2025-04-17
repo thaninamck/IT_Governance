@@ -10,7 +10,9 @@ class RemediationRepository
       // return  Remediation::with('execution')->where('execution_id', $executionId)->get();
 
       return Remediation::with(['execution.user', 
+      'execution.user.participations.profile',
       'execution.layer',
+      'execution.status',
       'execution.layer.system.owner',
       'execution.layer.system',
       'execution.layer.system.mission', 

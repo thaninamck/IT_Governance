@@ -382,6 +382,20 @@ Route::prefix('v1')->controller(EvidenceController::class)->group(function () {
     Route::post('/remediationevidences/upload', 'storeRemediationMultiple');
 });
 
+Route::prefix('v1')->controller(ExecutionController::class)->group(function () {
+    Route::get('/revue/{missionId}/getexecutionreviewedforSuperviseur', 'getexecutionReviewBySuperviseur');
+});
+Route::prefix('v1')->controller(ExecutionController::class)->group(function () {
+    Route::get('/revue/getmissionexecutionreviewedforSuperviseur', 'getmissionReviewBySuperviseur');
+});
+
+Route::prefix('v1')->controller(ExecutionController::class)->group(function () {
+    Route::get('/revue/getexecutionreviewedforManager', 'getexecutionReviewByManager');
+});
+Route::prefix('v1')->controller(ExecutionController::class)->group(function () {
+    Route::get('/revue/getmissionexecutionreviewedforManager', 'getmissionReviewManager');
+});
+
 
 // Route::middleware(['auth:sanctum', AdminMiddleware::class])
 //     ->prefix('v1')
