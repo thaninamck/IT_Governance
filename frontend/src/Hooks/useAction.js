@@ -5,9 +5,9 @@ import emailjs from "emailjs-com";
 emailjs.init("oAXuwpg74dQwm0C_s");
 
 export default function useAction(initialRemediationData) {
-  
-  console.log('initial remediation data ',initialRemediationData)
-  
+
+    console.log('initial remediation data ', initialRemediationData)
+
     const [isSavingSuivi, setIsSavingSuivi] = useState(false);
     const [openDeletePopup, setOpenDeletePopup] = useState(false);
     const [loading, setLoading] = useState(true);
@@ -87,7 +87,7 @@ export default function useAction(initialRemediationData) {
     // Gestion du suivi (auto-save)
     const handleSaveSuivi = useCallback(async (suiviValue) => {
         if (!actionData.id) return;
-        
+
         setIsSavingSuivi(true);
         try {
             await api.put(`/execution/updateRemediation/${actionData.id}`, {
@@ -141,7 +141,7 @@ export default function useAction(initialRemediationData) {
     const handleDeleteConfirm = useCallback(async () => {
         setOpenDeletePopup(false);
         const fileToDelete = actionData.fileToDelete;
-        
+
         try {
             const response = await api.delete(`/remediationevidences/delete-evidence/${fileToDelete.id}`);
             if (response.status === 200 || response.status === 204) {
@@ -168,9 +168,9 @@ export default function useAction(initialRemediationData) {
         setOpenDeletePopup(true);
     }, [actionData.files]);
 
- 
-  return {
-    actionData,
+
+    return {
+        actionData,
         setActionData,
         isSavingSuivi,
         loading,
@@ -183,6 +183,6 @@ export default function useAction(initialRemediationData) {
         handleDelete,
         handleDeleteConfirm,
         fetchActionData
-    
-  };
+
+    };
 }

@@ -7,7 +7,7 @@ import Separator from '../../components/Decorators/Separator';
 import FileUploader from '../../components/Evidences/FileUploader';
 import EvidenceList from '../../components/Evidences/EvidenceList';
 import SelectInput from '../../components/Forms/SelectInput';
-import {  useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { api, fileApi } from '../../Api';
 import { useAuth } from '../../Context/AuthContext';
 import EditableTextarea from '../../components/EditableInput';
@@ -17,26 +17,26 @@ import useAction from '../../Hooks/useAction';
 
 function RemediationActionId() {
 
-      const location = useLocation();
-      const remediationData = location.state?.remediationData || {};
-      const { user } = useAuth();
-      const [isEditing, setIsEditing] = useState(true);
-  
-      console.log('remediation data',remediationData)
-      const {
-          actionData,
-          setActionData,
-          isSavingSuivi,
-          loading,
-          error,
-          statusOptions,
-          openDeletePopup,
-          setOpenDeletePopup,
-          handleSave,
-          handleSaveFiles,
-          handleDelete,
-          handleDeleteConfirm
-      } = useAction(remediationData);
+  const location = useLocation();
+  const remediationData = location.state?.remediationData || {};
+  const { user } = useAuth();
+  const [isEditing, setIsEditing] = useState(true);
+
+  console.log('remediation data', remediationData)
+  const {
+    actionData,
+    setActionData,
+    isSavingSuivi,
+    loading,
+    error,
+    statusOptions,
+    openDeletePopup,
+    setOpenDeletePopup,
+    handleSave,
+    handleSaveFiles,
+    handleDelete,
+    handleDeleteConfirm
+  } = useAction(remediationData);
 
   //   const location = useLocation();
   //   const remediationData = location.state?.remediationData|| {};
@@ -88,7 +88,7 @@ function RemediationActionId() {
   //         console.error("Erreur de récupération des statuts :", err);
   //       }
   //     };
-    
+
 
   //     if (remediationData.id) {
   //       fetchActionData();
@@ -96,7 +96,7 @@ function RemediationActionId() {
   //     fetchStatusOptions();
   // }, [remediationData.id]);
 
-   
+
 
   //   const handleSave = async () => {
   //     try {
@@ -108,7 +108,7 @@ function RemediationActionId() {
   //         start_date: actionData.startDate,
   //         end_date:actionData.endDate,
   //       };
-        
+
   //       // Transformer en FormData
   //       const formData = new FormData();
   //       Object.entries(transformedremediation).forEach(([key, value]) => {
@@ -134,7 +134,7 @@ function RemediationActionId() {
 
   // const handleSaveSuivi = useCallback(async (suiviValue) => {
   //   if (!actionData.id) return;
-    
+
   //   setIsSavingSuivi(true);
   //   try {
   //     await api.put(`/execution/updateRemediation/${actionData.id}`, {
@@ -146,7 +146,7 @@ function RemediationActionId() {
   //     setIsSavingSuivi(false);
   //   }
   // }, [actionData.id]);
-  
+
   // // Modifiez le useEffect d'auto-save
   // useEffect(() => {
   //   const timer = setTimeout(() => {
@@ -154,14 +154,14 @@ function RemediationActionId() {
   //       handleSaveSuivi(actionData.suivi);
   //     }
   //   }, 2000);
-  
+
   //   return () => clearTimeout(timer);
   // }, [actionData.suivi, handleSaveSuivi,actionData.id]);
 
   // const handleSaveFiles = async (formData) => {
   //   const formDataToSend = new FormData();
   //   const remediation_id = actionData.id;
-  
+
   //   let index = 0;
   //   for (const [key, file] of formData.entries()) {
   //     // Ajouter le fichier avec ses métadonnées indexées
@@ -169,18 +169,18 @@ function RemediationActionId() {
   //     formDataToSend.append(`files[${index}][remediation_id]`, remediation_id);
   //     index++;
   //   }
-  
+
   //   // Debug du contenu
   //   for (let pair of formDataToSend.entries()) {
   //     console.log(pair[0], pair[1]);
   //   }
-  
+
   //   try {
   //     console.log('formdata to send',formDataToSend)
   //     const response = await fileApi.post('/remediationevidences/upload', formDataToSend) 
-        
+
   //     console.log("response data", response.data);
-  
+
   //     if (response.status === 200 && Array.isArray(response.data)) {
   //       setActionData(prev => ({
   //         ...prev,
@@ -192,7 +192,7 @@ function RemediationActionId() {
   //     setError("Échec de l'upload des fichiers.");
   //   }
   // };
-  
+
   //  const handleDeleteConfirm = async () => {
   //   setOpenDeletePopup(false); // Fermer la popup de confirmation
   //   const fileToDelete = actionData.fileToDelete;
@@ -209,9 +209,9 @@ function RemediationActionId() {
   //   }catch (error) {
   //     console.error("Erreur lors de la suppression des fichiers:", error);
   //     setError("Échec de la suppression des fichiers.");
-    
+
   //   }
-  
+
   // };
   // const handleDelete = (index) => {
   //   const deletedFile = actionData.files[index];
@@ -220,72 +220,72 @@ function RemediationActionId() {
   //     fileToDelete: deletedFile
   //   }));
   //   setOpenDeletePopup(true);
-    
+
   //   } 
-  
-     
-      // const isValidateDisabled = !selectedMulti
-      
+
+
+  // const isValidateDisabled = !selectedMulti
+
   return (
     <div>
-        <Header user={user}/>
-        <div className='ml-5 mr-6 pb-9'>
+      <Header user={user} />
+      <div className='ml-5 mr-6 pb-9'>
         <Breadcrumbs />
 
         <div className='flex flex-row justify-between  w-[95%] py-6 '>
-        <InputForm
-          type="date"
-          label="Date Début"
-          width="250px"
-          flexDirection="flex-row gap-4 items-center mb-2 "
-          value={actionData.startDate}
-          onChange={e => setActionData({ ...actionData, startDate: e.target.value })}
-        />
-        
-        <InputForm
-          type="date"
-          label="Date Fin"
-          width="250px"
-          flexDirection="flex-row gap-4 items-center mb-2"
-          value={actionData.endDate}
-          onChange={e => setActionData({ ...actionData, endDate: e.target.value })}
-        />
-        <InputForm
-          type="email"
-          label="Contact"
-          placeholder="Entrez l'e-mail de la personne concernée..."
-          width="350px"
-          flexDirection="flex-row gap-4 items-center mb-2"
-          value={actionData.ownerContact}
-          onChange={e => setActionData({ ...actionData, ownerContact: e.target.value })}
-        />
+          <InputForm
+            type="date"
+            label="Date Début"
+            width="250px"
+            flexDirection="flex-row gap-4 items-center mb-2 "
+            value={actionData.startDate}
+            onChange={e => setActionData({ ...actionData, startDate: e.target.value })}
+          />
+
+          <InputForm
+            type="date"
+            label="Date Fin"
+            width="250px"
+            flexDirection="flex-row gap-4 items-center mb-2"
+            value={actionData.endDate}
+            onChange={e => setActionData({ ...actionData, endDate: e.target.value })}
+          />
+          <InputForm
+            type="email"
+            label="Contact"
+            placeholder="Entrez l'e-mail de la personne concernée..."
+            width="350px"
+            flexDirection="flex-row gap-4 items-center mb-2"
+            value={actionData.ownerContact}
+            onChange={e => setActionData({ ...actionData, ownerContact: e.target.value })}
+          />
         </div>
         <Separator text={'Description'} />
         <TextDisplay
-        label=""
-        content={actionData.description}
-        isEditing={isEditing}
-        onSave={handleSave}
-        onContentChange={(value) =>
-          setActionData({ ...actionData, description: value })
-        }
-        
-        borderWidth="95%"
-        labelWidth="120px"
-        flexDirection="column"
-        marginLeft="30px"
-      />
+          label=""
+          content={actionData.description}
+          isEditing={isEditing}
+          onSave={handleSave}
+          onContentChange={(value) =>
+            setActionData({ ...actionData, description: value })
+          }
 
-<Separator text={'Evidences'} />
-      
-      <FileUploader onSave={handleSaveFiles} />
-      <div className='flex flex-col items-center w-full my-6'>
-        <EvidenceList files={actionData.files} onDelete={handleDelete} />
-      </div>
-      {actionData.files.length === 0 && (
-        <p className="text-center text-gray-500 mt-4">Aucun fichier disponible.</p>
-      )}
-       {openDeletePopup && (
+          borderWidth="95%"
+          labelWidth="120px"
+          flexDirection="column"
+          marginLeft="30px"
+        />
+
+        <Separator text={'Evidences'} />
+
+        <FileUploader onSave={handleSaveFiles} />
+        <div className='flex flex-col items-center w-full my-6'>
+          <EvidenceList files={actionData.files} onDelete={handleDelete} />
+        </div>
+        {actionData.files.length === 0 && (
+          <p className="text-center text-gray-500 mt-4">Aucun fichier disponible.</p>
+        )}
+        {openDeletePopup && (
           <DecisionPopUp
             //loading={loading}
             handleDeny={() => setOpenDeletePopup(false)}
@@ -295,9 +295,9 @@ function RemediationActionId() {
           />
         )}
 
-<Separator text={'Suivi'} />
+        <Separator text={'Suivi'} />
 
-{/* <TextDisplay
+        {/* <TextDisplay
           label=""
           content={actionData.suivi}
           isEditing={isEditing}
@@ -311,7 +311,7 @@ function RemediationActionId() {
           flexDirection="column"
           marginLeft="30px"
         /> */}
-         {/* <EditableTextarea
+        {/* <EditableTextarea
   content={actionData.suivi}
   placeholder=""
   onSave={(value) => {
@@ -323,35 +323,35 @@ function RemediationActionId() {
   }}
 /> */}
 
-<EditableTextarea
-        content={actionData.suivi}
-        placeholder=""
-        onSave={(value) => {
+        <EditableTextarea
+          content={actionData.suivi}
+          placeholder=""
+          onSave={(value) => {
             setActionData(prev => ({
-                ...prev,
-                suivi: value
+              ...prev,
+              suivi: value
             }));
 
-        }}
-    />
+          }}
+        />
 
-{isSavingSuivi && (
-  <div className="flex items-center gap-2 text-sm text-gray-500 italic mt-1 ml-4">
-    <svg className="animate-spin h-4 w-4 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
-    </svg>
-    Enregistrement en cours...
-  </div>
-)}
+        {isSavingSuivi && (
+          <div className="flex items-center gap-2 text-sm text-gray-500 italic mt-1 ml-4">
+            <svg className="animate-spin h-4 w-4 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
+            </svg>
+            Enregistrement en cours...
+          </div>
+        )}
 
 
 
-<Separator text={'Conclusion'} />
-<div className='flex flex-row items-center gap-4  ml-2'>
-        <label className="mr-8 font-medium">Status</label>
-        <p>{actionData.statusName}</p>
-        {/* <SelectInput
+        <Separator text={'Conclusion'} />
+        <div className='flex flex-row items-center gap-4  ml-2'>
+          <label className="mr-8 font-medium">Status</label>
+          <p>{actionData.statusName}</p>
+          {/* <SelectInput
           label=""
           options={statusOptions}
           value={actionData.statusName}
@@ -363,22 +363,22 @@ function RemediationActionId() {
         </div>
 
         <div className="flex justify-end mx-16 mt-9 py-4  gap-5">
-        
+
           {/* <button
             className={`bg-[var(--blue-menu)] text-white px-4 py-2 ${isValidateDisabled ? 'opacity-50 cursor-not-allowed' : ''}`}
             disabled={isValidateDisabled}
             onClick={handleSave}
           > */}
-           <button
+          <button
             className={`bg-[var(--blue-menu)] text-white px-4 py-2 `}
-           // disabled={isValidateDisabled}
+            // disabled={isValidateDisabled}
             onClick={handleSave}
           >
             Valider
           </button>
-      </div>
+        </div>
 
- </div>
+      </div>
     </div>
   )
 }
