@@ -376,7 +376,7 @@ Route::prefix('v1')->controller(RemediationController::class)->group(function ()
     Route::put('/updatestatusremediation/{id}', 'UpdateStatusRemediation');
 });
 Route::prefix('v1')->controller(EvidenceController::class)->group(function () {
-    Route::delete('/remediationevidences/delete-evidence/{evidenceId}', ' destroyRemediation');
+    Route::delete('/remediationevidences/delete-evidence/{evidenceId}', 'destroyRemediation');
 });
 Route::prefix('v1')->controller(EvidenceController::class)->group(function () {
     Route::post('/remediationevidences/upload', 'storeRemediationMultiple');

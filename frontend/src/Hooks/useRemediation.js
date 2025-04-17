@@ -1,16 +1,20 @@
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { api } from "../Api";
 
 import emailjs from "emailjs-com";
 emailjs.init("oAXuwpg74dQwm0C_s");
+
 export default function useRemediation(executionId, controlCode) {
+  
+
   const [action, setAction] = useState([]);
-  const [error, setError] = useState(null);
+ const [error, setError] = useState(null);
   const [isDeletePopupOpen, setIsDeletePopupOpen] = useState(false);
   const [selectedActionId, setSelectedActionId] = useState(null);
   const [showRemediation, setShowRemediation] = useState(false);
   const [showDecisionPopup, setShowDecisionPopup] = useState(false);
   const [isAddingAnother, setIsAddingAnother] = useState(false);
+
 
   const fetchRemediations = async () => {
     try {
@@ -136,7 +140,8 @@ export default function useRemediation(executionId, controlCode) {
     selectedActionId,
     setSelectedActionId,
     isAddingAnother,
-    handleSendAction
+    handleSendAction,
+
     
   };
 }

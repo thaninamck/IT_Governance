@@ -11,255 +11,219 @@ import {  useLocation, useNavigate } from 'react-router-dom';
 import { api, fileApi } from '../../Api';
 import { useAuth } from '../../Context/AuthContext';
 import EditableTextarea from '../../components/EditableInput';
+import DecisionPopUp from '../../components/PopUps/DecisionPopUp';
+import useRemediation from '../../Hooks/useRemediation';
+import useAction from '../../Hooks/useAction';
 
 function RemediationActionId() {
-    const location = useLocation();
-    const remediationData = location.state?.remediationData|| {};
-    const navigate = useNavigate();
-    const [isSavingSuivi, setIsSavingSuivi] = useState(false);
 
-    const{user}=useAuth();
-     const [loading, setLoading] = useState(true);
-        const [error, setError] = useState(null);
-        const [statusOptions, setStatusOptions] = useState([]);
-
-    const [actionData, setActionData] = useState({
-      description: '',
-      suivi: '',
-      ownerContact: '',
-      statusName: '' ,
-      startDate: '',
-      endDate: '',
-      //actionName:'',
-      files: []
-  });
-     const [description, setDescription] = useState(remediationData.description || '');
+      const location = useLocation();
+      const remediationData = location.state?.remediationData || {};
+      const { user } = useAuth();
       const [isEditing, setIsEditing] = useState(true);
-     const [dateField, setDateField] = useState(remediationData.dateField||'');
-    const [dateField1, setDateField1] = useState(remediationData.dateField1||'');
-     const [contact, setContact] = useState( remediationData.contact||'');
-    // const [selectedMulti, setSelectedMulti] = useState(remediationData.status||'');
-    //  const [files, setFiles] = useState([
-    //      { name: 'document.pdf', size: 1024000 },
-    //      { name: 'image.png', size: 2048000 },
-    //      { name: 'presentation.pptx', size: 512000 }
-    //    ]);
-      // const [suivi, setSuivi] = useState(
-      //   remediationData.suivi||''
-      //  );
+  
+      console.log('remediation data',remediationData)
+      const {
+          actionData,
+          setActionData,
+          isSavingSuivi,
+          loading,
+          error,
+          statusOptions,
+          openDeletePopup,
+          setOpenDeletePopup,
+          handleSave,
+          handleSaveFiles,
+          handleDelete,
+          handleDeleteConfirm
+      } = useAction(remediationData);
 
-       
-     // Chargement des données
-     useEffect(() => {
-      const fetchActionData = async () => {
-          try {
-              const response = await api.get(`/execution/getRemediation/${remediationData.id}`);
-              console.log('response action',response.data)
-              setActionData({
-                  ...response.data,
-                  files: response.data.remediation_evidences || []
-              });
-              console.log('action',actionData)
-          } catch (err) {
-              setError(err.message);
-          } finally {
-              setLoading(false);
-          }
-      };
+  //   const location = useLocation();
+  //   const remediationData = location.state?.remediationData|| {};
+  //   const [isSavingSuivi, setIsSavingSuivi] = useState(false);
+  //   const [openDeletePopup, setOpenDeletePopup] = useState(false);
+  //   const [isEditing, setIsEditing] = useState(true);
+  //   const{user}=useAuth();
+  //    const [loading, setLoading] = useState(true);
+  //     const [error, setError] = useState(null);
+  //     const [statusOptions, setStatusOptions] = useState([]);
 
-      const fetchStatusOptions = async () => {
-        try {
-          const res = await api.get("/remediation/get-options");
-          const options = res.data.map(status => ({
-            value: status.id,
-            label: status.status_name
-          }));
-          setStatusOptions(options);
-        } catch (err) {
-          console.error("Erreur de récupération des statuts :", err);
-        }
-      };
+  //   const [actionData, setActionData] = useState({
+  //     description: '',
+  //     suivi: '',
+  //     ownerContact: '',
+  //     statusName: '' ,
+  //     startDate: '',
+  //     endDate: '',
+  //     //actionName:'',
+  //     files: []
+  // }); 
+  //    // Chargement des données
+  //    useEffect(() => {
+  //     const fetchActionData = async () => {
+  //         try {
+  //             const response = await api.get(`/execution/getRemediation/${remediationData.id}`);
+  //             console.log('response action',response.data)
+  //             setActionData({
+  //                 ...response.data,
+  //                 files: response.data.remediation_evidences || []
+  //             });
+  //             console.log('action',actionData)
+  //         } catch (err) {
+  //             setError(err.message);
+  //         } finally {
+  //             setLoading(false);
+  //         }
+  //     };
+
+  //     const fetchStatusOptions = async () => {
+  //       try {
+  //         const res = await api.get("/remediation/get-options");
+  //         const options = res.data.map(status => ({
+  //           value: status.id,
+  //           label: status.status_name
+  //         }));
+  //         setStatusOptions(options);
+  //       } catch (err) {
+  //         console.error("Erreur de récupération des statuts :", err);
+  //       }
+  //     };
     
 
-      if (remediationData.id) {
-        fetchActionData();
-      }
-      fetchStatusOptions();
-  }, [remediationData.id]);
+  //     if (remediationData.id) {
+  //       fetchActionData();
+  //     }
+  //     fetchStatusOptions();
+  // }, [remediationData.id]);
 
-    //  const handleSave = () => {
-    //     const updatedRemediationData = {
-    //         ...remediationData, // Inclure les anciennes données si nécessaire
-    //         description,
-    //         suivi,
-    //         files,
-    //         status: selectedMulti,
-    //         dateField,
-    //         dateField1,
-    //         contact
-    //       };
-     
-    //       console.log('Données mises à jour:', updatedRemediationData);
-    //     console.log('Description:', description,
-    //       'Suivi:', suivi,
-    //       'files:',files ,
-    //       'status:',selectedMulti,
-    //       'Date debut', dateField,
-    //       'Date fin',dateField1,
-    //       'contact',contact,
+   
 
-         
-    //     );
-    //     //setIsEditing(false); // Quitter le mode édition après la sauvegarde
-    //    };
-
-    const handleSave = async () => {
-      try {
-        const transformedremediation = {
-          id: actionData.id,
-          description: actionData.description,
-          owner_cntct: actionData.ownerContact,
-          follow_up:actionData.suivi,
-          start_date: actionData.startDate,
-          end_date:actionData.endDate,
-        };
+  //   const handleSave = async () => {
+  //     try {
+  //       const transformedremediation = {
+  //         id: actionData.id,
+  //         description: actionData.description,
+  //         owner_cntct: actionData.ownerContact,
+  //         follow_up:actionData.suivi,
+  //         start_date: actionData.startDate,
+  //         end_date:actionData.endDate,
+  //       };
         
-        // Transformer en FormData
-        const formData = new FormData();
-        Object.entries(transformedremediation).forEach(([key, value]) => {
-          formData.append(key, value);
-        });
+  //       // Transformer en FormData
+  //       const formData = new FormData();
+  //       Object.entries(transformedremediation).forEach(([key, value]) => {
+  //         formData.append(key, value);
+  //       });    
+  //         // Ajoutez les fichiers (si nouveau upload)
+  //         remediationData?.files?.forEach(file => {
+  //             if (file instanceof File) {
+  //                 formData.append('files[]', file);
+  //             }
+  //         });
 
-          //formData.append('status', remediationData.status);
-          
-          // Ajoutez les fichiers (si nouveau upload)
-          remediationData?.files?.forEach(file => {
-              if (file instanceof File) {
-                  formData.append('files[]', file);
-              }
-          });
+  //         const response = await api.put( `/execution/updateRemediation/${remediationData.id}`,formData, );
 
-          const response = await api.put( `/execution/updateRemediation/${remediationData.id}`,formData, );
+  //         console.log('Réponse du serveur:', response.data);
+  //         // Afficher un message de succès ou rediriger
 
-          console.log('Réponse du serveur:', response.data);
-          // Afficher un message de succès ou rediriger
+  //     } catch (err) {
+  //         console.error('Erreur lors de la sauvegarde:', err);
+  //         setError('Erreur lors de la sauvegarde');
+  //     }
+  // };
 
-      } catch (err) {
-          console.error('Erreur lors de la sauvegarde:', err);
-          setError('Erreur lors de la sauvegarde');
-      }
-  };
-
-  // const handleSaveSuivi = async (updatedActionData = actionData) => {
-  //  // if (!updatedActionData?.id || updatedActionData.suivi === undefined) return;
-  //   setIsSavingSuivi(true); 
+  // const handleSaveSuivi = useCallback(async (suiviValue) => {
+  //   if (!actionData.id) return;
+    
+  //   setIsSavingSuivi(true);
   //   try {
-  //     const transformedremediation = {
-  //       id: updatedActionData.id,
-  //       follow_up: updatedActionData.suivi ?? "" 
-  //     };
-  
-  //     const formData = new FormData();
-  //     Object.entries(transformedremediation).forEach(([key, value]) => {
-  //       formData.append(key, value);
+  //     await api.put(`/execution/updateRemediation/${actionData.id}`, {
+  //       follow_up: suiviValue
   //     });
-  
-  //     const response = await api.put(`/execution/updateRemediation/${remediationData.id}`, formData);
-  //     console.log('Réponse du serveur:', response.data);
   //   } catch (err) {
-  //     console.error('Erreur lors de la sauvegarde:', err);
-  //     setError('Erreur lors de la sauvegarde');
+  //     console.error('Erreur sauvegarde suivi:', err);
   //   } finally {
-  //     setIsSavingSuivi(false); // Fin du chargement
+  //     setIsSavingSuivi(false);
+  //   }
+  // }, [actionData.id]);
+  
+  // // Modifiez le useEffect d'auto-save
+  // useEffect(() => {
+  //   const timer = setTimeout(() => {
+  //     if (actionData.id) {
+  //       handleSaveSuivi(actionData.suivi);
+  //     }
+  //   }, 2000);
+  
+  //   return () => clearTimeout(timer);
+  // }, [actionData.suivi, handleSaveSuivi,actionData.id]);
+
+  // const handleSaveFiles = async (formData) => {
+  //   const formDataToSend = new FormData();
+  //   const remediation_id = actionData.id;
+  
+  //   let index = 0;
+  //   for (const [key, file] of formData.entries()) {
+  //     // Ajouter le fichier avec ses métadonnées indexées
+  //     formDataToSend.append(`files[${index}]`, file);
+  //     formDataToSend.append(`files[${index}][remediation_id]`, remediation_id);
+  //     index++;
+  //   }
+  
+  //   // Debug du contenu
+  //   for (let pair of formDataToSend.entries()) {
+  //     console.log(pair[0], pair[1]);
+  //   }
+  
+  //   try {
+  //     console.log('formdata to send',formDataToSend)
+  //     const response = await fileApi.post('/remediationevidences/upload', formDataToSend) 
+        
+  //     console.log("response data", response.data);
+  
+  //     if (response.status === 200 && Array.isArray(response.data)) {
+  //       setActionData(prev => ({
+  //         ...prev,
+  //         files: [...(prev.files || []), ...response.data]
+  //       }));
+  //     }
+  //   } catch (error) {
+  //     console.error("Erreur lors de l'upload des fichiers:", error);
+  //     setError("Échec de l'upload des fichiers.");
   //   }
   // };
-// Auto-saving du suivi
-// useEffect(() => {
-//   const timer = setTimeout(() => {
-//       if (actionData.suivi !== '' && actionData.id) {
-//         console.log("Auto-saving", actionData.suivi);
-//           handleSaveSuivi(actionData);
-//       }
-//   }, 1000); // 1 seconde après le dernier changement
-
-//   return () => clearTimeout(timer);
-// }, [actionData.suivi, actionData.id]); // Déclenché quand suivi change
-
-
-
-  const handleSaveSuivi = useCallback(async (suiviValue) => {
-    if (!actionData.id) return;
+  
+  //  const handleDeleteConfirm = async () => {
+  //   setOpenDeletePopup(false); // Fermer la popup de confirmation
+  //   const fileToDelete = actionData.fileToDelete;
+  //   console.log('dile to delete',actionData.fileToDelete)
+  //  try{
+  //     const response = await api.delete(`/remediationevidences/delete-evidence/${fileToDelete.id}`);
+  //     if (response.status === 200 || response.status === 204) {
+  //       setActionData(prev => ({
+  //         ...prev,
+  //         files: prev.files.filter(f => f.id !== fileToDelete.id),
+  //         fileToDelete: null
+  //       }));
+  //     }
+  //   }catch (error) {
+  //     console.error("Erreur lors de la suppression des fichiers:", error);
+  //     setError("Échec de la suppression des fichiers.");
     
-    setIsSavingSuivi(true);
-    try {
-      await api.put(`/execution/updateRemediation/${actionData.id}`, {
-        follow_up: suiviValue
-      });
-    } catch (err) {
-      console.error('Erreur sauvegarde suivi:', err);
-    } finally {
-      setIsSavingSuivi(false);
-    }
-  }, [actionData.id]);
+  //   }
   
-  // Modifiez le useEffect d'auto-save
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      if (actionData.id) {
-        handleSaveSuivi(actionData.suivi);
-      }
-    }, 2000);
+  // };
+  // const handleDelete = (index) => {
+  //   const deletedFile = actionData.files[index];
+  //   setActionData(prev => ({
+  //     ...prev,
+  //     fileToDelete: deletedFile
+  //   }));
+  //   setOpenDeletePopup(true);
+    
+  //   } 
   
-    return () => clearTimeout(timer);
-  }, [actionData.suivi, handleSaveSuivi,actionData.id]);
-
-  const handleSaveFiles = async (formData) => {
-    const formDataToSend = new FormData();
-    const remediation_id = actionData.id;
-  
-    let index = 0;
-    for (const [key, file] of formData.entries()) {
-      // Ajouter le fichier avec ses métadonnées indexées
-      formDataToSend.append(`files[${index}]`, file);
-      formDataToSend.append(`files[${index}][remediation_id]`, remediation_id);
-      index++;
-    }
-  
-    // Debug du contenu
-    for (let pair of formDataToSend.entries()) {
-      console.log(pair[0], pair[1]);
-    }
-  
-    try {
-      console.log('formdata to send',formDataToSend)
-      const response = await fileApi.post('/remediationevidences/upload', formDataToSend) 
-        
-      console.log("response data", response.data);
-  
-      if (response.status === 200 && Array.isArray(response.data)) {
-        setActionData(prev => ({
-          ...prev,
-          files: [...(prev.files || []), ...response.data]
-        }));
-      }
-    } catch (error) {
-      console.error("Erreur lors de l'upload des fichiers:", error);
-      setError("Échec de l'upload des fichiers.");
-    }
-  };
-  
-  
-      //  const handleSaveFiles = (formData) => {
-      //   const newFiles = [];
-      //   for (const [key, file] of formData.entries()) {
-      //     newFiles.push({ name: file.name, size: file.size });
-      //   }
-      //   setFiles((prevFiles) => [...prevFiles, ...newFiles]);
-      //  };
-       const handleDelete = (index) => {
-        const updatedFiles = files.filter((_, i) => i !== index);
-        setFiles(updatedFiles);
-       };
+     
       // const isValidateDisabled = !selectedMulti
       
   return (
@@ -321,6 +285,15 @@ function RemediationActionId() {
       {actionData.files.length === 0 && (
         <p className="text-center text-gray-500 mt-4">Aucun fichier disponible.</p>
       )}
+       {openDeletePopup && (
+          <DecisionPopUp
+            //loading={loading}
+            handleDeny={() => setOpenDeletePopup(false)}
+            handleConfirm={handleDeleteConfirm}
+            text="Confirmation de suppression"
+            name="Êtes-vous sûr de vouloir supprimer ce fichier ?"
+          />
+        )}
 
 <Separator text={'Suivi'} />
 
