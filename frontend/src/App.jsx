@@ -237,7 +237,7 @@ const rowsData3 = [
           {/* <Route path='/gestionmission/:mission' element={<MissionReport/>}></Route> */}
           <Route path='/adminaction' element={<AdminActionsPanel/>}></Route>
           <Route path='/missions/:mission' element={<MissionReport/>}></Route>
-          <Route path='/missions/:mission/:app' element={<AppReport/>}></Route>
+          <Route path='/missions/:mission/appReport/:app' element={<AppReport/>}></Route>
           <Route path='/apprep' element={<AppReport/>}></Route>
 
          

@@ -132,22 +132,22 @@ const data =
     }
 
     // Met à jour les breadcrumbs
-    setBreadcrumbs([
-      { label: "Missions", path: "/missions" },
-      {
-        label: missionParam || missionName,
-        path: `/missions/${missionParam || missionName}`,
-      },
-      {
-        label: app.name,
-        path: `/missions/${missionParam || missionName}/${app.application_id}`,
-      },
-    ]);
+    // setBreadcrumbs([
+    //   { label: "Missions", path: "/missions" },
+    //   {
+    //     label: missionParam || missionName,
+    //     path: `/missions/${missionParam || missionName}`,
+    //   },
+    //   {
+    //     label: app.name,
+    //     path: `/missions/${missionParam || missionName}/${app.application_id}`,
+    //   },
+    // ]);
 
     console.log("Application sélectionnée :", app);
 
     // Navigation vers l'URL de type /missions/DSP/app
-    navigate(`/missions/${missionParam || missionName}/${app.name}`, {
+    navigate(`/missions/${7}/appReport/${app.application_id}`, {
       state: { appData: app },
     });
   };

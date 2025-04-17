@@ -9,6 +9,7 @@ const useStatistics = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const missionId=7;
+  const [data,setData]=useState([])
   const [missionStatistics, setMissionStatistics] = useState({
     app: [],
     db: [],
@@ -50,16 +51,38 @@ const useStatistics = () => {
     }
   };
 
+
+  const getAppReport = async () => {
+    setLoading(true);
+    try {
+      const response = await api.get(`missions/systems/${1}/system-report`);
+      const data = response.data;
+      console.log("dahchun",data)
+       
+      setData(data)
+      return data;
+    } catch (err) {
+      console.error("Erreur lors de la récupération du rapport :", err);
+      setError(err);
+      toast.error("Échec du chargement du rapport.");
+    } finally {
+      setLoading(false);
+    }
+  };
   useEffect(() => {
     if (missionId) {
       getMissionreport();
+     
     }
-  }, [missionId]);
+    getAppReport();
+  }, []);
 
   return {
     loading,
     error,
-    missionStatistics
+    missionStatistics,
+    data,
+    getAppReport
   };
 };
 

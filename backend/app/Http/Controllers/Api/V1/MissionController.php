@@ -112,7 +112,28 @@ class MissionController extends BaseController
     }
 }
 
+public function getSystemReport($id): JsonResponse
+{
+    try {
+        $data = ['system_id' => $id];
 
+        $app_conf = $this->statisticsService->calculate('app_report', $data);
+        
+       
+
+        
+       
+        return $this->sendResponse(
+            
+               [ "app" => $app_conf],
+               
+
+            
+            "Report generated successfully"
+        );
+    } catch (\Exception $e) {
+        return $this->sendError("An error occurred", ["error" => $e->getMessage()], 500);
+     } }
     /**
      * Store a newly created resource in storage.
      */

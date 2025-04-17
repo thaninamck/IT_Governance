@@ -11,6 +11,7 @@ use App\Services\Calculations\GeneralAdvancementCalculator;
 use App\Services\Calculations\OSScoreConformityCalculator;
 use App\Services\Calculations\PhysicalLayerGlobalConformityScoreCalculator;
 use App\Services\Calculations\ProceduralLayerGlobalConformityScoreCalculator;
+use App\Services\Calculations\SystemStatsCalculator;
 
 class StatisticsService
 {
@@ -30,8 +31,8 @@ class StatisticsService
             'procedural_conf_score' => new ProceduralLayerGlobalConformityScoreCalculator($systemRepository, new DefaultStatusWeightStrategy()),
             'physical_conf_score' => new PhysicalLayerGlobalConformityScoreCalculator($systemRepository, new DefaultStatusWeightStrategy()),
             'global_adv' => new GeneralAdvancementCalculator($systemRepository, new DefaultStatusWeightStrategy()),
+            'app_report' => new SystemStatsCalculator($systemRepository, new DefaultStatusWeightStrategy()),
 
-            // 'risk_score' => new RiskScoreCalculator(...),
             // Tu peux en rajouter d'autres ici
         ];
     }
