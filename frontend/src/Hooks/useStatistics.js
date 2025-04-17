@@ -26,7 +26,7 @@ const useStatistics = () => {
     try {
       const response = await api.get(`/missions/${missionId}/report`);
       const data = response.data;
-      console.log("data",data.layer)
+      
 
       setMissionStatistics({
         app: data.app || [],
@@ -52,13 +52,12 @@ const useStatistics = () => {
   };
 
 
-  const getAppReport = async () => {
+  const getAppReport = async (id) => {
     setLoading(true);
     try {
-      const response = await api.get(`missions/systems/${1}/system-report`);
+      const response = await api.get(`missions/systems/${id}/system-report`);
       const data = response.data;
-      console.log("dahchun",data)
-       
+      console.log("izan",data)       
       setData(data)
       return data;
     } catch (err) {
@@ -74,7 +73,7 @@ const useStatistics = () => {
       getMissionreport();
      
     }
-    getAppReport();
+   
   }, []);
 
   return {
