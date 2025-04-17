@@ -61,8 +61,13 @@ function ControleExcutionPage() {
     selectedActionId,
     setSelectedActionId,
     isAddingAnother,
+    handleCloseForm,
     
   } = useRemediation(controleData.executionId, controleData.controlCode);
+
+  useEffect(() => {
+    fetchRemediations();
+  }, []);
 
   
   const navigate = useNavigate();
@@ -398,9 +403,9 @@ function ControleExcutionPage() {
     },
   ];
 
-  const onClose = () => {
-    setShowDecisionPopup(false);
-  };
+  // const onClose = () => {
+  //   setShowDecisionPopup(false);
+  // };
   const handleCommentSave = (newComment) => {
     console.log("Nouveau commentaire:", newComment);
     setCommentaire(newComment);
@@ -827,7 +832,8 @@ function ControleExcutionPage() {
           showDecisionPopup={showDecisionPopup}
           isAddingAnother={isAddingAnother}
           controleID={controleID}
-          onClose={onClose}
+         // onClose={handleCloseForm}
+         handleCloseForm={handleCloseForm} 
           handleSaveModifications={handleSaveModifications}
           loading={loading}
           isToReview={isToReview}

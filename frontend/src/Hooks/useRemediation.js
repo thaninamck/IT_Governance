@@ -37,6 +37,8 @@ export default function useRemediation(executionId, controlCode) {
         setAction(prev => [...prev, response.data]);
         setShowDecisionPopup(true);
       }
+       setSelectedActionId(null);
+      setShowRemediation(false);
     } catch (error) {
       console.error("Erreur dans l'ajout/màj remediation:", error);
       throw error;
@@ -71,9 +73,14 @@ export default function useRemediation(executionId, controlCode) {
             end_date: selectedRow.endDate,
           };
           setSelectedActionId(transformedremediation);
-          if (!showRemediation) setShowRemediation((prev) => !prev);
+         // if (!showRemediation) setShowRemediation((prev) => !prev);
+         setShowRemediation(true);
   };
-
+  const handleCloseForm = () => {
+    setSelectedActionId(null);
+    setShowRemediation(false);
+    setIsAddingAnother(false);
+  };
   const handleCloseRow = async (selectedRow) => {
     try {
       await api.put(`/closeremediation/${selectedRow.id}`);
@@ -116,6 +123,7 @@ export default function useRemediation(executionId, controlCode) {
     if (response) setIsAddingAnother(true);
     else {
       setIsAddingAnother(false);
+      //setSelectedActionId(null);
       setShowRemediation(false);
     }
   };
@@ -141,6 +149,7 @@ export default function useRemediation(executionId, controlCode) {
     setSelectedActionId,
     isAddingAnother,
     handleSendAction,
+    handleCloseForm
 
     
   };

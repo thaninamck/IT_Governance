@@ -35,6 +35,7 @@ function ConclusionRemediationSection({
   isAddingAnother,
   controleID,
   onClose,
+  handleCloseForm,
   handleSaveModifications,
   loading,
   isToReview,
@@ -124,7 +125,8 @@ function ConclusionRemediationSection({
           initialValues={selectedActionId || {}}
           onAdd={handleAdd}
           idControle={controleID}
-          onClose={onClose}
+         // onClose={onClose}
+         onClose={handleCloseForm}
         />
       )}
       {shouldShowRemediation && (
