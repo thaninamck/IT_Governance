@@ -11,7 +11,9 @@ class RemediationEvidence extends Model
 
     use HasFactory;
     protected $fillable=[
-        "file_name", "remediation_id","stored_name"
+        "file_name",
+         "remediation_id",
+         "stored_name",
     ];
 
     public function remediation(){

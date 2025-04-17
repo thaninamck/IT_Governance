@@ -65,11 +65,13 @@ public function storeRemediationFile($remediationId, $file)
         $createdEvidences = [];  
     
         foreach ($filesData as $fileData) {
-            $data=[
-                'remediation_id' => $fileData['remediation_id'] ?? null,
-               
-            ];
-            $createdEvidences[] = $this->storeRemediationFile($data, $fileData['file']);
+            $remediationId = $fileData['remediation_id'] ?? null;
+
+            if (!$remediationId || !isset($fileData['file'])) {
+            continue; // skip invalid entry
+        }
+
+        $createdEvidences[] = $this->storeRemediationFile($remediationId, $fileData['file']);
         }
     
         return $createdEvidences; 

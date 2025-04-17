@@ -8,7 +8,7 @@ import FileUploader from '../../components/Evidences/FileUploader';
 import EvidenceList from '../../components/Evidences/EvidenceList';
 import SelectInput from '../../components/Forms/SelectInput';
 import {  useLocation, useNavigate } from 'react-router-dom';
-import { api } from '../../Api';
+import { api, fileApi } from '../../Api';
 import { useAuth } from '../../Context/AuthContext';
 import EditableTextarea from '../../components/EditableInput';
 
@@ -232,10 +232,8 @@ function RemediationActionId() {
   
     try {
       console.log('formdata to send',formDataToSend)
-      const response = await api.post('/remediationevidences/upload', formDataToSend, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        }})
+      const response = await fileApi.post('/remediationevidences/upload', formDataToSend) 
+        
       console.log("response data", response.data);
   
       if (response.status === 200 && Array.isArray(response.data)) {

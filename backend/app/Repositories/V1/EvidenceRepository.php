@@ -49,7 +49,7 @@ class EvidenceRepository
 
     public function getByRemediation($remediationId)
     {
-        return Evidence::where('remediation_id', $remediationId)->get();
+        return RemediationEvidence::where('remediation_id', $remediationId)->get();
     }
 
     public function deleteRemediationEvidence($evidenceId)
