@@ -6,6 +6,7 @@ use App\Models\Mission;
 use App\Models\Status;
 use App\Models\StepExecution;
 use App\Models\StepTestScript;
+use App\Models\User;
 use Illuminate\Support\Facades\DB;
 
 class ExecutionRepository
@@ -534,24 +535,49 @@ public function getexecutionReviewBySuperviseur($missionId)
 }
 
 
-public function getmissionReviewBySuperviseur()
+// public function getmissionReviewBySuperviseur()
+// {
+//     return  $missions = Mission::whereHas('systems.layers.executions', function ($query) {
+//         $query
+//         ->where('is_to_review', true)
+//         ->where('is_to_validate', false);
+//     })
+//     ->with([
+//         'client',
+//         'status',
+//         'participations.user',
+//         'participations.profile',
+//     ])
+//     ->get();
+// }
+
+public function getmissionReviewBySuperviseur($userId)
 {
-    return  $missions = Mission::whereHas('systems.layers.executions', function ($query) {
-        $query
-        ->where('is_to_review', true)
-        ->where('is_to_validate', false);
-    })
-    ->with([
-        'client',
-        'status',
-        'participations.user',
-        'participations.profile',
-    ])
-    ->get();
+    
+        return Mission::whereHas('systems.layers.executions', function ($query) {
+                $query->where('is_to_review', true)
+                      ->where('is_to_validate', false);
+            })
+            ->whereHas('participations', function ($query) use ($userId) {
+                $query->where('user_id', $userId)
+                      ->whereHas('profile', function ($q) {
+                          $q->where('profile_name', 'superviseur'); // ou selon la logique métier exacte
+                      });
+            })
+            ->with([
+                'client',
+                'status',
+                'participations.user',
+                'participations.profile',
+            ])
+            ->get();
+    
 }
+
+
   
 //manager
-public function getexecutionReviewByManager()
+public function getexecutionReviewByManager($missionId)
 {
     return Execution::with([
 'user',
@@ -564,24 +590,100 @@ public function getexecutionReviewByManager()
 'steps.control'
     ])  ->where('is_to_review', false)
     ->where('is_to_validate', true)
+    ->whereHas('layer.system.mission', function ($query) use ($missionId) {
+        $query->where('id', $missionId);
+    })
     ->get();
 }
 
-public function getmissionReviewManager()
+// public function getmissionReviewManager($userId)
+// {
+//     return  $missions = Mission::whereHas('systems.layers.executions', function ($query) {
+//         $query
+//         ->where('is_to_review', false)
+//         ->where('is_to_validate', true);
+//     })
+//     ->with([
+//         'client',
+//         'status',
+//         'participations.user',
+//         'participations.profile',
+//     ])
+//     ->get();
+// }
+
+public function getmissionReviewManager($userId)
 {
-    return  $missions = Mission::whereHas('systems.layers.executions', function ($query) {
-        $query
-        ->where('is_to_review', false)
-        ->where('is_to_validate', true);
-    })
-    ->with([
-        'client',
-        'status',
-        'participations.user',
-        'participations.profile',
-    ])
-    ->get();
+    return Mission::whereHas('systems.layers.executions', function ($query) {
+            $query->where('is_to_review', false)
+                  ->where('is_to_validate', true);
+        })
+        ->whereHas('participations', function ($query) use ($userId) {
+            $query->where('user_id', $userId)
+                  ->whereHas('profile', function ($q) {
+                      $q->where('profile_name', 'manager'); // ou selon la logique métier exacte
+                  });
+        })
+        ->with([
+            'client',
+            'status',
+            'participations.user',
+            'participations.profile',
+        ])
+        ->get();
 }
+
+
+public function getmissionReviewManage1($userId)
+{
+    // Charger l'utilisateur avec ses participations et profils
+    $user = User::with('participations.profile')->find($userId);
+    logger()->info('User:', [$user]);
+
+    // Extraire les noms de profil (manager, superviseur, etc.)
+    $profiles = $user->participations->pluck('profile.profile_name')->unique()->toArray();
+    logger()->info('Profils de l\'utilisateur:', $profiles);
+
+    // Filtrer pour ne garder que manager ou superviseur
+    $validProfiles = ['manager', 'superviseur'];
+    $userProfiles = array_intersect($profiles, $validProfiles);
+
+    if (empty($userProfiles)) {
+        logger()->info('Aucun profil manager ou superviseur trouvé.');
+        return collect();
+    }
+
+    // Récupérer les missions qui matchent les conditions d'exécution ET la participation de l'utilisateur
+    $missions = Mission::whereHas('systems.layers.executions', function ($query) {
+            $query->where(function ($q) {
+                $q->where('is_to_review', true)
+                  ->where('is_to_validate', false);
+            })->orWhere(function ($q) {
+                $q->where('is_to_review', false)
+                  ->where('is_to_validate', true);
+            });
+        })
+        ->whereHas('participations', function ($query) use ($userId, $userProfiles) {
+            $query->where('user_id', $userId)
+                  ->whereHas('profile', function ($q) use ($userProfiles) {
+                      $q->whereIn('profile_name', $userProfiles);
+                  });
+        })
+        ->with([
+            'client',
+            'status',
+            'participations.user',
+            'participations.profile',
+        ])
+        ->get();
+
+    logger()->info('Missions récupérées:', $missions->toArray());
+
+    return $missions;
+}
+
+
+
   
 //validation finale
 //manager

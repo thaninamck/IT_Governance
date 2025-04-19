@@ -161,7 +161,7 @@ Route::middleware(['auth:sanctum', TesterMiddleware::class])
             Route::put('/executions/launch-execution/{execution}', 'launchExecution');
             Route::get('/executions/get-options', 'getExecutionStatusOptions');
             Route::get('/executions/get-execution/{execution}', 'getExecutionById');
-            Route::patch('/executions/submit-execution-for-review/{executionID}', 'submitExecutionForReview');
+           // Route::patch('/executions/submit-execution-for-review/{executionID}', 'submitExecutionForReview');
             Route::patch('/executions/submit-execution-for-validation/{executionID}', 'submitExecutionForValidation');
 
         });
@@ -385,15 +385,29 @@ Route::prefix('v1')->controller(EvidenceController::class)->group(function () {
 Route::prefix('v1')->controller(ExecutionController::class)->group(function () {
     Route::get('/revue/{missionId}/getexecutionreviewedforSuperviseur', 'getexecutionReviewBySuperviseur');
 });
-Route::prefix('v1')->controller(ExecutionController::class)->group(function () {
-    Route::get('/revue/getmissionexecutionreviewedforSuperviseur', 'getmissionReviewBySuperviseur');
+// Route::prefix('v1')->controller(ExecutionController::class)->group(function () {
+//     Route::get('/revue/getmissionexecutionreviewedforSuperviseur', 'getmissionReviewBySuperviseur');
+// });
+
+Route::middleware('auth:sanctum')->prefix('v1')->group(function () {
+    Route::controller(ExecutionController::class)->group(function () {
+        Route::get('/revue/getmissionexecutionreviewedforSuperviseur', 'getmissionReviewBySuperviseur');
+    });
 });
+Route::prefix('v1')->controller(ExecutionController::class)->group(function () {
+    Route::get('/revue/{missionId}/getexecutionreviewedforManager', 'getexecutionReviewByManager');
+});
+Route::middleware('auth:sanctum')->prefix('v1')->group(function () {
+    Route::controller(ExecutionController::class)->group(function () {
+        Route::get('/revue/getmissionexecutionreviewedforManager', 'getmissionReviewManager');
+    });
+});
+// Route::prefix('v1')->controller(ExecutionController::class)->group(function () {
+//     Route::get('/revue/getmissionexecutionreviewedforManager', 'getmissionReviewManager');
+// });
 
 Route::prefix('v1')->controller(ExecutionController::class)->group(function () {
-    Route::get('/revue/getexecutionreviewedforManager', 'getexecutionReviewByManager');
-});
-Route::prefix('v1')->controller(ExecutionController::class)->group(function () {
-    Route::get('/revue/getmissionexecutionreviewedforManager', 'getmissionReviewManager');
+    Route::patch('/executions/submit-execution-for-review/{executionID}', 'submitExecutionForReview');
 });
 
 

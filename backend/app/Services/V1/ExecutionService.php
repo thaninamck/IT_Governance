@@ -203,17 +203,73 @@ public function getexecutionReviewBySuperviseur($missionId)
 {
     return $this->executionRepository->getexecutionReviewBySuperviseur($missionId);
 }
-public function getmissionReviewBySuperviseur()
+public function getmissionReviewBySuperviseur($userId)
 {
-    return $this->executionRepository->getmissionReviewBySuperviseur();
+   // return $this->executionRepository->getmissionReviewBySuperviseur($userId);
+   $missions= $this->executionRepository->getmissionReviewBySuperviseur($userId);
+   return $missions->map(function ($mission) use ($userId) {
+       // Trouver la participation de l'utilisateur courant
+       $userParticipation = $mission->participations->firstWhere('user_id', $userId);
+       $user = $userParticipation->user;
+       $profile_name=$userParticipation->profile;
+       
+       return [
+           'id' => $mission->id,
+           'missionName' => $mission->mission_name,
+           'clientId' => $mission->client_id,
+           'clientName' => $mission->client->commercial_name,
+           'startDate' => $mission->start_date,
+           'endDate' => $mission->end_date,
+           'auditStartDate' => $mission->audit_start_date,
+           'auditEndDate' => $mission->audit_end_date,
+           'statusId' => $mission->status_id,
+           'status' => $mission->status->status_name,
+           'profileName' => $profile_name->profile_name,
+
+           'userId' => $user->id,
+           'userFullName' => $user->first_name . ' ' . $user->last_name,
+           'userRole' => $user->role == 1 ? 'admin' : 'user',
+       ];
+
+})->toArray();
 }
 
-public function getexecutionReviewByManager()
+public function getexecutionReviewByManager($missionId)
 {
-    return $this->executionRepository->getexecutionReviewByManager();
+    return $this->executionRepository->getexecutionReviewByManager($missionId);
 }
-public function getmissionReviewManager()
+// public function getmissionReviewManager($userId)
+// {
+//     return $this->executionRepository->getmissionReviewManager($userId);
+// }
+
+public function getmissionReviewManager($userId)
 {
-    return $this->executionRepository->getmissionReviewManager();
+    $missions= $this->executionRepository->getmissionReviewManager($userId);
+    return $missions->map(function ($mission) use ($userId) {
+        // Trouver la participation de l'utilisateur courant
+        $userParticipation = $mission->participations->firstWhere('user_id', $userId);
+        $user = $userParticipation->user;
+        $profile_name=$userParticipation->profile;
+        
+        return [
+            'id' => $mission->id,
+            'missionName' => $mission->mission_name,
+            'clientId' => $mission->client_id,
+            'clientName' => $mission->client->commercial_name,
+            'startDate' => $mission->start_date,
+            'endDate' => $mission->end_date,
+            'auditStartDate' => $mission->audit_start_date,
+            'auditEndDate' => $mission->audit_end_date,
+            'statusId' => $mission->status_id,
+            'status' => $mission->status->status_name,
+            'profileName' => $profile_name->profile_name,
+
+            'userId' => $user->id,
+            'userFullName' => $user->first_name . ' ' . $user->last_name,
+            'userRole' => $user->role == 1 ? 'admin' : 'user',
+        ];
+
+})->toArray();
 }
 }
