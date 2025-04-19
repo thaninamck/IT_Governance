@@ -201,9 +201,9 @@ function ConclusionRemediationSection({
               }}
             />
           </div>
-          {action.length > 0 && (
+          {/* {action.length > 0 && ( */}
             <div className="flex justify-end mt-5">
-              {showSave && (
+              {/* {showSave && ( */}
                 <button
                   className={`bg-[var(--blue-menu)] mr-16  text-white px-4 py-2 ${isValidateDisabled || loading
                       ? "opacity-50 cursor-not-allowed"
@@ -214,9 +214,9 @@ function ConclusionRemediationSection({
                 >
                   Envoyer pour revue{" "}
                 </button>
-              )}
+              {/* )} */}
             </div>
-          )}
+          {/* )} */}
         </div>
       )}
     </div>

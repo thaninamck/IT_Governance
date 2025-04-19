@@ -151,7 +151,7 @@ function ControleExcutionPage() {
   }, [controleData.executionId]);
 
   useEffect(() => {
-    console.log("Execution Data:", executionData);
+   
     const allEvidences = executionData?.[0]?.evidences || [];
     const filteredEvidences = allEvidences.filter(
       (file) => file.is_f_test === false
@@ -166,6 +166,7 @@ function ControleExcutionPage() {
     setIsToReview(executionData?.[0]?.execution_is_to_review);
     setIsToValidate(executionData?.[0]?.execution_is_to_validate);
   }, [executionData]);
+  console.log("Execution Data:", executionData);
   const [commentaire, setCommentaire] = useState(
     controleData.commentaire || ""
   );
@@ -493,8 +494,9 @@ function ControleExcutionPage() {
 
   const shouldShowRemediation =
     selectedMulti === "Partially Applied" || selectedMulti === "Not Applied";
+    
   const isValidateDisabled =
-    !selectedMulti || !commentaire || shouldShowRemediation;
+    !selectedMulti || shouldShowRemediation // || !commentaire ;
 
 
   const handleValidate = () => {
@@ -510,178 +512,198 @@ function ControleExcutionPage() {
     setTestScriptData(data); // Mettre à jour les données du test script en temps réel
   };
 
+  const handleSaveRevue = async () => {
+    if (!controleData?.executionId) {
+      console.error("Aucun executionId trouvé.");
+      return;
+    }
+  
+    try {
+      const response = await api.patch( `/executions/submit-execution-for-review/${controleData.executionId}`, );
+      if (response) {
+        alert("Contrôle envoyé pour revue avec succès !");
+      } else {
+        alert(`Erreur :  "Échec de l'envoi"}`);
+      }
+  
+    } catch (error) {
+      console.error("Erreur lors de l'envoi :", error);
+      alert("Une erreur est survenue lors de l'envoi pour revue.");
+    } 
+  };
+  
   const handleSave = async () => {
-    const doc = new jsPDF();
-    let yOffset = 30; // Position verticale initiale
+  //   const doc = new jsPDF();
+  //   let yOffset = 30; // Position verticale initiale
 
-    // Fonction pour vérifier si une nouvelle page est nécessaire
-    const addNewPageIfNeeded = (offset) => {
-      if (offset > doc.internal.pageSize.height - 20) {
-        // 20 est une marge
-        doc.addPage();
-        return 30; // Réinitialiser la position verticale
-      }
-      return offset;
-    };
+  //   // Fonction pour vérifier si une nouvelle page est nécessaire
+  //   const addNewPageIfNeeded = (offset) => {
+  //     if (offset > doc.internal.pageSize.height - 20) {
+  //       // 20 est une marge
+  //       doc.addPage();
+  //       return 30; // Réinitialiser la position verticale
+  //     }
+  //     return offset;
+  //   };
 
-    doc.setFontSize(18);
-    doc.text("Rapport de Contrôle", 105, 20, { align: "center" });
-    doc.setFontSize(12);
-    doc.text(`Date: ${new Date().toLocaleDateString()}`, 14, 30);
+  //   doc.setFontSize(18);
+  //   doc.text("Rapport de Contrôle", 105, 20, { align: "center" });
+  //   doc.setFontSize(12);
+  //   doc.text(`Date: ${new Date().toLocaleDateString()}`, 14, 30);
 
-    // Tableau récapitulatif des informations principales
-    autoTable(doc, {
-      startY: yOffset,
-      head: [["Champ", "Valeur"]],
-      body: [
-        ["Type:", type],
-        ["Major Process:", majorProcess],
-        ["Sub Process:", subProcess],
-        ["Description", description],
-        ["Test Script", testScript],
-        ["Status", selectedMulti],
-        ["Commentaire", commentaire],
-        ["Critères", JSON.stringify(localSelections)],
-      ],
-      didDrawPage: (data) => {
-        yOffset = data.cursor.y + 10; // Mettre à jour la position verticale après le tableau
-      },
-    });
+  //   // Tableau récapitulatif des informations principales
+  //   autoTable(doc, {
+  //     startY: yOffset,
+  //     head: [["Champ", "Valeur"]],
+  //     body: [
+  //       ["Type:", type],
+  //       ["Major Process:", majorProcess],
+  //       ["Sub Process:", subProcess],
+  //       ["Description", description],
+  //       ["Test Script", testScript],
+  //       ["Status", selectedMulti],
+  //       ["Commentaire", commentaire],
+  //       ["Critères", JSON.stringify(localSelections)],
+  //     ],
+  //     didDrawPage: (data) => {
+  //       yOffset = data.cursor.y + 10; // Mettre à jour la position verticale après le tableau
+  //     },
+  //   });
 
-    // Vérifier si une nouvelle page est nécessaire
-    yOffset = addNewPageIfNeeded(yOffset);
+  //   // Vérifier si une nouvelle page est nécessaire
+  //   yOffset = addNewPageIfNeeded(yOffset);
 
-    // Liste des remédiations sous forme de tableau
-    autoTable(doc, {
-      startY: yOffset,
-      head: [
-        [
-          "ID",
-          "Description",
-          "Contact",
-          "Date Début",
-          "Date Fin",
-          "Suivi",
-          "Status",
-        ],
-      ],
-      body: action.map((item) => [
-        item.id,
-        item.description,
-        item.contact,
-        item.dateField,
-        item.dateField1,
-        item.suivi,
-        item.status,
-      ]),
-      didDrawPage: (data) => {
-        yOffset = data.cursor.y + 10; // Mettre à jour la position verticale après le tableau
-      },
-    });
-    // Vérifier si une nouvelle page est nécessaire
-    yOffset = addNewPageIfNeeded(yOffset);
+  //   // Liste des remédiations sous forme de tableau
+  //   autoTable(doc, {
+  //     startY: yOffset,
+  //     head: [
+  //       [
+  //         "ID",
+  //         "Description",
+  //         "Contact",
+  //         "Date Début",
+  //         "Date Fin",
+  //         "Suivi",
+  //         "Status",
+  //       ],
+  //     ],
+  //     body: action.map((item) => [
+  //       item.id,
+  //       item.description,
+  //       item.contact,
+  //       item.dateField,
+  //       item.dateField1,
+  //       item.suivi,
+  //       item.status,
+  //     ]),
+  //     didDrawPage: (data) => {
+  //       yOffset = data.cursor.y + 10; // Mettre à jour la position verticale après le tableau
+  //     },
+  //   });
+  //   // Vérifier si une nouvelle page est nécessaire
+  //   yOffset = addNewPageIfNeeded(yOffset);
 
-    //    Ajout des données du test script
-    autoTable(doc, {
-      startY: yOffset,
-      head: [["Étape", "Phrase", "Validée", "Commentaire"]],
-      body: testScriptData.map((item, index) => [
-        index + 1,
-        item.phrase,
-        item.isChecked ? "Oui" : "Non", // Afficher "Oui" ou "Non" pour la validation
-        item.comment || "Aucun commentaire", // Afficher "Aucun commentaire" si le commentaire est vide
-      ]),
-      didDrawPage: (data) => {
-        yOffset = data.cursor.y + 10; // Mettre à jour la position verticale après le tableau
-      },
-    });
-    // Vérifier si une nouvelle page est nécessaire
-    yOffset = addNewPageIfNeeded(yOffset);
+  //   //    Ajout des données du test script
+  //   autoTable(doc, {
+  //     startY: yOffset,
+  //     head: [["Étape", "Phrase", "Validée", "Commentaire"]],
+  //     body: testScriptData.map((item, index) => [
+  //       index + 1,
+  //       item.phrase,
+  //       item.isChecked ? "Oui" : "Non", // Afficher "Oui" ou "Non" pour la validation
+  //       item.comment || "Aucun commentaire", // Afficher "Aucun commentaire" si le commentaire est vide
+  //     ]),
+  //     didDrawPage: (data) => {
+  //       yOffset = data.cursor.y + 10; // Mettre à jour la position verticale après le tableau
+  //     },
+  //   });
+  //   // Vérifier si une nouvelle page est nécessaire
+  //   yOffset = addNewPageIfNeeded(yOffset);
 
-    // Ajout des fichiers de preuves (evidences)
-    if (evidenceFiles.length > 0) {
-      doc.text("Fichiers de preuves (Evidences):", 14, yOffset);
-      yOffset += 10;
-      evidenceFiles.forEach((file, index) => {
-        doc.text(`- ${file.name}`, 20, yOffset);
-        yOffset += 10;
-        yOffset = addNewPageIfNeeded(yOffset); // Vérifier si une nouvelle page est nécessaire
-      });
-    } else {
-      doc.text("Aucun fichier de preuve (Evidence) disponible.", 14, yOffset);
-      yOffset += 10;
-    }
+  //   // Ajout des fichiers de preuves (evidences)
+  //   if (evidenceFiles.length > 0) {
+  //     doc.text("Fichiers de preuves (Evidences):", 14, yOffset);
+  //     yOffset += 10;
+  //     evidenceFiles.forEach((file, index) => {
+  //       doc.text(`- ${file.name}`, 20, yOffset);
+  //       yOffset += 10;
+  //       yOffset = addNewPageIfNeeded(yOffset); // Vérifier si une nouvelle page est nécessaire
+  //     });
+  //   } else {
+  //     doc.text("Aucun fichier de preuve (Evidence) disponible.", 14, yOffset);
+  //     yOffset += 10;
+  //   }
 
-    // Vérifier si une nouvelle page est nécessaire
-    yOffset = addNewPageIfNeeded(yOffset);
+  //   // Vérifier si une nouvelle page est nécessaire
+  //   yOffset = addNewPageIfNeeded(yOffset);
 
-    // Ajout des fichiers de test
-    if (testFiles.length > 0) {
-      doc.text("Fichiers de test:", 14, yOffset);
-      yOffset += 10;
-      testFiles.forEach((file, index) => {
-        doc.text(`- ${file.name}`, 20, yOffset);
-        yOffset += 10;
-        yOffset = addNewPageIfNeeded(yOffset); // Vérifier si une nouvelle page est nécessaire
-      });
-    } else {
-      doc.text("Aucun fichier de test disponible.", 14, yOffset);
-      yOffset += 10;
-    }
-    // Créer un fichier ZIP
-    const zip = new JSZip();
+  //   // Ajout des fichiers de test
+  //   if (testFiles.length > 0) {
+  //     doc.text("Fichiers de test:", 14, yOffset);
+  //     yOffset += 10;
+  //     testFiles.forEach((file, index) => {
+  //       doc.text(`- ${file.name}`, 20, yOffset);
+  //       yOffset += 10;
+  //       yOffset = addNewPageIfNeeded(yOffset); // Vérifier si une nouvelle page est nécessaire
+  //     });
+  //   } else {
+  //     doc.text("Aucun fichier de test disponible.", 14, yOffset);
+  //     yOffset += 10;
+  //   }
+  //   // Créer un fichier ZIP
+  //   const zip = new JSZip();
 
-    // Générer le PDF
-    const pdfBlob = doc.output("blob");
+  //   // Générer le PDF
+  //   const pdfBlob = doc.output("blob");
 
-    // Ajouter le PDF au ZIP
-    zip.file("rapport_controle.pdf", pdfBlob);
+  //   // Ajouter le PDF au ZIP
+  //   zip.file("rapport_controle.pdf", pdfBlob);
 
-    // Ajouter les fichiers de preuves (evidences) au ZIP
-    for (const file of evidenceFiles) {
-      if (file instanceof File || file instanceof Blob) {
-        zip.file(`evidences/${file.name}`, file);
-      }
-    }
-    // Ajouter les fichiers de preuves (evidences) au ZIP
-    for (const file of testFiles) {
-      if (file instanceof File || file instanceof Blob) {
-        zip.file(`testFile/${file.name}`, file);
-      }
-    }
-    // Générer le fichier ZIP et le télécharger
-    const zipBlob = await zip.generateAsync({ type: "blob" });
-    saveAs(zipBlob, "rapport_controle.zip");
+  //   // Ajouter les fichiers de preuves (evidences) au ZIP
+  //   for (const file of evidenceFiles) {
+  //     if (file instanceof File || file instanceof Blob) {
+  //       zip.file(`evidences/${file.name}`, file);
+  //     }
+  //   }
+  //   // Ajouter les fichiers de preuves (evidences) au ZIP
+  //   for (const file of testFiles) {
+  //     if (file instanceof File || file instanceof Blob) {
+  //       zip.file(`testFile/${file.name}`, file);
+  //     }
+  //   }
+  //   // Générer le fichier ZIP et le télécharger
+  //   const zipBlob = await zip.generateAsync({ type: "blob" });
+  //   saveAs(zipBlob, "rapport_controle.zip");
 
-    setShowPopup(true);
+  //   setShowPopup(true);
 
-    console.log(
-      "Type:",
-      type,
-      "Major Process:",
-      majorProcess,
-      "Sub Process:",
-      subProcess,
-      "Description:",
-      description,
-      "TestScript:",
-      testScript,
-      "Test Script Data:",
-      testScriptData,
-      "Evidence Files:",
-      evidenceFiles,
-      "Test Files:",
-      testFiles,
-      "status:",
-      selectedMulti,
-      "Commentaire:",
-      commentaire,
-      "remediation:",
-      action,
-      "critere:",
-      localSelections
-    );
-    //setIsEditing(false); // Quitter le mode édition après la sauvegarde
+  //   console.log(
+  //     "Type:",
+  //     type,
+  //     "Major Process:",
+  //     majorProcess,
+  //     "Sub Process:",
+  //     subProcess,
+  //     "Description:",
+  //     description,
+  //     "TestScript:",
+  //     testScript,
+  //     "Test Script Data:",
+  //     testScriptData,
+  //     "Evidence Files:",
+  //     evidenceFiles,
+  //     "Test Files:",
+  //     testFiles,
+  //     "status:",
+  //     selectedMulti,
+  //     "Commentaire:",
+  //     commentaire,
+  //     "remediation:",
+  //     action,
+  //     "critere:",
+  //     localSelections
+  //   );
+  //   //setIsEditing(false); // Quitter le mode édition après la sauvegarde
   };
 
   const handleSubmit = () => {
@@ -814,7 +836,8 @@ function ControleExcutionPage() {
           commentaire={commentaire}
           setCommentaire={setCommentaire}
           action={action}
-          handleSubmit={handleSave}
+         // handleSubmit={handleSave}
+         handleSubmit={handleSaveRevue}
           handleAdd={handleAdd}
           handleValidate={handleValidate}
           statusOptions={statusOptions}

@@ -60,7 +60,6 @@ function RevueListExecution() {
                 }
               };
           
-              
               return (
                 <div
                   onClick={handleCopy}
@@ -154,7 +153,7 @@ function RevueListExecution() {
     const handleSearchResults = (results) => setFilteredRows(results);
 // Appel API à l'affichage
     useEffect(() => {
-        const fetchMissions = async () => {
+        const fetchexecutionMissionsSupervisuer = async () => {
             try {
                 const response = await api.get(`/revue/${missionRevueData.id}/getexecutionreviewedforSuperviseur`);
                 const missions = response.data|| [];
@@ -166,7 +165,23 @@ function RevueListExecution() {
             }
         };
 
-        fetchMissions();
+        fetchexecutionMissionsSupervisuer();
+    }, []);
+
+    useEffect(() => {
+        const fetchexecutionMissionsManager = async () => {
+            try {
+                const response = await api.get(`/revue/${missionRevueData.id}/getexecutionreviewedforManager`);
+                const missions = response.data|| [];
+                console.log('response',missions)
+                setRevueMissionData(missions);
+                setFilteredRows(missions);
+            } catch (error) {
+                console.error("Erreur lors du chargement des missions à revoir :", error);
+            }
+        };
+
+        fetchexecutionMissionsManager();
     }, []);
 
     return (
