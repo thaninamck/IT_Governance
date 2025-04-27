@@ -21,6 +21,8 @@ import { PermissionRoleContext } from "../../Context/permissionRoleContext";
 import useExecution from "../../Hooks/useExecution";
 import DecisionPopUp from "../../components/PopUps/DecisionPopUp";
 import VisibilityIcon from "@mui/icons-material/Visibility"; // ou RateReviewIcon
+import CommentButton from "../../components/ExecutionPage/CommentButton";
+import ExistingComment from "../../components/ExecutionPage/ExistingComment";
 // Initialize EmailJS with your userID
 emailjs.init("oAXuwpg74dQwm0C_s"); // Replace 'YOUR_USER_ID' with your actual userID
 
@@ -65,7 +67,7 @@ function ControleExcutionPage() {
   const [steps, setSteps] = useState([]);
   const [isToReview, setIsToReview] = useState(false);
   const [isToValidate, setIsToValidate] = useState(false);
-  const sourceNames = controleData.sources.map(s => s.source_name).join(', ');
+  const sourceNames = controleData.sources.map((s) => s.source_name).join(", ");
 
   useEffect(() => {
     console.log("Execution Data:", executionData);
@@ -654,8 +656,6 @@ function ControleExcutionPage() {
     // navigate('/controle', { state: { controleData: rowData } });
     console.log("Détails du contrôle sélectionné:", rowData);
   };
-  
-
 
   // Check if all remediations are done
   const isAllRemediationDone =
@@ -698,11 +698,109 @@ function ControleExcutionPage() {
       />
     );
 
+
+    const handleAddCommentAtPosition = (y) => {
+      // Vérifier qu'on ne superpose pas un commentaire existant
+      const isOverlapping = existingComments.some(c => Math.abs(c.y - y) < 50);
+      
+      if (!isOverlapping) {
+        setComments([...comments, { 
+          y, 
+          text: "", 
+          tempId: Date.now() 
+        }]);
+      }
+    };
+    
+    const handleSaveComment = (tempId, text) => {
+      if (!text.trim()) {
+        // Si le commentaire est vide, on le supprime simplement
+        setComments(comments.filter(comment => comment.tempId !== tempId));
+        return;
+      }
+    
+      // Crée un nouveau commentaire existant
+      const newExistingComment = {
+        y: comments.find(c => c.tempId === tempId).y,
+        initials: "MO", // Initiales de l'utilisateur actuel
+        name: "Moi",    // Nom de l'utilisateur actuel
+        text
+      };
+    
+      // Ajoute aux commentaires existants et supprime du tableau temporaire
+      setExistingComments([...existingComments, newExistingComment]);
+      setComments(comments.filter(comment => comment.tempId !== tempId));
+    };
+    
+    const handleCancelComment = (tempId) => {
+      // Supprime simplement le commentaire non sauvegardé
+      setComments(comments.filter(comment => comment.tempId !== tempId));
+    };
+    const [comments, setComments] = useState([]);
+  const [existingComments, setExistingComments] = useState([
+    {
+      y: 150,
+      initials: "NK",
+      name: "Nina Koliai",
+      text: "Premier commentaire.",
+    },
+    { 
+      y: 300, 
+      initials: "AB", 
+      name: "Alex Ben", 
+      text: "Deuxième commentaire." 
+    },
+  ]);
+
   return (
-    <div className=" ">
-      {isToReview ||isToValidate && (
+    <div className="relative bg-black ">
+      <div 
+    className="absolute right-0 top-0 w-16 h-full bg-gray-700 border-l border-none z-40"
+    onClick={(e) => {
+      // Ne crée un commentaire que si on clique directement sur la marge (pas sur un enfant)
+      if (e.target === e.currentTarget) {
+        const rect = e.currentTarget.getBoundingClientRect();
+        const y = e.clientY - rect.top + e.currentTarget.scrollTop;
+        handleAddCommentAtPosition(y);
+      }
+    }}
+  >
+    {/* Commentaires existants (ne bloquent pas les clics sur la marge) */}
+    {existingComments.map((comment, index) => (
+      <div
+        key={`existing-${index}`}
+        className="absolute right-4 " // Désactive les events
+        style={{ top: comment.y }}
+      >
+        <div onClick={e => e.stopPropagation()}> {/* Conteneur interne */}
+          <ExistingComment
+            user={{ initials: comment.initials, name: comment.name }}
+            comment={comment.text}
+          />
+        </div>
+      </div>
+    ))}
+
+    {/* Commentaires en cours d'édition */}
+    {comments.map((comment) => (
+      <div
+        key={`temp-${comment.tempId}`}
+        className="absolute right-4"
+        style={{ top: comment.y }}
+        onClick={e => e.stopPropagation()} // Bloque le clic parent
+      >
+        <CommentButton
+          onSave={(text) => handleSaveComment(comment.tempId, text)}
+          onCancel={() => handleCancelComment(comment.tempId)}
+        />
+      </div>
+    ))}
+  </div>
+
+      {isToReview ||
+        (isToValidate && (
           <div className="fixed top-0 left-0 w-full h-full bg-transparent z-50 pointer-events-auto" />
-        )}
+        ))}
       <Header />
 
       <div className="ml-8 mr-6 pb-9 relative">
