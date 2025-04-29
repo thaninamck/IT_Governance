@@ -147,10 +147,11 @@ const editComment = async (commentId, newText) => {
     const response = await api.put(`/executions/update-comment/${commentId}`, {
       text: newText,
     });
-    toast.success("Commentaire modifié !");
-    return response.data;
+    
+    return response.status;
   } catch (error) {
     setError(error);
+    console.log(error)
     toast.error("Erreur lors de la modification du commentaire");
   } finally {
     setLoading(false);
@@ -174,6 +175,7 @@ const editComment = async (commentId, newText) => {
     submitExecutionForValidation,
     createComment,
     deleteComment,
+    editComment,
     
 
 };

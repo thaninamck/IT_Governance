@@ -39,6 +39,7 @@ function ControleExcutionPage() {
     updateExecution,
     createComment,
     deleteComment,
+    editComment,
   } = useExecution();
 
   const location = useLocation();
@@ -116,14 +117,14 @@ function ControleExcutionPage() {
         const formattedRemarks = parsedRemarks.map((remark) => {
           const [firstName, lastName] = remark.name?.split(" ") ?? ["", ""];
           return {
-            id:remark.id,
+            id: remark.id,
             y: Number(remark.y),
             initials:
               remark.initials ||
               `${firstName?.[0] ?? ""}${lastName?.[0] ?? ""}`.toUpperCase(),
             name: remark.name,
             text: remark.text,
-            userId:remark.user_id,
+            userId: remark.user_id,
           };
         });
         setExistingComments(formattedRemarks);
@@ -769,42 +770,41 @@ function ControleExcutionPage() {
       setComments(comments.filter((comment) => comment.tempId !== tempId));
       return;
     }
-  
+
     const user = JSON.parse(window.localStorage.getItem("User"));
     const firstName = user.firstName;
     const lastName = user.lastName;
     const fullName = `${firstName} ${lastName}`;
     const initials = `${firstName[0] ?? ""}${lastName[0] ?? ""}`.toUpperCase();
-  
+
     const newExistingComment = {
       y: comments.find((c) => c.tempId === tempId).y,
       initials: initials,
       name: fullName,
       text,
     };
-  
+
     const commentData = {
       y: newExistingComment.y,
       user_id: user.id,
       execution_id: executionData?.[0]?.execution_id,
       text: newExistingComment.text,
     };
-  
+
     const status = await createComment(commentData);
     if (status >= 200 && status < 300) {
       setExistingComments([...existingComments, newExistingComment]);
       setComments(comments.filter((comment) => comment.tempId !== tempId));
-    }else{
-      toast.error("une erreur est survenue veuillez ressayez")
+    } else {
+      toast.error("une erreur est survenue veuillez ressayez");
     }
   };
-  
+
   const handleDeleteComment = async (commentId) => {
     try {
-     toast.info("infos",commentId)
+      toast.info("infos", commentId);
       const response = await deleteComment(commentId);
       if (response === 200) {
-       
         setExistingComments((prev) => prev.filter((c) => c.id !== commentId));
         toast.success("Commentaire supprimé avec succès !");
       }
@@ -813,40 +813,44 @@ function ControleExcutionPage() {
       console.error(error);
     }
   };
-  
-  const handleEdit = (comment) => {
-    // Par exemple, tu pourrais afficher une zone de texte avec la valeur existante
-    setComments((prev) => [
-      ...prev,
-      {
-        tempId: Date.now(), // ou comment.id si déjà enregistré
-        y: comment.y,
-        text: comment.text,
-        isEditing: true,
-        existingId: comment.id,
-      }
-    ]);
+
+  const handleEdit = async (updatedComment) => {
+    console.log("updatedComment", updatedComment);
+
+    const status = await editComment(updatedComment.id, updatedComment.text);
+    if (status != 200) {
+      toast.error("erreur lors de la mise à jour");
+      return;
+    }
+    setExistingComments((prevComments) =>
+      prevComments.map((c) =>
+        c.id === updatedComment.id ? { ...c, text: updatedComment.text } : c
+      )
+    );
   };
-  
+
   const handleCancelComment = (tempId) => {
     // Supprime simplement le commentaire non sauvegardé
     setComments(comments.filter((comment) => comment.tempId !== tempId));
   };
   const [comments, setComments] = useState([]);
-
+  const currentUserRole = JSON.parse(localStorage.getItem("User"))?.role;
   return (
     <div className="relative  ">
       <div
-        className="absolute right-0 top-0 w-16 h-full bg-transparent border-l border-none z-40"
-        onClick={(e) => {
-          // Ne crée un commentaire que si on clique directement sur la marge (pas sur un enfant)
-          if (e.target === e.currentTarget) {
-            const rect = e.currentTarget.getBoundingClientRect();
-            const y = e.clientY - rect.top + e.currentTarget.scrollTop;
-            handleAddCommentAtPosition(y);
-          }
-        }}
-      >
+  className="absolute right-0 top-0 w-16 h-full bg-transparent border-l border-none z-40"
+  onClick={(e) => {
+    if (
+      e.target === e.currentTarget &&
+      currentUserRole !== "testeur" 
+    ) {
+      const rect = e.currentTarget.getBoundingClientRect();
+      const y = e.clientY - rect.top + e.currentTarget.scrollTop;
+      handleAddCommentAtPosition(y);
+    }
+  }}
+>
+
         {/* Commentaires existants (ne bloquent pas les clics sur la marge) */}
         {!(isToReview || isToValidate) &&
           existingComments.map((comment, index) => (
@@ -856,14 +860,19 @@ function ControleExcutionPage() {
               style={{ top: comment.y }}
             >
               <div className="border-none" onClick={(e) => e.stopPropagation()}>
-               {comment.id}
-                <ExistingComment 
-  user={{ id: comment.userId, initials: comment.initials, name: comment.name}}
-  comment={comment.text}
-  onDelete={() => handleDeleteComment(comment.id)}
-  onEdit={() => handleEdit(comment)}
-/>
-
+                
+                <ExistingComment
+                  user={{
+                    id: comment.userId,
+                    initials: comment.initials,
+                    name: comment.name,
+                  }}
+                  comment={comment.text}
+                  onDelete={() => handleDeleteComment(comment.id)}
+                  onEdit={(newText) =>
+                    handleEdit({ id: comment.id, text: newText })
+                  }
+                />
               </div>
             </div>
           ))}
