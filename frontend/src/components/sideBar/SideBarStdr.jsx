@@ -22,7 +22,7 @@ function SideBarStdr({user}) {
       { key: "profile", label: "Profile", path: "/myprofile" },
       { key: "missions", label: "Mes missions", path: "/missions" },
       { key: "notification", label: "Notification", path: "/notification" },
-      { key: "Revue", label: "Revue", path: "/revue" },
+     // { key: "Revue", label: "Revue", path: "/revue" },
     ];
     
       

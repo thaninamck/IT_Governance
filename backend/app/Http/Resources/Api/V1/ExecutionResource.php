@@ -25,8 +25,8 @@ class ExecutionResource extends JsonResource
         'executionIpe' => $this->execution_ipe,
         'executionEffectiveness' => $this->execution_effectiveness,
         'executionDesign' => $this->execution_design,
-        'isToReview'=>$this->execution_review,
-        'isToValidate'=>$this->execution_validate,
+        'isToReview'=>$this->execution_is_to_review,
+        'isToValidate'=>$this->execution_is_to_validate,
 
         'statusId' => $this->status_id,
         'statusName' => $this->status_name,

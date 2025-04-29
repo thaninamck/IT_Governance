@@ -55,6 +55,8 @@ class ExecutionRepository
             e.ipe AS execution_ipe,
             e.effectiveness AS execution_effectiveness,
             e.design AS execution_design,
+             e.is_to_review AS execution_is_to_review,
+    e.is_to_validate AS execution_is_to_validate,
             sts.control_id,
 
             json_agg( json_build_object(
@@ -186,8 +188,8 @@ GROUP BY
         e.ipe AS execution_ipe,
         e.effectiveness AS execution_effectiveness,
         e.design AS execution_design,
-         e.is_to_review AS execution_review,
-            e.is_to_validate AS execution_validate,
+         e.is_to_review AS execution_is_to_review,
+    e.is_to_validate AS execution_is_to_validate,
         sts.control_id,
 
         json_agg( DISTINCT jsonb_build_object(
@@ -285,6 +287,8 @@ GROUP BY
             e.ipe AS execution_ipe,
             e.effectiveness AS execution_effectiveness,
             e.design AS execution_design,
+             e.is_to_review AS execution_is_to_review,
+    e.is_to_validate AS execution_is_to_validate,
             sts.control_id,
 
             json_agg( json_build_object(
@@ -418,8 +422,8 @@ GROUP BY
             e.ipe AS execution_ipe,
             e.effectiveness AS execution_effectiveness,
             e.design AS execution_design,
-            e.is_to_review AS execution_review,
-            e.is_to_validate AS execution_validate,
+            e.is_to_review AS execution_is_to_review,
+    e.is_to_validate AS execution_is_to_validate,
             sts.control_id,
 
             json_agg( json_build_object(
@@ -520,8 +524,8 @@ GROUP BY
                 e.ipe AS execution_ipe,
                 e.effectiveness AS execution_effectiveness,
                 e.design AS execution_design,
-                e.is_to_review AS execution_review,
-                e.is_to_validate AS execution_validate,
+                e.is_to_review AS execution_is_to_review,
+    e.is_to_validate AS execution_is_to_validate,
                 sts.control_id,
     
                 json_agg( json_build_object(
