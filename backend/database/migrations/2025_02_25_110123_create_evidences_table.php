@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('stored_name', 255)->nullable();
 
             $table->boolean('is_f_test')->default(false);
-            $table->foreignId('execution_id')->nullable()->constrained('executions','id');
+            $table->foreignId('execution_id')->nullable()->constrained('executions','id')->onDelete('cascade');;
 
             $table->timestamps();//pour insered_at
         });

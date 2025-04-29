@@ -229,10 +229,11 @@ const useGestionMission = (user,viewMode) => {
   };
   // Gérer la navigation vers le rapport d'une mission
   const handleViewReport = (selectedRow) => {
-    if (!selectedRow || !selectedRow.mission) {
-      console.error("Mission non définie !");
-      return;
-    }
+    console.log("selected row",selectedRow)
+    // if (!selectedRow || !selectedRow.mission) {
+    //   console.error("Mission non définie !");
+    //   return;
+    // }
 
     const link = `/rapportmissions/${selectedRow.mission}`;
     setBreadcrumbs([
