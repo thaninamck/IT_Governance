@@ -11,12 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('mission_systems', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('mission_id')->constrained('missions');
-            $table->foreignId('system_id')->constrained('systems');
-
-            $table->timestamps();
+        Schema::table('remediation_evidences', function (Blueprint $table) {
+          
+            $table->string('stored_name', 255)->nullable();
+           
         });
     }
 
@@ -25,6 +23,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('mission_system');
+            Schema::dropIfExists('remediation_evidences');
+        
     }
 };

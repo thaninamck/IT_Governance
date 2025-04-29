@@ -4,7 +4,7 @@ import {api }from '../Api';
 // Hook personnalisé pour la gestion des clients
 const useClient = () => {
     // État contenant la liste des clients filtrés
-    const [filtereRows, setFiltereRows] = useState([]);
+    const [filteredRows, setFilteredRows] = useState([]);
     // État pour gérer l'ouverture du modal d'ajout de client
     const [isModalOpen, setIsModalOpen] = useState(false);
     // État pour gérer l'ouverture du modal de modification de client
@@ -22,7 +22,7 @@ const useClient = () => {
             // Envoi d'une requête GET pour obtenir la liste des clients
             const response = await api.get('/getclients');
             // Mise à jour de l'état avec les données reçues
-            setFiltereRows(response.data);
+            setFilteredRows(response.data);
         } catch (error) {
             console.error('Erreur lors de la récupération des clients:', error);
         }
@@ -43,7 +43,7 @@ const useClient = () => {
             // Envoi d'une requête POST avec les données du nouveau client
             const response = await api.post('/createclient', newClient);
             // Ajout du nouveau client à la liste des clients affichés
-            setFiltereRows(prevRows => [...prevRows, response.data.client]);
+            setFilteredRows(prevRows => [...prevRows, response.data.client]);
             // Fermeture du modal d'ajout
             setIsModalOpen(false);
         } catch (error) {
@@ -75,7 +75,7 @@ const useClient = () => {
             // Envoi d'une requête PUT avec les nouvelles informations du client
             const response = await api.put(`/updateclientID/${updatedClient.id}`, updatedClient);
             // Mise à jour de la liste des clients affichés avec les nouvelles données
-            setFiltereRows(prevRows =>
+            setFilteredRows(prevRows =>
                 prevRows.map(row => (row.id === updatedClient.id ? response.data : row))
             );
             // Fermeture du modal d'édition
@@ -99,7 +99,7 @@ const useClient = () => {
                 // Envoi d'une requête DELETE pour supprimer le client
                 await api.delete(`/deleteclientID/${selectedClientId}`);
                 // Suppression du client de la liste affichée
-                setFiltereRows(prevRows => prevRows.filter(row => row.id !== selectedClientId));
+                setFilteredRows(prevRows => prevRows.filter(row => row.id !== selectedClientId));
             } catch (error) {
                 console.error('Erreur lors de la suppression du client:', error);
             }
@@ -117,8 +117,8 @@ const useClient = () => {
 
     // Retourne toutes les états et fonctions pour être utilisées dans les composants
     return {
-        filtereRows,
-        setFiltereRows,
+        filteredRows,
+        setFilteredRows,
         isModalOpen,
         isEditModalOpen,
         setIsEditModalOpen,

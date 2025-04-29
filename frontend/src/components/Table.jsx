@@ -186,6 +186,38 @@ function Table({
         // Ajoute une condition spécifique en fonction du champ
         if (colConfig.field === "status") {
           return (
+            // <FormControl sx={{ width: "100%" }}>
+            //   <Select
+            //     value={params.row.status}
+            //     onChange={(e) => handleStatusChange(e, params.row.id)}
+            //     disabled // Désactive le Select
+            //     displayEmpty
+            //     renderValue={(selected) => {
+            //       const color = statusColors[selected] || "gray"; // Détermine la couleur du statut sélectionné
+            //       return (
+            //         <span style={{ color: color }}>
+            //           {selected || "Choisir un statut"}
+            //         </span>
+            //       );
+            //     }}
+            //     sx={{
+            //       fontSize: "14px",
+            //       height: "40px",
+            //       backgroundColor: "#fff",
+            //       borderRadius: "4px",
+            //     }}
+            //   >
+            //     {statusOptions.map((status, color) => (
+            //       <MuiMenuItem
+            //         key={status}
+            //         value={status}
+            //         style={{ color: statusColors[status] || "gray" }}
+            //       >
+            //         {status}
+            //       </MuiMenuItem>
+            //     ))}
+            //   </Select>
+            // </FormControl>
 
             <Typography sx={{ color: statusColors[params.row.status] || "gray" }}>
   {params.row.status || "Aucun statut"}
@@ -193,8 +225,32 @@ function Table({
           );
 
         }
-        
-       
+        if (colConfig.field === "dateField") {
+          // Formater la date en "DEC 27, 2024"
+          const date = new Date(params.value);
+          const formattedDate = date
+            .toLocaleString("en-US", {
+              month: "short",
+              day: "2-digit",
+              year: "numeric",
+            })
+            .toUpperCase();
+
+          return <span>{formattedDate}</span>;
+        }
+        if (colConfig.field === "dateField1") {
+          // Formater la date en "DEC 27, 2024"
+          const date = new Date(params.value);
+          const formattedDate = date
+            .toLocaleString("en-US", {
+              month: "short",
+              day: "2-digit",
+              year: "numeric",
+            })
+            .toUpperCase();
+
+          return <span>{formattedDate}</span>;
+        }
         if (colConfig.field === "rapport") {
           return (
             <IconButton
@@ -286,17 +342,7 @@ function Table({
   };
 
   return (
-     <Paper 
-    // sx={{ margin: "0% 3%", width: "max-content" }}
-    elevation={2}
-    sx={{
-      margin: "20px auto",
-      padding: "20px",
-      borderRadius: "16px",
-      backgroundColor: "#f9fafb", // light background
-      boxShadow: "0 2px 8px rgba(0, 0, 0, 0.05)",
-      maxWidth: "98%",
-    }}>
+    <Paper sx={{ margin: "0% 3%", width: "max-content" }}>
       <DataGrid
         rows={rows}
         columns={columns}

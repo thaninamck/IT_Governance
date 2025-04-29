@@ -10,10 +10,10 @@ function Remediation({ title, initialValues = {}, onAdd, idControle ,onClose}) {
   
   // États pour chaque champ
   const [description, setDescription] = useState(initialValues?.description || '');
-  const [contact, setContact] = useState(initialValues?.contact || '');
+  const [owner_cntct, setContact] = useState(initialValues?.owner_cntct|| '');
   const [status, setStatus] = useState(initialValues?.status || '');
-  const [dateField, setDateField] = useState(initialValues?.dateField || '');
-  const [dateField1, setDateField1] = useState(initialValues?.dateField1 || '');
+  const [start_date, setDateField] = useState(initialValues?.start_date|| '');
+  const [end_date, setDateField1] = useState(initialValues?.end_date || '');
 
   // État pour gérer les erreurs de validation
   const [error, setError] = useState('');
@@ -28,10 +28,10 @@ function Remediation({ title, initialValues = {}, onAdd, idControle ,onClose}) {
   useEffect(() => {
     if (isFirstRender.current) {
       setDescription(initialValues.description || '');
-      setContact(initialValues.contact || '');
-      setStatus(initialValues.status || 'Non_commencee');
-      setDateField(initialValues.dateField || '');
-      setDateField1(initialValues.dateField1 || '');
+      setContact(initialValues.owner_cntct || '');
+      // setStatus(initialValues.status || 'Non_commencee');
+       setDateField(initialValues.start_date || '');
+      setDateField1(initialValues.end_date || '');
       isFirstRender.current = false;
     }
   }, [initialValues]);
@@ -51,7 +51,7 @@ function Remediation({ title, initialValues = {}, onAdd, idControle ,onClose}) {
     const selectedDate = e.target.value;
 
     // Vérifier si la date sélectionnée est antérieure à la date de début
-    if (new Date(selectedDate) < new Date(dateField)) {
+    if (new Date(selectedDate) < new Date(start_date)) {
       setError('La date de fin doit être postérieure à la date de début.');
       setDateField1(''); // Réinitialiser la date de fin si elle est invalide
     } else {
@@ -77,35 +77,38 @@ function Remediation({ title, initialValues = {}, onAdd, idControle ,onClose}) {
     e.preventDefault();
 
      // Vérifier que tous les champs requis sont remplis
-  if (!description || !contact || !dateField ||!dateField1 ) {
+  if (!description || !owner_cntct /*|| !dateField ||!dateField1*/ ) {
     setError('Veuillez remplir tous les champs obligatoires.');
     return; // Empêcher la soumission
   }
 
     // Valider les dates avant de soumettre le formulaire
-    if (!validateDates(dateField, dateField1)) {
-      return; // Empêcher la soumission si les dates ne sont pas valides
-    }
+    // if (!validateDates(dateField, dateField1)) {
+    //   return; // Empêcher la soumission si les dates ne sont pas valides
+    // }
     
     setError(''); // Réinitialiser les erreurs si tout est bon
 
 
     const formData = {
-      id: generateActionId(idControle),
+      id: initialValues?.id, //generateActionId(idControle),
+     // action_name:generateActionId(idControle),
       description,
-      contact,
+      owner_cntct,
       status: status || 'Non_commencee',
-      dateField,
-      dateField1,
+       start_date,
+       end_date,
     };
+    setError(''); // Réinitialiser les erreurs si tout est bon
+    console.log('form data',formData)
 
     onAdd(formData);
     setDescription('');
     setContact('');
-    setDateField('');
+     setDateField('');
     setDateField1('');
     console.log('Form Data:', formData);
-    alert(initialValues?.id ? 'Application mise à jour avec succès !' : 'Application créée avec succès !');
+   // alert(initialValues?.id ? 'Application mise à jour avec succès !' : 'Application créée avec succès !');
   };
 
   return (
@@ -142,7 +145,7 @@ function Remediation({ title, initialValues = {}, onAdd, idControle ,onClose}) {
               width="100%"
               required={true}
               flexDirection="flex-row gap-12 items-center mb-2"
-              value={contact}
+              value={owner_cntct}
               onChange={(e) => setContact(e.target.value)}
             />
           </div>
@@ -153,7 +156,7 @@ function Remediation({ title, initialValues = {}, onAdd, idControle ,onClose}) {
               width="50%"
               required={true}
               flexDirection="flex-row gap-9 items-center mb-2"
-              value={dateField}
+              value={start_date}
               onChange={(e) => setDateField(e.target.value)}
             />
             <InputForm
@@ -162,9 +165,9 @@ function Remediation({ title, initialValues = {}, onAdd, idControle ,onClose}) {
               width="50%"
               required={true}
               flexDirection="flex-row gap-14 items-center mb-2"
-              value={dateField1}
+              value={end_date}
               onChange={handleDateField1Change} // Utiliser la nouvelle fonction de gestion
-              min={dateField} // L'attribut min est défini sur la date de début
+              min={start_date} // L'attribut min est défini sur la date de début
             />
           </div>
         </div>

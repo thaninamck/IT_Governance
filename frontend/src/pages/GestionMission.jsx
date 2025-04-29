@@ -19,23 +19,18 @@ import HighlightOffRoundedIcon from '@mui/icons-material/HighlightOffRounded';
 import PlayCircleOutlineRoundedIcon from '@mui/icons-material/PlayCircleOutlineRounded';
 import LockOpenRoundedIcon from '@mui/icons-material/LockOpenRounded';
 import { Snackbar } from "@mui/material";
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import CancelIcon from '@mui/icons-material/Cancel';
-
 import ImportCsvButton from "../components/ImportXcelButton";
 import StatusMission from "../components/StatusMission";
 import useGestionMission from "../Hooks/useGestionMission";
 import { useAuth } from "../Context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import SideBarStdr from "../components/sideBar/SideBarStdr";
-import { useProfile } from "../Context/ProfileContext";
 
 
 
 function GestionMission() {
   const navigate = useNavigate();
  const { user,viewMode} = useAuth();
- const { profile } = useProfile();
  
 
   const {
@@ -73,9 +68,7 @@ function GestionMission() {
     handlePopupClose,
     isMissionCreated,
     handleRowClick,
-    changeStatus,
-    denyChangeStatus,
-  } = useGestionMission(user,viewMode,profile);
+  } = useGestionMission(user,viewMode);
 
   console.log(user)
   // Colonnes de la table
@@ -106,34 +99,7 @@ function GestionMission() {
         return <StatusMission status={params.row.status} />;
       },
     },
-    ...(activeView === "requeststatus"
-      ? [{
-          field: "request",
-          headerName: "Action",
-          width: 200,
-          customRenderCell: (params) => {
-            return (
-              <div className="flex gap-4">
-                <CheckCircleIcon
-                  className="text-green-600 cursor-pointer hover:text-green-800"
-                  onClick={() => changeStatus(params.row)}
-                />
-                <CancelIcon
-                  className="text-red-600 cursor-pointer hover:text-red-800"
-                  onClick={() => denyChangeStatus(params.row)}
-                />
-              </div>
-            );
-          },
-        }]
-      : [{
-          field: "actions",
-          headerName: "Actions",
-          width: 80,
-        }]
-    )
-    
-    
+    { field: "actions", headerName: "Actions", width: 80 },
   ];
 
   // Actions sur les lignes de la table
@@ -156,16 +122,18 @@ function GestionMission() {
       disabled: (selectedRow) =>
         !selectedRow || !["en_cours", "en_retard"].includes(selectedRow.status),
     },
-   
+    ...(user?.role === "admin" 
+      ? [
           {
             icon: <HighlightOffRoundedIcon sx={{ marginRight: "5px" }} />,
             label: "Annulée",
             onClick: handleCancelRow,
             disabled: (selectedRow) =>
               !selectedRow ||
-              !["non_commencee", "en_cours", "en_attente","en_attente_annulation"].includes(selectedRow.status),
+              !["non_commencee", "en_cours", "en_attente"].includes(selectedRow.status),
           },
-       
+        ]
+      : []),
     ...(user?.role === "admin" 
       ? [
           {
@@ -179,7 +147,7 @@ function GestionMission() {
               selectedRow?.status === "en_attente" ? "Reprendre" : "Pause",
             onClick: handlePauseRow,
             disabled: (selectedRow) =>
-              !selectedRow || !["en_cours", "en_attente","non_commencee"].includes(selectedRow.status),
+              !selectedRow || !["en_cours", "en_attente"].includes(selectedRow.status),
           },
         ]
       : []),
@@ -236,17 +204,11 @@ function GestionMission() {
         </div>
         <div className="flex justify-end items-center gap-4 pr-10 mb-6">
           <ImportCsvButton onDataImported={handleDataImported} />
-          {/* <ExportButton
+          <ExportButton
             rowsData={filteredRows}
             headers={columnsConfig2.map((col) => col.headerName)}
             fileName="missions"
-          /> */}
-          <ExportButton
-  rowsData={filteredRows}
-  columns={columnsConfig2}
-  fileName="missions"
-/>
-
+          />
         </div>
 
         {/* Boutons pour basculer entre les vues */}
@@ -269,15 +231,6 @@ function GestionMission() {
               onClick={() => setActiveView("archived")}
             >
               Missions Archivées
-            </button>
-            <button
-              className={`px-4 py-2 ${activeView === "requeststatus"
-                  ? " rounded-r rounded-l-none  border-none bg-gray-200 text-gray-700"
-                  : "rounded-none text-[var(--subfont-gray)] border-none"
-                } `}
-              onClick={() => setActiveView("requeststatus")}
-            >
-              Request status mission
             </button>
           </div>}
 

@@ -3,6 +3,7 @@
 namespace App\Services\V1;
 
 use App\Models\Mission;
+use App\Models\User;
 use App\Repositories\V1\MissionRepository;
 
 class MissionService
@@ -34,8 +35,6 @@ class MissionService
         'mission_name' => $mission->mission_name,
         'start_date' => $mission->start_date,
         'end_date' => $mission->end_date,
-        'auditStartDate' => $mission->audit_start_date,
-        'auditEndDate' => $mission->audit_end_date,
         'client_id' => $mission->client_id,
         'clientName' => $mission->client->commercial_name,
         'status_id' => $mission->status_id,
@@ -56,8 +55,44 @@ class MissionService
     ];
 }
 
-public function getSystemsByMissionID($missionId)
+// public function getSystemsByMissionID($missionId)
+// {
+//     // Chargez la mission avec les systèmes et leurs relations
+//     $mission = $this->missionRepository->getSystemsByMissionID($missionId)
+//     ->load(['systems.layers', 'systems.owner']);
+
+//     if (!$mission) {
+//         return null; // ou lancer une exception
+//     }
+    
+
+//     return response()->json([
+//         'systems' => $mission->systems->map(function ($system) use ($mission) {
+//             return [
+//                 'missionId' => $mission->id,
+//                 'missionName' => $mission->mission_name,
+//                 'id' => $system->id,
+//                 'name' => $system->name,
+//                 'description' => $system->description,
+//                 'ownerId' => $system->owner->id ?? null,
+//                 'ownerName' => $system->owner->full_name ?? null,
+//                 'ownerContact' => $system->owner->email ?? null,
+//                 'layers' => $system->layers->map(function ($layer) {
+//                     return [
+//                         'id' => $layer->id,
+//                         'name' => $layer->name
+//                     ];
+//                 })->toArray()
+//             ];
+//         })->toArray()
+//     ]);
+// }
+
+public function getSystemsByMissionID($missionId, User $user)
 {
+   
+
+
     // Chargez la mission avec les systèmes et leurs relations
     $mission = $this->missionRepository->getSystemsByMissionID($missionId)
     ->load(['systems.layers', 'systems.owner']);
@@ -67,8 +102,11 @@ public function getSystemsByMissionID($missionId)
     }
     
 
+    $participation = $mission->participations->firstWhere('user_id', $user->id);
+    $profileName = $participation?->profile?->profile_name ?? null;
+
     return response()->json([
-        'systems' => $mission->systems->map(function ($system) use ($mission) {
+        'systems' => $mission->systems->map(function ($system) use  ($mission, $user, $profileName) {
             return [
                 'missionId' => $mission->id,
                 'missionName' => $mission->mission_name,
@@ -78,6 +116,8 @@ public function getSystemsByMissionID($missionId)
                 'ownerId' => $system->owner->id ?? null,
                 'ownerName' => $system->owner->full_name ?? null,
                 'ownerContact' => $system->owner->email ?? null,
+                'role' => ($user->role == 1) ? 'admin' : 'user',
+                'profile' => $profileName,
                 'layers' => $system->layers->map(function ($layer) {
                     return [
                         'id' => $layer->id,
@@ -88,7 +128,6 @@ public function getSystemsByMissionID($missionId)
         })->toArray()
     ]);
 }
-
 public function getMissionSystemsById($id){
     $data=$this->missionRepository->getMissionSystemsById($id);
     return $data;	
@@ -96,7 +135,7 @@ public function getMissionSystemsById($id){
 
     public function createMission(array $data): Mission
     {
-        $data['status_id'] = 7; //NON commencée
+        $data['status_id'] = 10; //NON commencée
         return $this->missionRepository->createMission($data);
     }
 
@@ -112,45 +151,19 @@ public function getMissionSystemsById($id){
     {
         return $this->missionRepository->cancelMission($id);
     }
-    public function requestCancelMission(int $id):Mission
-    {
-        return $this->missionRepository->requestCancelMission($id);
-    }
-    public function requestCloseMission(int $id):Mission
-    {
-        return $this->missionRepository->requestCloseMission($id);
-    }
-    public function requestArchiveMission(int $id):Mission
-    {
-        return $this->missionRepository->requestArchiveMission($id);
-    }
-   
-    public function acceptrequestStatus(int $id):Mission
-    {
-        return $this->missionRepository->acceptrequestStatus($id);
-    }
-    public function refuseRequestStatus(int $id):Mission
-    {
-        return $this->missionRepository->refuseRequestStatus($id);
-    }
-   
-    public function stopMission(int $id): Mission
+    public function stopMission(int $id): array
     {
         return $this->missionRepository->stopMission($id);
     }
     
-    public function resumeMission(int $id): ?Mission
+    public function resumeMission(int $id, int $previousStatusId, string $newStartDate): ?Mission
 {
-    return $this->missionRepository->resumeMission($id);
+    return $this->missionRepository->resumeMission($id, $previousStatusId, $newStartDate );
 }
 
     public function getArchivedMissions()
 {
     return $this->missionRepository->getArchivedMissions();
-}
-public function getRequestStatusForMissions()
-{
-    return $this->missionRepository->getRequestStatusForMissions();
 }
 
     public function updateMission($id, array $data): ?Mission
@@ -182,7 +195,7 @@ public function getRequestStatusForMissions()
         // }
         // Ajouter status_id à chaque mission
         $missionsData = array_map(function ($missionData) {
-            $missionData['status_id'] = 7; // Définir le statut par défaut NON commencée
+            $missionData['status_id'] = 10; // Définir le statut par défaut NON commencée
             return $missionData;
         }, $missionsData);
 
@@ -210,6 +223,7 @@ public function getRequestStatusForMissions()
     return $missions->map(function ($mission) use ($userId) {
         // Trouver la participation de l'utilisateur courant
         $userParticipation = $mission->participations->firstWhere('user_id', $userId);
+        $user = $userParticipation->user;
         $profile_name=$userParticipation->profile;
         
         return [
@@ -224,6 +238,10 @@ public function getRequestStatusForMissions()
             'statusId' => $mission->status_id,
             'status' => $mission->status->status_name,
             'profileName' => $profile_name->profile_name,
+
+            'userId' => $user->id,
+            'userFullName' => $user->first_name . ' ' . $user->last_name,
+            'userRole' => $user->role == 1 ? 'admin' : 'user',
             // Conserver les autres participations si nécessaire
             // 'participations' => $mission->participations->map(function ($participation) {
             //     return [

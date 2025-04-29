@@ -14,7 +14,7 @@ import { useProfile } from '../../Context/ProfileContext';
 
 function DisplayControleAppID() {
   const { profile } = useProfile();
-  console.log(profile)
+  console.log('profile',profile)
   const navigate = useNavigate()
   const { user} = useAuth();
   const [loading, setLoading] = useState(true);
@@ -45,10 +45,7 @@ function DisplayControleAppID() {
 
   const [selectedControl, setSelectedControl] = useState([]);
   const handleRowClick = (rowData) => {
-    
-    // Naviguer vers la page de détails avec l'ID du contrôle dans l'URL
     navigate(`/missions/${mission}/${name}/${rowData.controlCode}`, { state: { controleData: rowData } });
-    // navigate('/controle', { state: { controleData: rowData } });
     console.log('Détails du contrôle sélectionné:', rowData);
   };
   const columnsConfig2 = [
@@ -78,9 +75,14 @@ function DisplayControleAppID() {
 
 const [appData, setAppData] = useState([]); // État pour stocker les données de l'application
  const fetchAppData = async () => {
+  setLoading(true); 
   try {
-    const endpoint = (user?.role === "admin"|| profile==='manager' ) ? `/missions/${AppData.id}/getexecutionsList`
-     : `/missions/${AppData.missionId}/${AppData.id}/getexecutionsListForTesteur`;
+   console.log('profileme',AppData.profile);
+  
+   console.log('role',AppData.role);
+    const endpoint = (AppData.role === "admin"||AppData.profile ==='manager' ) ? 
+    `/missions/${AppData.id}/getexecutionsList` :
+     `/missions/${AppData.missionId}/${AppData.id}/getexecutionsListForTesteur`;
     const response = await api.get(endpoint);
     console.log('list',response.data)
     setAppData(response.data);
@@ -90,25 +92,11 @@ const [appData, setAppData] = useState([]); // État pour stocker les données d
     setLoading(false);
   }
 };
-
-// const fetchAppData = async () => {
-//   if (!user?.role || !profile) return; // éviter les erreurs silencieuses
-
-//   try {
-//     const isAdminOrManager = user.role === "admin" || profile === "manager";
-//     const endpoint = isAdminOrManager
-//       ? `/missions/${AppData.id}/getexecutionsList`
-//       : `/missions/${AppData.missionId}/${AppData.id}/getexecutionsListForTesteur`;
-
-//     const response = await api.get(endpoint);
-//     console.log('list', response.data);
-//     setAppData(response.data);
-//   } catch (err) {
-//     setError(err.message);
-//   } finally {
-//     setLoading(false);
-//   }
-// };
+useEffect(() => {
+  if (user?.role && profile) {
+    fetchAppData();
+  }
+}, [user, profile]);
 
 
 // const fetchAppData = async () => {
@@ -124,16 +112,15 @@ const [appData, setAppData] = useState([]); // État pour stocker les données d
 //   };
  // Chargement initial
  useEffect(() => {
-  if (user?.role || profile) {
+  if (AppData.id) {
     fetchAppData();
   }
-}, [user?.role,profile]);
+  
+}, [AppData.id]);
+useEffect(() => {
+  console.log("appData:", appData);
+}, [appData]);
 
-// useEffect(() => {
-//   if (AppData?.id && user?.role && profile) {
-//     fetchAppData();
-//   }
-// }, [AppData?.id, user?.role, profile]);
 
   return (
     <div className=" ">
@@ -159,6 +146,7 @@ const [appData, setAppData] = useState([]); // État pour stocker les données d
         <div
           className="flex-1 overflow-x-auto overflow-y-auto h-[400px] transition-all "
         >
+          
         {AppData ? (
           // <Matrix
           //   data={{ applications: [{ ...appData, controls }] }}

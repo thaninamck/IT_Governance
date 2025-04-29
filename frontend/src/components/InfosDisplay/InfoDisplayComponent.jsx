@@ -1,32 +1,50 @@
 import React from 'react';
-import { Box } from '@mui/material';
+import Box from '@mui/material/Box';
 
-const InfoDisplayComponent = ({ label, BoxContent, icon }) => {
+
+const InfoDisplayComponent = ({label,BoxContent,borderWidth,labelWidth}) => {
   return (
-    <div className="flex items-start space-x-3">
-      <div className="flex-shrink-0 mt-1">
-        {icon}
-      </div>
+    <div 
       
-      <div className="flex-1 min-w-0">
-        <label htmlFor={label} className="block text-sm font-medium text-gray-500 mb-1">
-          {label}
-        </label>
+
+      className='relative flex items-center justify-start '
+    >
+      {/* Label pour la mission */}
+      <label 
+        htmlFor={label} 
         
-        <Box
-          sx={{
-            display: 'flex',
-            alignItems: 'center',
-            minHeight: '1.7rem',
-            padding: ' 0',
-            borderBottom: '1px solid #e5e7eb',
+        className='text-font-gray font-medium  '
+        style={{ width: labelWidth }}
+      >
+        {label} 
+      </label>
+
+      {/* Affichage du contenu */}
+      <Box
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'flex-start',
+          borderBottom: '1px solid #dcdcdc',
+          width: borderWidth,
+          marginBottom: '10px',
+          wordBreak: "break-word", // Coupe les mots longs
+          overflowWrap: "break-word", // Force le retour à la ligne
+          whiteSpace: "pre-wrap", // Respecte les retours à la ligne et les espaces
+         
+         
+        }}
+      >
+        <span 
+          style={{ 
+            fontSize: '13px', 
+            color: '#555' ,
+            
           }}
         >
-          <span className="text-sm text-gray-800 font-medium">
-            {BoxContent}
-          </span>
-        </Box>
-      </div>
+          {BoxContent}
+        </span>
+      </Box>
     </div>
   );
 };

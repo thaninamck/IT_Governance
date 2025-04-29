@@ -37,6 +37,8 @@ useEffect(() => {
 }, [missionData, updateProfile]);
 console.log('profile',profile)
 
+console.log("mission manel",missionData)
+
   // Liste des chemins où les breadcrumbs doivent s'afficher
   const breadcrumbRoutes = [
     "/missions",

@@ -15,6 +15,44 @@ public function __construct(EvidenceService $evidenceService)
 {
     $this->evidenceService = $evidenceService;
 }
+
+public function destroyRemediation( $evidenceId)
+{
+    try {
+        $this->evidenceService->deleteRemediationFile($evidenceId);
+        return $this->sendResponse("File deleted successfully","");
+    } catch (\Exception $e) {
+        Log::error('Error deleting file: ' . $e->getMessage());
+        }
+    
+}
+public function storeRemediationMultiple(Request $request)
+{
+    Log::info('Request data: ', $request->all());
+    Log::info('Uploaded files: ', $request->file());
+
+    try {
+        $filesData = [];
+        
+        if ($request->hasFile('files')) {
+            foreach ($request->file('files') as $index => $file) {
+                $filesData[] = [
+                    'file' => $file,
+                    'remediation_id' => $request->input("files.$index.remediation_id"),
+                ];
+            }
+        }
+
+        $evidences=$this->evidenceService->storeRemediationFiles($filesData);
+
+        return $this->sendResponse($evidences, 'All files uploaded successfully.');
+    } catch (\Exception $e) {
+        Log::error('Multiple upload error: ' . $e->getMessage());
+        return $this->sendError('Upload failed', [], 500);
+    }
+}
+
+
     /**
      * Remove the specified resource from storage.
      */
@@ -56,6 +94,8 @@ public function __construct(EvidenceService $evidenceService)
         return $this->sendError('Upload failed', [], 500);
     }
 }
+    
+
     
     
     
