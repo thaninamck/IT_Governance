@@ -163,7 +163,7 @@ Route::middleware(['auth:sanctum', TesterMiddleware::class])
             Route::put('/executions/update-execution/{execution}', 'updateExecution');
             Route::put('/executions/launch-execution/{execution}', 'launchExecution');
             Route::get('/executions/get-options', 'getExecutionStatusOptions');
-            Route::get('/executions/get-execution/{execution}', 'getExecutionById');
+            Route::get('missions/{mission}/executions/get-execution/{execution}', 'getExecutionById');
             Route::patch('/executions/submit-execution-for-review/{executionID}', 'submitExecutionForReview');
             Route::patch('/executions/submit-execution-for-validation/{executionID}', 'submitExecutionForValidation');
 

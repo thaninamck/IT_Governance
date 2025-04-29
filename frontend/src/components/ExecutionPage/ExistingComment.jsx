@@ -8,7 +8,7 @@ export default function ExistingComment({ user, comment }) {
     <div className="relative">
       <button
         onClick={() => setShowDetails(!showDetails)}
-        className="text-gray-800 border-none hover:text-black"
+        className="text-gray-800 border-none  hover:text-black"
       >
         <MessageSquare size={25} />
       </button>

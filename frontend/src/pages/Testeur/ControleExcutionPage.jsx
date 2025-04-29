@@ -40,13 +40,14 @@ function ControleExcutionPage() {
 
   const location = useLocation();
   const controleData = location.state?.controleData || {};
-  console.log(controleData);
+  console.log("controoooole data",controleData);
 
   const [executionData, setExecutionData] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
-      const data = await getExecutionById(controleData.executionId);
+     const  missionId=controleData.missionId
+      const data = await getExecutionById(missionId,controleData.executionId);
 
       if (data && Array.isArray(data)) {
         const parsedData = data.map((item) => ({
@@ -62,15 +63,39 @@ function ControleExcutionPage() {
     if (controleData.executionId) {
       fetchData();
     }
-  }, [controleData.executionId]);
+  }, [controleData.executionId,controleData.missionId]);
   const [evidences, setEvidences] = useState([]);
   const [steps, setSteps] = useState([]);
   const [isToReview, setIsToReview] = useState(false);
   const [isToValidate, setIsToValidate] = useState(false);
+  const [commentaire, setCommentaire] = useState(
+     ""
+  );
   const sourceNames = controleData.sources.map((s) => s.source_name).join(", ");
-
+  const [selections, setSelections] = useState({
+    IPE: true,
+    Design: false,
+    Effectiveness:true
+    ,
+  });
+  const [existingComments, setExistingComments] = useState([
+    // {
+    //   y: 150,
+    //   initials: "NK",
+    //   name: "Nina Koliai",
+    //   text: "Premier commentaire.",
+    // },
+    // { 
+    //   y: 300, 
+    //   initials: "AB", 
+    //   name: "Alex Ben", 
+    //   text: "Deuxième commentaire." 
+    // },
+  ]);
   useEffect(() => {
     console.log("Execution Data:", executionData);
+  
+    console.log("Execution Dataff:", executionData?.[0]?.remarks);
     const allEvidences = executionData?.[0]?.evidences || [];
     const filteredEvidences = allEvidences.filter(
       (file) => file.is_f_test === false
@@ -78,6 +103,35 @@ function ControleExcutionPage() {
     const filteredTestFiles = allEvidences.filter(
       (file) => file.is_f_test === true
     );
+    setCommentaire(executionData?.[0]?.comment)
+setSelections({
+  IPE: executionData?.[0]?.ipe,
+    Design: executionData?.[0]?.design,
+    Effectiveness:executionData?.[0]?.effectiveness
+    ,
+});
+//setExistingComments(executionData?.[0]?.remarks)
+if (executionData?.[0]?.remarks) {
+  try {
+    const parsedRemarks = JSON.parse(executionData[0].remarks);
+    const formattedRemarks = parsedRemarks.map(remark => {
+      const [firstName, lastName] = remark.name?.split(" ") ?? ["", ""];
+      return {
+        y: Number(remark.y),
+        initials: remark.initials || `${firstName?.[0] ?? ""}${lastName?.[0] ?? ""}`.toUpperCase(),
+        name: remark.name,
+        text: remark.text
+      };
+    });
+    setExistingComments(formattedRemarks);
+  } catch (error) {
+    console.error("Erreur de parsing des remarques:", error);
+    setExistingComments([]);
+  }
+} else {
+  setExistingComments([]);
+}
+
 
     setEvidences(filteredEvidences);
     setTestFiles(filteredTestFiles);
@@ -85,9 +139,7 @@ function ControleExcutionPage() {
     setIsToReview(executionData?.[0]?.execution_is_to_review);
     setIsToValidate(executionData?.[0]?.execution_is_to_validate);
   }, [executionData]);
-  const [commentaire, setCommentaire] = useState(
-    controleData.commentaire || ""
-  );
+  
   const [isEditing, setIsEditing] = useState(true);
   const statusOptions = ["Terminé", "En_cours", "Non_commencee"];
   const statusColors = {
@@ -97,10 +149,7 @@ function ControleExcutionPage() {
   };
   const [selectedMulti, setSelectedMulti] = useState(controleData.statusId);
 
-  useEffect(() => {
-    console.log("Selected Multi:", selectedMulti);
-  }, [selectedMulti]); // Log the selectedMulti whenever it changes
-
+ 
   const [showRemediation, setShowRemediation] = useState(false);
   const [showPopup, setShowPopup] = useState(false);
   const [description, setDescription] = useState(
@@ -116,11 +165,9 @@ function ControleExcutionPage() {
   );
   const [subProcess, setSubProcess] = useState(controleData.subProcess || "");
   const [controleID, setControleID] = useState(controleData.controlCode || "");
-  const [selections, setSelections] = useState({
-    IPE: controleData.ipe,
-    Design: controleData.design,
-    Effectiveness: controleData.effectiveness,
-  });
+  useEffect(() => {
+    console.log("ippepe:", selections);
+  }, [selections]); // Log the selectedMulti whenever it changes
 
   const handleStatesChange = (selections) => {
     console.log("Depuis ControlExecution :", selections);
@@ -139,7 +186,9 @@ function ControleExcutionPage() {
   useEffect(() => {
     updateStatusBasedOnSuivi();
   }, []);
-
+  useEffect(() => {
+    console.log("comments",existingComments);
+  }, [existingComments]);
   const columnsConfig = [
     { field: "id", headerName: "ID", width: 250, editable: true },
     {
@@ -737,25 +786,12 @@ function ControleExcutionPage() {
       setComments(comments.filter(comment => comment.tempId !== tempId));
     };
     const [comments, setComments] = useState([]);
-  const [existingComments, setExistingComments] = useState([
-    {
-      y: 150,
-      initials: "NK",
-      name: "Nina Koliai",
-      text: "Premier commentaire.",
-    },
-    { 
-      y: 300, 
-      initials: "AB", 
-      name: "Alex Ben", 
-      text: "Deuxième commentaire." 
-    },
-  ]);
+  
 
   return (
-    <div className="relative bg-black ">
+    <div className="relative  ">
       <div 
-    className="absolute right-0 top-0 w-16 h-full bg-gray-700 border-l border-none z-40"
+    className="absolute right-0 top-0 w-16 h-full bg-transparent border-l border-none z-40"
     onClick={(e) => {
       // Ne crée un commentaire que si on clique directement sur la marge (pas sur un enfant)
       if (e.target === e.currentTarget) {
@@ -766,22 +802,25 @@ function ControleExcutionPage() {
     }}
   >
     {/* Commentaires existants (ne bloquent pas les clics sur la marge) */}
-    {existingComments.map((comment, index) => (
-      <div
-        key={`existing-${index}`}
-        className="absolute right-4 " // Désactive les events
-        style={{ top: comment.y }}
-      >
-        <div onClick={e => e.stopPropagation()}> {/* Conteneur interne */}
-          <ExistingComment
-            user={{ initials: comment.initials, name: comment.name }}
-            comment={comment.text}
-          />
-        </div>
+    {!(isToReview || isToValidate) && (
+  existingComments.map((comment, index) => (
+    <div
+      key={`existing-${index}`}
+      className="absolute border-none right-4"
+      style={{ top: comment.y }}
+    >
+      <div className="border-none" onClick={e => e.stopPropagation()}>
+        <ExistingComment
+          user={{ initials: comment.initials, name: comment.name }}
+          comment={comment.text}
+        />
       </div>
-    ))}
+    </div>
+  ))
+)}
 
-    {/* Commentaires en cours d'édition */}
+
+    {/* Commentaires en cours d'édition à mettre dans la page de revue  */}
     {comments.map((comment) => (
       <div
         key={`temp-${comment.tempId}`}
@@ -795,6 +834,8 @@ function ControleExcutionPage() {
         />
       </div>
     ))}
+
+
   </div>
 
       {isToReview ||

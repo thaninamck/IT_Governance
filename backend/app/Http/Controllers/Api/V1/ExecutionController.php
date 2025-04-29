@@ -111,8 +111,9 @@ class ExecutionController extends BaseController
             return $this->sendError('Erreur lors de la récupération des exécutions.', ['error' => $e->getMessage()], 500);
         }
     }
-    public function getExecutionById($executionId)
+    public function getExecutionById($missionId,$executionId)
     {
+       
         $returnedExecution = $this->executionService->getExecutionById($executionId);
         if ($returnedExecution) {
             return $this->sendResponse(
@@ -120,7 +121,7 @@ class ExecutionController extends BaseController
                 'Execution retrieved successfully'
             );
         } else {
-            return $this->sendError('Execution not found', [], 404);
+            return $this->sendError('Execution Not found', [], 404);
         }
     }
 

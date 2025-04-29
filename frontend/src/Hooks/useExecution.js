@@ -23,10 +23,10 @@ const useExecution = () => {
     }
   }
 
-  const getExecutionById =  async ($id) => {
+  const getExecutionById =  async ($missionId,$id) => {
         setLoading(true);
         try {
-        const response = await api.get(`/executions/get-execution/${$id}`);
+        const response = await api.get(`missions/${$missionId}/executions/get-execution/${$id}`);
         return response.data;
         } catch (error) {
         setError(error);
