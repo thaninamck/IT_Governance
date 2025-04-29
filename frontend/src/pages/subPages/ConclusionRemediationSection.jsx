@@ -78,9 +78,15 @@ function ConclusionRemediationSection({
           </div>
         )}
       </div>
-      <p className="mt-4 font-medium ml-16    ">Commentaire: {commentaire}</p>
+      <div className="flex gap-20 mt-4 items-center font-medium justify-start">
+      <p className="  ml-16    ">Commentaire: </p>
+    
+      <p>{commentaire}</p>
+     
 
-      <div className="flex flex-row items-center mt-8 ml-8 ">
+      </div>
+
+      <div className="flex flex-row gap-10 items-center mt-8 ml-8 ">
         <label className=" font-medium  ml-8">modifier le commentaire</label>
 
         <div className=" w-full pr-10  mr-8">

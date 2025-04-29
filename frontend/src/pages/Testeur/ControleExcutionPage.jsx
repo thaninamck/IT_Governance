@@ -21,6 +21,9 @@ import { PermissionRoleContext } from "../../Context/permissionRoleContext";
 import useExecution from "../../Hooks/useExecution";
 import DecisionPopUp from "../../components/PopUps/DecisionPopUp";
 import VisibilityIcon from "@mui/icons-material/Visibility"; // ou RateReviewIcon
+import CommentButton from "../../components/ExecutionPage/CommentButton";
+import ExistingComment from "../../components/ExecutionPage/ExistingComment";
+import { toast } from "react-toastify";
 // Initialize EmailJS with your userID
 emailjs.init("oAXuwpg74dQwm0C_s"); // Replace 'YOUR_USER_ID' with your actual userID
 
@@ -34,17 +37,21 @@ function ControleExcutionPage() {
     deleteEvidence,
     uploadEvidences,
     updateExecution,
+    createComment,
+    deleteComment,
+    editComment,
   } = useExecution();
 
   const location = useLocation();
   const controleData = location.state?.controleData || {};
-  console.log(controleData);
+  console.log("controoooole data", controleData);
 
   const [executionData, setExecutionData] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
-      const data = await getExecutionById(controleData.executionId);
+      const missionId = controleData.missionId;
+      const data = await getExecutionById(missionId, controleData.executionId);
 
       if (data && Array.isArray(data)) {
         const parsedData = data.map((item) => ({
@@ -60,15 +67,36 @@ function ControleExcutionPage() {
     if (controleData.executionId) {
       fetchData();
     }
-  }, [controleData.executionId]);
+  }, [controleData.executionId, controleData.missionId]);
   const [evidences, setEvidences] = useState([]);
   const [steps, setSteps] = useState([]);
   const [isToReview, setIsToReview] = useState(false);
   const [isToValidate, setIsToValidate] = useState(false);
-  const sourceNames = controleData.sources.map(s => s.source_name).join(', ');
-
+  const [commentaire, setCommentaire] = useState("");
+  const sourceNames = controleData.sources.map((s) => s.source_name).join(", ");
+  const [selections, setSelections] = useState({
+    IPE: true,
+    Design: false,
+    Effectiveness: true,
+  });
+  const [existingComments, setExistingComments] = useState([
+    // {
+    //   y: 150,
+    //   initials: "NK",
+    //   name: "Nina Koliai",
+    //   text: "Premier commentaire.",
+    // },
+    // {
+    //   y: 300,
+    //   initials: "AB",
+    //   name: "Alex Ben",
+    //   text: "Deuxième commentaire."
+    // },
+  ]);
   useEffect(() => {
     console.log("Execution Data:", executionData);
+
+    console.log("Execution Dataff:", executionData?.[0]?.remarks);
     const allEvidences = executionData?.[0]?.evidences || [];
     const filteredEvidences = allEvidences.filter(
       (file) => file.is_f_test === false
@@ -76,6 +104,37 @@ function ControleExcutionPage() {
     const filteredTestFiles = allEvidences.filter(
       (file) => file.is_f_test === true
     );
+    setCommentaire(executionData?.[0]?.comment);
+    setSelections({
+      IPE: executionData?.[0]?.ipe,
+      Design: executionData?.[0]?.design,
+      Effectiveness: executionData?.[0]?.effectiveness,
+    });
+    //setExistingComments(executionData?.[0]?.remarks)
+    if (executionData?.[0]?.remarks) {
+      try {
+        const parsedRemarks = JSON.parse(executionData[0].remarks);
+        const formattedRemarks = parsedRemarks.map((remark) => {
+          const [firstName, lastName] = remark.name?.split(" ") ?? ["", ""];
+          return {
+            id: remark.id,
+            y: Number(remark.y),
+            initials:
+              remark.initials ||
+              `${firstName?.[0] ?? ""}${lastName?.[0] ?? ""}`.toUpperCase(),
+            name: remark.name,
+            text: remark.text,
+            userId: remark.user_id,
+          };
+        });
+        setExistingComments(formattedRemarks);
+      } catch (error) {
+        console.error("Erreur de parsing des remarques:", error);
+        setExistingComments([]);
+      }
+    } else {
+      setExistingComments([]);
+    }
 
     setEvidences(filteredEvidences);
     setTestFiles(filteredTestFiles);
@@ -83,9 +142,7 @@ function ControleExcutionPage() {
     setIsToReview(executionData?.[0]?.execution_is_to_review);
     setIsToValidate(executionData?.[0]?.execution_is_to_validate);
   }, [executionData]);
-  const [commentaire, setCommentaire] = useState(
-    controleData.commentaire || ""
-  );
+
   const [isEditing, setIsEditing] = useState(true);
   const statusOptions = ["Terminé", "En_cours", "Non_commencee"];
   const statusColors = {
@@ -94,10 +151,6 @@ function ControleExcutionPage() {
     Non_Commencée: "gray",
   };
   const [selectedMulti, setSelectedMulti] = useState(controleData.statusId);
-
-  useEffect(() => {
-    console.log("Selected Multi:", selectedMulti);
-  }, [selectedMulti]); // Log the selectedMulti whenever it changes
 
   const [showRemediation, setShowRemediation] = useState(false);
   const [showPopup, setShowPopup] = useState(false);
@@ -114,11 +167,9 @@ function ControleExcutionPage() {
   );
   const [subProcess, setSubProcess] = useState(controleData.subProcess || "");
   const [controleID, setControleID] = useState(controleData.controlCode || "");
-  const [selections, setSelections] = useState({
-    IPE: controleData.ipe,
-    Design: controleData.design,
-    Effectiveness: controleData.effectiveness,
-  });
+  useEffect(() => {
+    console.log("icommentssssssss:", existingComments);
+  }, [existingComments]); // Log the selectedMulti whenever it changes
 
   const handleStatesChange = (selections) => {
     console.log("Depuis ControlExecution :", selections);
@@ -137,7 +188,9 @@ function ControleExcutionPage() {
   useEffect(() => {
     updateStatusBasedOnSuivi();
   }, []);
-
+  useEffect(() => {
+    console.log("comments", existingComments);
+  }, [existingComments]);
   const columnsConfig = [
     { field: "id", headerName: "ID", width: 250, editable: true },
     {
@@ -654,8 +707,6 @@ function ControleExcutionPage() {
     // navigate('/controle', { state: { controleData: rowData } });
     console.log("Détails du contrôle sélectionné:", rowData);
   };
-  
-
 
   // Check if all remediations are done
   const isAllRemediationDone =
@@ -698,11 +749,154 @@ function ControleExcutionPage() {
       />
     );
 
+  const handleAddCommentAtPosition = (y) => {
+    // Vérifier qu'on ne superpose pas un commentaire existant
+    const isOverlapping = existingComments.some((c) => Math.abs(c.y - y) < 50);
+
+    if (!isOverlapping) {
+      setComments([
+        ...comments,
+        {
+          y,
+          text: "",
+          tempId: Date.now(),
+        },
+      ]);
+    }
+  };
+
+  const handleSaveComment = async (tempId, text) => {
+    if (!text.trim()) {
+      setComments(comments.filter((comment) => comment.tempId !== tempId));
+      return;
+    }
+
+    const user = JSON.parse(window.localStorage.getItem("User"));
+    const firstName = user.firstName;
+    const lastName = user.lastName;
+    const fullName = `${firstName} ${lastName}`;
+    const initials = `${firstName[0] ?? ""}${lastName[0] ?? ""}`.toUpperCase();
+
+    const newExistingComment = {
+      y: comments.find((c) => c.tempId === tempId).y,
+      initials: initials,
+      name: fullName,
+      text,
+    };
+
+    const commentData = {
+      y: newExistingComment.y,
+      user_id: user.id,
+      execution_id: executionData?.[0]?.execution_id,
+      text: newExistingComment.text,
+    };
+
+    const status = await createComment(commentData);
+    if (status >= 200 && status < 300) {
+      setExistingComments([...existingComments, newExistingComment]);
+      setComments(comments.filter((comment) => comment.tempId !== tempId));
+    } else {
+      toast.error("une erreur est survenue veuillez ressayez");
+    }
+  };
+
+  const handleDeleteComment = async (commentId) => {
+    try {
+      toast.info("infos", commentId);
+      const response = await deleteComment(commentId);
+      if (response === 200) {
+        setExistingComments((prev) => prev.filter((c) => c.id !== commentId));
+        toast.success("Commentaire supprimé avec succès !");
+      }
+    } catch (error) {
+      toast.error("Erreur lors de la suppression du commentaire");
+      console.error(error);
+    }
+  };
+
+  const handleEdit = async (updatedComment) => {
+    console.log("updatedComment", updatedComment);
+
+    const status = await editComment(updatedComment.id, updatedComment.text);
+    if (status != 200) {
+      toast.error("erreur lors de la mise à jour");
+      return;
+    }
+    setExistingComments((prevComments) =>
+      prevComments.map((c) =>
+        c.id === updatedComment.id ? { ...c, text: updatedComment.text } : c
+      )
+    );
+  };
+
+  const handleCancelComment = (tempId) => {
+    // Supprime simplement le commentaire non sauvegardé
+    setComments(comments.filter((comment) => comment.tempId !== tempId));
+  };
+  const [comments, setComments] = useState([]);
+  const currentUserRole = JSON.parse(localStorage.getItem("User"))?.role;
   return (
-    <div className=" ">
-      {isToReview ||isToValidate && (
+    <div className="relative  ">
+      <div
+  className="absolute right-0 top-0 w-16 h-full bg-transparent border-l border-none z-40"
+  onClick={(e) => {
+    if (
+      e.target === e.currentTarget &&
+      currentUserRole !== "testeur" 
+    ) {
+      const rect = e.currentTarget.getBoundingClientRect();
+      const y = e.clientY - rect.top + e.currentTarget.scrollTop;
+      handleAddCommentAtPosition(y);
+    }
+  }}
+>
+
+        {/* Commentaires existants (ne bloquent pas les clics sur la marge) */}
+        {!(isToReview || isToValidate) &&
+          existingComments.map((comment, index) => (
+            <div
+              key={`existing-${index}`}
+              className="absolute border-none right-4"
+              style={{ top: comment.y }}
+            >
+              <div className="border-none" onClick={(e) => e.stopPropagation()}>
+                
+                <ExistingComment
+                  user={{
+                    id: comment.userId,
+                    initials: comment.initials,
+                    name: comment.name,
+                  }}
+                  comment={comment.text}
+                  onDelete={() => handleDeleteComment(comment.id)}
+                  onEdit={(newText) =>
+                    handleEdit({ id: comment.id, text: newText })
+                  }
+                />
+              </div>
+            </div>
+          ))}
+
+        {/* Commentaires en cours d'édition à mettre dans la page de revue  */}
+        {comments.map((comment) => (
+          <div
+            key={`temp-${comment.tempId}`}
+            className="absolute right-4"
+            style={{ top: comment.y }}
+            onClick={(e) => e.stopPropagation()} // Bloque le clic parent
+          >
+            <CommentButton
+              onSave={(text) => handleSaveComment(comment.tempId, text)}
+              onCancel={() => handleCancelComment(comment.tempId)}
+            />
+          </div>
+        ))}
+      </div>
+
+      {isToReview ||
+        (isToValidate && (
           <div className="fixed top-0 left-0 w-full h-full bg-transparent z-50 pointer-events-auto" />
-        )}
+        ))}
       <Header />
 
       <div className="ml-8 mr-6 pb-9 relative">
