@@ -142,7 +142,7 @@ function AddScope({ dataFormat,title, text, text1, onToggleForm, showForm, user,
       )}
 
       {applications.length > 0 && (
-        <div className={`mt-6 flex-1 overflow-x-auto overflow-y-auto h-[400px] transition-all ${isDeletePopupOpen ? 'blur-sm' : ''}`}>
+        <div className={`mt-6 flex-1 overflow-x-auto overflow-y-auto h-[250px] transition-all ${isDeletePopupOpen ? 'blur-sm' : ''}`}>
           <Table
             key={JSON.stringify(applications)}
             columnsConfig={columnsConfig}

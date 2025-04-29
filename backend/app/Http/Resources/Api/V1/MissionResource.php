@@ -30,8 +30,6 @@ class MissionResource extends JsonResource
                     return (
                         $participation->user->id);
                 })->first(),
-
-
             'startDate' => $this->start_date,
             'endDate' => $this->end_date,
             'auditStartDate' => $this->audit_start_date,

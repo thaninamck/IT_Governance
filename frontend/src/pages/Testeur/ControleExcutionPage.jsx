@@ -62,18 +62,17 @@ function ControleExcutionPage() {
     setSelectedActionId,
     isAddingAnother,
     handleCloseForm,
-    
+
   } = useRemediation(controleData.executionId, controleData.controlCode);
 
   useEffect(() => {
     fetchRemediations();
   }, []);
 
-  
+
   const navigate = useNavigate();
-  const { mission } = useParams([]); // Récupérer les paramètres de l'URL
-  const { name } = useParams([]);
-  const { controlCode } = useParams([]);
+  const { mission, name, controlCode } = useParams();
+
 
   console.log(controleData);
   const { user } = useAuth();
@@ -82,7 +81,7 @@ function ControleExcutionPage() {
       state: { remediationData: rowData },
     });
   };
-  const [testScriptData, setTestScriptData] = useState([]); 
+  const [testScriptData, setTestScriptData] = useState([]);
   const [localSelections, setLocalSelections] = useState({}); // Renommé ici
   const [openDeletePopup, setOpenDeletePopup] = useState(false);
   const [deletedEvidence, setDeletedEvidence] = useState(null);
@@ -104,7 +103,7 @@ function ControleExcutionPage() {
     En_cours: "orange",
     Non_Commencée: "gray",
   };
- // const [isAddingAnother, setIsAddingAnother] = useState(false);
+  // const [isAddingAnother, setIsAddingAnother] = useState(false);
   const [evidenceFiles, setEvidenceFiles] = useState([]);
   const [testFiles, setTestFiles] = useState([]);
   const [showPopup, setShowPopup] = useState(false);
@@ -141,6 +140,7 @@ function ControleExcutionPage() {
         }));
 
         setExecutionData(parsedData);
+        console.log("executionData", executionData)
       }
     };
 
@@ -150,7 +150,7 @@ function ControleExcutionPage() {
   }, [controleData.executionId]);
 
   useEffect(() => {
-    console.log("Execution Data:", executionData);
+
     const allEvidences = executionData?.[0]?.evidences || [];
     const filteredEvidences = allEvidences.filter(
       (file) => file.is_f_test === false
@@ -165,6 +165,7 @@ function ControleExcutionPage() {
     setIsToReview(executionData?.[0]?.execution_is_to_review);
     setIsToValidate(executionData?.[0]?.execution_is_to_validate);
   }, [executionData]);
+  console.log("Execution Data:", executionData);
   const [commentaire, setCommentaire] = useState(
     controleData.commentaire || ""
   );
@@ -177,28 +178,6 @@ function ControleExcutionPage() {
     console.log("Depuis ControlExecution :", selections);
     setSelections(selections);
   };
-
-  // const updateStatusBasedOnSuivi = () => {
-  //   setAction((prevActions) =>
-  //     prevActions.map((action) => ({
-  //       ...action,
-  //       status: action.suivi.trim() !== "" ? "En_cours" : "Non_commencee",
-  //     }))
-  //   );
-  // };
-
-  // useEffect(() => {
-  //   updateStatusBasedOnSuivi();
-  // }, []);
-
-  // const [loading, setLoading] = useState(true);
-
- // const [error, setError] = useState(null);
-  //const [action, setAction] = useState()
-  // const [selectedActionId, setSelectedActionId] = useState("");
-  // const [isDeletePopupOpen, setIsDeletePopupOpen] = useState(false);
-  // const [showRemediation, setShowRemediation] = useState(false);
-  // const [showDecisionPopup, setShowDecisionPopup] = useState(false);
   const columnsConfig = [
     { field: "actionName", headerName: "Nom", width: 250, editable: true },
     {
@@ -236,17 +215,7 @@ function ControleExcutionPage() {
     { field: "actions", headerName: "Action", width: 80 },
   ];
 
-  // const fetchRemediations = async () => {
-  //   try {
-  //     const response = await api.get(`/execution/${controleData.executionId}/getremediations`);
-  //     console.log('executionid', controleData.executionId)
-  //     console.log('listremediation', response.data)
-  //     setAction(response.data);
-  //   }
-  //   catch (err) {
-  //     setError(err.message);
-  //   };
-  // }
+
   useEffect(() => {
     if (controleData.executionId) {
       fetchRemediations();
@@ -254,119 +223,7 @@ function ControleExcutionPage() {
 
   }, [controleData.executionId]);
 
-  // const handleAdd = async (remediation) => {
-  //   try {
-  //     if (selectedActionId) {
-  //       console.log('yuo', selectedActionId)
-  //       // Mise à jour de l'application existante
-  //       console.log('update  remediation', remediation)
-  //       const response = await api.put(`/execution/updateRemediation/${remediation.id}`, remediation);
-  //       console.log("remediation mis a jour avec succé", response.data)
-  //       setAction((prevApps) =>
-  //         prevApps.map((row) => (row.id === remediation.id ? response.data : row))
-  //       );
-  //       setSelectedActionId(null);
-  //       setShowRemediation((prev) => !prev);
-  //     } else {
-  //       console.log('add  remediation', remediation)
-  //       console.log('contrt', controleData.executionId)
-  //       const response = await api.post(`/execution/${controleData.executionId}/${controleData.controlCode}/createremediation`, remediation)
-  //       setAction(prev => [...prev, response.data]);
-  //       console.log("remediation ajouté avec succé", response.data)
-  //       setShowDecisionPopup(true);
-  //     }
-  //   } catch (error) {
-  //     console.error("Erreur lors de la création/mise à jour d'une remediation:", error);
-  //     throw error;
-  //   }
-  // };
 
-  // const handleCloseRow = async (selectedRow) => {
-  //   try {
-  //     await api.put(`/closeremediation/${selectedRow.id}`);
-  //     await fetchRemediations();
-  //   } catch (error) {
-  //     console.error("Erreur lors de la cloture de la remediation:", error);
-  //     alert("Erreur lors de la cloture de la remediation. Veuillez réessayer.");
-  //   }
-  // };
-  // const handleDeleteRow = (selectedRow) => {
-  //   setSelectedActionId(selectedRow.id);
-  //   console.log(selectedActionId);
-  //   setIsDeletePopupOpen(true);
-  // };
-  // const confirmDeleteRemediation = async () => {
-  //   try {
-
-  //     if (selectedActionId !== null) {
-  //       await api.delete(`/execution/deleteRemediation/${selectedActionId}`);
-  //       setAction((prev) => prev.filter((row) => row.id !== selectedActionId));
-  //     }
-  //   } catch (error) {
-  //     console.error("Erreur lors de la suppression de remediation:", error);
-
-  //   }
-  //   setIsDeletePopupOpen(false);
-  //   setSelectedActionId(null);
-  // };
-  // const handleEditRow = (selectedRow) => {
-  //   const transformedremediation = {
-  //     id: selectedRow.id,
-  //     description: selectedRow.description,
-  //     owner_cntct: selectedRow.ownerContact,
-  //     start_date: selectedRow.startDate,
-  //     end_date: selectedRow.endDate,
-  //   };
-  //   setSelectedActionId(transformedremediation);
-  //   if (!showRemediation) setShowRemediation((prev) => !prev);
-  // };
-  // const handleDecisionResponse = (response) => {
-  //   setShowDecisionPopup(false);
-  //   if (response) {
-  //     setIsAddingAnother(true);
-  //   } else {
-  //     setIsAddingAnother(false);
-  //     setShowRemediation((prev) => !prev);
-  //   }
-  // };
-  // const handleSendAction = async (selectedRow) => {
-
-  //   if (!selectedRow || !selectedRow.ownerContact) {
-  //     alert("Aucune adresse e-mail trouvée pour cet élément !");
-  //     return;
-  //   }
-  //   const ccEmail = selectedRow.ownerSystem_email || ""
-
-  //   const templateParams = {
-  //     to_email: selectedRow.ownerContact,
-  //     cc_email: ccEmail,
-  //     controlCode: selectedRow.controlCode,
-  //     SystemName: selectedRow.SystemName,
-  //     missionName: selectedRow.missionName,
-  //     description: selectedRow.description,
-  //     suivi: selectedRow.suivi,
-  //     startDate: selectedRow.startDate,
-  //     endDate: selectedRow.endDate,
-  //   };
-
-  //   console.log("Envoi de l'email avec les paramètres :", templateParams);
-  //   try {
-  //     const response = await emailjs.send(
-  //       "service_dg6av6d",
-  //       "template_f4ojiam",
-  //       templateParams);
-  //     alert(`E-mail envoyé avec succès à ${selectedRow.ownerContact} !`);
-
-  //     await api.put(`/updatestatusremediation/${selectedRow.id}`);
-
-  //     await fetchRemediations();
-
-  //   }
-  //   catch (error) {
-  //     console.error("Erreur lors de l'envoi de l'e-mail:", error);
-  //     alert("Erreur lors de l'envoi de l'e-mail. Veuillez réessayer.");
-  //   };
-  // };
   const rowActions = [
     {
       icon: (
@@ -492,8 +349,8 @@ function ControleExcutionPage() {
 
   const shouldShowRemediation =
     selectedMulti === "Partially Applied" || selectedMulti === "Not Applied";
-  const isValidateDisabled =
-    !selectedMulti || !commentaire || shouldShowRemediation;
+
+ 
 
 
   const handleValidate = () => {
@@ -509,178 +366,199 @@ function ControleExcutionPage() {
     setTestScriptData(data); // Mettre à jour les données du test script en temps réel
   };
 
+  const handleSaveRevue = async () => {
+    if (!controleData?.executionId) {
+      console.error("Aucun executionId trouvé.");
+      return;
+    }
+
+    try {
+      const response = await api.patch(`/executions/submit-execution-for-review/${controleData.executionId}`,);
+      if (response) {
+        alert("Contrôle envoyé pour revue avec succès !");
+      } else {
+        alert(`Erreur :  "Échec de l'envoi"}`);
+      }
+
+    } catch (error) {
+      console.error("Erreur lors de l'envoi :", error);
+      alert("Une erreur est survenue lors de l'envoi pour revue.");
+    }
+  };
+
   const handleSave = async () => {
-    const doc = new jsPDF();
-    let yOffset = 30; // Position verticale initiale
+    console.log('test');
+    //   const doc = new jsPDF();
+    //   let yOffset = 30; // Position verticale initiale
 
-    // Fonction pour vérifier si une nouvelle page est nécessaire
-    const addNewPageIfNeeded = (offset) => {
-      if (offset > doc.internal.pageSize.height - 20) {
-        // 20 est une marge
-        doc.addPage();
-        return 30; // Réinitialiser la position verticale
-      }
-      return offset;
-    };
+    //   // Fonction pour vérifier si une nouvelle page est nécessaire
+    //   const addNewPageIfNeeded = (offset) => {
+    //     if (offset > doc.internal.pageSize.height - 20) {
+    //       // 20 est une marge
+    //       doc.addPage();
+    //       return 30; // Réinitialiser la position verticale
+    //     }
+    //     return offset;
+    //   };
 
-    doc.setFontSize(18);
-    doc.text("Rapport de Contrôle", 105, 20, { align: "center" });
-    doc.setFontSize(12);
-    doc.text(`Date: ${new Date().toLocaleDateString()}`, 14, 30);
+    //   doc.setFontSize(18);
+    //   doc.text("Rapport de Contrôle", 105, 20, { align: "center" });
+    //   doc.setFontSize(12);
+    //   doc.text(`Date: ${new Date().toLocaleDateString()}`, 14, 30);
 
-    // Tableau récapitulatif des informations principales
-    autoTable(doc, {
-      startY: yOffset,
-      head: [["Champ", "Valeur"]],
-      body: [
-        ["Type:", type],
-        ["Major Process:", majorProcess],
-        ["Sub Process:", subProcess],
-        ["Description", description],
-        ["Test Script", testScript],
-        ["Status", selectedMulti],
-        ["Commentaire", commentaire],
-        ["Critères", JSON.stringify(localSelections)],
-      ],
-      didDrawPage: (data) => {
-        yOffset = data.cursor.y + 10; // Mettre à jour la position verticale après le tableau
-      },
-    });
+    //   // Tableau récapitulatif des informations principales
+    //   autoTable(doc, {
+    //     startY: yOffset,
+    //     head: [["Champ", "Valeur"]],
+    //     body: [
+    //       ["Type:", type],
+    //       ["Major Process:", majorProcess],
+    //       ["Sub Process:", subProcess],
+    //       ["Description", description],
+    //       ["Test Script", testScript],
+    //       ["Status", selectedMulti],
+    //       ["Commentaire", commentaire],
+    //       ["Critères", JSON.stringify(localSelections)],
+    //     ],
+    //     didDrawPage: (data) => {
+    //       yOffset = data.cursor.y + 10; // Mettre à jour la position verticale après le tableau
+    //     },
+    //   });
 
-    // Vérifier si une nouvelle page est nécessaire
-    yOffset = addNewPageIfNeeded(yOffset);
+    //   // Vérifier si une nouvelle page est nécessaire
+    //   yOffset = addNewPageIfNeeded(yOffset);
 
-    // Liste des remédiations sous forme de tableau
-    autoTable(doc, {
-      startY: yOffset,
-      head: [
-        [
-          "ID",
-          "Description",
-          "Contact",
-          "Date Début",
-          "Date Fin",
-          "Suivi",
-          "Status",
-        ],
-      ],
-      body: action.map((item) => [
-        item.id,
-        item.description,
-        item.contact,
-        item.dateField,
-        item.dateField1,
-        item.suivi,
-        item.status,
-      ]),
-      didDrawPage: (data) => {
-        yOffset = data.cursor.y + 10; // Mettre à jour la position verticale après le tableau
-      },
-    });
-    // Vérifier si une nouvelle page est nécessaire
-    yOffset = addNewPageIfNeeded(yOffset);
+    //   // Liste des remédiations sous forme de tableau
+    //   autoTable(doc, {
+    //     startY: yOffset,
+    //     head: [
+    //       [
+    //         "ID",
+    //         "Description",
+    //         "Contact",
+    //         "Date Début",
+    //         "Date Fin",
+    //         "Suivi",
+    //         "Status",
+    //       ],
+    //     ],
+    //     body: action.map((item) => [
+    //       item.id,
+    //       item.description,
+    //       item.contact,
+    //       item.dateField,
+    //       item.dateField1,
+    //       item.suivi,
+    //       item.status,
+    //     ]),
+    //     didDrawPage: (data) => {
+    //       yOffset = data.cursor.y + 10; // Mettre à jour la position verticale après le tableau
+    //     },
+    //   });
+    //   // Vérifier si une nouvelle page est nécessaire
+    //   yOffset = addNewPageIfNeeded(yOffset);
 
-    //    Ajout des données du test script
-    autoTable(doc, {
-      startY: yOffset,
-      head: [["Étape", "Phrase", "Validée", "Commentaire"]],
-      body: testScriptData.map((item, index) => [
-        index + 1,
-        item.phrase,
-        item.isChecked ? "Oui" : "Non", // Afficher "Oui" ou "Non" pour la validation
-        item.comment || "Aucun commentaire", // Afficher "Aucun commentaire" si le commentaire est vide
-      ]),
-      didDrawPage: (data) => {
-        yOffset = data.cursor.y + 10; // Mettre à jour la position verticale après le tableau
-      },
-    });
-    // Vérifier si une nouvelle page est nécessaire
-    yOffset = addNewPageIfNeeded(yOffset);
+    //   //    Ajout des données du test script
+    //   autoTable(doc, {
+    //     startY: yOffset,
+    //     head: [["Étape", "Phrase", "Validée", "Commentaire"]],
+    //     body: testScriptData.map((item, index) => [
+    //       index + 1,
+    //       item.phrase,
+    //       item.isChecked ? "Oui" : "Non", // Afficher "Oui" ou "Non" pour la validation
+    //       item.comment || "Aucun commentaire", // Afficher "Aucun commentaire" si le commentaire est vide
+    //     ]),
+    //     didDrawPage: (data) => {
+    //       yOffset = data.cursor.y + 10; // Mettre à jour la position verticale après le tableau
+    //     },
+    //   });
+    //   // Vérifier si une nouvelle page est nécessaire
+    //   yOffset = addNewPageIfNeeded(yOffset);
 
-    // Ajout des fichiers de preuves (evidences)
-    if (evidenceFiles.length > 0) {
-      doc.text("Fichiers de preuves (Evidences):", 14, yOffset);
-      yOffset += 10;
-      evidenceFiles.forEach((file, index) => {
-        doc.text(`- ${file.name}`, 20, yOffset);
-        yOffset += 10;
-        yOffset = addNewPageIfNeeded(yOffset); // Vérifier si une nouvelle page est nécessaire
-      });
-    } else {
-      doc.text("Aucun fichier de preuve (Evidence) disponible.", 14, yOffset);
-      yOffset += 10;
-    }
+    //   // Ajout des fichiers de preuves (evidences)
+    //   if (evidenceFiles.length > 0) {
+    //     doc.text("Fichiers de preuves (Evidences):", 14, yOffset);
+    //     yOffset += 10;
+    //     evidenceFiles.forEach((file, index) => {
+    //       doc.text(`- ${file.name}`, 20, yOffset);
+    //       yOffset += 10;
+    //       yOffset = addNewPageIfNeeded(yOffset); // Vérifier si une nouvelle page est nécessaire
+    //     });
+    //   } else {
+    //     doc.text("Aucun fichier de preuve (Evidence) disponible.", 14, yOffset);
+    //     yOffset += 10;
+    //   }
 
-    // Vérifier si une nouvelle page est nécessaire
-    yOffset = addNewPageIfNeeded(yOffset);
+    //   // Vérifier si une nouvelle page est nécessaire
+    //   yOffset = addNewPageIfNeeded(yOffset);
 
-    // Ajout des fichiers de test
-    if (testFiles.length > 0) {
-      doc.text("Fichiers de test:", 14, yOffset);
-      yOffset += 10;
-      testFiles.forEach((file, index) => {
-        doc.text(`- ${file.name}`, 20, yOffset);
-        yOffset += 10;
-        yOffset = addNewPageIfNeeded(yOffset); // Vérifier si une nouvelle page est nécessaire
-      });
-    } else {
-      doc.text("Aucun fichier de test disponible.", 14, yOffset);
-      yOffset += 10;
-    }
-    // Créer un fichier ZIP
-    const zip = new JSZip();
+    //   // Ajout des fichiers de test
+    //   if (testFiles.length > 0) {
+    //     doc.text("Fichiers de test:", 14, yOffset);
+    //     yOffset += 10;
+    //     testFiles.forEach((file, index) => {
+    //       doc.text(`- ${file.name}`, 20, yOffset);
+    //       yOffset += 10;
+    //       yOffset = addNewPageIfNeeded(yOffset); // Vérifier si une nouvelle page est nécessaire
+    //     });
+    //   } else {
+    //     doc.text("Aucun fichier de test disponible.", 14, yOffset);
+    //     yOffset += 10;
+    //   }
+    //   // Créer un fichier ZIP
+    //   const zip = new JSZip();
 
-    // Générer le PDF
-    const pdfBlob = doc.output("blob");
+    //   // Générer le PDF
+    //   const pdfBlob = doc.output("blob");
 
-    // Ajouter le PDF au ZIP
-    zip.file("rapport_controle.pdf", pdfBlob);
+    //   // Ajouter le PDF au ZIP
+    //   zip.file("rapport_controle.pdf", pdfBlob);
 
-    // Ajouter les fichiers de preuves (evidences) au ZIP
-    for (const file of evidenceFiles) {
-      if (file instanceof File || file instanceof Blob) {
-        zip.file(`evidences/${file.name}`, file);
-      }
-    }
-    // Ajouter les fichiers de preuves (evidences) au ZIP
-    for (const file of testFiles) {
-      if (file instanceof File || file instanceof Blob) {
-        zip.file(`testFile/${file.name}`, file);
-      }
-    }
-    // Générer le fichier ZIP et le télécharger
-    const zipBlob = await zip.generateAsync({ type: "blob" });
-    saveAs(zipBlob, "rapport_controle.zip");
+    //   // Ajouter les fichiers de preuves (evidences) au ZIP
+    //   for (const file of evidenceFiles) {
+    //     if (file instanceof File || file instanceof Blob) {
+    //       zip.file(`evidences/${file.name}`, file);
+    //     }
+    //   }
+    //   // Ajouter les fichiers de preuves (evidences) au ZIP
+    //   for (const file of testFiles) {
+    //     if (file instanceof File || file instanceof Blob) {
+    //       zip.file(`testFile/${file.name}`, file);
+    //     }
+    //   }
+    //   // Générer le fichier ZIP et le télécharger
+    //   const zipBlob = await zip.generateAsync({ type: "blob" });
+    //   saveAs(zipBlob, "rapport_controle.zip");
 
-    setShowPopup(true);
+    //   setShowPopup(true);
 
-    console.log(
-      "Type:",
-      type,
-      "Major Process:",
-      majorProcess,
-      "Sub Process:",
-      subProcess,
-      "Description:",
-      description,
-      "TestScript:",
-      testScript,
-      "Test Script Data:",
-      testScriptData,
-      "Evidence Files:",
-      evidenceFiles,
-      "Test Files:",
-      testFiles,
-      "status:",
-      selectedMulti,
-      "Commentaire:",
-      commentaire,
-      "remediation:",
-      action,
-      "critere:",
-      localSelections
-    );
-    //setIsEditing(false); // Quitter le mode édition après la sauvegarde
+    //   console.log(
+    //     "Type:",
+    //     type,
+    //     "Major Process:",
+    //     majorProcess,
+    //     "Sub Process:",
+    //     subProcess,
+    //     "Description:",
+    //     description,
+    //     "TestScript:",
+    //     testScript,
+    //     "Test Script Data:",
+    //     testScriptData,
+    //     "Evidence Files:",
+    //     evidenceFiles,
+    //     "Test Files:",
+    //     testFiles,
+    //     "status:",
+    //     selectedMulti,
+    //     "Commentaire:",
+    //     commentaire,
+    //     "remediation:",
+    //     action,
+    //     "critere:",
+    //     localSelections
+    //   );
+    //   //setIsEditing(false); // Quitter le mode édition après la sauvegarde
   };
 
   const handleSubmit = () => {
@@ -706,51 +584,53 @@ function ControleExcutionPage() {
   };
 
 
-  // Check if all remediations are done  hadi welilha manel mategel3ihech
-  // const isAllRemediationDone =
-  //   action.every((remediation) => remediation?.status === "Terminé") &&
-  //   selectedMulti != "";
+  //Check if all remediations are done  hadi welilha manel mategel3ihech
+  const isAllRemediationDone =
+    action.every((remediation) => remediation?.statusName === "Terminé") &&
+    selectedMulti != "";
 
-  // const controlStatus = isAllRemediationDone
-  //   ? "Terminé"
-  //   : isToReview || isToValidate
-  //   ? "En cours de revue"
-  //   : "En cours";
+  const controlStatus = isAllRemediationDone
+    ? "Terminé"
+    : isToReview || isToValidate
+    ? "En cours de revue"
+    : "En cours";
 
-  // const controlIcon =
-  //   controlStatus === "Terminé" ? (
-  //     <CheckCircleIcon
-  //       style={{
-  //         color: "var(--success-green)",
-  //         animation: "fadeIn 1s ease",
-  //         width: "25px",
-  //         height: "25px",
-  //       }}
-  //     />
-  //   ) : controlStatus === "En cours de revue" ? (
-  //     <VisibilityIcon
-  //       style={{
-  //         color: "#3b82f6",
-  //         animation: "fadeIn 1s ease",
-  //         width: "25px",
-  //         height: "25px",
-  //       }}
-  //     />
-  //   ) : (
-  //     <AccessTimeFilledIcon
-  //       style={{
-  //         color: "var(--await-orange)",
-  //         animation: "fadeIn 1s ease",
-  //         width: "20px",
-  //         height: "20px",
-  //       }}
-  //     />
-  //   );
+  const controlIcon =
+    controlStatus === "Terminé" ? (
+      <CheckCircleIcon
+        style={{
+          color: "var(--success-green)",
+          animation: "fadeIn 1s ease",
+          width: "25px",
+          height: "25px",
+        }}
+      />
+    ) : controlStatus === "En cours de revue" ? (
+      <VisibilityIcon
+        style={{
+          color: "#3b82f6",
+          animation: "fadeIn 1s ease",
+          width: "25px",
+          height: "25px",
+        }}
+      />
+    ) : (
+      <AccessTimeFilledIcon
+        style={{
+          color: "var(--await-orange)",
+          animation: "fadeIn 1s ease",
+          width: "20px",
+          height: "20px",
+        }}
+      />
+    );
 
+    const isValidateDisabled =
+    !selectedMulti || shouldShowRemediation || !isAllRemediationDone// || !commentaire ;
   return (
-    <div className=" ">
+    <>
       {isToReview || isToValidate && (
-        <div className="fixed top-0 left-0 w-full h-full bg-transparent z-50 pointer-events-auto" />
+        <div className=" top-0 left-0 w-full h-full bg-transparent z-50 pointer-events-auto" />
       )}
       <Header user={user} />
       <div className="ml-8 mr-6 pb-9 relative">
@@ -759,8 +639,8 @@ function ControleExcutionPage() {
         </div>
 
         <div className="absolute right-4 top-11 flex items-center gap-2 z-10">
-          {/* <h1 className="font-medium text-base">Statut : {controlStatus}</h1>
-          {controlIcon} */}
+          <h1 className="font-medium text-base">Statut : {controlStatus}</h1>
+          {controlIcon}
         </div>
 
         <DescriptionTestScriptSection
@@ -786,7 +666,7 @@ function ControleExcutionPage() {
             name="Êtes-vous sûr de vouloir supprimer ce fichier ?"
           />
         )}
-        <div className=" max-h-screen min-h-screen">
+    
           <EvidencesSection
             handleSelectionChange={handleSelectionChange}
             files={files}
@@ -801,8 +681,8 @@ function ControleExcutionPage() {
             onStatesChange={handleStatesChange}
             getFile={getFileURL}
           />
-        </div>
-
+        
+     
         <ConclusionRemediationSection
           selectedMulti={selectedMulti}
           setSelectedMulti={setSelectedMulti}
@@ -813,7 +693,8 @@ function ControleExcutionPage() {
           commentaire={commentaire}
           setCommentaire={setCommentaire}
           action={action}
-          handleSubmit={handleSave}
+          // handleSubmit={handleSave}
+          handleSubmit={handleSaveRevue}
           handleAdd={handleAdd}
           handleValidate={handleValidate}
           statusOptions={statusOptions}
@@ -832,13 +713,14 @@ function ControleExcutionPage() {
           showDecisionPopup={showDecisionPopup}
           isAddingAnother={isAddingAnother}
           controleID={controleID}
-         // onClose={handleCloseForm}
-         handleCloseForm={handleCloseForm} 
+          // onClose={handleCloseForm}
+          handleCloseForm={handleCloseForm}
           handleSaveModifications={handleSaveModifications}
           loading={loading}
           isToReview={isToReview}
           isToValidate={isToValidate}
         />
+        
         {showPopup && (
           <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-md z-50">
             <PopUp
@@ -848,7 +730,7 @@ function ControleExcutionPage() {
           </div>
         )}
       </div>
-    </div>
+    </>
   );
 }
 

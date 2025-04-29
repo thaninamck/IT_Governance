@@ -14,13 +14,22 @@ import EditableTextarea from '../../components/EditableInput';
 import DecisionPopUp from '../../components/PopUps/DecisionPopUp';
 import useRemediation from '../../Hooks/useRemediation';
 import useAction from '../../Hooks/useAction';
+import AssignmentIcon from '@mui/icons-material/Assignment';
 
-function RemediationActionId() {
+
+function RemediationActionId({readOnly =false}) {
 
   const location = useLocation();
   const remediationData = location.state?.remediationData || {};
   const { user } = useAuth();
   const [isEditing, setIsEditing] = useState(true);
+
+
+  useEffect(() => {
+    if (location.pathname.includes('/revue/revueExecution')) {
+      setIsEditing(false); // Par exemple, ici tu peux désactiver l'édition si readOnly est vrai
+    }
+  }, [location.pathname]);
 
   console.log('remediation data', remediationData)
   const {
@@ -225,6 +234,7 @@ function RemediationActionId() {
 
 
   // const isValidateDisabled = !selectedMulti
+  const getFileURL = `http://127.0.0.1:8000/storage/Remediationevidences/`;
 
   return (
     <div>
@@ -232,8 +242,17 @@ function RemediationActionId() {
       <div className='ml-5 mr-6 pb-9'>
         <Breadcrumbs />
 
+        <h1 className='text-xl text-center font-semibold py-4 text-[var(--blue-menu)]'>
+        {readOnly && (
+    <>
+      <AssignmentIcon  style={{ fontSize: 30, color: 'var(--blue-menu)' ,marginRight:'6px'}} />
+      Consultation
+    </>
+  )}
+          </h1>
         <div className='flex flex-row justify-between  w-[95%] py-6 '>
           <InputForm
+          readOnly
             type="date"
             label="Date Début"
             width="250px"
@@ -243,6 +262,7 @@ function RemediationActionId() {
           />
 
           <InputForm
+          readOnly
             type="date"
             label="Date Fin"
             width="250px"
@@ -251,6 +271,7 @@ function RemediationActionId() {
             onChange={e => setActionData({ ...actionData, endDate: e.target.value })}
           />
           <InputForm
+          readOnly
             type="email"
             label="Contact"
             placeholder="Entrez l'e-mail de la personne concernée..."
@@ -262,6 +283,7 @@ function RemediationActionId() {
         </div>
         <Separator text={'Description'} />
         <TextDisplay
+     
           label=""
           content={actionData.description}
           isEditing={isEditing}
@@ -278,9 +300,9 @@ function RemediationActionId() {
 
         <Separator text={'Evidences'} />
 
-        <FileUploader onSave={handleSaveFiles} />
+       {!readOnly && <FileUploader onSave={handleSaveFiles} />}
         <div className='flex flex-col items-center w-full my-6'>
-          <EvidenceList files={actionData.files} onDelete={handleDelete} />
+          <EvidenceList files={actionData.files} onDelete={handleDelete}  getFile={getFileURL} readOnly={readOnly} />
         </div>
         {actionData.files.length === 0 && (
           <p className="text-center text-gray-500 mt-4">Aucun fichier disponible.</p>
@@ -324,6 +346,7 @@ function RemediationActionId() {
 /> */}
 
         <EditableTextarea
+        readOnly={readOnly}
           content={actionData.suivi}
           placeholder=""
           onSave={(value) => {

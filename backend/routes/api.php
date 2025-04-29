@@ -44,7 +44,6 @@ Route::middleware(['auth:sanctum', AdminMiddleware::class])
 
         Route::controller(AuthController::class)->group(function () {
             Route::post('/reset-user', 'resetUser');
-
         });
 
         // Logs
@@ -127,13 +126,11 @@ Route::middleware(['auth:sanctum', ManagerMiddleware::class])
             Route::get('/missions/{mission}/workplanOptions', 'getWorkplanOptionsByMission');
             Route::post('/executions/deleteExecutions', 'deleteExecutions');
             Route::post('/executions/update-executions', 'updateMultipleExecutions');
-
         });
 
         Route::controller(ParticipationController::class)->group(function () {
 
             Route::get('/missions/{mission}/testers', 'getTestersByMissionID');
-
         });
 
         // MissionController Routes
@@ -149,6 +146,9 @@ Route::middleware(['auth:sanctum', ManagerMiddleware::class])
 Route::middleware(['auth:sanctum', SupervisorMiddleware::class])
     ->prefix('v1')
     ->group(function () {
+        Route::controller(ExecutionController::class)->group(function () {
+            Route::get('/executions/get-execution/{execution}', 'getExecutionById');
+        });
         //
     });
 
@@ -161,14 +161,12 @@ Route::middleware(['auth:sanctum', TesterMiddleware::class])
             Route::put('/executions/launch-execution/{execution}', 'launchExecution');
             Route::get('/executions/get-options', 'getExecutionStatusOptions');
             Route::get('/executions/get-execution/{execution}', 'getExecutionById');
-            Route::patch('/executions/submit-execution-for-review/{executionID}', 'submitExecutionForReview');
-            Route::patch('/executions/submit-execution-for-validation/{executionID}', 'submitExecutionForValidation');
-
+            // Route::patch('/executions/submit-execution-for-review/{executionID}', 'submitExecutionForReview');
+            //Route::patch('/executions/submit-execution-for-validation/{executionID}', 'submitExecutionForValidation');
         });
         Route::controller(EvidenceController::class)->group(function () {
             Route::delete('/evidences/delete-evidence/{evidenceId}', 'destroy');
             Route::post('/evidences/upload', 'storeMultiple');
-
         });
     });
 
@@ -234,6 +232,11 @@ Route::prefix('v1')->group(function () {
 Route::middleware('auth:sanctum')->prefix('v1')->group(function () {
     Route::controller(ExecutionController::class)->group(function () {
         Route::get('/missions/{missionId}/{appId}/getexecutionsListForTesteur', 'getExecutionsByMissionAndSystemAndTester');
+    });
+});
+Route::middleware('auth:sanctum')->prefix('v1')->group(function () {
+    Route::controller(ExecutionController::class)->group(function () {
+        Route::get('/missions/{missionId}/{appId}/getexecutionsListForTesteurForCorrection', 'getExecutionsByMissionAndSystemAndTesterFiltered');
     });
 });
 
@@ -381,6 +384,51 @@ Route::prefix('v1')->controller(EvidenceController::class)->group(function () {
 Route::prefix('v1')->controller(EvidenceController::class)->group(function () {
     Route::post('/remediationevidences/upload', 'storeRemediationMultiple');
 });
+Route::middleware('auth:sanctum')->prefix('v1')->group(function () {
+    Route::controller(ExecutionController::class)->group(function () {
+        Route::get('/revue/{missionId}/getexecutionreviewedforSuperviseur', 'getexecutionReviewBySuperviseur');
+    });
+});
+// Route::prefix('v1')->controller(ExecutionController::class)->group(function () {
+//     Route::get('/revue/getmissionexecutionreviewedforSuperviseur', 'getmissionReviewBySuperviseur');
+// });
+
+Route::middleware('auth:sanctum')->prefix('v1')->group(function () {
+    Route::controller(ExecutionController::class)->group(function () {
+        Route::get('/revue/getmissionexecutionreviewedforSuperviseur', 'getmissionReviewBySuperviseur');
+    });
+});
+Route::middleware('auth:sanctum')->prefix('v1')->group(function () {
+Route::controller(ExecutionController::class)->group(function () {
+    Route::get('/revue/{missionId}/getexecutionreviewedforManager', 'getexecutionReviewByManager');
+});
+});
+Route::middleware('auth:sanctum')->prefix('v1')->group(function () {
+    Route::controller(ExecutionController::class)->group(function () {
+        Route::get('/revue/getmissionexecutionreviewedforManager', 'getmissionReviewManager');
+    });
+});
+// Route::prefix('v1')->controller(ExecutionController::class)->group(function () {
+//     Route::get('/revue/getmissionexecutionreviewedforManager', 'getmissionReviewManager');
+// });
+
+Route::prefix('v1')->controller(ExecutionController::class)->group(function () {
+    Route::patch('/executions/submit-execution-for-review/{executionID}', 'submitExecutionForReview');
+});
+Route::prefix('v1')->controller(ExecutionController::class)->group(function () {
+    Route::patch('/executions/submit-execution-for-validation/{executionID}', 'submitExecutionForValidation');
+});
+Route::prefix('v1')->controller(ExecutionController::class)->group(function () {
+    Route::patch('/executions/submit-execution-for-correction/{executionID}', 'submitExecutionForCorrection');
+});
+
+Route::prefix('v1')->controller(ExecutionController::class)->group(function () {
+    Route::patch('/executions/submit-execution-for-final-validation/{executionID}', 'submitExecutionForFinalValidation');
+});
+
+Route::prefix('v1')->controller(ExecutionController::class)->group(function () {
+    Route::get('/executions/get-execution/{execution}', 'getExecutionById');
+});
 
 
 // Route::middleware(['auth:sanctum', AdminMiddleware::class])
@@ -399,4 +447,3 @@ Route::prefix('v1')->controller(EvidenceController::class)->group(function () {
 
 // Route::put('executions/update-execution/{execution}', [ExecutionController::class, 'updateExecution']);
 // Route::put('executions/launch-execution/{execution}', [ExecutionController::class, 'launchExecution']);
-

@@ -46,6 +46,14 @@ public function submitExecutionForValidation($executionId)
 {
     return $this->executionRepository->updateExecutionStatus($executionId,false,true);
 }
+public function submitExecutionForCorrection($executionId)
+{
+    return $this->executionRepository->updateExecutionStatus($executionId,false,false);
+}
+public function submitExecutionForFinalValidation($executionId)
+{
+    return $this->executionRepository->updateExecutionStatus($executionId,true,true);
+}
     public function getExecutionStatusOptions()
     {
         return $this->statusRepository->getExecutionStatusOptions();
@@ -64,6 +72,11 @@ public function submitExecutionForValidation($executionId)
     {
         return $this->executionRepository->getExecutionsByMissionAndSystemAndTester($missionId,$userId,$appId);
     }
+    public function getExecutionsByMissionAndSystemAndTesterFiltered($missionId,$userId,$appId)
+    {
+        return $this->executionRepository->getExecutionsByMissionAndSystemAndTesterFiltered($missionId,$userId,$appId);
+    }
+
 
     public function createExecutions(array $data): Execution
     {
@@ -197,5 +210,79 @@ public function launchExecution($executionId)
         'launched_at' => now(),
     ];
     return $this->executionRepository->updateAnExecutionRaw($executionId , $raw);
+}
+
+public function getexecutionReviewBySuperviseur($missionId)
+{
+    return $this->executionRepository->getexecutionReviewBySuperviseur($missionId);
+}
+public function getmissionReviewBySuperviseur($userId)
+{
+   // return $this->executionRepository->getmissionReviewBySuperviseur($userId);
+   $missions= $this->executionRepository->getmissionReviewBySuperviseur($userId);
+   return $missions->map(function ($mission) use ($userId) {
+       // Trouver la participation de l'utilisateur courant
+       $userParticipation = $mission->participations->firstWhere('user_id', $userId);
+       $user = $userParticipation->user;
+       $profile_name=$userParticipation->profile;
+       
+       return [
+           'id' => $mission->id,
+           'missionName' => $mission->mission_name,
+           'clientId' => $mission->client_id,
+           'clientName' => $mission->client->commercial_name,
+           'startDate' => $mission->start_date,
+           'endDate' => $mission->end_date,
+           'auditStartDate' => $mission->audit_start_date,
+           'auditEndDate' => $mission->audit_end_date,
+           'statusId' => $mission->status_id,
+           'status' => $mission->status->status_name,
+           'profileName' => $profile_name->profile_name,
+
+           'userId' => $user->id,
+           'userFullName' => $user->first_name . ' ' . $user->last_name,
+           'userRole' => $user->role == 1 ? 'admin' : 'user',
+       ];
+
+})->toArray();
+}
+
+public function getexecutionReviewByManager($missionId)
+{
+    return $this->executionRepository->getexecutionReviewByManager($missionId);
+}
+// public function getmissionReviewManager($userId)
+// {
+//     return $this->executionRepository->getmissionReviewManager($userId);
+// }
+
+public function getmissionReviewManager($userId)
+{
+    $missions= $this->executionRepository->getmissionReviewManager($userId);
+    return $missions->map(function ($mission) use ($userId) {
+        // Trouver la participation de l'utilisateur courant
+        $userParticipation = $mission->participations->firstWhere('user_id', $userId);
+        $user = $userParticipation->user;
+        $profile_name=$userParticipation->profile;
+        
+        return [
+            'id' => $mission->id,
+            'missionName' => $mission->mission_name,
+            'clientId' => $mission->client_id,
+            'clientName' => $mission->client->commercial_name,
+            'startDate' => $mission->start_date,
+            'endDate' => $mission->end_date,
+            'auditStartDate' => $mission->audit_start_date,
+            'auditEndDate' => $mission->audit_end_date,
+            'statusId' => $mission->status_id,
+            'status' => $mission->status->status_name,
+            'profileName' => $profile_name->profile_name,
+
+            'userId' => $user->id,
+            'userFullName' => $user->first_name . ' ' . $user->last_name,
+            'userRole' => $user->role == 1 ? 'admin' : 'user',
+        ];
+
+})->toArray();
 }
 }

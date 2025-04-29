@@ -80,7 +80,36 @@ const useExecution = () => {
         }
     }
 
-
+    const fetchExecutionsListForApp = async (appData) => {
+      setLoading(true);
+      try {
+        const endpoint =
+          (appData.role === "admin" || appData.profile === "manager"|| appData.profile === "superviseur")
+            ? `/missions/${appData.id}/getexecutionsList`
+            : `/missions/${appData.missionId}/${appData.id}/getexecutionsListForTesteur`;
+        const response = await api.get(endpoint);
+        return response.data;
+      } catch (err) {
+        setError(err.message);
+        return [];
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    const fetchExecutionsListForCorrection = async (missionId, appId) => {
+      setLoading(true);
+      try {
+        const response = await api.get(`/missions/${missionId}/${appId}/getexecutionsListForTesteurForCorrection`);
+        return response.data;
+      } catch (err) {
+        setError(err.message);
+        return [];
+      } finally {
+        setLoading(false);
+      }
+    };
+    
 
     const submitExecutionForReview = async (executionId) => {
         setLoading(true);
@@ -109,10 +138,39 @@ const useExecution = () => {
           setLoading(false);
         }
       };
+      const submitExecutionForFinalValidation = async (executionId) => {
+        setLoading(true);
+        try {
+          const response = await api.patch(`/executions/submit-execution-for-final-validation/${executionId}`);
+          toast.success("Soumis pour validation !");
+          return response.data;
+        } catch (error) {
+          setError(error);
+          toast.error("Échec de la soumission pour validation");
+        } finally {
+          setLoading(false);
+        }
+      };
+
+      const submitExecutionForCorrection = async (executionId) => {
+        setLoading(true);
+        try {
+          const response = await api.patch(`/executions/submit-execution-for-correction/${executionId}`);
+          toast.success("Soumis pour ajustement !");
+          return response;
+        } catch (error) {
+          setError(error);
+          toast.error("Échec de la soumission pour ajustement ");
+        } finally {
+          setLoading(false);
+        }
+      };
       
  useEffect(() => {
     fetchOptions();
   }, []);
+
+
   return { 
     loading,
     error,
@@ -124,6 +182,11 @@ const useExecution = () => {
     updateExecution,
     submitExecutionForReview,
     submitExecutionForValidation,
+    fetchExecutionsListForApp,
+  fetchExecutionsListForCorrection,
+  submitExecutionForCorrection,
+  submitExecutionForFinalValidation,
+
     
 
 };

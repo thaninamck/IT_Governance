@@ -10,6 +10,8 @@ import { useAuth } from "../../Context/AuthContext";
 
 import Workplan from "../Manager/Workplan";
 import { useProfile } from "../../Context/ProfileContext";
+import GestionRevue from "../Superviseur/GestionRevue";
+import RevueListExecution from "../Superviseur/RevueListExecution";
 
 function MissionDetail() {
    const { user} = useAuth();
@@ -84,6 +86,10 @@ console.log("mission manel",missionData)
         dataFormat={missionData}
         missionId={missionData.id} 
         />
+           
+        
+<RevueListExecution dataFormat={missionData}  />
+
       </div>
     </div>
   );

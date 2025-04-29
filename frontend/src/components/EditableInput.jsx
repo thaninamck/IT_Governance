@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 
-const EditableTextarea = ({ placeholder = 'Saisir un commentaire ...', onSave ,content}) => {
+const EditableTextarea = ({ placeholder = 'Saisir un commentaire ...', onSave ,content ,readOnly=false}) => {
   const [value, setValue] = useState(content || '');
   const [showButton, setShowButton] = useState(false);
 
@@ -18,6 +18,7 @@ const EditableTextarea = ({ placeholder = 'Saisir un commentaire ...', onSave ,c
   //   setValue("")
   // };
   const handleChange = (e) => {
+    if (readOnly) return;
     const newValue = e.target.value;
     setValue(newValue);
     setShowButton(newValue.trim() !== '');

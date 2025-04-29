@@ -11,6 +11,8 @@ use App\Models\Execution;
 use Illuminate\Http\Request;
 use App\Services\V1\ExecutionService;
 use App\Http\Resources\Api\V1\ExecutionResource;
+use App\Http\Resources\Api\V1\MissionResource;
+use Illuminate\Http\JsonResponse;
 use Log;
 
 class ExecutionController extends BaseController
@@ -21,7 +23,7 @@ class ExecutionController extends BaseController
     protected $riskService;
     protected $controlService;
     protected $evidenceService;
-    public function __construct(ExecutionService $executionService ,MissionService $missionService, RiskService $riskService, ControlService $controlService, EvidenceService $evidenceService)
+    public function __construct(ExecutionService $executionService, MissionService $missionService, RiskService $riskService, ControlService $controlService, EvidenceService $evidenceService)
     {
         $this->evidenceService = $evidenceService;
         $this->executionService = $executionService;
@@ -209,7 +211,26 @@ class ExecutionController extends BaseController
         }
     }
 
-    
+    public function getExecutionsByMissionAndSystemAndTesterFiltered($missionId, $appId)
+    {
+        try {
+            $userId = auth()->user()->id;
+
+            $executions = ExecutionResource::collection($this->executionService->getExecutionsByMissionAndSystemAndTesterFiltered($missionId, $userId, $appId));
+            if ($executions->isEmpty()) {
+                return $this->sendError('Aucune exécution trouvée pour cette mission et system et testeur.', [], 404);
+            }
+
+            return $this->sendResponse(
+                $executions,
+                'Liste des exécutions récupérée avec succès.'
+            );
+        } catch (\Exception $e) {
+            return $this->sendError('Erreur lors de la récupération des exécutions.', ['error' => $e->getMessage()], 500);
+        }
+    }
+
+
 
     public function updateExecution(Request $request, $executionId)
     {
@@ -227,7 +248,7 @@ class ExecutionController extends BaseController
             'design' => 'sometimes|boolean',
             'ipe' => 'sometimes|boolean',
             'controlTester' => 'sometimes|integer',
-            'steps'=> 'sometimes|array',
+            'steps' => 'sometimes|array',
         ];
 
         // Validation des données
@@ -342,23 +363,6 @@ class ExecutionController extends BaseController
         }
     }
 
-    public function submitExecutionForReview($executionId)
-    {
-        try {
-            return $this->executionService->submitExecutionForReview($executionId) ? $this->sendResponse("Execution submitted successfully", [], 200) : $this->sendError("submitting execution failed", [], 404);
-        } catch (\Exception $e) {
-            return $this->sendError("Error while submitting execution", ['error' => $e->getMessage()], 500);
-        }
-    }
-
-    public function submitExecutionForValidation($executionId)
-    {
-        try {
-            return $this->executionService->submitExecutionForValidation($executionId) ? $this->sendResponse("Execution submitted successfully", [], 200) : $this->sendError("submitting execution failed", [], 404);
-        } catch (\Exception $e) {
-            return $this->sendError("Error while submitting execution", ['error' => $e->getMessage()], 500);
-        }
-    }
     public function storeFile(Request $request)
     {
         $rules = [
@@ -419,4 +423,113 @@ class ExecutionController extends BaseController
             return $this->sendError('Failed to retrieve workplan options.', ['error' => $e->getMessage()], 500);
         }
     }
+
+
+// gestion Revue 
+
+    public function getexecutionReviewBySuperviseur($missionId): JsonResponse
+    {
+        try {
+            
+            $executionReviewed = $this->executionService->getexecutionReviewBySuperviseur($missionId);
+            if (!isset($executionReviewed)) {
+                return $this->sendError('Aucune execution Reviewed trouvé pour cette execution.', [], 404);
+            }
+
+            // return $this->sendResponse($remediations, 'Liste des remediations récupérée avec succès.');
+            return $this->sendResponse( ExecutionResource::structuredResponse($executionReviewed), 'Liste des remediations récupérée avec succès.');
+        } catch (\Exception $e) {
+            return $this->sendError('Erreur lors de la récupération des execution Reviewed.', ['error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function getmissionReviewBySuperviseur(): JsonResponse
+    {
+        try {
+            $userId = auth()->user()->id;
+            $executionReviewed = $this->executionService->getmissionReviewBySuperviseur($userId);
+            if (!isset($executionReviewed)) {
+                return $this->sendError('Aucune mission execution Reviewed trouvé pour cette execution.', [], 404);
+            }
+
+            // return $this->sendResponse($remediations, 'Liste des remediations récupérée avec succès.');
+            return 
+            //$this->sendResponse( MissionResource::collection($executionReviewed), 'Liste des remediations récupérée avec succès.');
+            response()->json($executionReviewed);
+        } catch (\Exception $e) {
+            return $this->sendError('Erreur lors de la récupération des mission execution Reviewed.', ['error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function getexecutionReviewByManager($missionId): JsonResponse
+    {
+        try {
+            $executionReviewed = $this->executionService->getexecutionReviewByManager($missionId);
+            if (!isset($executionReviewed)) {
+                return $this->sendError('Aucune execution Reviewed trouvé pour cette execution.', [], 404);
+            }
+
+            // return $this->sendResponse($remediations, 'Liste des remediations récupérée avec succès.');
+            return $this->sendResponse( ExecutionResource::structuredResponse($executionReviewed), 'Liste des remediations récupérée avec succès.');
+        } catch (\Exception $e) {
+            return $this->sendError('Erreur lors de la récupération des execution Reviewed.', ['error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function getmissionReviewManager(): JsonResponse
+    {
+        try {
+            $userId = auth()->user()->id;
+
+            $executionReviewed = $this->executionService->getmissionReviewManager($userId);
+            if (!isset($executionReviewed)) {
+                return $this->sendError('Aucune mission execution Reviewed trouvé pour cette execution.', [], 404);
+            }
+
+            // return $this->sendResponse($remediations, 'Liste des remediations récupérée avec succès.');
+            return 
+            //$this->sendResponse( MissionResource::collection($executionReviewed), 'Liste des remediations récupérée avec succès.');
+            response()->json($executionReviewed);
+        } catch (\Exception $e) {
+            return $this->sendError('Erreur lors de la récupération des mission execution Reviewed.', ['error' => $e->getMessage()], 500);
+        }
+    }
+
+
+    public function submitExecutionForReview($executionId)
+    {
+        try {
+            return $this->executionService->submitExecutionForReview($executionId) ? $this->sendResponse("Execution submitted successfully", [], 200) : $this->sendError("submitting execution failed", [], 404);
+        } catch (\Exception $e) {
+            return $this->sendError("Error while submitting execution", ['error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function submitExecutionForValidation($executionId)
+    {
+        try {
+            return $this->executionService->submitExecutionForValidation($executionId) ? $this->sendResponse("Execution submitted successfully", [], 200) : $this->sendError("submitting execution failed", [], 404);
+        } catch (\Exception $e) {
+            return $this->sendError("Error while submitting execution", ['error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function submitExecutionForCorrection($executionId)
+    {
+        try {
+            return $this->executionService->submitExecutionForCorrection($executionId) ? $this->sendResponse("Execution submitted successfully", [], 200) : $this->sendError("submitting execution failed", [], 404);
+        } catch (\Exception $e) {
+            return $this->sendError("Error while submitting execution", ['error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function submitExecutionForFinalValidation($executionId)
+    {
+        try {
+            return $this->executionService->submitExecutionForFinalValidation($executionId) ? $this->sendResponse("Execution submitted successfully", [], 200) : $this->sendError("submitting execution failed", [], 404);
+        } catch (\Exception $e) {
+            return $this->sendError("Error while submitting execution", ['error' => $e->getMessage()], 500);
+        }
+    }
+
 }
