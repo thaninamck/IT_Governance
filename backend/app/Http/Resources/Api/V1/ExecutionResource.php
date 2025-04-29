@@ -166,12 +166,21 @@ private function formatSourcesText($sources): ?string
     return $uniqueNames->isNotEmpty() ? $uniqueNames->implode(', ') : null;
 }
 
-
 public static function structuredResponse($executions)
 {
-    return $executions->map(function ($execution) {
+    $connectedUser = auth()->user();
+    $missionId = optional($executions->first()?->layer->system->mission)->id;
+
+    $connectedProfile = $connectedUser
+        ?->participations
+        ?->where('mission_id', $missionId)
+        ?->first()
+        ?->profile?->profile_name;
+
+    // Construire le tableau principal
+    $response = $executions->map(function ($execution) {
         return [
-            'id'=>$execution->id,
+            'id' => $execution->id,
             'executionId' => $execution->id,
             'executionModification' => $execution->cntrl_modification,
             'executionEffectiveness' => $execution->effectiveness,
@@ -182,11 +191,10 @@ public static function structuredResponse($executions)
             'executionStatus' => $execution->status->status_name ?? null,
             'executionStatusId' => $execution->status_id ?? null,
 
-            // Infos de l’utilisateur
+            // Infos de testeur
             'testerId' => optional($execution->user)->id,
-           'testerName' => optional($execution->user)->first_name . ' ' . optional($execution->user)->last_name,
+            'testerName' => optional($execution->user)->first_name . ' ' . optional($execution->user)->last_name,
             'testerEmail' => optional($execution->user)->email,
-           // 'testerProfile' => optional(optional($execution->user->participations)->profile)->profile_name,
 
             // Infos du système
             'systemId' => optional($execution->layer->system)->id,
@@ -204,25 +212,27 @@ public static function structuredResponse($executions)
 
             // Infos du contrôle
             'controlCode' => $execution->steps->first()?->control->code,
-            
 
             // Infos du risque
-            'riskId' => $execution->coverage->first()->risk_id,
-            // 'riskName' => $execution->coverage->first()->risk_name,
-            // 'riskCode' => $execution->coverage->first()->risk_code,
-            // 'riskDescription' => $execution->coverage->first()->risk_modification,
-            // 'riskOwner' => $execution->coverage->first()->risk_owner,
+            'riskId' => optional($execution->coverage->first())->risk_id,
 
             // Autres
-   
-             'majorProcess' =>$execution->steps->first()?->control->majorProcess->description,
-             'subProcess' =>$execution->steps->first()?->control->subProcess->name,
-             'typeName'=>$execution->steps->first()?->control->type->name,
-             'sources' => $execution->steps->first()?->control->sources->pluck('name')->implode(', '),
-           
+            'majorProcess' => $execution->steps->first()?->control->majorProcess->description,
+            'subProcess' => $execution->steps->first()?->control->subProcess->name,
+            'typeName' => $execution->steps->first()?->control->type->name,
+            'sources' => $execution->steps->first()?->control->sources->pluck('name')->implode(', '),
         ];
-    });
-}
+    })->toArray();
 
+    // Ajouter les infos de l'utilisateur connecté dans chaque ligne ou à la fin
+    foreach ($response as &$item) {
+        $item['connectedUserId'] = $connectedUser->id;
+        $item['connectedUserName'] = $connectedUser->first_name . ' ' . $connectedUser->last_name;
+        $item['connectedUserEmail'] = $connectedUser->email;
+        $item['connectedUserProfile'] = $connectedProfile;
+    }
+
+    return $response;
+}
 
 }

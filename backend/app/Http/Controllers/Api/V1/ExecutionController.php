@@ -363,34 +363,6 @@ class ExecutionController extends BaseController
         }
     }
 
-    public function submitExecutionForReview($executionId)
-    {
-        try {
-            return $this->executionService->submitExecutionForReview($executionId) ? $this->sendResponse("Execution submitted successfully", [], 200) : $this->sendError("submitting execution failed", [], 404);
-        } catch (\Exception $e) {
-            return $this->sendError("Error while submitting execution", ['error' => $e->getMessage()], 500);
-        }
-    }
-
-    public function submitExecutionForValidation($executionId)
-    {
-        try {
-            return $this->executionService->submitExecutionForValidation($executionId) ? $this->sendResponse("Execution submitted successfully", [], 200) : $this->sendError("submitting execution failed", [], 404);
-        } catch (\Exception $e) {
-            return $this->sendError("Error while submitting execution", ['error' => $e->getMessage()], 500);
-        }
-    }
-
-    public function submitExecutionForCorrection($executionId)
-    {
-        try {
-            return $this->executionService->submitExecutionForCorrection($executionId) ? $this->sendResponse("Execution submitted successfully", [], 200) : $this->sendError("submitting execution failed", [], 404);
-        } catch (\Exception $e) {
-            return $this->sendError("Error while submitting execution", ['error' => $e->getMessage()], 500);
-        }
-    }
-
-
     public function storeFile(Request $request)
     {
         $rules = [
@@ -452,9 +424,13 @@ class ExecutionController extends BaseController
         }
     }
 
+
+// gestion Revue 
+
     public function getexecutionReviewBySuperviseur($missionId): JsonResponse
     {
         try {
+            
             $executionReviewed = $this->executionService->getexecutionReviewBySuperviseur($missionId);
             if (!isset($executionReviewed)) {
                 return $this->sendError('Aucune execution Reviewed trouvé pour cette execution.', [], 404);
@@ -516,6 +492,43 @@ class ExecutionController extends BaseController
             response()->json($executionReviewed);
         } catch (\Exception $e) {
             return $this->sendError('Erreur lors de la récupération des mission execution Reviewed.', ['error' => $e->getMessage()], 500);
+        }
+    }
+
+
+    public function submitExecutionForReview($executionId)
+    {
+        try {
+            return $this->executionService->submitExecutionForReview($executionId) ? $this->sendResponse("Execution submitted successfully", [], 200) : $this->sendError("submitting execution failed", [], 404);
+        } catch (\Exception $e) {
+            return $this->sendError("Error while submitting execution", ['error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function submitExecutionForValidation($executionId)
+    {
+        try {
+            return $this->executionService->submitExecutionForValidation($executionId) ? $this->sendResponse("Execution submitted successfully", [], 200) : $this->sendError("submitting execution failed", [], 404);
+        } catch (\Exception $e) {
+            return $this->sendError("Error while submitting execution", ['error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function submitExecutionForCorrection($executionId)
+    {
+        try {
+            return $this->executionService->submitExecutionForCorrection($executionId) ? $this->sendResponse("Execution submitted successfully", [], 200) : $this->sendError("submitting execution failed", [], 404);
+        } catch (\Exception $e) {
+            return $this->sendError("Error while submitting execution", ['error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function submitExecutionForFinalValidation($executionId)
+    {
+        try {
+            return $this->executionService->submitExecutionForFinalValidation($executionId) ? $this->sendResponse("Execution submitted successfully", [], 200) : $this->sendError("submitting execution failed", [], 404);
+        } catch (\Exception $e) {
+            return $this->sendError("Error while submitting execution", ['error' => $e->getMessage()], 500);
         }
     }
 

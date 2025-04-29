@@ -186,6 +186,8 @@ GROUP BY
         e.ipe AS execution_ipe,
         e.effectiveness AS execution_effectiveness,
         e.design AS execution_design,
+         e.is_to_review AS execution_review,
+            e.is_to_validate AS execution_validate,
         sts.control_id,
 
         json_agg( DISTINCT jsonb_build_object(
@@ -248,6 +250,9 @@ GROUP BY
     JOIN public.users u ON e.user_id = u.id
     JOIN public.owners o ON s.owner_id = o.id
     WHERE s.id = ?
+    AND e.is_to_review = false
+                AND e.is_to_validate = false
+                AND e.status_id IS  NULL
     GROUP BY 
         e.id, e.cntrl_modification, e.comment, e.control_owner, e.launched_at,
         e.ipe, e.effectiveness, e.design, sts.control_id,

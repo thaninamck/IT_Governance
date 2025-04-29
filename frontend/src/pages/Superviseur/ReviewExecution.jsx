@@ -26,6 +26,8 @@ function ReviewExecution() {
     getFileURL,
     submitExecutionForValidation,
   submitExecutionForCorrection,
+  submitExecutionForFinalValidation,
+  submitExecutionForReview,
   } = useExecution();
 
   const {
@@ -124,7 +126,11 @@ function ReviewExecution() {
     const handleValidateRevue = async () => {
       if (!controleData?.executionId) return alert("Aucun executionId trouvé.");
       try {
+        if(controleData.connectedUserProfile === "superviseur"){
         await submitExecutionForValidation(controleData.executionId);
+        }else if (controleData.connectedUserProfile === "manager"){
+          await submitExecutionForFinalValidation(controleData.executionId);
+        }
         
       } catch (err) {
         console.error(err);
@@ -135,8 +141,12 @@ function ReviewExecution() {
     const handleCorrectRevue = async () => {
       if (!controleData?.executionId) return alert("Aucun executionId trouvé.");
       try {
+        if(controleData.connectedUserProfile === "superviseur"){
         await submitExecutionForCorrection(controleData.executionId);
-    
+        }
+      else if (controleData.connectedUserProfile === "manager"){
+        await submitExecutionForReview(controleData.executionId);
+      }
       } catch (err) {
         console.error(err);
        

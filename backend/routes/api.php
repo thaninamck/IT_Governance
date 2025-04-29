@@ -384,9 +384,10 @@ Route::prefix('v1')->controller(EvidenceController::class)->group(function () {
 Route::prefix('v1')->controller(EvidenceController::class)->group(function () {
     Route::post('/remediationevidences/upload', 'storeRemediationMultiple');
 });
-
-Route::prefix('v1')->controller(ExecutionController::class)->group(function () {
-    Route::get('/revue/{missionId}/getexecutionreviewedforSuperviseur', 'getexecutionReviewBySuperviseur');
+Route::middleware('auth:sanctum')->prefix('v1')->group(function () {
+    Route::controller(ExecutionController::class)->group(function () {
+        Route::get('/revue/{missionId}/getexecutionreviewedforSuperviseur', 'getexecutionReviewBySuperviseur');
+    });
 });
 // Route::prefix('v1')->controller(ExecutionController::class)->group(function () {
 //     Route::get('/revue/getmissionexecutionreviewedforSuperviseur', 'getmissionReviewBySuperviseur');
@@ -397,8 +398,10 @@ Route::middleware('auth:sanctum')->prefix('v1')->group(function () {
         Route::get('/revue/getmissionexecutionreviewedforSuperviseur', 'getmissionReviewBySuperviseur');
     });
 });
-Route::prefix('v1')->controller(ExecutionController::class)->group(function () {
+Route::middleware('auth:sanctum')->prefix('v1')->group(function () {
+Route::controller(ExecutionController::class)->group(function () {
     Route::get('/revue/{missionId}/getexecutionreviewedforManager', 'getexecutionReviewByManager');
+});
 });
 Route::middleware('auth:sanctum')->prefix('v1')->group(function () {
     Route::controller(ExecutionController::class)->group(function () {
@@ -417,6 +420,10 @@ Route::prefix('v1')->controller(ExecutionController::class)->group(function () {
 });
 Route::prefix('v1')->controller(ExecutionController::class)->group(function () {
     Route::patch('/executions/submit-execution-for-correction/{executionID}', 'submitExecutionForCorrection');
+});
+
+Route::prefix('v1')->controller(ExecutionController::class)->group(function () {
+    Route::patch('/executions/submit-execution-for-final-validation/{executionID}', 'submitExecutionForFinalValidation');
 });
 
 Route::prefix('v1')->controller(ExecutionController::class)->group(function () {

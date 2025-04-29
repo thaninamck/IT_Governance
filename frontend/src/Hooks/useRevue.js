@@ -42,6 +42,7 @@ const useRevue = (activeView) => {
 
             if (missionRevueData.profileName === 'superviseur') {
                 response = await api.get(`/revue/${missionRevueData.id}/getexecutionreviewedforSuperviseur`);
+                console.log("sup",response.data)
             } else if (missionRevueData.profileName === 'manager') {
                 response = await api.get(`/revue/${missionRevueData.id}/getexecutionreviewedforManager`);
             } else {

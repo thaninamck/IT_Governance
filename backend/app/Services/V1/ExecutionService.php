@@ -50,6 +50,10 @@ public function submitExecutionForCorrection($executionId)
 {
     return $this->executionRepository->updateExecutionStatus($executionId,false,false);
 }
+public function submitExecutionForFinalValidation($executionId)
+{
+    return $this->executionRepository->updateExecutionStatus($executionId,true,true);
+}
     public function getExecutionStatusOptions()
     {
         return $this->statusRepository->getExecutionStatusOptions();
