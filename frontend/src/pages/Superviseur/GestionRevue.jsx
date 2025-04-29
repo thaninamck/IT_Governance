@@ -10,16 +10,21 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import Table from '../../components/Table';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../../Api';
+import useRevue from '../../Hooks/useRevue';
 
 function GestionRevue() {
     const { user } = useAuth();
     const navigate = useNavigate();
-    const [activeView, setActiveView] = useState("manager"); // "manager" par défaut
+    const [activeView, setActiveView] = useState("manager");
+    const {
+        revueMissionData,
+        setRevueMissionData,
+        filteredRows,
+        setFilteredRows,
+        handleRowClick,
+    } = useRevue(activeView);
 
-    const [revueMissionData, setRevueMissionData] = useState([
-        // { "id": "1", "clientName": "djezzy", "missionName": "DSP", "manager": "houda", "status": 'en cours' }
-    ]);
-    const [filteredRows, setFilteredRows] = useState([]);
+    
     const columnsConfig2 = [
         { field: "clientName", headerName: "Client", width: 170 },
         { field: "missionName", headerName: "Mission", width: 170 },
@@ -41,60 +46,17 @@ function GestionRevue() {
         },
     ];
     const handleSearchResults = (results) => setFilteredRows(results);
-    const handleRowClick = (rowData) => {
-        navigate(`/revue/${rowData.missionName}`, { state: { missionRevueData: rowData } });
-        console.log('Détails du mission revue sélectionné:', rowData);
-    }
-    // Appel API à l'affichage
-    // useEffect(() => {
-    //     const fetchMissions = async () => {
-    //         try {
-    //             //  const response = await api.get(`/revue/getmissionexecutionreviewedforSuperviseur`);
-    //             const response = await api.get(`/revue/getmissionexecutionreviewedforManager`);
-    //             const missions = response.data || [];
-    //             console.log('response', missions)
-    //             setRevueMissionData(missions);
-    //             setFilteredRows(missions);
-    //         } catch (error) {
-    //             console.error("Erreur lors du chargement des missions à revoir :", error);
-    //         }
-    //     };
-
-    //     fetchMissions();
-    // }, []);
-
-    useEffect(() => {
-        const fetchMissions = async () => {
-          try {
-            const endpoint =
-              activeView === "manager"
-                ? "/revue/getmissionexecutionreviewedforManager"
-                : "/revue/getmissionexecutionreviewedforSuperviseur";
-      
-            const response = await api.get(endpoint);
-            const missions = response.data || [];
-            console.log('Missions:', missions);
-            setRevueMissionData(missions);
-            setFilteredRows(missions);
-          } catch (error) {
-            console.error("Erreur lors du chargement des missions à revoir :", error);
-          }
-        };
-      
-        fetchMissions();
-      }, [activeView]); // <-- dépendance sur activeView
-      
-
+    
     return (
         <div className='flex'>
             <SideBarStdr user={user} />
             <div className="flex-1 flex flex-col h-screen overflow-y-auto">
                 <HeaderBis />
                 <HeaderWithAction
-  title={`Revues - ${activeView === "manager" ? "Manager" : "Superviseur"}`}
-  buttonLabel=""
-  user={user}
-/>
+                    title={`Revues - ${activeView === "manager" ? "Manager" : "Superviseur"}`}
+                    buttonLabel=""
+                    user={user}
+                />
 
                 <div className="flex items-center justify-center mb-6">
                     <SearchBar
@@ -114,8 +76,8 @@ function GestionRevue() {
                 <div className="flex border-b-2 border-gray-300 mb-3 ml-8">
                     <button
                         className={`px-4 py-2 ${activeView === "manager"
-                                ? "rounded-l rounded-r-none border-none bg-gray-200 text-gray-700"
-                                : "rounded-none text-[var(--subfont-gray)] border-none"
+                            ? "rounded-l rounded-r-none border-none bg-gray-200 text-gray-700"
+                            : "rounded-none text-[var(--subfont-gray)] border-none"
                             }`}
                         onClick={() => setActiveView("manager")}
                     >
@@ -123,8 +85,8 @@ function GestionRevue() {
                     </button>
                     <button
                         className={`px-4 py-2 ${activeView === "superviseur"
-                                ? "rounded-r rounded-l-none border-none bg-gray-200 text-gray-700"
-                                : "rounded-none text-[var(--subfont-gray)] border-none"
+                            ? "rounded-r rounded-l-none border-none bg-gray-200 text-gray-700"
+                            : "rounded-none text-[var(--subfont-gray)] border-none"
                             }`}
                         onClick={() => setActiveView("superviseur")}
                     >

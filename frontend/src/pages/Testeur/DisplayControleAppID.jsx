@@ -13,13 +13,20 @@ import Tabs from "@mui/joy/Tabs";
 import TabList from "@mui/joy/TabList";
 import Tab from "@mui/joy/Tab";
 import TabPanel from "@mui/joy/TabPanel";
+import useExecution from '../../Hooks/useExecution';
 
 function DisplayControleAppID() {
+
+  const {
+    loading,
+    error,
+    fetchExecutionsListForApp,
+    fetchExecutionsListForCorrection
+  } = useExecution();
+
   const { profile } = useProfile();
   const navigate = useNavigate();
   const { user } = useAuth();
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
   const location = useLocation();
   const AppData = location.state?.AppData;
   const { mission, name } = useParams();
@@ -87,47 +94,25 @@ function DisplayControleAppID() {
     
   ];
 
-  const fetchAppData = async () => {
-    setLoading(true);
-    try {
-      const endpoint = (AppData.role === "admin" || AppData.profile === 'manager')
-        ? `/missions/${AppData.id}/getexecutionsList`
-        : `/missions/${AppData.missionId}/${AppData.id}/getexecutionsListForTesteur`;
-      const response = await api.get(endpoint);
-      setAppData(response.data);
-      console.log('execution before ', response.data)
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-
   useEffect(() => {
-    if (user?.role && profile && AppData?.id) {
-      fetchAppData();
-    }
+    const loadData = async () => {
+      if (user?.role && profile && AppData?.id) {
+        const data = await fetchExecutionsListForApp(AppData);
+        setAppData(data);
+      }
+    };
+    loadData();
   }, [user, profile, AppData?.id]);
-
-  const fetchExecutionForCorrection = async () => {
-    setLoading(true);
-    try {
-      const response = await api.get(`/missions/${AppData.missionId}/${AppData.id}/getexecutionsListForTesteurForCorrection`);
-      console.log("correction execution" , response.data)
-      setCorrectionExecution(response.data);
-    
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
+  
   useEffect(() => {
-    if ( AppData?.id) {
-      fetchExecutionForCorrection();
-    }
-  }, [ AppData?.id]);
+    const loadCorrectionData = async () => {
+      if (AppData?.id) {
+        const data = await fetchExecutionsListForCorrection(AppData.missionId, AppData.id);
+        setCorrectionExecution(data);
+      }
+    };
+    loadCorrectionData();
+  }, [AppData?.id]);
 
   const handleTabChange = (event, newValue) => {
     setActivePanel(newValue === 0 ? "executer" : "corriger");

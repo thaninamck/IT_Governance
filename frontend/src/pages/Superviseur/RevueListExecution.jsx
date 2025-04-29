@@ -9,9 +9,13 @@ import Table from '../../components/Table';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import { api } from '../../Api';
+import useRevue from '../../Hooks/useRevue';
 
 
 function RevueListExecution() {
+
+    const { loading, error, fetchRevueExecutions } = useRevue();
+
     const navigate = useNavigate();
     const { user } = useAuth();
     const { missionRevue } = useParams(); // Récupérer les paramètres de l'URL
@@ -129,29 +133,18 @@ function RevueListExecution() {
 // Appel API à l'affichage
 
 useEffect(() => {
-    const fetchData = async () => {
-        try {
-            let response;
-
-            if (missionRevueData.profileName === 'superviseur') {
-                response = await api.get(`/revue/${missionRevueData.id}/getexecutionreviewedforSuperviseur`);
-            } else if (missionRevueData.profileName === 'manager') {
-                response = await api.get(`/revue/${missionRevueData.id}/getexecutionreviewedforManager`);
-            }
-
-            const missions = response?.data || [];
-            console.log('response', missions);
-            setRevueMissionData(missions);
-            setFilteredRows(missions);
-        } catch (error) {
-            console.error("Erreur lors du chargement des missions à revoir :", error);
+    const loadData = async () => {
+        if (missionRevueData?.profileName) {
+            const data = await fetchRevueExecutions(missionRevueData);
+            setRevueMissionData(data);
+            setFilteredRows(data);
         }
     };
-
-    if (missionRevueData?.profileName) {
-        fetchData();
-    }
+    loadData();
 }, [missionRevueData]);
+
+{loading && <p className="text-center mt-10">Chargement...</p>}
+{error && <p className="text-red-500 text-center mt-4">{error}</p>}
 
 
     // useEffect(() => {

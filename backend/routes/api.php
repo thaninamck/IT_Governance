@@ -413,7 +413,7 @@ Route::prefix('v1')->controller(ExecutionController::class)->group(function () {
     Route::patch('/executions/submit-execution-for-review/{executionID}', 'submitExecutionForReview');
 });
 Route::prefix('v1')->controller(ExecutionController::class)->group(function () {
-    Route::patch('/executions/submit-execution-for-validate/{executionID}', 'submitExecutionForValidation');
+    Route::patch('/executions/submit-execution-for-validation/{executionID}', 'submitExecutionForValidation');
 });
 Route::prefix('v1')->controller(ExecutionController::class)->group(function () {
     Route::patch('/executions/submit-execution-for-correction/{executionID}', 'submitExecutionForCorrection');

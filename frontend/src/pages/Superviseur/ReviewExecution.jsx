@@ -24,6 +24,8 @@ function ReviewExecution() {
     loading,
     getExecutionById,
     getFileURL,
+    submitExecutionForValidation,
+  submitExecutionForCorrection,
   } = useExecution();
 
   const {
@@ -118,44 +120,28 @@ function ReviewExecution() {
       });
     };
 
-  const handleValidateRevue = async () => {
-    if (!controleData?.executionId) {
-      console.error("Aucun executionId trouvé.");
-      return;
-    }
 
-    try {
-      const response = await api.patch(`/executions/submit-execution-for-validate/${controleData.executionId}`);
-      if (response) {
-        alert("Contrôle envoyé pour revue avec succès !");
-      } else {
-        alert(`Erreur : "Échec de l'envoi"`);
+    const handleValidateRevue = async () => {
+      if (!controleData?.executionId) return alert("Aucun executionId trouvé.");
+      try {
+        await submitExecutionForValidation(controleData.executionId);
+        
+      } catch (err) {
+        console.error(err);
+       
       }
-    } catch (error) {
-      console.error("Erreur lors de l'envoi :", error);
-      alert("Une erreur est survenue lors de l'envoi pour revue.");
-    }
-  };
-
-  const handleCorrectRevue = async () => {
-    if (!controleData?.executionId) {
-      console.error("Aucun executionId trouvé.");
-      return;
-    }
-
-    try {
-      const response = await api.patch(`/executions/submit-execution-for-correction/${controleData.executionId}`);
-      if (response) {
-        alert("Contrôle envoyé pour revue avec succès !");
-      } else {
-        alert(`Erreur : "Échec de l'envoi"`);
+    };
+    
+    const handleCorrectRevue = async () => {
+      if (!controleData?.executionId) return alert("Aucun executionId trouvé.");
+      try {
+        await submitExecutionForCorrection(controleData.executionId);
+    
+      } catch (err) {
+        console.error(err);
+       
       }
-    } catch (error) {
-      console.error("Erreur lors de l'envoi :", error);
-      alert("Une erreur est survenue lors de l'envoi pour revue.");
-    }
-  };
-
+    };
   const handleTabChange = (event, newValue) => {
     setActivePanel(newValue);
   };
