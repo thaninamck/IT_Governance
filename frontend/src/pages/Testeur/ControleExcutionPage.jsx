@@ -23,6 +23,7 @@ import DecisionPopUp from "../../components/PopUps/DecisionPopUp";
 import VisibilityIcon from "@mui/icons-material/Visibility"; // ou RateReviewIcon
 import CommentButton from "../../components/ExecutionPage/CommentButton";
 import ExistingComment from "../../components/ExecutionPage/ExistingComment";
+import { toast } from "react-toastify";
 // Initialize EmailJS with your userID
 emailjs.init("oAXuwpg74dQwm0C_s"); // Replace 'YOUR_USER_ID' with your actual userID
 
@@ -36,18 +37,19 @@ function ControleExcutionPage() {
     deleteEvidence,
     uploadEvidences,
     updateExecution,
+    createComment,
   } = useExecution();
 
   const location = useLocation();
   const controleData = location.state?.controleData || {};
-  console.log("controoooole data",controleData);
+  console.log("controoooole data", controleData);
 
   const [executionData, setExecutionData] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
-     const  missionId=controleData.missionId
-      const data = await getExecutionById(missionId,controleData.executionId);
+      const missionId = controleData.missionId;
+      const data = await getExecutionById(missionId, controleData.executionId);
 
       if (data && Array.isArray(data)) {
         const parsedData = data.map((item) => ({
@@ -63,20 +65,17 @@ function ControleExcutionPage() {
     if (controleData.executionId) {
       fetchData();
     }
-  }, [controleData.executionId,controleData.missionId]);
+  }, [controleData.executionId, controleData.missionId]);
   const [evidences, setEvidences] = useState([]);
   const [steps, setSteps] = useState([]);
   const [isToReview, setIsToReview] = useState(false);
   const [isToValidate, setIsToValidate] = useState(false);
-  const [commentaire, setCommentaire] = useState(
-     ""
-  );
+  const [commentaire, setCommentaire] = useState("");
   const sourceNames = controleData.sources.map((s) => s.source_name).join(", ");
   const [selections, setSelections] = useState({
     IPE: true,
     Design: false,
-    Effectiveness:true
-    ,
+    Effectiveness: true,
   });
   const [existingComments, setExistingComments] = useState([
     // {
@@ -85,16 +84,16 @@ function ControleExcutionPage() {
     //   name: "Nina Koliai",
     //   text: "Premier commentaire.",
     // },
-    // { 
-    //   y: 300, 
-    //   initials: "AB", 
-    //   name: "Alex Ben", 
-    //   text: "Deuxième commentaire." 
+    // {
+    //   y: 300,
+    //   initials: "AB",
+    //   name: "Alex Ben",
+    //   text: "Deuxième commentaire."
     // },
   ]);
   useEffect(() => {
     console.log("Execution Data:", executionData);
-  
+
     console.log("Execution Dataff:", executionData?.[0]?.remarks);
     const allEvidences = executionData?.[0]?.evidences || [];
     const filteredEvidences = allEvidences.filter(
@@ -103,35 +102,35 @@ function ControleExcutionPage() {
     const filteredTestFiles = allEvidences.filter(
       (file) => file.is_f_test === true
     );
-    setCommentaire(executionData?.[0]?.comment)
-setSelections({
-  IPE: executionData?.[0]?.ipe,
-    Design: executionData?.[0]?.design,
-    Effectiveness:executionData?.[0]?.effectiveness
-    ,
-});
-//setExistingComments(executionData?.[0]?.remarks)
-if (executionData?.[0]?.remarks) {
-  try {
-    const parsedRemarks = JSON.parse(executionData[0].remarks);
-    const formattedRemarks = parsedRemarks.map(remark => {
-      const [firstName, lastName] = remark.name?.split(" ") ?? ["", ""];
-      return {
-        y: Number(remark.y),
-        initials: remark.initials || `${firstName?.[0] ?? ""}${lastName?.[0] ?? ""}`.toUpperCase(),
-        name: remark.name,
-        text: remark.text
-      };
+    setCommentaire(executionData?.[0]?.comment);
+    setSelections({
+      IPE: executionData?.[0]?.ipe,
+      Design: executionData?.[0]?.design,
+      Effectiveness: executionData?.[0]?.effectiveness,
     });
-    setExistingComments(formattedRemarks);
-  } catch (error) {
-    console.error("Erreur de parsing des remarques:", error);
-    setExistingComments([]);
-  }
-} else {
-  setExistingComments([]);
-}
-
+    //setExistingComments(executionData?.[0]?.remarks)
+    if (executionData?.[0]?.remarks) {
+      try {
+        const parsedRemarks = JSON.parse(executionData[0].remarks);
+        const formattedRemarks = parsedRemarks.map((remark) => {
+          const [firstName, lastName] = remark.name?.split(" ") ?? ["", ""];
+          return {
+            y: Number(remark.y),
+            initials:
+              remark.initials ||
+              `${firstName?.[0] ?? ""}${lastName?.[0] ?? ""}`.toUpperCase(),
+            name: remark.name,
+            text: remark.text,
+          };
+        });
+        setExistingComments(formattedRemarks);
+      } catch (error) {
+        console.error("Erreur de parsing des remarques:", error);
+        setExistingComments([]);
+      }
+    } else {
+      setExistingComments([]);
+    }
 
     setEvidences(filteredEvidences);
     setTestFiles(filteredTestFiles);
@@ -139,7 +138,7 @@ if (executionData?.[0]?.remarks) {
     setIsToReview(executionData?.[0]?.execution_is_to_review);
     setIsToValidate(executionData?.[0]?.execution_is_to_validate);
   }, [executionData]);
-  
+
   const [isEditing, setIsEditing] = useState(true);
   const statusOptions = ["Terminé", "En_cours", "Non_commencee"];
   const statusColors = {
@@ -149,7 +148,6 @@ if (executionData?.[0]?.remarks) {
   };
   const [selectedMulti, setSelectedMulti] = useState(controleData.statusId);
 
- 
   const [showRemediation, setShowRemediation] = useState(false);
   const [showPopup, setShowPopup] = useState(false);
   const [description, setDescription] = useState(
@@ -187,7 +185,7 @@ if (executionData?.[0]?.remarks) {
     updateStatusBasedOnSuivi();
   }, []);
   useEffect(() => {
-    console.log("comments",existingComments);
+    console.log("comments", existingComments);
   }, [existingComments]);
   const columnsConfig = [
     { field: "id", headerName: "ID", width: 250, editable: true },
@@ -747,96 +745,109 @@ if (executionData?.[0]?.remarks) {
       />
     );
 
+  const handleAddCommentAtPosition = (y) => {
+    // Vérifier qu'on ne superpose pas un commentaire existant
+    const isOverlapping = existingComments.some((c) => Math.abs(c.y - y) < 50);
 
-    const handleAddCommentAtPosition = (y) => {
-      // Vérifier qu'on ne superpose pas un commentaire existant
-      const isOverlapping = existingComments.some(c => Math.abs(c.y - y) < 50);
-      
-      if (!isOverlapping) {
-        setComments([...comments, { 
-          y, 
-          text: "", 
-          tempId: Date.now() 
-        }]);
-      }
-    };
-    
-    const handleSaveComment = (tempId, text) => {
-      if (!text.trim()) {
-        // Si le commentaire est vide, on le supprime simplement
-        setComments(comments.filter(comment => comment.tempId !== tempId));
-        return;
-      }
-    
-      // Crée un nouveau commentaire existant
-      const newExistingComment = {
-        y: comments.find(c => c.tempId === tempId).y,
-        initials: "MO", // Initiales de l'utilisateur actuel
-        name: "Moi",    // Nom de l'utilisateur actuel
-        text
-      };
-    
-      // Ajoute aux commentaires existants et supprime du tableau temporaire
-      setExistingComments([...existingComments, newExistingComment]);
-      setComments(comments.filter(comment => comment.tempId !== tempId));
-    };
-    
-    const handleCancelComment = (tempId) => {
-      // Supprime simplement le commentaire non sauvegardé
-      setComments(comments.filter(comment => comment.tempId !== tempId));
-    };
-    const [comments, setComments] = useState([]);
+    if (!isOverlapping) {
+      setComments([
+        ...comments,
+        {
+          y,
+          text: "",
+          tempId: Date.now(),
+        },
+      ]);
+    }
+  };
+
+  const handleSaveComment = async (tempId, text) => {
+    if (!text.trim()) {
+      setComments(comments.filter((comment) => comment.tempId !== tempId));
+      return;
+    }
   
+    const user = JSON.parse(window.localStorage.getItem("User"));
+    const firstName = user.firstName;
+    const lastName = user.lastName;
+    const fullName = `${firstName} ${lastName}`;
+    const initials = `${firstName[0] ?? ""}${lastName[0] ?? ""}`.toUpperCase();
+  
+    const newExistingComment = {
+      y: comments.find((c) => c.tempId === tempId).y,
+      initials: initials,
+      name: fullName,
+      text,
+    };
+  
+    const commentData = {
+      y: newExistingComment.y,
+      user_id: user.id,
+      execution_id: executionData?.[0]?.execution_id,
+      text: newExistingComment.text,
+    };
+  
+    const status = await createComment(commentData);
+    if (status >= 200 && status < 300) {
+      setExistingComments([...existingComments, newExistingComment]);
+      setComments(comments.filter((comment) => comment.tempId !== tempId));
+    }else{
+      toast.error("une erreur est survenue veuillez ressayez")
+    }
+  };
+  
+
+  const handleCancelComment = (tempId) => {
+    // Supprime simplement le commentaire non sauvegardé
+    setComments(comments.filter((comment) => comment.tempId !== tempId));
+  };
+  const [comments, setComments] = useState([]);
 
   return (
     <div className="relative  ">
-      <div 
-    className="absolute right-0 top-0 w-16 h-full bg-transparent border-l border-none z-40"
-    onClick={(e) => {
-      // Ne crée un commentaire que si on clique directement sur la marge (pas sur un enfant)
-      if (e.target === e.currentTarget) {
-        const rect = e.currentTarget.getBoundingClientRect();
-        const y = e.clientY - rect.top + e.currentTarget.scrollTop;
-        handleAddCommentAtPosition(y);
-      }
-    }}
-  >
-    {/* Commentaires existants (ne bloquent pas les clics sur la marge) */}
-    {!(isToReview || isToValidate) && (
-  existingComments.map((comment, index) => (
-    <div
-      key={`existing-${index}`}
-      className="absolute border-none right-4"
-      style={{ top: comment.y }}
-    >
-      <div className="border-none" onClick={e => e.stopPropagation()}>
-        <ExistingComment
-          user={{ initials: comment.initials, name: comment.name }}
-          comment={comment.text}
-        />
-      </div>
-    </div>
-  ))
-)}
-
-
-    {/* Commentaires en cours d'édition à mettre dans la page de revue  */}
-    {comments.map((comment) => (
       <div
-        key={`temp-${comment.tempId}`}
-        className="absolute right-4"
-        style={{ top: comment.y }}
-        onClick={e => e.stopPropagation()} // Bloque le clic parent
+        className="absolute right-0 top-0 w-16 h-full bg-transparent border-l border-none z-40"
+        onClick={(e) => {
+          // Ne crée un commentaire que si on clique directement sur la marge (pas sur un enfant)
+          if (e.target === e.currentTarget) {
+            const rect = e.currentTarget.getBoundingClientRect();
+            const y = e.clientY - rect.top + e.currentTarget.scrollTop;
+            handleAddCommentAtPosition(y);
+          }
+        }}
       >
-        <CommentButton
-          onSave={(text) => handleSaveComment(comment.tempId, text)}
-          onCancel={() => handleCancelComment(comment.tempId)}
-        />
+        {/* Commentaires existants (ne bloquent pas les clics sur la marge) */}
+        {!(isToReview || isToValidate) &&
+          existingComments.map((comment, index) => (
+            <div
+              key={`existing-${index}`}
+              className="absolute border-none right-4"
+              style={{ top: comment.y }}
+            >
+              <div className="border-none" onClick={(e) => e.stopPropagation()}>
+                <ExistingComment
+                  user={{ initials: comment.initials, name: comment.name }}
+                  comment={comment.text}
+                />
+              </div>
+            </div>
+          ))}
+
+        {/* Commentaires en cours d'édition à mettre dans la page de revue  */}
+        {comments.map((comment) => (
+          <div
+            key={`temp-${comment.tempId}`}
+            className="absolute right-4"
+            style={{ top: comment.y }}
+            onClick={(e) => e.stopPropagation()} // Bloque le clic parent
+          >
+            <CommentButton
+              onSave={(text) => handleSaveComment(comment.tempId, text)}
+              onCancel={() => handleCancelComment(comment.tempId)}
+            />
+          </div>
+        ))}
       </div>
-    ))}
-
-
-  </div>
 
       {isToReview ||
         (isToValidate && (

@@ -152,7 +152,11 @@ Route::middleware(['auth:sanctum', ManagerMiddleware::class])
 Route::middleware(['auth:sanctum', SupervisorMiddleware::class])
     ->prefix('v1')
     ->group(function () {
-        //
+        Route::controller(ExecutionController::class)->group(function () {
+            
+            Route::post('/executions/create-comment', 'createComment');
+
+        });
     });
 
 Route::middleware(['auth:sanctum', TesterMiddleware::class])

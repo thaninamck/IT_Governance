@@ -125,6 +125,30 @@ class ExecutionController extends BaseController
         }
     }
 
+    public function createComment(Request $request)
+    {
+        try {
+            $rules = [
+                'user_id' => 'required|int',
+                'y'=> 'required|int',
+                'text'=> 'required|string',
+                'execution_id'=>'required|int'
+            ];
+
+            $validator = Validator::make($request->all(), $rules);
+
+            if ($validator->fails()) {
+                return $this->sendError("Validation failed", $validator->errors(), 422);
+            }
+            $this->executionService->createComment($request->all());
+
+            return $this->sendResponse("Commment created successfully", [], 201);
+        } catch (\Exception $e) {
+            return $this->sendError("An error occurred", ["error" => $e->getMessage()], 500);
+        }
+       
+    }
+
     /**
      * Update the specified resource in storage.
      */

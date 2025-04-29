@@ -110,6 +110,21 @@ const useExecution = () => {
         }
       };
       
+      const createComment = async (commentData) => {
+        setLoading(true);
+        try {
+          const response = await api.post("/executions/create-comment", commentData);
+          toast.success("Commentaire ajouté !");
+          return response.status;
+        } catch (error) {
+          setError(error);
+          toast.error("Échec de l'ajout du commentaire");
+        } finally {
+          setLoading(false);
+        }
+      };
+      
+
  useEffect(() => {
     fetchOptions();
   }, []);
@@ -124,6 +139,7 @@ const useExecution = () => {
     updateExecution,
     submitExecutionForReview,
     submitExecutionForValidation,
+    createComment,
     
 
 };
