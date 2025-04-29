@@ -16,6 +16,7 @@ const useExecution = () => {
     try {
       const response = await api.get("/executions/get-options");
       setOptions(response.data);
+      console.log("options select" ,options)
     } catch (error) {
       setError(error);
     } finally {
@@ -81,8 +82,10 @@ const useExecution = () => {
     }
 
     const fetchExecutionsListForApp = async (appData) => {
+ 
       setLoading(true);
       try {
+        console.log ('app data', appData)
         const endpoint =
           (appData.role === "admin" || appData.profile === "manager"|| appData.profile === "superviseur")
             ? `/missions/${appData.id}/getexecutionsList`

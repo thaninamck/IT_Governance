@@ -29,6 +29,7 @@ function DisplayControleAppID() {
   const { user } = useAuth();
   const location = useLocation();
   const AppData = location.state?.AppData;
+  console.log("APPDATA", AppData)
   const { mission, name } = useParams();
 
   const breadcrumbRoutes = [
@@ -96,7 +97,7 @@ function DisplayControleAppID() {
 
   useEffect(() => {
     const loadData = async () => {
-      if (user?.role && profile && AppData?.id) {
+      if ((user?.role || profile) && AppData?.id) {
         const data = await fetchExecutionsListForApp(AppData);
         setAppData(data);
       }

@@ -280,17 +280,15 @@ class ExecutionController extends BaseController
     {
         $rules = [
             'executions' => 'required|array',
+            'executions.*.controlModification' => 'sometimes|nullable|string',
+            'executions.*.comment' => 'sometimes|nullable|string',
+            'executions.*.covId' => 'sometimes|nullable|integer',
             'executions.*.id' => 'required|integer|exists:executions,id',
-            'executions.*.description' => 'required|string',
-            'executions.*.comment' => 'sometimes|string',
-            'executions.*.status_id' => 'sometimes|integer',
-            'executions.*.effectiveness' => 'sometimes|boolean',
-            'executions.*.design' => 'sometimes|boolean',
-            'executions.*.ipe' => 'sometimes|boolean',
-            'executions.*.controlTester' => 'sometimes|integer',
-            'executions.*.riskOwner' => 'sometimes|string',
-            'executions.*.controlOwner' => 'sometimes|string',
-            'executions.*.riskModification' => 'sometimes|string',
+
+            'executions.*.controlTester' => 'sometimes|nullable|integer',
+            'executions.*.riskOwner' => 'sometimes|nullable|string',
+            'executions.*.controlOwner' => 'sometimes|nullable|string',
+            'executions.*.riskModification' => 'sometimes|nullable|string',
         ];
 
         $validator = Validator::make($request->all(), $rules);
@@ -304,6 +302,10 @@ class ExecutionController extends BaseController
 
             return $this->sendResponse("Executions updated successfully", [], 200);
         } catch (\Exception $e) {
+            Log::error("Erreur lors de la mise à jour des exécutions : " . $e->getMessage(), [
+                'trace' => $e->getTraceAsString(),
+                'request_data' => $request->all()
+            ]);
             return $this->sendError("Error while updating executions", ['error' => $e->getMessage()], 500);
         }
     }
@@ -341,6 +343,7 @@ class ExecutionController extends BaseController
             );
         } catch (\Exception $e) {
             // Gestion des erreurs en cas de problème
+            Log::error('Erreur lors de la suppression des exécutions : ' . $e->getMessage());
             return $this->sendError("Erreur lors de la suppression des exécutions.", ['error' => $e->getMessage()], 500);
         }
     }
@@ -406,7 +409,7 @@ class ExecutionController extends BaseController
     {
         try {
             $data = [
-                'systems' => $this->missionService->getSystemsByMissionID($missionId), // Déjà un array
+                'systems' => $this->missionService->getSystemsByMissionIDforOption($missionId), // Déjà un array
                 'risks' => $this->riskService->getAllRisks(), // Collection
                 'controls' => $this->controlService->getAllControls() // Collection
             ];

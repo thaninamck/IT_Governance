@@ -6,6 +6,7 @@ use App\Repositories\V1\ExecutionRepository;
 use App\Repositories\V1\CntrlRiskCovRepository;
 use App\Repositories\V1\StatusRepository;
 use App\Repositories\V1\StepTestScriptRepository;
+use App\Services\NotificationService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 class ExecutionService
@@ -13,17 +14,20 @@ class ExecutionService
     protected ExecutionRepository $executionRepository;
     protected CntrlRiskCovRepository $covRepository;
     protected EvidenceService $evidenceService;
+    protected NotificationService $notificationService;
     protected $statusRepository;
     protected $stepRepository;
 
 
-    public function __construct( EvidenceService $evidenceService,ExecutionRepository $executionRepository, 
+    public function __construct( EvidenceService $evidenceService, NotificationService $notificationService ,ExecutionRepository $executionRepository, 
     CntrlRiskCovRepository $covRepository , StatusRepository $statusRepository,StepTestScriptRepository $stepRepository)
     {
     
         $this->statusRepository = $statusRepository;
-$this->stepRepository = $stepRepository;
+        $this->stepRepository = $stepRepository;
         $this->executionRepository =$executionRepository;
+        $this->notificationService =$notificationService;
+
         $this->covRepository =$covRepository;
         $this->evidenceService = $evidenceService;
         
@@ -98,10 +102,19 @@ public function submitExecutionForFinalValidation($executionId)
 
                 $lastExecution = $this->executionRepository->createExecution($executionToInsert);
 
+                
                 if (!$lastExecution) {
                     throw new \Exception("Failed to create execution");
-                }
+                };
+                if ($executionToInsert['controlTester']) {
 
+                    $this->notificationService->sendNotification(
+                        $executionToInsert['controlTester'],
+                        "Vous avez été assigné(e) à des contrôles pour la mission {$execution['missionName']}.",
+                        ['type' => 'affectation_cntrl', 'id' => '#'],
+                        "affectation_cntrl"
+                    );
+                 };
                 $coverageToInsert['riskDescription'] = $execution['riskModified'] ? $execution['riskDescription'] : null;
 
 
@@ -133,7 +146,7 @@ public function updateExecution($executionId, $data)
 {
     $executionData = [
         'id' => $executionId,
-        'cntrl_modification' => $data['description'] ?? null,
+        'cntrl_modification' => $data['controlModification'] ?? null,
         'control_owner'=> $data['controlOwner'] ?? null,
         'ipe' => $data['ipe'] ?? null,
         'design' => $data['design'] ?? null,
@@ -143,14 +156,22 @@ public function updateExecution($executionId, $data)
         'user_id' => $data['controlTester'] ?? null,
     ];
     $riskData = [
-       
+
         'risk_modification' => $data['riskModification'] ?? null,
         'risk_owner' => $data['riskOwner'] ?? null,
     ];
     $riskFilteredData = array_filter($riskData, function ($value) {
         return !is_null($value);
     });
+    if ($executionData['user_id']) {
 
+        $this->notificationService->sendNotification(
+            $executionData['user_id'],
+            "Vous avez été assigné(e) à des contrôles pour la mission {$data['missionName']}.",
+            ['type' => 'affectation_cntrl', 'id' => '#'],
+            "affectation_cntrl"
+        );
+     };
     if(!empty($data['steps'])) {
         Log::info('Steps Data:', $data['steps']);
        foreach ($data['steps'] as $step) {
@@ -165,8 +186,8 @@ public function updateExecution($executionId, $data)
         }
     }
 
-    if (!empty($riskFilteredData) ) {
-       $this->covRepository->updateCoverage($executionId, $riskFilteredData);
+    if (!empty($data['covId'])&&!empty($riskFilteredData)) {
+       $this->covRepository->updateCoverage($data['covId'], $riskFilteredData);
     }
 
     $filteredData = array_filter($executionData, function ($value) {
@@ -186,11 +207,11 @@ public function updateMultipleExecutions(array $executionsData)
     try {
         foreach ($executionsData as $executionData) {
             // Assure-toi que chaque élément a un ID d'exécution
-            if (!isset($executionData['executionId'])) {
+            if (!isset($executionData['id'])) {
                 throw new \Exception("Execution ID is required for update.");
             }
 
-            $this->updateExecution($executionData['executionId'], $executionData);
+            $this->updateExecution($executionData['id'], $executionData);
         }
 
         DB::commit();

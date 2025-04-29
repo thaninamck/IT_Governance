@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { ChevronDown, Check } from 'lucide-react';
 
-function SelectInput({ label, options, value, onChange, width, flexDirection, customStyle,required=false, multiSelect = false ,mt='mt-20'}) {
+function SelectInput({ label, options = [], value, onChange, width, flexDirection, customStyle,required=false, multiSelect = false ,mt='mt-20'}) {
   const [isOpen, setIsOpen] = useState(false);
    const [error, setError] = useState(false);
   console.log('value',value)
@@ -43,11 +43,10 @@ function SelectInput({ label, options, value, onChange, width, flexDirection, cu
       >
         <span>
           {multiSelect
-            ? options
-                .filter(option => selectedValues.includes(option.value))
+            ? options?.filter(option => selectedValues.includes(option.value))
                 .map(option => option.label)
                 .join(", ") || label
-            : options.find(option => option.value === value)?.label || `${label}`}
+            : options?.find(option => option.value === value)?.label || `${label}`}
         </span>
         <ChevronDown className={`w-4 h-4 transition-transform ${isOpen ? "rotate-180" : ""}`} />
       </div>

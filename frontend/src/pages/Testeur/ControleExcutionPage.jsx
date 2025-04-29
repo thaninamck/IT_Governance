@@ -348,7 +348,7 @@ function ControleExcutionPage() {
   };
 
   const shouldShowRemediation =
-    selectedMulti === "Partially Applied" || selectedMulti === "Not Applied";
+    selectedMulti === 6 || selectedMulti === 3;
 
  
 
@@ -586,8 +586,7 @@ function ControleExcutionPage() {
 
   //Check if all remediations are done  hadi welilha manel mategel3ihech
   const isAllRemediationDone =
-    action.every((remediation) => remediation?.statusName === "Terminé") &&
-    selectedMulti != "";
+   selectedMulti != "" && action.every((remediation) => remediation?.statusName === "Terminé");
 
   const controlStatus = isAllRemediationDone
     ? "Terminé"
@@ -626,7 +625,7 @@ function ControleExcutionPage() {
     );
 
     const isValidateDisabled =
-    !selectedMulti || shouldShowRemediation || !isAllRemediationDone// || !commentaire ;
+    !selectedMulti || !shouldShowRemediation || !isAllRemediationDone// || !commentaire ;
   return (
     <>
       {isToReview || isToValidate && (

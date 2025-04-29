@@ -53,6 +53,11 @@ class Execution extends Model
     {
         return $this->hasManyTo(Evidence::class);
     }
+
+    // public function evidences(){    
+    //     return $this->hasMany(Evidence::class);
+    // }
+
     public function status()
     {
         return $this->belongsTo(Status::class);

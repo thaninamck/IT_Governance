@@ -31,10 +31,12 @@ class MissionService
     }
 
     return [
-        'id' => $mission->id,
+       'id' => $mission->id,
         'mission_name' => $mission->mission_name,
         'start_date' => $mission->start_date,
         'end_date' => $mission->end_date,
+        'auditStartDate' => $mission->audit_start_date,
+        'auditEndDate' => $mission->audit_end_date,
         'client_id' => $mission->client_id,
         'clientName' => $mission->client->commercial_name,
         'status_id' => $mission->status_id,
@@ -88,11 +90,42 @@ class MissionService
 //     ]);
 // }
 
+public function getSystemsByMissionIDforOption($missionId)
+{
+    // Chargez la mission avec les systèmes et leurs relations
+    $mission = $this->missionRepository->getSystemsByMissionID($missionId)
+    ->load(['systems.layers', 'systems.owner']);
+
+    if (!$mission) {
+        return null; // ou lancer une exception
+    }
+    
+
+    return response()->json([
+        'systems' => $mission->systems->map(function ($system) use ($mission) {
+            return [
+                'missionId' => $mission->id,
+                'missionName' => $mission->mission_name,
+                'id' => $system->id,
+                'name' => $system->name,
+                'description' => $system->description,
+                'ownerId' => $system->owner->id ?? null,
+                'ownerName' => $system->owner->full_name ?? null,
+                'ownerContact' => $system->owner->email ?? null,
+                'layers' => $system->layers->map(function ($layer) {
+                    return [
+                        'id' => $layer->id,
+                        'name' => $layer->name
+                    ];
+                })->toArray()
+            ];
+        })->toArray()
+    ]);
+}
+
 public function getSystemsByMissionID($missionId, User $user)
 {
    
-
-
     // Chargez la mission avec les systèmes et leurs relations
     $mission = $this->missionRepository->getSystemsByMissionID($missionId)
     ->load(['systems.layers', 'systems.owner']);

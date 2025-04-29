@@ -19,7 +19,7 @@ class ExecutionResource extends JsonResource
         'id' => $this->execution_id,
         'executionId' => $this->execution_id,
         'executionModification' => $this->execution_modification,
-       // 'executionComment' => $this->execution_comment,
+        'executionComment' => $this->execution_comment,
         'executionControlOwner' => $this->execution_control_owner,
         'executionLaunchedAt' => $this->execution_launched_at,
         'executionIpe' => $this->execution_ipe,
@@ -35,13 +35,13 @@ class ExecutionResource extends JsonResource
         'missionName' => $this->mission_name,
 
         'controlId' => $this->control_id,
-        'controlDescription' => $this->control_description,
+        'controlDescription' => $this->execution_modification ? : $this->control_description ,
         'controlCode' => $this->control_code,
 
         'riskId' => $this->risk_id,
         'riskName' => $this->risk_name,
         'riskCode' => $this->risk_code,
-        'riskDescription' => $this->risk_description,
+        'riskDescription' => $this->risk_modification ? :$this->risk_description,
         'riskOwner' => $this->risk_owner,
 
         'coverageId' => $this->coverage_id,
@@ -190,32 +190,25 @@ public static function structuredResponse($executions)
             'executionControlOwner' => $execution->control_owner,
             'executionStatus' => $execution->status->status_name ?? null,
             'executionStatusId' => $execution->status_id ?? null,
-
             // Infos de testeur
             'testerId' => optional($execution->user)->id,
             'testerName' => optional($execution->user)->first_name . ' ' . optional($execution->user)->last_name,
             'testerEmail' => optional($execution->user)->email,
-
             // Infos du système
             'systemId' => optional($execution->layer->system)->id,
             'systemName' => optional($execution->layer->system)->name,
             'systemOwner' => optional($execution->layer->system->owner)->full_name,
             'systemOwnerEmail' => optional($execution->layer->system->owner)->email,
-
             // Infos du layer
             'layerId' => optional($execution->layer)->id,
             'layerName' => optional($execution->layer)->name,
-
             // Infos de la mission
             'missionId' => optional($execution->layer->system->mission)->id,
             'missionName' => optional($execution->layer->system->mission)->mission_name,
-
             // Infos du contrôle
             'controlCode' => $execution->steps->first()?->control->code,
-
             // Infos du risque
             'riskId' => optional($execution->coverage->first())->risk_id,
-
             // Autres
             'majorProcess' => $execution->steps->first()?->control->majorProcess->description,
             'subProcess' => $execution->steps->first()?->control->subProcess->name,

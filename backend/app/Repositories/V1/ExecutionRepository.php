@@ -276,12 +276,13 @@ GROUP BY
 
     public function getExecutionsByMissionAndTester($missionId, $userId)
     {
+        //e.comment AS execution_remark,
         return DB::select(
             "
          SELECT 
             e.id AS execution_id, 
             e.cntrl_modification AS execution_modification,
-            e.comment AS execution_remark,
+            e.comment AS execution_comment,
             e.control_owner AS execution_control_owner,
             e.launched_at AS execution_launched_at,
             e.ipe AS execution_ipe,
@@ -411,12 +412,14 @@ GROUP BY
 
     public function getExecutionsByMissionAndSystemAndTester($missionId, $userId, $appId)
     {
+        // e.comment AS execution_remark,
         return DB::select(
             "
          SELECT 
             e.id AS execution_id, 
             e.cntrl_modification AS execution_modification,
-            e.comment AS execution_remark,
+           
+            e.comment AS execution_comment,
             e.control_owner AS execution_control_owner,
             e.launched_at AS execution_launched_at,
             e.ipe AS execution_ipe,
@@ -518,7 +521,7 @@ GROUP BY
              SELECT 
                 e.id AS execution_id, 
                 e.cntrl_modification AS execution_modification,
-                e.comment AS execution_remark,
+              e.comment AS execution_comment,
                 e.control_owner AS execution_control_owner,
                 e.launched_at AS execution_launched_at,
                 e.ipe AS execution_ipe,

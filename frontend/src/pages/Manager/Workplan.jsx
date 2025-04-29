@@ -169,6 +169,7 @@ const Workplan = () => {
 
                               owner: "",
                               executionId: "",
+                              covId: "",
                             },
                           ],
                     }
@@ -223,7 +224,7 @@ const Workplan = () => {
     setAppNodes([]);
     setEdges([]);
     setApplication({});
-  };
+    };
 
   const handleopenConfirmationDialog = () => {
     setopenConfirmationDialog(true);
@@ -531,6 +532,8 @@ const Workplan = () => {
           data={dataStructure}
           handleSaveexecutions={handleSaveexecutions}
           fromScopeModification={false}
+          unlockModification={true}
+          viewOnly={false}
         ></Matrix>
       </div>
     </main>

@@ -9,6 +9,8 @@ use App\Models\Participation;
 use App\Repositories\V1\MissionRepository;
 use App\Services\LogService;
 use App\Services\V1\MissionService;
+use App\Services\V1\StatisticsService;
+
 use App\Services\V1\ParticipationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -20,15 +22,17 @@ use function Laravel\Prompts\text;
 class MissionController extends BaseController
 {
     protected $missionService;
+    protected StatisticsService $statisticsService ;
     protected $logService;
     protected $participationService;
     protected $notificationService;
 
 
-    public function __construct(MissionService $missionService, LogService $logService, ParticipationService $participationService, NotificationService $notificationService)
+    public function __construct(StatisticsService $statisticsService,MissionService $missionService, LogService $logService, ParticipationService $participationService, NotificationService $notificationService)
     {
         $this->missionService = $missionService;
         $this->logService = $logService;
+        $this->statisticsService = $statisticsService;
         $this->participationService = $participationService;
         $this->notificationService = $notificationService;
     }
@@ -47,6 +51,89 @@ class MissionController extends BaseController
         return $this->sendResponse(MissionResource::collection($missions), 'missions retrived successfully');
     }
 
+    public function getMissionReport($id): JsonResponse
+{
+    try {
+        $data = ['mission_id' => $id];
+
+        $app_conf = $this->statisticsService->calculate('app_conf_score', $data);
+        $db_conf = $this->statisticsService->calculate('db_conf_score', $data);
+        $os_conf = $this->statisticsService->calculate('os_conf_score', $data);
+        $procedural_conf = $this->statisticsService->calculate('procedural_conf_score', $data);
+        $physical_conf = $this->statisticsService->calculate('physical_conf_score', $data);
+        $global_adv = $this->statisticsService->calculate('global_adv', $data);
+
+        // Construire la structure "systeme"
+        $systeme = [];
+
+        foreach ($app_conf as $app) {
+            $name = $app['name'];
+
+            $appScore = $app['score'];
+            $dbScore = collect($db_conf)->firstWhere('name', $name)['score'] ?? 0;
+            $osScore = collect($os_conf)->firstWhere('name', $name)['score'] ?? 0;
+
+            $globalScore = round(($appScore + $dbScore + $osScore) / 3, 2);
+
+            $systeme[] = [
+                'name' => $name,
+                'score' => $globalScore
+            ];
+        }
+
+        // Moyenne des scores pour chaque couche
+        $layer = [
+            'Applicative' => round(collect($app_conf)->avg('score'), 2),
+            'Base de données' => round(collect($db_conf)->avg('score'), 2),
+            'Système d\'exploitation' => round(collect($os_conf)->avg('score'), 2),
+            $physical_conf['name']=>$physical_conf['score'],
+            $procedural_conf['name']=>$procedural_conf['score']
+        ];
+
+        // Moyenne globale des couches
+        $global_score = round(array_sum($layer) / count($layer), 2);
+
+        return $this->sendResponse(
+            [
+                "app" => $app_conf,
+                "db" => $db_conf,
+                "os" => $os_conf,
+                "systeme" => $systeme,
+                "layer" => $layer,
+               "global_score" => $global_score,
+               "mission_adv"=>$global_adv['global_advancement'],
+               "apps_adv"=>$global_adv['apps'],
+
+            ],
+            "Report generated successfully"
+        );
+    } catch (\Exception $e) {
+        return $this->sendError("An error occurred", ["error" => $e->getMessage()], 500);
+    }
+}
+
+public function getSystemReport($id): JsonResponse
+{
+    try {
+        $data = ['system_id' => $id];
+
+        $app_conf = $this->statisticsService->calculate('app_report', $data);
+        
+       
+
+        
+       
+        return $this->sendResponse(
+            
+               [ "app" => $app_conf],
+               
+
+            
+            "Report generated successfully"
+        );
+    } catch (\Exception $e) {
+        return $this->sendError("An error occurred", ["error" => $e->getMessage()], 500);
+     } }
     /**
      * Store a newly created resource in storage.
      */
@@ -88,15 +175,7 @@ class MissionController extends BaseController
             // Création de la participation du manager
             $this->participationService->createParticipation($participantData);
 
-            /*do this 
-            
-           $this->notificationService->sendNotification(
-     $missionData['manager_id'],
-     "Vous avez été affecté à la mission '{$mission->mission_name}' comme manager.",
-     json_encode(['type' => 'mission', 'id' => $mission->id]), // Convertir en JSON
-     'mission'
- );
- */
+           
 
             // Log de l'action
             $this->logService->logUserAction(
@@ -627,20 +706,8 @@ public function getUserMissions(Request $request)
     
     return response()->json($missions);
 }
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Mission $mission)
-    {
-        //
-    }
+    
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Mission $mission)
-    {
-        //
-    }
+
 }
 

@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('step_executions', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('execution_id')->constrained('executions');
+            $table->foreignId('execution_id')->constrained('executions')->onDelete('cascade');;
             $table->foreignId('step_id')->constrained('step_test_scripts');
             $table->string('comment', 255)->nullable(); 
             $table->boolean('checked',); 

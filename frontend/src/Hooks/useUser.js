@@ -32,6 +32,7 @@ const useUser = () => {
         id: user.id,
         nom: user.firstName, // Concaténation du nom et du prénom
         prenom: user.lastName,
+        fullName: `${user.firstName} ${user.lastName}`,
         grade: user.grade,
         email: user.email,
         contact: user.phoneNumber,
@@ -250,6 +251,7 @@ const useUser = () => {
   }, [token]);
 
   return {
+    fetchUsers,
     selectedAppId,
     setSelectedAppId,
     isDeletePopupOpen,

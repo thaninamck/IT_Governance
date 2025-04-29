@@ -20,10 +20,10 @@ class CntrlRiskCovRepository
         );
     }
 
-    public function updateCoverage($executionId ,$data)
+    public function updateCoverage($covId ,$data)
     {
        
 
-        return CntrlRiskCov::where('execution_id', $executionId)->update($data);
+        return CntrlRiskCov::where('id', $covId)->update($data);
     }
 }

@@ -122,7 +122,28 @@ function ConclusionRemediationSection({
       </div>
    
       
-      
+      {(shouldShowRemediation || action?.length > 0) && (
+        //hadi hatitha foug 
+        <div className="flex justify-end m-3 py-6 mr-8 gap-5">
+        <button
+          onClick={() => setShowRemediation((prevState) => !prevState)}
+          className='text-[var(--blue-menu)] px-3 py-2 border-[var(--blue-menu)]'
+        >
+          Créer une remédiation <AddCircleOutlineRoundedIcon />
+        </button>
+        </div>
+
+      )}
+       {(showRemediation || isAddingAnother) && (
+        <Remediation
+          title={"Créer une remédiation"}
+          initialValues={selectedActionId || {}}
+          onAdd={handleAdd}
+          idControle={controleID}
+         // onClose={onClose}
+         onClose={handleCloseForm}
+        />
+      )}
       {/* Table for Remédiations */}
       {action?.length > 0 && (
         <div className="min-h-screen">
@@ -139,28 +160,8 @@ function ConclusionRemediationSection({
           />
         </div>
       )}
- {shouldShowRemediation ||action?.length > 0 && (
-        //hadi hatitha foug 
-        <div className="flex justify-end m-3 py-6 mr-8 gap-5">
-        <button
-          onClick={() => setShowRemediation((prevState) => !prevState)}
-          className='text-[var(--blue-menu)] px-3 py-2 border-[var(--blue-menu)]'
-        >
-          Créer une remédiation <AddCircleOutlineRoundedIcon />
-        </button>
-        </div>
 
-      )}
-      {(showRemediation || isAddingAnother) && (
-        <Remediation
-          title={"Créer une remédiation"}
-          initialValues={selectedActionId || {}}
-          onAdd={handleAdd}
-          idControle={controleID}
-         // onClose={onClose}
-         onClose={handleCloseForm}
-        />
-      )}
+     
          
           <div className="flex justify-end m-3 py-6 gap-5">
             {/*  hadi commentitha w hatit wahda foug 

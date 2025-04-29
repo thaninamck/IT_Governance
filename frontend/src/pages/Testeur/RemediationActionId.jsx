@@ -385,13 +385,13 @@ function RemediationActionId({readOnly =false}) {
         /> */}
         </div>
 
-        <div className="flex justify-end mx-16 mt-9 py-4  gap-5">
+        {/* <div className="flex justify-end mx-16 mt-9 py-4  gap-5">
 
           {/* <button
             className={`bg-[var(--blue-menu)] text-white px-4 py-2 ${isValidateDisabled ? 'opacity-50 cursor-not-allowed' : ''}`}
             disabled={isValidateDisabled}
             onClick={handleSave}
-          > */}
+          > 
           <button
             className={`bg-[var(--blue-menu)] text-white px-4 py-2 `}
             // disabled={isValidateDisabled}
@@ -399,7 +399,7 @@ function RemediationActionId({readOnly =false}) {
           >
             Valider
           </button>
-        </div>
+        </div> */}
 
       </div>
     </div>
