@@ -211,6 +211,25 @@ class ExecutionController extends BaseController
         }
     }
 
+    public function getExecutionsByMissionAndSystemAndTesterFiltered($missionId, $appId)
+    {
+        try {
+            $userId = auth()->user()->id;
+
+            $executions = ExecutionResource::collection($this->executionService->getExecutionsByMissionAndSystemAndTesterFiltered($missionId, $userId, $appId));
+            if ($executions->isEmpty()) {
+                return $this->sendError('Aucune exécution trouvée pour cette mission et system et testeur.', [], 404);
+            }
+
+            return $this->sendResponse(
+                $executions,
+                'Liste des exécutions récupérée avec succès.'
+            );
+        } catch (\Exception $e) {
+            return $this->sendError('Erreur lors de la récupération des exécutions.', ['error' => $e->getMessage()], 500);
+        }
+    }
+
 
 
     public function updateExecution(Request $request, $executionId)
@@ -361,6 +380,17 @@ class ExecutionController extends BaseController
             return $this->sendError("Error while submitting execution", ['error' => $e->getMessage()], 500);
         }
     }
+
+    public function submitExecutionForCorrection($executionId)
+    {
+        try {
+            return $this->executionService->submitExecutionForCorrection($executionId) ? $this->sendResponse("Execution submitted successfully", [], 200) : $this->sendError("submitting execution failed", [], 404);
+        } catch (\Exception $e) {
+            return $this->sendError("Error while submitting execution", ['error' => $e->getMessage()], 500);
+        }
+    }
+
+
     public function storeFile(Request $request)
     {
         $rules = [

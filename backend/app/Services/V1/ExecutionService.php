@@ -46,6 +46,10 @@ public function submitExecutionForValidation($executionId)
 {
     return $this->executionRepository->updateExecutionStatus($executionId,false,true);
 }
+public function submitExecutionForCorrection($executionId)
+{
+    return $this->executionRepository->updateExecutionStatus($executionId,false,false);
+}
     public function getExecutionStatusOptions()
     {
         return $this->statusRepository->getExecutionStatusOptions();
@@ -64,6 +68,11 @@ public function submitExecutionForValidation($executionId)
     {
         return $this->executionRepository->getExecutionsByMissionAndSystemAndTester($missionId,$userId,$appId);
     }
+    public function getExecutionsByMissionAndSystemAndTesterFiltered($missionId,$userId,$appId)
+    {
+        return $this->executionRepository->getExecutionsByMissionAndSystemAndTesterFiltered($missionId,$userId,$appId);
+    }
+
 
     public function createExecutions(array $data): Execution
     {

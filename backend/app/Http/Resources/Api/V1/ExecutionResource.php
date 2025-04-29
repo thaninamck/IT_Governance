@@ -25,6 +25,8 @@ class ExecutionResource extends JsonResource
         'executionIpe' => $this->execution_ipe,
         'executionEffectiveness' => $this->execution_effectiveness,
         'executionDesign' => $this->execution_design,
+        'isToReview'=>$this->execution_review,
+        'isToValidate'=>$this->execution_validate,
 
         'statusId' => $this->status_id,
         'statusName' => $this->status_name,
@@ -212,10 +214,11 @@ public static function structuredResponse($executions)
             // 'riskOwner' => $execution->coverage->first()->risk_owner,
 
             // Autres
-            // 'typeName' => $execution->type_name,
+   
              'majorProcess' =>$execution->steps->first()?->control->majorProcess->description,
              'subProcess' =>$execution->steps->first()?->control->subProcess->name,
-            // 'sources' => json_decode($execution->sources ?? '[]', true),
+             'typeName'=>$execution->steps->first()?->control->type->name,
+             'sources' => $execution->steps->first()?->control->sources->pluck('name')->implode(', '),
            
         ];
     });
