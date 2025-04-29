@@ -43,6 +43,16 @@ class ExecutionService
         return $this->commentRepository->createComment($data);
 
     }
+    public function updateComment($id, $text)
+{
+    return $this->commentRepository->updateComment($id, ['text' => $text]);
+}
+
+public function deleteComment($id)
+{
+    return $this->commentRepository->deleteComment($id);
+}
+
 public function getExecutionById($executionId)
 {
     return $this->executionRepository->getExecutionById($executionId);

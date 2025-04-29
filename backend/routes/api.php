@@ -153,10 +153,13 @@ Route::middleware(['auth:sanctum', SupervisorMiddleware::class])
     ->prefix('v1')
     ->group(function () {
         Route::controller(ExecutionController::class)->group(function () {
-            
-            Route::post('/executions/create-comment', 'createComment');
 
+            Route::post('/executions/create-comment', 'createComment');
+            Route::put('/executions/update-comment/{id}', 'updateComment');     
+            Route::delete('/executions/delete-comment/{id}', 'deleteComment');  
+        
         });
+        
     });
 
 Route::middleware(['auth:sanctum', TesterMiddleware::class])

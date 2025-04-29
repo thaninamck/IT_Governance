@@ -125,6 +125,39 @@ const useExecution = () => {
       };
       
 
+     
+const deleteComment = async (commentId) => {
+  setLoading(true);
+  try {
+    const response = await api.delete(`/executions/delete-comment/${commentId}`);
+    toast.success("Commentaire supprimé !");
+    return response.status;
+  } catch (error) {
+    setError(error);
+    toast.error("Erreur lors de la suppression du commentaire");
+  } finally {
+    setLoading(false);
+  }
+};
+
+// Modifier un commentaire
+const editComment = async (commentId, newText) => {
+  setLoading(true);
+  try {
+    const response = await api.put(`/executions/update-comment/${commentId}`, {
+      text: newText,
+    });
+    toast.success("Commentaire modifié !");
+    return response.data;
+  } catch (error) {
+    setError(error);
+    toast.error("Erreur lors de la modification du commentaire");
+  } finally {
+    setLoading(false);
+  }
+};
+
+
  useEffect(() => {
     fetchOptions();
   }, []);
@@ -140,6 +173,7 @@ const useExecution = () => {
     submitExecutionForReview,
     submitExecutionForValidation,
     createComment,
+    deleteComment,
     
 
 };

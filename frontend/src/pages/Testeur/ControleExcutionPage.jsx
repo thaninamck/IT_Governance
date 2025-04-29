@@ -38,6 +38,7 @@ function ControleExcutionPage() {
     uploadEvidences,
     updateExecution,
     createComment,
+    deleteComment,
   } = useExecution();
 
   const location = useLocation();
@@ -115,12 +116,14 @@ function ControleExcutionPage() {
         const formattedRemarks = parsedRemarks.map((remark) => {
           const [firstName, lastName] = remark.name?.split(" ") ?? ["", ""];
           return {
+            id:remark.id,
             y: Number(remark.y),
             initials:
               remark.initials ||
               `${firstName?.[0] ?? ""}${lastName?.[0] ?? ""}`.toUpperCase(),
             name: remark.name,
             text: remark.text,
+            userId:remark.user_id,
           };
         });
         setExistingComments(formattedRemarks);
@@ -164,8 +167,8 @@ function ControleExcutionPage() {
   const [subProcess, setSubProcess] = useState(controleData.subProcess || "");
   const [controleID, setControleID] = useState(controleData.controlCode || "");
   useEffect(() => {
-    console.log("ippepe:", selections);
-  }, [selections]); // Log the selectedMulti whenever it changes
+    console.log("icommentssssssss:", existingComments);
+  }, [existingComments]); // Log the selectedMulti whenever it changes
 
   const handleStatesChange = (selections) => {
     console.log("Depuis ControlExecution :", selections);
@@ -796,7 +799,35 @@ function ControleExcutionPage() {
     }
   };
   
-
+  const handleDeleteComment = async (commentId) => {
+    try {
+     toast.info("infos",commentId)
+      const response = await deleteComment(commentId);
+      if (response === 200) {
+       
+        setExistingComments((prev) => prev.filter((c) => c.id !== commentId));
+        toast.success("Commentaire supprimé avec succès !");
+      }
+    } catch (error) {
+      toast.error("Erreur lors de la suppression du commentaire");
+      console.error(error);
+    }
+  };
+  
+  const handleEdit = (comment) => {
+    // Par exemple, tu pourrais afficher une zone de texte avec la valeur existante
+    setComments((prev) => [
+      ...prev,
+      {
+        tempId: Date.now(), // ou comment.id si déjà enregistré
+        y: comment.y,
+        text: comment.text,
+        isEditing: true,
+        existingId: comment.id,
+      }
+    ]);
+  };
+  
   const handleCancelComment = (tempId) => {
     // Supprime simplement le commentaire non sauvegardé
     setComments(comments.filter((comment) => comment.tempId !== tempId));
@@ -825,10 +856,14 @@ function ControleExcutionPage() {
               style={{ top: comment.y }}
             >
               <div className="border-none" onClick={(e) => e.stopPropagation()}>
-                <ExistingComment
-                  user={{ initials: comment.initials, name: comment.name }}
-                  comment={comment.text}
-                />
+               {comment.id}
+                <ExistingComment 
+  user={{ id: comment.userId, initials: comment.initials, name: comment.name}}
+  comment={comment.text}
+  onDelete={() => handleDeleteComment(comment.id)}
+  onEdit={() => handleEdit(comment)}
+/>
+
               </div>
             </div>
           ))}

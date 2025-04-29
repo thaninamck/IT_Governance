@@ -155,6 +155,7 @@ e.comment,
         'text', r.text,
         'y', r.y,
         'initials', UPPER(LEFT(u.first_name, 1) || '' || LEFT(u.last_name, 1)),
+        'user_id',u.id,
         'name', u.first_name || ' ' || u.last_name
     )) AS remarks,
 

@@ -91,7 +91,42 @@ class ExecutionController extends BaseController
         }
     }
 
-
+    public function updateComment(Request $request, $id)
+    {
+        try {
+            $rules = [
+                'text' => 'required|string',
+            ];
+            $validator = Validator::make($request->all(), $rules);
+    
+            if ($validator->fails()) {
+                return $this->sendError("Validation échouée", $validator->errors(), 422);
+            }
+    
+            $this->executionService->updateComment($id, $request->text);
+            return $this->sendResponse([], 'Commentaire mis à jour avec succès');
+        } catch (\Exception $e) {
+            return $this->sendError("Erreur lors de la mise à jour du commentaire", ['error' => $e->getMessage()], 500);
+        }
+    }
+    
+    public function deleteComment($id)
+    {
+        try {
+            $this->executionService->deleteComment($id);
+            return $this->sendResponse([], 'Commentaire supprimé avec succès');
+        } catch (\Exception $e) {
+            \Log::error('Erreur lors de la suppression du commentaire', [
+                'comment_id' => $id,
+                'exception' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(), // optionnel mais utile pour debug
+            ]);
+    
+            return $this->sendError("Erreur lors de la suppression du commentaire", ['error' => $e->getMessage()], 500);
+        }
+    }
+    
+    
 
     public function getExecutionsByMissionAndTester($missionId)
     {
