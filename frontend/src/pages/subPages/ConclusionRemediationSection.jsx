@@ -93,10 +93,10 @@ function ConclusionRemediationSection({
 
         </div>
         {/* hada jdid */}
-        <div className="flex justify-end mt-16">
-          {showSave && (
+        <div className="flex justify-end  items-center  mt-12 gap-8 pr-8">
+          {!showSave && (
             <button
-              className={`bg-[var(--blue-menu)] text-white px-4 mr-16 mt-20 py-2 ${loading ? "opacity-50 cursor-not-allowed" : ""
+              className={`bg-[var(--blue-menu)]  border-none text-white px-4   py-2 ${loading ? "opacity-50 cursor-not-allowed" : ""
                 }`}
               disabled={loading}
               onClick={handleSaveModifications}
@@ -104,11 +104,32 @@ function ConclusionRemediationSection({
               Enregistrer les modifications
             </button>
           )}
+          {!action.length != 0 && (
+         
+         <button
+           className={`bg-[var(--blue-menu)]  border-none text-white px-4 py-2 ${isValidateDisabled ? "opacity-50 cursor-not-allowed" : ""
+             }`}
+           disabled={isValidateDisabled}
+           onClick={handleSubmit}
+         >
+          Envoyer pour revue
+         </button>
+         
+       )}
         </div>
         {/* ---------------- */}
-
+        
       </div>
-      {showDecisionPopup && (
+   
+      
+      
+      {/* Table for Remédiations */}
+      {action?.length > 0 && (
+        <div className="min-h-screen">
+          <div className="mr-5  ml-9">
+            <Separator text={"Remédiation"} />
+          </div>
+          {showDecisionPopup && (
         <div className="absolute top-25 left-1/2 -translate-x-1/2 translate-y-1/4 z-50 ">
           <DecisionPopUp
             name="nouvelle action"
@@ -118,7 +139,18 @@ function ConclusionRemediationSection({
           />
         </div>
       )}
+ {shouldShowRemediation && (
+        //hadi hatitha foug 
+        <div className="flex justify-end m-3 py-6 mr-8 gap-5">
+        <button
+          onClick={() => setShowRemediation((prevState) => !prevState)}
+          className='text-[var(--blue-menu)] px-3 py-2 border-[var(--blue-menu)]'
+        >
+          Créer une remédiation <AddCircleOutlineRoundedIcon />
+        </button>
+        </div>
 
+      )}
       {(showRemediation || isAddingAnother) && (
         <Remediation
           title={"Créer une remédiation"}
@@ -129,24 +161,7 @@ function ConclusionRemediationSection({
          onClose={handleCloseForm}
         />
       )}
-      {shouldShowRemediation && (
-        //hadi hatitha foug 
-        <div className="flex justify-end m-3 py-6 mr-20 gap-5">
-        <button
-          onClick={() => setShowRemediation((prevState) => !prevState)}
-          className='text-[var(--blue-menu)] px-3 py-2 border-[var(--blue-menu)]'
-        >
-          Créer une remédiation <AddCircleOutlineRoundedIcon />
-        </button>
-        </div>
-
-      )}
-      {/* Table for Remédiations */}
-      {action?.length > 0 && (
-        <div className="min-h-screen">
-          <div className="mr-5  ml-9">
-            <Separator text={"Remédiation"} />
-          </div>
+         
           <div className="flex justify-end m-3 py-6 gap-5">
             {/*  hadi commentitha w hatit wahda foug 
             {showSave && (
@@ -158,16 +173,7 @@ function ConclusionRemediationSection({
               </button>
             )} */}
 
-            {action.length === 0 && (
-              <button
-                className={`bg-[var(--blue-menu)] text-white px-4 py-2 ${isValidateDisabled ? "opacity-50 cursor-not-allowed" : ""
-                  }`}
-                disabled={isValidateDisabled}
-                onClick={handleSubmit}
-              >
-                valider
-              </button>
-            )}
+            
           </div>
           <div
             className={`mt-6 flex-1 overflow-x-auto overflow-y-auto h-[400px] mx-10 transition-all }`}
@@ -201,11 +207,12 @@ function ConclusionRemediationSection({
               }}
             />
           </div>
+
           {/* {action.length > 0 && ( */}
-            <div className="flex justify-end mt-5">
+            <div className="flex justify-end mt-5 pr-8">
               {/* {showSave && ( */}
                 <button
-                  className={`bg-[var(--blue-menu)] mr-16  text-white px-4 py-2 ${isValidateDisabled || loading
+                  className={`bg-[var(--blue-menu)]   text-white px-4 py-2 ${isValidateDisabled || loading
                       ? "opacity-50 cursor-not-allowed"
                       : ""
                     }`}
@@ -219,6 +226,8 @@ function ConclusionRemediationSection({
           {/* )} */}
         </div>
       )}
+      
+       
     </div>
   );
 }

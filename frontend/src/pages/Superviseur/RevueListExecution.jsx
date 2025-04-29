@@ -95,31 +95,6 @@ function RevueListExecution() {
                 );
             },
         },
-
-        {
-            field: "remediation",
-            headerName: "Remédiation",
-            expandable: true,
-            width: 180,
-            customRenderCell: (params) => {
-                const handleClick = () => {
-                    const missionName = missionRevueData.missionName;
-                    const systemName = params.row.systemName;
-                    const controlCode = params.row.controlCode;
-              
-                    console.log("System Name:", systemName);
-                    navigate(`/missions/${missionName}/${systemName}/${controlCode}`);
-                  };
-                  return(
-                    <span
-                    onClick={handleClick}
-                    className="text-blue-600 underline hover:text-blue-800 cursor-pointer"
-                  >
-                    Remédiation
-                  </span>
-                  )
-                },
-        },
         { field: "testerName", headerName: "Testeur", width: 220 },
         {
             field: "consulter",
@@ -128,7 +103,7 @@ function RevueListExecution() {
             width: 160,
             customRenderCell: (params) => (
                 <button
-                    onClick={() => navigate(`/revue/revueExecution/${params.row.controlCode}`)}
+                    onClick={() => navigate(`/revue/revueExecution/${params.row.controlCode}`,{state :{controleData :params.row}})}
                     className="text-white bg-blue-500 hover:bg-blue-600 px-6 h-[40px] flex items-center rounded border-none"
                 >
                     Consulter
@@ -152,37 +127,65 @@ function RevueListExecution() {
     ];
     const handleSearchResults = (results) => setFilteredRows(results);
 // Appel API à l'affichage
-    useEffect(() => {
-        const fetchexecutionMissionsSupervisuer = async () => {
-            try {
-                const response = await api.get(`/revue/${missionRevueData.id}/getexecutionreviewedforSuperviseur`);
-                const missions = response.data|| [];
-                console.log('response',missions)
-                setRevueMissionData(missions);
-                setFilteredRows(missions);
-            } catch (error) {
-                console.error("Erreur lors du chargement des missions à revoir :", error);
+
+useEffect(() => {
+    const fetchData = async () => {
+        try {
+            let response;
+
+            if (missionRevueData.profileName === 'superviseur') {
+                response = await api.get(`/revue/${missionRevueData.id}/getexecutionreviewedforSuperviseur`);
+            } else if (missionRevueData.profileName === 'manager') {
+                response = await api.get(`/revue/${missionRevueData.id}/getexecutionreviewedforManager`);
             }
-        };
 
-        fetchexecutionMissionsSupervisuer();
-    }, []);
+            const missions = response?.data || [];
+            console.log('response', missions);
+            setRevueMissionData(missions);
+            setFilteredRows(missions);
+        } catch (error) {
+            console.error("Erreur lors du chargement des missions à revoir :", error);
+        }
+    };
 
-    useEffect(() => {
-        const fetchexecutionMissionsManager = async () => {
-            try {
-                const response = await api.get(`/revue/${missionRevueData.id}/getexecutionreviewedforManager`);
-                const missions = response.data|| [];
-                console.log('response',missions)
-                setRevueMissionData(missions);
-                setFilteredRows(missions);
-            } catch (error) {
-                console.error("Erreur lors du chargement des missions à revoir :", error);
-            }
-        };
+    if (missionRevueData?.profileName) {
+        fetchData();
+    }
+}, [missionRevueData]);
 
-        fetchexecutionMissionsManager();
-    }, []);
+
+    // useEffect(() => {
+       
+    //     const fetchexecutionMissionsSupervisuer = async () => {
+    //         try {
+    //             const response = await api.get(`/revue/${missionRevueData.id}/getexecutionreviewedforSuperviseur`);
+    //             const missions = response.data|| [];
+    //             console.log('response',response.data)
+    //             setRevueMissionData(missions);
+    //             setFilteredRows(missions);
+    //         } catch (error) {
+    //             console.error("Erreur lors du chargement des missions à revoir :", error);
+    //         }
+    //     };
+
+    //     fetchexecutionMissionsSupervisuer();
+    // }, []);
+
+    // useEffect(() => {
+    //     const fetchexecutionMissionsManager = async () => {
+    //         try {
+    //             const response = await api.get(`/revue/${missionRevueData.id}/getexecutionreviewedforManager`);
+    //             const missions = response.data|| [];
+    //             console.log('response',missions)
+    //             setRevueMissionData(missions);
+    //             setFilteredRows(missions);
+    //         } catch (error) {
+    //             console.error("Erreur lors du chargement des missions à revoir :", error);
+    //         }
+    //     };
+
+    //     fetchexecutionMissionsManager();
+    // }, []);
 
     return (
         <div className=''>

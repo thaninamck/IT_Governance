@@ -342,7 +342,7 @@ function Table({
   };
 
   return (
-    <Paper sx={{ margin: "0% 3%", width: "max-content" }}>
+    <Paper sx={{ margin: "0% 1%", width: "max-content" }}>
       <DataGrid
         rows={rows}
         columns={columns}

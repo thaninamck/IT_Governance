@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import AddCommentRoundedIcon from "@mui/icons-material/AddCommentRounded";
 
-function InstructionSplitter({ steps, onChange }) {
+function InstructionSplitter({ steps, onChange = () => {}, readOnly = false}) {
   const [phrases, setPhrases] = useState([]);
   const [comments, setComments] = useState({});
   const [validatedSteps, setValidatedSteps] = useState({});
@@ -95,7 +95,7 @@ function InstructionSplitter({ steps, onChange }) {
                 type="checkbox"
                 checked={validatedSteps[index] || false}
                 onChange={() => toggleValidation(index)}
-                disabled={disabledSteps[index]}
+                disabled={disabledSteps[index] || readOnly}
                 title={
                   disabledSteps[index]
                     ? "Les étapes précédentes doivent être validées ou commentées."
@@ -112,7 +112,7 @@ function InstructionSplitter({ steps, onChange }) {
             </div>
 
             <div className="flex items-center gap-2">
-              {showComments[index] && (
+              {!readOnly && showComments[index] && (
                 <input
                   type="text"
                   value={comments[index] || ""}
@@ -122,12 +122,22 @@ function InstructionSplitter({ steps, onChange }) {
                   placeholder="Ajoutez un commentaire..."
                 />
               )}
+
+               {/* If in readonly, show the comment directly without the icon */}
+               {readOnly && comments[index] && (
+                <div className="w-full text-sm p-2 border border-gray-300 rounded-lg focus:outline-none">
+                  {comments[index]}
+                </div>
+              )}
+
             </div>
 
-            <AddCommentRoundedIcon
-              className="absolute top-3 right-8 cursor-pointer text-blue-500"
-              onClick={() => toggleComment(index)}
-            />
+            {!readOnly && (
+              <AddCommentRoundedIcon
+                className="absolute top-3 right-8 cursor-pointer text-blue-500"
+                onClick={() => toggleComment(index)}
+              />
+            )}
           </div>
         ))}
       </div>

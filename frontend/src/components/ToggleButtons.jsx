@@ -3,7 +3,7 @@ import { Check } from "lucide-react";
 
 const options = ["IPE", "Design", "Effectiveness"];
 
-export default function MultiSelectButtons({ onSelectionChange, selections,onStatesChange }) {
+export default function MultiSelectButtons({ readOnly, onSelectionChange = () => {}, selections ,onStatesChange = () => {}}) {
   const [selected, setSelected] = useState({});
   const [isInitialized, setIsInitialized] = useState(false);
 
@@ -23,6 +23,7 @@ export default function MultiSelectButtons({ onSelectionChange, selections,onSta
 
   // Fonction de changement de sélection
   const toggleSelection = (option) => {
+    if (readOnly) return;
     setSelected((prevSelected) => {
       if (option === "Effectiveness" && prevSelected["Design"] === "Non Conforme") {
         return prevSelected;

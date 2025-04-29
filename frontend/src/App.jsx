@@ -71,6 +71,7 @@ import { ProfileProvider } from './Context/ProfileContext';
 import UserViewMode from './pages/UserViewMode';
 import GestionRevue from './pages/Superviseur/GestionRevue';
 import RevueListExecution from './pages/Superviseur/RevueListExecution';
+import ReviewExecution from './pages/Superviseur/ReviewExecution';
 function App() {
   const getRowLink = (row) => `/tablemission/${row.mission}`;
   
@@ -206,6 +207,7 @@ const rowsData3 = [
           {/*----------------------------Pages-------------------*/}
           <Route path='/revue' element={<GestionRevue/>}/>
           <Route path='/revue/:missionRevue' element={<RevueListExecution/>}/>
+          <Route path='/revue/revueExecution/:controlCode' element={<ReviewExecution/>}/>
           <Route path='/notification' element={<Notification/>}/>
           <Route path='/changePw' element={<ChangePassword/>}/>
           <Route path='/adminHomePage' element={<AdminHomePage/>}/>
@@ -228,6 +230,7 @@ const rowsData3 = [
           <Route path='/missions/:mission/:name/:controlCode' element={<ControleExcutionPage/>}></Route>
           {/* <Route path='/remediation/:id' element={<RemediationActionId/>}></Route> */}
           <Route path='/missions/:mission/:name/:controlCode/remediation/:id' element={<RemediationActionId/>}></Route>
+          <Route path='/revue/revueExecution/:controlCode/remediation/:id' element={<RemediationActionId  readOnly={true}/>} />
           <Route path='/listcontrole' element={<ListControle/>}></Route>
           <Route path='/pw' element={<ForgotPw/>}></Route>
           <Route path='/stepEmailForm' element={<StepEmailForm/>}></Route>

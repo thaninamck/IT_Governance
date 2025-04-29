@@ -1,178 +1,234 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react';
 import { useNavigate, useLocation, useParams } from "react-router-dom";
 import { PermissionRoleContext } from '../../Context/permissionRoleContext';
 import Header from '../../components/Header/Header';
 import Breadcrumbs from '../../components/Breadcrumbs';
 import AppInfo from '../../components/InfosDisplay/AppInfo';
-import Matrix from '../../components/workPlan/Matrix';
 import Separator from '../../components/Decorators/Separator';
-import SearchBar from '../../components/SearchBar';
 import { useAuth } from '../../Context/AuthContext';
 import Table from '../../components/Table';
 import { api } from '../../Api';
 import { useProfile } from '../../Context/ProfileContext';
+import Tabs from "@mui/joy/Tabs";
+import TabList from "@mui/joy/TabList";
+import Tab from "@mui/joy/Tab";
+import TabPanel from "@mui/joy/TabPanel";
 
 function DisplayControleAppID() {
   const { profile } = useProfile();
-  console.log('profile',profile)
-  const navigate = useNavigate()
-  const { user} = useAuth();
+  const navigate = useNavigate();
+  const { user } = useAuth();
   const [loading, setLoading] = useState(true);
-      const [error, setError] = useState(null);
- 
-  console.log("Rôle de l'utilisateur :", user);
-  const location = useLocation(); // Obtenir l'URL actuell
+  const [error, setError] = useState(null);
+  const location = useLocation();
+  const AppData = location.state?.AppData;
+  const { mission, name } = useParams();
 
-  const AppData = location.state?.AppData; // Récupérer les données envoyées
-  console.log('appdata',AppData)
   const breadcrumbRoutes = [
     "/missions",
     "/missions/:mission/:nomApp",
     "/tablemission",
     "gestionmission",
-    "/rapportmission", // Ajout pour la page principale
-    "/rapportmission/:missionName", // Ajout pour une mission spécifique
-
+    "/rapportmission",
+    "/rapportmission/:missionName",
   ];
 
-  // const [filteredRows, setFilteredRows] = useState(data1);
-  const handleSearchResults = (results) => setFilteredRows(results);
-  const { mission } = useParams([]); // Récupérer les paramètres de l'URL
-  const { name } = useParams([]); // Récupérer les paramètres de l'URL
-  console.log("Mission sélectionnée :", mission);
-  console.log("App sélectionnée :", name);
-  
+  const [appData, setAppData] = useState([]);
+  const [correctionExecution, setCorrectionExecution] = useState([]);
+  const [activePanel, setActivePanel] = useState("executer");
 
-  const [selectedControl, setSelectedControl] = useState([]);
+  const columnsConfig2 = [
+    { field: "riskCode", headerName: "Risk Code", width: 80, expandable: true },
+    { field: "riskDescription", headerName: "Risk Description", width: 200, expandable: true },
+    { field: "controlCode", headerName: "Control Code", width: 100, expandable: true },
+    { field: "controlDescription", headerName: "Description", width: 200, expandable: true },
+    { field: "executionControlOwner", headerName: "Owner", width: 120, expandable: true },
+    { field: "layerName", headerName: "Layer", width: 100, expandable: true },
+    { field: "etat", headerName: "State", width: 150, expandable: true },
+    { field: "statusName", headerName: "Status", width: 150, expandable: true },
+    { field: "userFullName", headerName: "Tester", width: 150, expandable: true },
+    {
+      field: "Lancer",
+      headerName: "Action",
+      width: 120,
+      customRenderCell: (params) => {
+        const isCorrection = activePanel === "corriger";
+        const isToReview = params.row.isToReview;
+        const isToValidate = params.row.isToValidate;
+    
+        let buttonLabel = "Exécuter";
+        let buttonColor = "bg-blue-500 hover:bg-blue-600";
+    
+        if (isCorrection) {
+          if (!isToReview && !isToValidate) {
+            buttonLabel = "À corriger";
+            buttonColor = "bg-orange-500 hover:bg-orange-600";
+          } else if (isToReview && isToValidate) {
+            buttonLabel = "Valider";
+            buttonColor = "bg-green-500 hover:bg-green-600";
+          }
+        }
+    
+        return (
+          <button
+            onClick={() =>
+              navigate(`/missions/${mission}/${name}/${params.row.controlCode}`, {
+                state: { controleData: params.row },
+              })
+            }
+            className={`flex items-center justify-center ${buttonColor} text-white font-semibold border-none h-[40px] w-[100px] rounded shadow`}
+          >
+            {buttonLabel}
+          </button>
+        );
+      },
+    }
+    
+    
+  ];
+
+  const fetchAppData = async () => {
+    setLoading(true);
+    try {
+      const endpoint = (AppData.role === "admin" || AppData.profile === 'manager')
+        ? `/missions/${AppData.id}/getexecutionsList`
+        : `/missions/${AppData.missionId}/${AppData.id}/getexecutionsListForTesteur`;
+      const response = await api.get(endpoint);
+      setAppData(response.data);
+      console.log('execution before ', response.data)
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+
+  useEffect(() => {
+    if (user?.role && profile && AppData?.id) {
+      fetchAppData();
+    }
+  }, [user, profile, AppData?.id]);
+
+  const fetchExecutionForCorrection = async () => {
+    setLoading(true);
+    try {
+      const response = await api.get(`/missions/${AppData.missionId}/${AppData.id}/getexecutionsListForTesteurForCorrection`);
+      console.log("correction execution" , response.data)
+      setCorrectionExecution(response.data);
+    
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+  useEffect(() => {
+    if ( AppData?.id) {
+      fetchExecutionForCorrection();
+    }
+  }, [ AppData?.id]);
+
+  const handleTabChange = (event, newValue) => {
+    setActivePanel(newValue === 0 ? "executer" : "corriger");
+  };
+
   const handleRowClick = (rowData) => {
     navigate(`/missions/${mission}/${name}/${rowData.controlCode}`, { state: { controleData: rowData } });
-    console.log('Détails du contrôle sélectionné:', rowData);
   };
-  const columnsConfig2 = [
-    { field: "riskCode", headerName: "risk Code", width: 100,expandable: true },
-    { field: "riskDescription", headerName: "risk description", width: 200 ,expandable: true},
-    { field: "controlCode", headerName: "controle Code", width: 100 ,expandable: true},
-    { field: "controlDescription", headerName: "description", width: 170 ,expandable: true},
-    { field: "executionControlOwner", headerName: "owner", width: 150,expandable: true },
-    { field: "layerName", headerName: "couche", width: 150 ,expandable: true},
-    { field: "etat", headerName: "Etat", width: 150 ,expandable: true},
-    { field: "statusName", headerName: "status", width: 150,expandable: true },
-    { field: "userFullName", headerName: "testeur", width: 150 ,expandable: true},
-    { field: "remediation", headerName: "Remédiation", width: 150 ,expandable: true},
-    { field: "Lancer",
-       headerName: "Lancer",
-        width: 115 ,
-        customRenderCell: (params) => {
-          return (
-            <button 
-           // onClick={() =>  navigate(`/missions/${mission}/${name}/${rowData.controlCode}`, { state: { controleData: rowData } })}
-            className=" flex items-center bg-green-500  hover:bg-green-600 text-white font-semibold  border-none h-[40px] px-5 rounded shadow">
-              Exécuter
-            </button>
-          );
-        },
-
-      },
-  ];
-
-const [appData, setAppData] = useState([]); // État pour stocker les données de l'application
- const fetchAppData = async () => {
-  setLoading(true); 
-  try {
-   console.log('profileme',AppData.profile);
-  
-   console.log('role',AppData.role);
-    const endpoint = (AppData.role === "admin"||AppData.profile ==='manager' ) ? 
-    `/missions/${AppData.id}/getexecutionsList` :
-     `/missions/${AppData.missionId}/${AppData.id}/getexecutionsListForTesteur`;
-    const response = await api.get(endpoint);
-    console.log('list',response.data)
-    setAppData(response.data);
-  } catch (err) {
-    setError(err.message);
-  } finally {
-    setLoading(false);
-  }
-};
-useEffect(() => {
-  if (user?.role && profile) {
-    fetchAppData();
-  }
-}, [user, profile]);
-
-
-// const fetchAppData = async () => {
-//     try {
-//       const response = await api.get(`/missions/${AppData.missionId}/${AppData.id}/getexecutionsListForTesteur`);
-//       console.log('list',AppData.missionId)
-//       setAppData(response.data);
-//     } catch (err) {
-//       setError(err.message);
-//     } finally {
-//       setLoading(false);
-//     }
-//   };
- // Chargement initial
- useEffect(() => {
-  if (AppData.id) {
-    fetchAppData();
-  }
-  
-}, [AppData.id]);
-useEffect(() => {
-  console.log("appData:", appData);
-}, [appData]);
-
 
   return (
-    <div className=" ">
-
+    <div className="min-h-screen ">
       <Header user={user} />
-      <div className=" ml-5 mr-6 pb-9">
-        {/* Afficher Breadcrumbs uniquement si le chemin correspond */}
-        {breadcrumbRoutes.some((route) =>
-          location.pathname.startsWith(route)
-        ) && <Breadcrumbs />}
-        <AppInfo 
-       // dataFormat={AppData}
-        appId={AppData.id} />
-        {/* <div className="flex items-center justify-center mb-6">
-          <SearchBar
-            columnsConfig={''}
-            initialRows={data1}
-            onSearch={handleSearchResults}
-          />
-        </div> */}
-        <Separator text='List des Controles' />
-        {console.log("Données passées à Matrix:", { applications: [{ ...appData }] })}
-        <div
-          className="flex-1 overflow-x-auto overflow-y-auto h-[400px] transition-all "
-        >
-          
-        {AppData ? (
-          // <Matrix
-          //   data={{ applications: [{ ...appData, controls }] }}
-          //   user={user}
-          //   onRowClick={handleRowClick}
-          // />
-         
-          <Table
-          key={JSON.stringify(appData)}
-          columnsConfig={columnsConfig2}
-          rowsData={appData}
-          checkboxSelection={false}    
-             onRowClick={handleRowClick}
-              headerTextBackground={"white"}
-              headerBackground="var(--blue-menu)"
-          />
-        ) : (
-          <p className='text-[var(--status-gray)] text-s pl-6'>Aucun contrôle disponible</p>
-        )}
+      <div className="ml-5 mr-6 pb-9">
+        {breadcrumbRoutes.some((route) => location.pathname.startsWith(route)) && <Breadcrumbs />}
+        <AppInfo appId={AppData.id} />
+        <Separator text="List des Contrôles" />
+        
+        <div className="flex-1  transition-all">
+          <Tabs
+            color="success"
+            aria-label="Control Tabs"
+            defaultValue={0}
+            onChange={handleTabChange}
+            sx={{
+              "--Tabs-spacing": "0px",
+              borderRadius: "8px",
+              boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+              backgroundColor: "white",
+              width: "100%",
+            }}
+          >
+            <TabList
+              sx={{
+              
+                borderBottom: "1px solid #e0e0e0",
+                backgroundColor: "#f9fafb",
+                padding: "0.5rem 0",
+                "& .MuiTab-root": {
+                  fontWeight: "600",
+                  textTransform: "capitalize",
+                  padding: "10px 20px",
+                  borderRadius: "8px 8px 0 0",
+                  transition: "all 0.2s ease",
+                  "&:hover": {
+                    backgroundColor: "#e0f2fe",
+                    color: "#1e40af",
+                  },
+                  "&[aria-selected='true']": {
+                    backgroundColor: "#dbeafe",
+                    color: "#1e40af",
+                    borderBottom: "2px solid #1e40af",
+                  },
+                },
+              }}
+            >
+              <Tab disableIndicator>Exécuter</Tab>
+              <Tab disableIndicator>Corriger</Tab>
+            </TabList>
+
+            <div className="bg-white py-4 rounded-b-lg">
+              <TabPanel value={0} sx={{ padding: 0 }}>
+                {loading ? (
+                  <p className="text-gray-500 text-sm pl-6">Chargement...</p>
+                ) : appData.length > 0 ? (
+                  <div className="flex-1 overflow-x-auto overflow-y-auto transition-all">
+                  <Table
+                    columnsConfig={columnsConfig2}
+                    rowsData={appData}
+                    checkboxSelection={false}
+                   // onRowClick={handleRowClick}
+                    headerTextBackground="white"
+                    headerBackground="var(--blue-menu)"
+                  />
+                  /</div>
+                ) : (
+                  <p className="text-gray-500 text-sm pl-6">Aucun contrôle disponible</p>
+                )}
+              </TabPanel>
+
+              <TabPanel value={1} sx={{ padding: 0 }}>
+                {loading ? (
+                  <p className="text-gray-500 text-sm pl-6">Chargement...</p>
+                ) : appData.length > 0 ? (
+                  <Table
+                    columnsConfig={columnsConfig2}
+                    rowsData={correctionExecution}
+                    checkboxSelection={false}
+                   // onRowClick={handleRowClick}
+                    headerTextBackground="white"
+                    headerBackground="var(--blue-menu)"
+                  />
+                ) : (
+                  <p className="text-gray-500 text-sm pl-6">Aucun contrôle disponible</p>
+                )}
+              </TabPanel>
+            </div>
+          </Tabs>
         </div>
       </div>
-
     </div>
-  )
+  );
 }
 
-export default DisplayControleAppID
+export default DisplayControleAppID;
