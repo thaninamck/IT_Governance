@@ -2,6 +2,7 @@
 namespace App\Services\V1;
 
 use App\Models\execution;
+use App\Repositories\V1\CommentRepository;
 use App\Repositories\V1\ExecutionRepository;
 use App\Repositories\V1\CntrlRiskCovRepository;
 use App\Repositories\V1\StatusRepository;
@@ -17,9 +18,10 @@ class ExecutionService
     protected NotificationService $notificationService;
     protected $statusRepository;
     protected $stepRepository;
+    protected $commentRepository;
 
 
-    public function __construct( EvidenceService $evidenceService, NotificationService $notificationService ,ExecutionRepository $executionRepository, 
+    public function __construct( CommentRepository $commentRepository, EvidenceService $evidenceService, NotificationService $notificationService ,ExecutionRepository $executionRepository, 
     CntrlRiskCovRepository $covRepository , StatusRepository $statusRepository,StepTestScriptRepository $stepRepository)
     {
     
@@ -27,7 +29,7 @@ class ExecutionService
         $this->stepRepository = $stepRepository;
         $this->executionRepository =$executionRepository;
         $this->notificationService =$notificationService;
-
+        $this->commentRepository =$commentRepository;
         $this->covRepository =$covRepository;
         $this->evidenceService = $evidenceService;
         
@@ -37,6 +39,20 @@ class ExecutionService
     {
         return $this->executionRepository->getExecutionsByMission($missionId);
     }
+    public function createComment($data){
+        return $this->commentRepository->createComment($data);
+
+    }
+    public function updateComment($id, $text)
+{
+    return $this->commentRepository->updateComment($id, ['text' => $text]);
+}
+
+public function deleteComment($id)
+{
+    return $this->commentRepository->deleteComment($id);
+}
+
 public function getExecutionById($executionId)
 {
     return $this->executionRepository->getExecutionById($executionId);

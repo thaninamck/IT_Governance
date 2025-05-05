@@ -91,7 +91,42 @@ class ExecutionController extends BaseController
         }
     }
 
-
+    public function updateComment(Request $request, $id)
+    {
+        try {
+            $rules = [
+                'text' => 'required|string',
+            ];
+            $validator = Validator::make($request->all(), $rules);
+    
+            if ($validator->fails()) {
+                return $this->sendError("Validation échouée", $validator->errors(), 422);
+            }
+    
+            $this->executionService->updateComment($id, $request->text);
+            return $this->sendResponse([], 'Commentaire mis à jour avec succès');
+        } catch (\Exception $e) {
+            return $this->sendError("Erreur lors de la mise à jour du commentaire", ['error' => $e->getMessage()], 500);
+        }
+    }
+    
+    public function deleteComment($id)
+    {
+        try {
+            $this->executionService->deleteComment($id);
+            return $this->sendResponse([], 'Commentaire supprimé avec succès');
+        } catch (\Exception $e) {
+            \Log::error('Erreur lors de la suppression du commentaire', [
+                'comment_id' => $id,
+                'exception' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(), // optionnel mais utile pour debug
+            ]);
+    
+            return $this->sendError("Erreur lors de la suppression du commentaire", ['error' => $e->getMessage()], 500);
+        }
+    }
+    
+    
 
     public function getExecutionsByMissionAndTester($missionId)
     {
@@ -111,8 +146,9 @@ class ExecutionController extends BaseController
             return $this->sendError('Erreur lors de la récupération des exécutions.', ['error' => $e->getMessage()], 500);
         }
     }
-    public function getExecutionById($executionId)
+    public function getExecutionById($missionId,$executionId)
     {
+       
         $returnedExecution = $this->executionService->getExecutionById($executionId);
         if ($returnedExecution) {
             return $this->sendResponse(
@@ -120,8 +156,32 @@ class ExecutionController extends BaseController
                 'Execution retrieved successfully'
             );
         } else {
-            return $this->sendError('Execution not found', [], 404);
+            return $this->sendError('Execution Not found', [], 404);
         }
+    }
+
+    public function createComment(Request $request)
+    {
+        try {
+            $rules = [
+                'user_id' => 'required|int',
+                'y'=> 'required|int',
+                'text'=> 'required|string',
+                'execution_id'=>'required|int'
+            ];
+
+            $validator = Validator::make($request->all(), $rules);
+
+            if ($validator->fails()) {
+                return $this->sendError("Validation failed", $validator->errors(), 422);
+            }
+            $this->executionService->createComment($request->all());
+
+            return $this->sendResponse("Commment created successfully", [], 201);
+        } catch (\Exception $e) {
+            return $this->sendError("An error occurred", ["error" => $e->getMessage()], 500);
+        }
+       
     }
 
     /**
