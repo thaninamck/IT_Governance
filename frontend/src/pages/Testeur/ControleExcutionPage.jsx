@@ -16,18 +16,26 @@ import { saveAs } from "file-saver";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import emailjs from "emailjs-com";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { PermissionRoleContext } from "../../Context/permissionRoleContext";
 import useExecution from "../../Hooks/useExecution";
 import DecisionPopUp from "../../components/PopUps/DecisionPopUp";
 import VisibilityIcon from "@mui/icons-material/Visibility"; // ou RateReviewIcon
+
+import { useAuth } from "../../Context/AuthContext";
+import { api } from "../../Api";
+import useRemediation from "../../Hooks/useRemediation";
+
 import CommentButton from "../../components/ExecutionPage/CommentButton";
 import ExistingComment from "../../components/ExecutionPage/ExistingComment";
 import { toast } from "react-toastify";
+
 // Initialize EmailJS with your userID
-emailjs.init("oAXuwpg74dQwm0C_s"); // Replace 'YOUR_USER_ID' with your actual userID
+// emailjs.init("oAXuwpg74dQwm0C_s"); // Replace 'YOUR_USER_ID' with your actual userID
 
 function ControleExcutionPage() {
+  const location = useLocation();
+  const controleData = location.state?.controleData || {};
   // Accédez à userRole et setUserRole via le contexte
   const { userRole, setUserRole } = useContext(PermissionRoleContext);
   const {
@@ -42,11 +50,98 @@ function ControleExcutionPage() {
     editComment,
   } = useExecution();
 
+
+  const {
+    action,
+    error,
+    showRemediation,
+    setShowRemediation,
+    fetchRemediations,
+    handleAdd,
+    handleEditRow,
+    handleDeleteRow,
+    confirmDeleteRemediation,
+    handleCloseRow,
+    handleSendAction,
+    showDecisionPopup,
+    setShowDecisionPopup,
+    handleDecisionResponse,
+    isDeletePopupOpen,
+    setIsDeletePopupOpen,
+    selectedActionId,
+    setSelectedActionId,
+    isAddingAnother,
+    handleCloseForm,
+
+  } = useRemediation(controleData.executionId, controleData.controlCode);
+
+  useEffect(() => {
+    fetchRemediations();
+  }, []);
+
+
+  const navigate = useNavigate();
+  const { mission, name, controlCode } = useParams();
+
   const location = useLocation();
   const controleData = location.state?.controleData || {};
   console.log("controoooole data", controleData);
 
+
+
+  console.log(controleData);
+  const { user } = useAuth();
+  const handleRowClick = (rowData) => {
+    navigate(`/missions/${mission}/${name}/${controlCode}/remediation/${rowData.actionName}`, {
+      state: { remediationData: rowData },
+    });
+  };
+  const [testScriptData, setTestScriptData] = useState([]);
+  const [localSelections, setLocalSelections] = useState({}); // Renommé ici
+  const [openDeletePopup, setOpenDeletePopup] = useState(false);
+  const [deletedEvidence, setDeletedEvidence] = useState(null);
+  const [deletedTestFile, setDeletedTestFile] = useState(null);
+  const [activePanel, setActivePanel] = useState("evidence");
+  const [multiSelectStatus, setMultiSelectStatus] = useState({});
   const [executionData, setExecutionData] = useState(null);
+  const [evidences, setEvidences] = useState([]);
+  const [steps, setSteps] = useState([]);
+  const [isToReview, setIsToReview] = useState(false);
+  const [isToValidate, setIsToValidate] = useState(false);
+  const sourceNames = controleData.sources.map(s => s.source_name).join(', ');
+  const [isEditing, setIsEditing] = useState(true);
+  const [selectedMulti, setSelectedMulti] = useState(controleData.statusId);
+
+  const statusOptions = ["Terminé", "en cours", "Non commencée"];
+  const statusColors = {
+    Terminé: "green",
+    En_cours: "orange",
+    Non_Commencée: "gray",
+  };
+  // const [isAddingAnother, setIsAddingAnother] = useState(false);
+  const [evidenceFiles, setEvidenceFiles] = useState([]);
+  const [testFiles, setTestFiles] = useState([]);
+  const [showPopup, setShowPopup] = useState(false);
+  const [description, setDescription] = useState(controleData.controlDescription || "");
+  const [testScript, setTestScript] = useState(controleData.testScript || "");
+  const [type, setType] = useState(controleData.typeName || "");
+  const [controlOwner, setControlOwner] = useState(controleData.executionControlOwner || "");
+  const [majorProcess, setMajorProcess] = useState(controleData.majorProcess || "");
+  const [subProcess, setSubProcess] = useState(controleData.subProcess || "");
+  const [controleID, setControleID] = useState(controleData.controlCode || "");
+  const [selections, setSelections] = useState({
+    IPE: controleData.ipe,
+    Design: controleData.design,
+    Effectiveness: controleData.effectiveness,
+  });
+  const [files, setFiles] = useState([]);
+  const options = [
+    { label: "Applied", value: "Applied" },
+    { label: "Partially Applied", value: "Partially Applied" },
+    { label: "Not Applied", value: "Not Applied" },
+    { label: "Not Tested", value: "Not Tested" },
+    { label: "Not Applicable", value: "Not Applicable" },
+  ];
 
   useEffect(() => {
     const fetchData = async () => {
@@ -61,12 +156,14 @@ function ControleExcutionPage() {
         }));
 
         setExecutionData(parsedData);
+        console.log("executionData", executionData)
       }
     };
 
     if (controleData.executionId) {
       fetchData();
     }
+
   }, [controleData.executionId, controleData.missionId]);
   const [evidences, setEvidences] = useState([]);
   const [steps, setSteps] = useState([]);
@@ -97,6 +194,7 @@ function ControleExcutionPage() {
     console.log("Execution Data:", executionData);
 
     console.log("Execution Dataff:", executionData?.[0]?.remarks);
+
     const allEvidences = executionData?.[0]?.evidences || [];
     const filteredEvidences = allEvidences.filter(
       (file) => file.is_f_test === false
@@ -143,6 +241,7 @@ function ControleExcutionPage() {
     setIsToValidate(executionData?.[0]?.execution_is_to_validate);
   }, [executionData]);
 
+
   const [isEditing, setIsEditing] = useState(true);
   const statusOptions = ["Terminé", "En_cours", "Non_commencee"];
   const statusColors = {
@@ -171,10 +270,12 @@ function ControleExcutionPage() {
     console.log("icommentssssssss:", existingComments);
   }, [existingComments]); // Log the selectedMulti whenever it changes
 
+
   const handleStatesChange = (selections) => {
     console.log("Depuis ControlExecution :", selections);
     setSelections(selections);
   };
+
 
   const updateStatusBasedOnSuivi = () => {
     setAction((prevActions) =>
@@ -191,158 +292,52 @@ function ControleExcutionPage() {
   useEffect(() => {
     console.log("comments", existingComments);
   }, [existingComments]);
+
   const columnsConfig = [
-    { field: "id", headerName: "ID", width: 250, editable: true },
+    { field: "actionName", headerName: "Nom", width: 250, editable: true },
     {
       field: "description",
       headerName: "Description",
       editable: true,
       width: 300,
     },
-    { field: "contact", headerName: "Contact", width: 250 },
-    { field: "dateField", headerName: "Date début", width: 200 },
-    { field: "dateField1", headerName: "Date Fin", width: 200 },
+    { field: "ownerContact", headerName: "Contact", width: 250 },
+    { field: "startDate", headerName: "Date début", width: 200 },
+    { field: "endDate", headerName: "Date Fin", width: 200 },
     {
       field: "suivi",
       headerName: "Suivi",
       editable: true,
       width: 300,
     },
-    { field: "status", headerName: "Status", width: 180 },
+    {
+      field: "alert",
+      headerName: "Alerte",
+      width: 300,
+      customRenderCell: (params) => {
+        const { statusName, suivi } = params.row;
+        const isAlert = statusName === "en cours" && (!suivi || suivi.trim() === "");
+
+        return isAlert ? (
+          <div style={{ color: "red", fontWeight: "bold", fontSize: "12px" }}>
+            Cette remédiation n’a pas encore été traitée
+          </div>
+        ) : null;
+      }
+    },
+
+    { field: "statusName", headerName: "Status", width: 180 },
     { field: "actions", headerName: "Action", width: 80 },
   ];
 
-  const [files, setFiles] = useState([
-    // { name: 'document.pdf', size: 1024000 },
-    // { name: 'image.png', size: 2048000 },
-    // { name: 'presentation.pptx', size: 512000 }
-  ]);
 
-  // Options et couleurs de statut utilisateur
-  const options = [
-    { label: "Applied", value: "Applied" },
-    { label: "Partially Applied", value: "Partially Applied" },
-    { label: "Not Applied", value: "Not Applied" },
-    { label: "Not Tested", value: "Not Tested" },
-    { label: "Not Applicable", value: "Not Applicable" },
-  ];
-  const [action, setAction] = useState([
-    {
-      id: 1,
-      description: "llllll",
-      contact: "km_mohandouali@esi.dz",
-      dateField: "2025-02-01",
-      dateField1: "2025-02-06",
-      suivi: "",
-      status: "Terminé",
-    },
-    {
-      id: 2,
-      description: "llllll",
-      contact: "manelmohandouali@gmail.com",
-      dateField: "2025-02-05",
-      dateField1: "2025-02-10",
-      suivi: "lll",
-      status: "En_cours",
-    },
-    {
-      id: 3,
-      description: "llllll",
-      contact: "manel.mohandouali@mazars.dz",
-      dateField: "2025-01-11",
-      dateField1: "2025-01-21",
-      suivi: "mll",
-      status: "Non_commencee",
-    },
-    {
-      id: 4,
-      description: "llllll",
-      contact: "farid@gmail.com",
-      dateField: "2025-02-05",
-      dateField1: "2025-02-10",
-      suivi: "lll",
-      status: "En_cours",
-    },
-    {
-      id: 5,
-      description: "llllll",
-      contact: "farid@gmail.com",
-      dateField: "2025-01-11",
-      dateField1: "2025-01-21",
-      suivi: "mll",
-      status: "Non_commencee",
-    },
-  ]);
-
-  const [selectedActionId, setSelectedActionId] = useState("");
-  const [isDeletePopupOpen, setIsDeletePopupOpen] = useState(false);
-  const [isAddingAnother, setIsAddingAnother] = useState(false);
-  // États pour stocker les fichiers séparément
-  const [evidenceFiles, setEvidenceFiles] = useState([]);
-  const [testFiles, setTestFiles] = useState([]);
-
-  const handleDeleteRow = (selectedRow) => {
-    setSelectedActionId(selectedRow.id);
-    console.log(selectedActionId);
-    setIsDeletePopupOpen(true);
-  };
-  const confirmDeleteMission = () => {
-    if (selectedActionId !== null) {
-      setAction((prev) => prev.filter((row) => row.id !== selectedActionId));
-    }
-    setIsDeletePopupOpen(false);
-    setSelectedActionId(null);
-  };
-  const handleEditRow = (selectedRow) => {
-    setSelectedActionId(selectedRow);
-    if (!showRemediation) setShowRemediation((prev) => !prev);
-  };
-
-  const handleDecisionResponse = (response) => {
-    setShowDecisionPopup(false);
-    if (response) {
-      setIsAddingAnother(true);
-    } else {
-      setIsAddingAnother(false);
-      setShowRemediation((prev) => !prev);
-    }
-  };
-  const onClose = () => {
-    setShowDecisionPopup(false);
-  };
-  // Configurez EmailJS avec votre userID
-  //emailjs.init('YOUR_USER_ID');
-
-  const handlesendAction = (selectedRow) => {
-    if (!selectedRow || !selectedRow.contact) {
-      alert("Aucune adresse e-mail trouvée pour cet élément !");
-      return;
+  useEffect(() => {
+    if (controleData.executionId) {
+      fetchRemediations();
     }
 
-    const templateParams = {
-      to_email: selectedRow.contact,
-      description: selectedRow.description,
-      dateField: selectedRow.dateField,
-      dateField1: selectedRow.dateField1,
-    };
+  }, [controleData.executionId]);
 
-    console.log("Envoi de l'email avec les paramètres :", templateParams);
-
-    emailjs
-      .send("service_dg6av6d", "template_f4ojiam", templateParams)
-      .then((response) => {
-        console.log(
-          "E-mail envoyé avec succès!",
-          response.status,
-          response.text
-        );
-        alert(`E-mail envoyé avec succès à ${selectedRow.contact} !`);
-      })
-      .catch((error) => {
-        console.error("Erreur lors de l'envoi de l'e-mail:", error);
-        alert("Erreur lors de l'envoi de l'e-mail. Veuillez réessayer.");
-      });
-  };
 
   const rowActions = [
     {
@@ -350,7 +345,19 @@ function ControleExcutionPage() {
         <SendIcon sx={{ marginRight: "5px", width: "20px", height: "20px" }} />
       ),
       label: "Envoyer",
-      onClick: (selectedRow) => handlesendAction(selectedRow),
+      onClick: (selectedRow) => handleSendAction(selectedRow),
+    },
+    {
+      icon: (
+        <DeleteOutlineRoundedIcon
+          sx={{ color: "var(--alert-red)", marginRight: "5px" }}
+        />
+      ),
+      label: "cloturé",
+      onClick: (selectedRow) => handleCloseRow(selectedRow),
+      disabled: (selectedRow) =>
+        selectedRow.statusName === "en cours" &&
+        (!selectedRow.suivi || selectedRow.suivi.trim() === ""),
     },
     {
       icon: <SquarePen className="mr-2 w-[20px] h-[20px]" />,
@@ -368,16 +375,13 @@ function ControleExcutionPage() {
     },
   ];
 
-  const [multiSelectStatus, setMultiSelectStatus] = useState({});
-
+  // const onClose = () => {
+  //   setShowDecisionPopup(false);
+  // };
   const handleCommentSave = (newComment) => {
     console.log("Nouveau commentaire:", newComment);
     setCommentaire(newComment);
   };
-
-  // État pour suivre l'onglet actif
-  const [activePanel, setActivePanel] = useState("evidence");
-
   // Fonction pour gérer le changement d'onglet
   const handleTabChange = (event, newValue) => {
     setActivePanel(newValue === 0 ? "evidence" : "test");
@@ -415,9 +419,6 @@ function ControleExcutionPage() {
     }
   };
 
-  const [openDeletePopup, setOpenDeletePopup] = useState(false);
-  const [deletedEvidence, setDeletedEvidence] = useState(null);
-  const [deletedTestFile, setDeletedTestFile] = useState(null);
   const handleDeleteConfirm = async () => {
     setOpenDeletePopup(false); // Fermer la popup de confirmation
     if (activePanel === "evidence") {
@@ -455,8 +456,6 @@ function ControleExcutionPage() {
     }
   };
 
-  const [localSelections, setLocalSelections] = useState({}); // Renommé ici
-
   // Fonction pour gérer les changements de sélection dans MultiSelectButtons
   const handleSelectionChange = (newSelection) => {
     setLocalSelections(newSelection); // Met à jour l'état des sélections
@@ -464,27 +463,11 @@ function ControleExcutionPage() {
   };
 
   const shouldShowRemediation =
-    selectedMulti === "Partially Applied" || selectedMulti === "Not Applied";
-  const isValidateDisabled =
-    !selectedMulti || !commentaire || shouldShowRemediation;
-  const [showDecisionPopup, setShowDecisionPopup] = useState(false);
+    selectedMulti === 6 || selectedMulti === 3;
 
-  const handleAdd = (remediation) => {
-    if (selectedActionId) {
-      // Mise à jour de l'application existante
-      setAction((prevApps) =>
-        prevApps.map((row) => (row.id === remediation.id ? remediation : row))
-      );
-      setSelectedActionId(null);
-      setShowRemediation((prev) => !prev);
-    } else {
-      setAction((prev) => [
-        ...prev,
-        { id: prev.length + 1, ...remediation }, // Add the remediation to the list
-      ]);
-      setShowDecisionPopup(true);
-    }
-  };
+ 
+
+
   const handleValidate = () => {
     // Lorsque vous cliquez sur "Valider", affichez le popup
     console.log("handleValidate called");
@@ -492,188 +475,205 @@ function ControleExcutionPage() {
   };
   const handlePopupClose = () => setShowPopup(false);
 
-  const [testScriptData, setTestScriptData] = useState([]); // État pour stocker les données du test script
+
   const handleTestScriptChange = (data) => {
     console.log("Test Script Data:", data);
     setTestScriptData(data); // Mettre à jour les données du test script en temps réel
   };
 
+  const handleSaveRevue = async () => {
+    if (!controleData?.executionId) {
+      console.error("Aucun executionId trouvé.");
+      return;
+    }
+
+    try {
+      const response = await api.patch(`/executions/submit-execution-for-review/${controleData.executionId}`,);
+      if (response) {
+        alert("Contrôle envoyé pour revue avec succès !");
+      } else {
+        alert(`Erreur :  "Échec de l'envoi"}`);
+      }
+
+    } catch (error) {
+      console.error("Erreur lors de l'envoi :", error);
+      alert("Une erreur est survenue lors de l'envoi pour revue.");
+    }
+  };
+
   const handleSave = async () => {
-    const doc = new jsPDF();
-    let yOffset = 30; // Position verticale initiale
+    console.log('test');
+    //   const doc = new jsPDF();
+    //   let yOffset = 30; // Position verticale initiale
 
-    // Fonction pour vérifier si une nouvelle page est nécessaire
-    const addNewPageIfNeeded = (offset) => {
-      if (offset > doc.internal.pageSize.height - 20) {
-        // 20 est une marge
-        doc.addPage();
-        return 30; // Réinitialiser la position verticale
-      }
-      return offset;
-    };
+    //   // Fonction pour vérifier si une nouvelle page est nécessaire
+    //   const addNewPageIfNeeded = (offset) => {
+    //     if (offset > doc.internal.pageSize.height - 20) {
+    //       // 20 est une marge
+    //       doc.addPage();
+    //       return 30; // Réinitialiser la position verticale
+    //     }
+    //     return offset;
+    //   };
 
-    doc.setFontSize(18);
-    doc.text("Rapport de Contrôle", 105, 20, { align: "center" });
-    doc.setFontSize(12);
-    doc.text(`Date: ${new Date().toLocaleDateString()}`, 14, 30);
+    //   doc.setFontSize(18);
+    //   doc.text("Rapport de Contrôle", 105, 20, { align: "center" });
+    //   doc.setFontSize(12);
+    //   doc.text(`Date: ${new Date().toLocaleDateString()}`, 14, 30);
 
-    // Tableau récapitulatif des informations principales
-    autoTable(doc, {
-      startY: yOffset,
-      head: [["Champ", "Valeur"]],
-      body: [
-        ["Type:", type],
-        ["Major Process:", majorProcess],
-        ["Sub Process:", subProcess],
-        ["Description", description],
-        ["Test Script", testScript],
-        ["Status", selectedMulti],
-        ["Commentaire", commentaire],
-        ["Critères", JSON.stringify(localSelections)],
-      ],
-      didDrawPage: (data) => {
-        yOffset = data.cursor.y + 10; // Mettre à jour la position verticale après le tableau
-      },
-    });
+    //   // Tableau récapitulatif des informations principales
+    //   autoTable(doc, {
+    //     startY: yOffset,
+    //     head: [["Champ", "Valeur"]],
+    //     body: [
+    //       ["Type:", type],
+    //       ["Major Process:", majorProcess],
+    //       ["Sub Process:", subProcess],
+    //       ["Description", description],
+    //       ["Test Script", testScript],
+    //       ["Status", selectedMulti],
+    //       ["Commentaire", commentaire],
+    //       ["Critères", JSON.stringify(localSelections)],
+    //     ],
+    //     didDrawPage: (data) => {
+    //       yOffset = data.cursor.y + 10; // Mettre à jour la position verticale après le tableau
+    //     },
+    //   });
 
-    // Vérifier si une nouvelle page est nécessaire
-    yOffset = addNewPageIfNeeded(yOffset);
+    //   // Vérifier si une nouvelle page est nécessaire
+    //   yOffset = addNewPageIfNeeded(yOffset);
 
-    // Liste des remédiations sous forme de tableau
-    autoTable(doc, {
-      startY: yOffset,
-      head: [
-        [
-          "ID",
-          "Description",
-          "Contact",
-          "Date Début",
-          "Date Fin",
-          "Suivi",
-          "Status",
-        ],
-      ],
-      body: action.map((item) => [
-        item.id,
-        item.description,
-        item.contact,
-        item.dateField,
-        item.dateField1,
-        item.suivi,
-        item.status,
-      ]),
-      didDrawPage: (data) => {
-        yOffset = data.cursor.y + 10; // Mettre à jour la position verticale après le tableau
-      },
-    });
-    // Vérifier si une nouvelle page est nécessaire
-    yOffset = addNewPageIfNeeded(yOffset);
+    //   // Liste des remédiations sous forme de tableau
+    //   autoTable(doc, {
+    //     startY: yOffset,
+    //     head: [
+    //       [
+    //         "ID",
+    //         "Description",
+    //         "Contact",
+    //         "Date Début",
+    //         "Date Fin",
+    //         "Suivi",
+    //         "Status",
+    //       ],
+    //     ],
+    //     body: action.map((item) => [
+    //       item.id,
+    //       item.description,
+    //       item.contact,
+    //       item.dateField,
+    //       item.dateField1,
+    //       item.suivi,
+    //       item.status,
+    //     ]),
+    //     didDrawPage: (data) => {
+    //       yOffset = data.cursor.y + 10; // Mettre à jour la position verticale après le tableau
+    //     },
+    //   });
+    //   // Vérifier si une nouvelle page est nécessaire
+    //   yOffset = addNewPageIfNeeded(yOffset);
 
-    //    Ajout des données du test script
-    autoTable(doc, {
-      startY: yOffset,
-      head: [["Étape", "Phrase", "Validée", "Commentaire"]],
-      body: testScriptData.map((item, index) => [
-        index + 1,
-        item.phrase,
-        item.isChecked ? "Oui" : "Non", // Afficher "Oui" ou "Non" pour la validation
-        item.comment || "Aucun commentaire", // Afficher "Aucun commentaire" si le commentaire est vide
-      ]),
-      didDrawPage: (data) => {
-        yOffset = data.cursor.y + 10; // Mettre à jour la position verticale après le tableau
-      },
-    });
-    // Vérifier si une nouvelle page est nécessaire
-    yOffset = addNewPageIfNeeded(yOffset);
+    //   //    Ajout des données du test script
+    //   autoTable(doc, {
+    //     startY: yOffset,
+    //     head: [["Étape", "Phrase", "Validée", "Commentaire"]],
+    //     body: testScriptData.map((item, index) => [
+    //       index + 1,
+    //       item.phrase,
+    //       item.isChecked ? "Oui" : "Non", // Afficher "Oui" ou "Non" pour la validation
+    //       item.comment || "Aucun commentaire", // Afficher "Aucun commentaire" si le commentaire est vide
+    //     ]),
+    //     didDrawPage: (data) => {
+    //       yOffset = data.cursor.y + 10; // Mettre à jour la position verticale après le tableau
+    //     },
+    //   });
+    //   // Vérifier si une nouvelle page est nécessaire
+    //   yOffset = addNewPageIfNeeded(yOffset);
 
-    // Ajout des fichiers de preuves (evidences)
-    if (evidenceFiles.length > 0) {
-      doc.text("Fichiers de preuves (Evidences):", 14, yOffset);
-      yOffset += 10;
-      evidenceFiles.forEach((file, index) => {
-        doc.text(`- ${file.name}`, 20, yOffset);
-        yOffset += 10;
-        yOffset = addNewPageIfNeeded(yOffset); // Vérifier si une nouvelle page est nécessaire
-      });
-    } else {
-      doc.text("Aucun fichier de preuve (Evidence) disponible.", 14, yOffset);
-      yOffset += 10;
-    }
+    //   // Ajout des fichiers de preuves (evidences)
+    //   if (evidenceFiles.length > 0) {
+    //     doc.text("Fichiers de preuves (Evidences):", 14, yOffset);
+    //     yOffset += 10;
+    //     evidenceFiles.forEach((file, index) => {
+    //       doc.text(`- ${file.name}`, 20, yOffset);
+    //       yOffset += 10;
+    //       yOffset = addNewPageIfNeeded(yOffset); // Vérifier si une nouvelle page est nécessaire
+    //     });
+    //   } else {
+    //     doc.text("Aucun fichier de preuve (Evidence) disponible.", 14, yOffset);
+    //     yOffset += 10;
+    //   }
 
-    // Vérifier si une nouvelle page est nécessaire
-    yOffset = addNewPageIfNeeded(yOffset);
+    //   // Vérifier si une nouvelle page est nécessaire
+    //   yOffset = addNewPageIfNeeded(yOffset);
 
-    // Ajout des fichiers de test
-    if (testFiles.length > 0) {
-      doc.text("Fichiers de test:", 14, yOffset);
-      yOffset += 10;
-      testFiles.forEach((file, index) => {
-        doc.text(`- ${file.name}`, 20, yOffset);
-        yOffset += 10;
-        yOffset = addNewPageIfNeeded(yOffset); // Vérifier si une nouvelle page est nécessaire
-      });
-    } else {
-      doc.text("Aucun fichier de test disponible.", 14, yOffset);
-      yOffset += 10;
-    }
-    // Créer un fichier ZIP
-    const zip = new JSZip();
+    //   // Ajout des fichiers de test
+    //   if (testFiles.length > 0) {
+    //     doc.text("Fichiers de test:", 14, yOffset);
+    //     yOffset += 10;
+    //     testFiles.forEach((file, index) => {
+    //       doc.text(`- ${file.name}`, 20, yOffset);
+    //       yOffset += 10;
+    //       yOffset = addNewPageIfNeeded(yOffset); // Vérifier si une nouvelle page est nécessaire
+    //     });
+    //   } else {
+    //     doc.text("Aucun fichier de test disponible.", 14, yOffset);
+    //     yOffset += 10;
+    //   }
+    //   // Créer un fichier ZIP
+    //   const zip = new JSZip();
 
-    // Générer le PDF
-    const pdfBlob = doc.output("blob");
+    //   // Générer le PDF
+    //   const pdfBlob = doc.output("blob");
 
-    // Ajouter le PDF au ZIP
-    zip.file("rapport_controle.pdf", pdfBlob);
+    //   // Ajouter le PDF au ZIP
+    //   zip.file("rapport_controle.pdf", pdfBlob);
 
-    // Ajouter les fichiers de preuves (evidences) au ZIP
-    for (const file of evidenceFiles) {
-      if (file instanceof File || file instanceof Blob) {
-        zip.file(`evidences/${file.name}`, file);
-      }
-    }
-    // Ajouter les fichiers de preuves (evidences) au ZIP
-    for (const file of testFiles) {
-      if (file instanceof File || file instanceof Blob) {
-        zip.file(`testFile/${file.name}`, file);
-      }
-    }
-    // Générer le fichier ZIP et le télécharger
-    const zipBlob = await zip.generateAsync({ type: "blob" });
-    saveAs(zipBlob, "rapport_controle.zip");
+    //   // Ajouter les fichiers de preuves (evidences) au ZIP
+    //   for (const file of evidenceFiles) {
+    //     if (file instanceof File || file instanceof Blob) {
+    //       zip.file(`evidences/${file.name}`, file);
+    //     }
+    //   }
+    //   // Ajouter les fichiers de preuves (evidences) au ZIP
+    //   for (const file of testFiles) {
+    //     if (file instanceof File || file instanceof Blob) {
+    //       zip.file(`testFile/${file.name}`, file);
+    //     }
+    //   }
+    //   // Générer le fichier ZIP et le télécharger
+    //   const zipBlob = await zip.generateAsync({ type: "blob" });
+    //   saveAs(zipBlob, "rapport_controle.zip");
 
-    setShowPopup(true);
+    //   setShowPopup(true);
 
-    // // Télécharger automatiquement le PDF
-    // doc.save('rapport_controle.pdf');
-    // setShowPopup(true);
-
-    console.log(
-      "Type:",
-      type,
-      "Major Process:",
-      majorProcess,
-      "Sub Process:",
-      subProcess,
-      "Description:",
-      description,
-      "TestScript:",
-      testScript,
-      "Test Script Data:",
-      testScriptData,
-      "Evidence Files:",
-      evidenceFiles,
-      "Test Files:",
-      testFiles,
-      "status:",
-      selectedMulti,
-      "Commentaire:",
-      commentaire,
-      "remediation:",
-      action,
-      "critere:",
-      localSelections
-    );
-    //setIsEditing(false); // Quitter le mode édition après la sauvegarde
+    //   console.log(
+    //     "Type:",
+    //     type,
+    //     "Major Process:",
+    //     majorProcess,
+    //     "Sub Process:",
+    //     subProcess,
+    //     "Description:",
+    //     description,
+    //     "TestScript:",
+    //     testScript,
+    //     "Test Script Data:",
+    //     testScriptData,
+    //     "Evidence Files:",
+    //     evidenceFiles,
+    //     "Test Files:",
+    //     testFiles,
+    //     "status:",
+    //     selectedMulti,
+    //     "Commentaire:",
+    //     commentaire,
+    //     "remediation:",
+    //     action,
+    //     "critere:",
+    //     localSelections
+    //   );
+    //   //setIsEditing(false); // Quitter le mode édition après la sauvegarde
   };
 
   const handleSubmit = () => {
@@ -697,7 +697,7 @@ function ControleExcutionPage() {
     };
     await updateExecution(controleData.executionId, payload);
   };
-  const navigate = useNavigate();
+
 
   const handleRowClick = (rowData) => {
     // Naviguer vers la page de détails avec l'ID du contrôle dans l'URL
@@ -709,9 +709,9 @@ function ControleExcutionPage() {
   };
 
   // Check if all remediations are done
+
   const isAllRemediationDone =
-    action.every((remediation) => remediation.status === "Terminé") &&
-    selectedMulti != "";
+   selectedMulti != "" && action.every((remediation) => remediation?.statusName === "Terminé");
 
   const controlStatus = isAllRemediationDone
     ? "Terminé"
@@ -748,6 +748,16 @@ function ControleExcutionPage() {
         }}
       />
     );
+
+//*****************************can you check this please i commented it cause i donno if it causes an error ******************
+//     const isValidateDisabled =
+//     !selectedMulti || !shouldShowRemediation || !isAllRemediationDone// || !commentaire ;
+//   return (
+//     <>
+//       {isToReview || isToValidate && (
+//         <div className=" top-0 left-0 w-full h-full bg-transparent z-50 pointer-events-auto" />
+//       )}
+//       <Header user={user} />
 
   const handleAddCommentAtPosition = (y) => {
     // Vérifier qu'on ne superpose pas un commentaire existant
@@ -899,6 +909,7 @@ function ControleExcutionPage() {
         ))}
       <Header />
 
+
       <div className="ml-8 mr-6 pb-9 relative">
         <div className="flex justify-between items-center px-4 py-2">
           {location.pathname.includes("") && <Breadcrumbs />}
@@ -932,7 +943,7 @@ function ControleExcutionPage() {
             name="Êtes-vous sûr de vouloir supprimer ce fichier ?"
           />
         )}
-        <div className=" max-h-screen min-h-screen">
+    
           <EvidencesSection
             handleSelectionChange={handleSelectionChange}
             files={files}
@@ -947,19 +958,20 @@ function ControleExcutionPage() {
             onStatesChange={handleStatesChange}
             getFile={getFileURL}
           />
-        </div>
-
+        
+     
         <ConclusionRemediationSection
           selectedMulti={selectedMulti}
           setSelectedMulti={setSelectedMulti}
           shouldShowRemediation={
-            selectedMulti === "Partially Applied" ||
-            selectedMulti === "Not Applied"
+            selectedMulti === 6 ||
+            selectedMulti === 3
           }
           commentaire={commentaire}
           setCommentaire={setCommentaire}
           action={action}
-          handleSubmit={handleSave}
+          // handleSubmit={handleSave}
+          handleSubmit={handleSaveRevue}
           handleAdd={handleAdd}
           handleValidate={handleValidate}
           statusOptions={statusOptions}
@@ -971,19 +983,21 @@ function ControleExcutionPage() {
           handleRowClick={handleRowClick}
           rowActions={rowActions}
           isDeletePopupOpen={isDeletePopupOpen}
-          confirmDeleteMission={confirmDeleteMission}
+          confirmDeleteMission={confirmDeleteRemediation}
           setIsDeletePopupOpen={setIsDeletePopupOpen}
           selectedActionId={selectedActionId}
           handleDecisionResponse={handleDecisionResponse}
           showDecisionPopup={showDecisionPopup}
           isAddingAnother={isAddingAnother}
           controleID={controleID}
-          onClose={onClose}
+          // onClose={handleCloseForm}
+          handleCloseForm={handleCloseForm}
           handleSaveModifications={handleSaveModifications}
           loading={loading}
           isToReview={isToReview}
           isToValidate={isToValidate}
         />
+        
         {showPopup && (
           <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-md z-50">
             <PopUp
@@ -993,7 +1007,7 @@ function ControleExcutionPage() {
           </div>
         )}
       </div>
-    </div>
+    </>
   );
 }
 

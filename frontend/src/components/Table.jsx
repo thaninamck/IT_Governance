@@ -342,7 +342,7 @@ function Table({
   };
 
   return (
-    <Paper sx={{ margin: "0% 3%", width: "max-content" }}>
+    <Paper sx={{ margin: "0% 1%", width: "max-content" }}>
       <DataGrid
         rows={rows}
         columns={columns}
@@ -410,6 +410,61 @@ function Table({
             },
           }),
         }}
+
+        // sx={{
+        //   border: "none",
+        //   fontSize: "14px",
+        
+        //   "& .MuiDataGrid-root": {
+        //     borderRadius: "12px",
+        //   },
+        //   "& .MuiDataGrid-columnHeaders": {
+        //     backgroundColor: headerBackground,
+        // color: headerTextBackground,
+        //     fontWeight: 600,
+        //     fontSize: "15px",
+        //     borderBottom: "1px solid #cbd5e1",
+        //   },
+        
+        //   "& .MuiDataGrid-columnSeparator": {
+        //     display: "none",
+        //   },
+        
+        //   "& .MuiDataGrid-cell": {
+        //     borderBottom: "1px solid #e2e8f0",
+        //     padding: "10px",
+        //     whiteSpace: "normal",
+        //     wordWrap: "break-word",
+        //     alignItems: "center",
+        //     display: "flex",
+        //     color: "#0f172a", // Slate 900
+        //     backgroundColor: "#ffffff",
+        //     transition: "background 0.3s ease",
+        //   },
+        
+        //   "& .MuiDataGrid-row:hover .MuiDataGrid-cell": {
+        //     backgroundColor: "#f1f5f9", // Slate 100
+        //   },
+        
+        //   "& .MuiDataGrid-row.Mui-selected, .MuiDataGrid-row.Mui-selected:hover": {
+        //     backgroundColor: "#dbeafe !important", // Blue-100
+        //   },
+        
+        //   "& .MuiDataGrid-cell:focus": {
+        //     outline: "none",
+        //   },
+        
+        //   // Zebra striping
+        //   ...(isZebraStriping && {
+        //     "& .MuiDataGrid-row:nth-of-type(odd) .MuiDataGrid-cell": {
+        //       backgroundColor: "#f8fafc", // Slate-50
+        //     },
+        //     "& .MuiDataGrid-row:nth-of-type(even) .MuiDataGrid-cell": {
+        //       backgroundColor: "#ffffff",
+        //     },
+        //   }),
+        // }}
+        
       />
        <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose}>
   {(rowActions || []).map((action, index) => {

@@ -10,6 +10,8 @@ import { useAuth } from "../../Context/AuthContext";
 
 import Workplan from "../Manager/Workplan";
 import { useProfile } from "../../Context/ProfileContext";
+import GestionRevue from "../Superviseur/GestionRevue";
+import RevueListExecution from "../Superviseur/RevueListExecution";
 
 function MissionDetail() {
    const { user} = useAuth();
@@ -36,6 +38,8 @@ useEffect(() => {
   }
 }, [missionData, updateProfile]);
 console.log('profile',profile)
+
+console.log("mission manel",missionData)
 
   // Liste des chemins où les breadcrumbs doivent s'afficher
   const breadcrumbRoutes = [
@@ -82,6 +86,10 @@ console.log('profile',profile)
         dataFormat={missionData}
         missionId={missionData.id} 
         />
+           
+        
+<RevueListExecution dataFormat={missionData}  />
+
       </div>
     </div>
   );

@@ -1,19 +1,35 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
-const EditableTextarea = ({ placeholder = 'Saisir un commentaire ...', onSave }) => {
-  const [value, setValue] = useState('');
+const EditableTextarea = ({ placeholder = 'Saisir un commentaire ...', onSave ,content ,readOnly=false}) => {
+  const [value, setValue] = useState(content || '');
   const [showButton, setShowButton] = useState(false);
 
-  const handleChange = (e) => {
-    setValue(e.target.value);
-    setShowButton(e.target.value.trim() !== '');
-  };
+  useEffect(() => {
+    setValue(content || '');
+  }, [content]);
 
+  // const handleChange = (e) => {
+  //   setValue(e.target.value);
+  //   setShowButton(e.target.value.trim() !== '' );
+  // };
+  // const handleSave = () => {
+  //   onSave(value);
+  //   setShowButton(false);
+  //   setValue("")
+  // };
+  const handleChange = (e) => {
+    if (readOnly) return;
+    const newValue = e.target.value;
+    setValue(newValue);
+    setShowButton(newValue.trim() !== '');
+    // Appel immédiat de onSave pour auto-save
+    onSave(newValue);
+  };
   const handleSave = () => {
     onSave(value);
     setShowButton(false);
-    setValue("")
   };
+  
 
   return (
     <div className="relative flex items-center border border-gray-300 rounded-lg overflow-hidden w-full">

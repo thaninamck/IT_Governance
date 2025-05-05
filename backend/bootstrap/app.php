@@ -12,11 +12,8 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        $middleware->append(\Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class);
-        $middleware->append(\App\Http\Middleware\CheckPasswordReset::class);
-
+        //
     })
-    
     ->withExceptions(function (Exceptions $exceptions) {
         //
     })->create();

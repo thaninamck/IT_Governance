@@ -1,7 +1,9 @@
 import React from "react";
 import DeleteIcon from "@mui/icons-material/Delete";
 
-const EvidenceList = ({ files, onDelete, getFile }) => {
+import UploadIcon from "@mui/icons-material/CloudDownload";
+
+const EvidenceList = ({ files, onDelete, getFile , readOnly=false }) => {
   /* Fonction de suppression déjà définie dans la page parente commme ca 
   const [files, setFiles] = useState([
   { name: 'file1.txt', size: 2048 },
@@ -21,7 +23,7 @@ const handleDelete = (index) => {
       {files.map((file, index) => (
         <div
           key={index}
-          className="flex overflow-y-auto relative w-[95%] flex-col mt-2 justify-center  bg-white border border-gray-300 rounded-lg p-2"
+          className="flex  relative w-[95%] flex-col mt-2 justify-center  bg-white border border-gray-300 rounded-lg p-2"
         >
           {/* Détails du fichier */}
           <div className="flex justify-between mx-4 ">
@@ -35,10 +37,22 @@ const handleDelete = (index) => {
             </a>{" "}
             {/* Utilisation du nom du fichier */}
             {/* ici on va traiter la suppression durant la programmmation */}
-            <DeleteIcon
-              sx={{ color: "red", cursor: "pointer" }}
-              onClick={() => onDelete(index)} // Appel de la fonction onDelete avec l'index
-            />
+            {!readOnly ? (
+              <DeleteIcon
+                sx={{ color: "red", cursor: "pointer" }}
+                onClick={() => onDelete(index)} // Appel de la fonction onDelete avec l'index
+              />
+            ) : (
+              <a
+                href={`${getFile}${file.stored_name}`}
+                target="_blank"
+              rel="noopener noreferrer"
+                download
+                className="text-green-500 cursor-pointer"
+              >
+                <UploadIcon sx={{ fontSize: 20, cursor: "pointer" }} />
+              </a>
+            )}
           </div>
 
           {/* Taille du fichier */}

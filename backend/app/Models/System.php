@@ -19,6 +19,10 @@ class System extends Model
         return $this->belongsTo(Mission::class);
 
     }
+    public function mission(){
+        return $this->belongsTo(Mission::class);
+
+    }
     
     public function owner(): BelongsTo
     {

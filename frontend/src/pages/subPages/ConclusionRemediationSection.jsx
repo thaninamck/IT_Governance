@@ -35,6 +35,7 @@ function ConclusionRemediationSection({
   isAddingAnother,
   controleID,
   onClose,
+  handleCloseForm,
   handleSaveModifications,
   loading,
   isToReview,
@@ -54,20 +55,21 @@ function ConclusionRemediationSection({
   return (
     <div>
       <div className="min-h-screen">
-      <div className="mr-5 ml-8">
-        <Separator text={"Conclusion"} />
-      </div>
-      <div className="flex flex-row items-center gap-14 py-7 ml-9">
-        <label className="mr-20 ml-8 font-medium">Status</label>
-        <SelectInput
-          label=""
-          options={statuses.length > 0 ? statuses : fallbackStatuses}
-          value={selectedMulti}
-          onChange={(e) => setSelectedMulti(e.target.value)}
-          width="200px"
-          multiSelect={false}
-          mt="mt-10"
-        />
+        <div className="mr-5 ml-8">
+          <Separator text={"Conclusion"} />
+        </div>
+        <div className="flex flex-row items-center gap-14 py-7 ml-9">
+          <label className="mr-20 ml-8 font-medium">Status</label>
+          <SelectInput
+            label=""
+            options={statuses.length > 0 ? statuses : fallbackStatuses}
+            value={selectedMulti}
+            onChange={(e) => setSelectedMulti(e.target.value)}
+            width="200px"
+            multiSelect={false}
+            mt="mt-10"
+          />
+
 
         {shouldShowRemediation && (
           <div className="flex flex-row items-center gap-1">
@@ -89,28 +91,67 @@ function ConclusionRemediationSection({
       <div className="flex flex-row gap-10 items-center mt-8 ml-8 ">
         <label className=" font-medium  ml-8">modifier le commentaire</label>
 
-        <div className=" w-full pr-10  mr-8">
-          <EditableTextarea
-            placeholder="Saisir un commentaire ..."
-            onSave={(newComment) => setCommentaire(newComment)}
-          />
+
         </div>
+        {/* hada jdid */}
+        <div className="flex justify-end  items-center  mt-12 gap-8 pr-8">
+          {showSave && (
+            <button
+              className={`bg-[var(--blue-menu)]  border-none text-white px-4   py-2 ${loading ? "opacity-50 cursor-not-allowed" : ""
+                }`}
+              disabled={loading}
+              onClick={handleSaveModifications}
+            >
+              Enregistrer les modifications
+            </button>
+          )}
+          {!action.length != 0 && (
+         
+         <button
+           className={`bg-[var(--blue-menu)]  border-none text-white px-4 py-2 ${isValidateDisabled ? "opacity-50 cursor-not-allowed" : ""
+             }`}
+           disabled={isValidateDisabled}
+           onClick={handleSubmit}
+         >
+          Envoyer pour revue
+         </button>
+         
+       )}
+        </div>
+        {/* ---------------- */}
+        
       </div>
-      <div className="flex justify-end mt-16">
-        {showSave && (
-          <button
-            className={`bg-[var(--blue-menu)] text-white px-4 mr-16 mt-20 py-2 ${
-              loading ? "opacity-50 cursor-not-allowed" : ""
-            }`}
-            disabled={loading}
-            onClick={handleSaveModifications}
-          >
-            Enregistrer les modifications
-          </button>
-        )}
-      </div>
-      </div>
-      {showDecisionPopup && (
+   
+      
+      {(shouldShowRemediation || action?.length > 0) && (
+        //hadi hatitha foug 
+        <div className="flex justify-end m-3 py-6 mr-8 gap-5">
+        <button
+          onClick={() => setShowRemediation((prevState) => !prevState)}
+          className='text-[var(--blue-menu)] px-3 py-2 border-[var(--blue-menu)]'
+        >
+          Créer une remédiation <AddCircleOutlineRoundedIcon />
+        </button>
+        </div>
+
+      )}
+       {(showRemediation || isAddingAnother) && (
+        <Remediation
+          title={"Créer une remédiation"}
+          initialValues={selectedActionId || {}}
+          onAdd={handleAdd}
+          idControle={controleID}
+         // onClose={onClose}
+         onClose={handleCloseForm}
+        />
+      )}
+      {/* Table for Remédiations */}
+      {action?.length > 0 && (
+        <div className="min-h-screen">
+          <div className="mr-5  ml-9">
+            <Separator text={"Remédiation"} />
+          </div>
+          {showDecisionPopup && (
         <div className="absolute top-25 left-1/2 -translate-x-1/2 translate-y-1/4 z-50 ">
           <DecisionPopUp
             name="nouvelle action"
@@ -121,23 +162,10 @@ function ConclusionRemediationSection({
         </div>
       )}
 
-      {(showRemediation || isAddingAnother) && (
-        <Remediation
-          title={"Créer une remédiation"}
-          initialValues={selectedActionId || {}}
-          onAdd={handleAdd}
-          idControle={controleID}
-          onClose={onClose}
-        />
-      )}
-
-      {/* Table for Remédiations */}
-      {action.length > 0 && (
-        <div className="min-h-screen">
-          <div className="mr-5  ml-9">
-            <Separator text={"Remédiation"} />
-          </div>
+     
+         
           <div className="flex justify-end m-3 py-6 gap-5">
+            {/*  hadi commentitha w hatit wahda foug 
             {showSave && (
               <button
                 onClick={() => setShowRemediation((prevState) => !prevState)}
@@ -145,19 +173,9 @@ function ConclusionRemediationSection({
               >
                 Créer une remédiation <AddCircleOutlineRoundedIcon />
               </button>
-            )}
+            )} */}
 
-            {action.length === 0 && (
-              <button
-                className={`bg-[var(--blue-menu)] text-white px-4 py-2 ${
-                  isValidateDisabled ? "opacity-50 cursor-not-allowed" : ""
-                }`}
-                disabled={isValidateDisabled}
-                onClick={handleSubmit}
-              >
-                valider
-              </button>
-            )}
+            
           </div>
           <div
             className={`mt-6 flex-1 overflow-x-auto overflow-y-auto h-[400px] mx-10 transition-all }`}
@@ -175,7 +193,7 @@ function ConclusionRemediationSection({
                 />
               </div>
             )}
-            
+
             <Table
               key={JSON.stringify(action)}
               columnsConfig={columnsConfig}
@@ -191,25 +209,27 @@ function ConclusionRemediationSection({
               }}
             />
           </div>
-          {action.length > 0 && (
-            <div className="flex justify-end mt-5">
-              {showSave && (
+
+          {/* {action.length > 0 && ( */}
+            <div className="flex justify-end mt-5 pr-8">
+              {/* {showSave && ( */}
                 <button
-                  className={`bg-[var(--blue-menu)] mr-16  text-white px-4 py-2 ${
-                    isValidateDisabled || loading
+                  className={`bg-[var(--blue-menu)]   text-white px-4 py-2 ${isValidateDisabled || loading
                       ? "opacity-50 cursor-not-allowed"
                       : ""
-                  }`}
+                    }`}
                   disabled={isValidateDisabled || loading}
                   onClick={handleSubmit}
                 >
                   Envoyer pour revue{" "}
                 </button>
-              )}
+              {/* )} */}
             </div>
-          )}
+          {/* )} */}
         </div>
       )}
+      
+       
     </div>
   );
 }

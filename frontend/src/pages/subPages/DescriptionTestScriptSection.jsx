@@ -16,7 +16,8 @@ function DescriptionTestScriptSection({
   subProcess,
   controlOwner,
   sources,
-  onTestScriptChange, // Fonction pour récupérer les données du test script en temps réel
+  onTestScriptChange,
+  readOnly, // Fonction pour récupérer les données du test script en temps réel
 }) {
   return (
     <div className="min-h-screen">
@@ -90,7 +91,8 @@ function DescriptionTestScriptSection({
 
         <InstructionSplitter
           steps={testScript}
-          onChange={onTestScriptChange} // Passer la fonction de rappel
+          onChange={onTestScriptChange} 
+          readOnly={readOnly}// Passer la fonction de rappel
         />
       </div>
     </div>

@@ -51,10 +51,17 @@ class Mission extends Model
 
     }
 
-    public function scopeForUser($query, $userId)
+//     public function scopeForUser($query, $userId)
+// {
+//     return $query->whereHas('participations', function($q) use ($userId) {
+//         $q->where('user_id', $userId);
+//     })->with(['client', 'status']);
+// }
+public function scopeForUser($query, $userId)
 {
     return $query->whereHas('participations', function($q) use ($userId) {
         $q->where('user_id', $userId);
-    })->with(['client', 'status']);
+    })->with(['client', 'status', 'participations.user', 'participations.profile']);
 }
+
 }
