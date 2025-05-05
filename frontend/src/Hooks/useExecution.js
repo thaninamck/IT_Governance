@@ -24,10 +24,10 @@ const useExecution = () => {
     }
   }
 
-  const getExecutionById =  async ($id) => {
+  const getExecutionById =  async ($missionId,$id) => {
         setLoading(true);
         try {
-        const response = await api.get(`/executions/get-execution/${$id}`);
+        const response = await api.get(`missions/${$missionId}/executions/get-execution/${$id}`);
         return response.data;
         } catch (error) {
         setError(error);
@@ -169,6 +169,55 @@ const useExecution = () => {
         }
       };
       
+      const createComment = async (commentData) => {
+        setLoading(true);
+        try {
+          const response = await api.post("/executions/create-comment", commentData);
+          toast.success("Commentaire ajouté !");
+          return response.status;
+        } catch (error) {
+          setError(error);
+          toast.error("Échec de l'ajout du commentaire");
+        } finally {
+          setLoading(false);
+        }
+      };
+      
+
+     
+const deleteComment = async (commentId) => {
+  setLoading(true);
+  try {
+    const response = await api.delete(`/executions/delete-comment/${commentId}`);
+    toast.success("Commentaire supprimé !");
+    return response.status;
+  } catch (error) {
+    setError(error);
+    toast.error("Erreur lors de la suppression du commentaire");
+  } finally {
+    setLoading(false);
+  }
+};
+
+// Modifier un commentaire
+const editComment = async (commentId, newText) => {
+  setLoading(true);
+  try {
+    const response = await api.put(`/executions/update-comment/${commentId}`, {
+      text: newText,
+    });
+    
+    return response.status;
+  } catch (error) {
+    setError(error);
+    console.log(error)
+    toast.error("Erreur lors de la modification du commentaire");
+  } finally {
+    setLoading(false);
+  }
+};
+
+
  useEffect(() => {
     fetchOptions();
   }, []);
@@ -185,10 +234,16 @@ const useExecution = () => {
     updateExecution,
     submitExecutionForReview,
     submitExecutionForValidation,
+
     fetchExecutionsListForApp,
   fetchExecutionsListForCorrection,
   submitExecutionForCorrection,
   submitExecutionForFinalValidation,
+
+
+    createComment,
+    deleteComment,
+    editComment,
 
     
 

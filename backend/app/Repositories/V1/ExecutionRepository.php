@@ -136,22 +136,33 @@ class ExecutionRepository
     ", [$missionId]);
     }
 
-    public function getExecutionById($executionId)
-    {
-        return DB::select("
-       SELECT 
+public function getExecutionById($executionId)
+{
+    return DB::select("
+      SELECT 
     e.id AS execution_id,
     sts.control_id,
     e.is_to_review AS execution_is_to_review,
     e.is_to_validate AS execution_is_to_validate,
-    e.comment As commentaire,
-
+e.ipe,
+e.design,
+e.effectiveness,
+e.comment,
     json_agg(DISTINCT jsonb_build_object(
         'step_execution_id', se.id,
         'step_text', sts.text,
         'step_comment', se.comment,
         'step_checked', se.checked
     )) AS steps,
+
+    json_agg(DISTINCT jsonb_build_object(
+        'id', r.id,
+        'text', r.text,
+        'y', r.y,
+        'initials', UPPER(LEFT(u.first_name, 1) || '' || LEFT(u.last_name, 1)),
+        'user_id',u.id,
+        'name', u.first_name || ' ' || u.last_name
+    )) AS remarks,
 
     json_agg(DISTINCT jsonb_build_object(
         'evidence_id', ev.id,
@@ -165,15 +176,17 @@ JOIN public.step_executions se ON e.id = se.execution_id
 JOIN public.step_test_scripts sts ON se.step_id = sts.id
 JOIN public.controls c ON c.id = sts.control_id
 LEFT JOIN public.executions_evidences ev ON ev.execution_id = e.id
+LEFT JOIN public.remarks r ON r.execution_id = e.id
+LEFT JOIN public.users u ON r.user_id = u.id
 
 WHERE e.id = ?
 
 GROUP BY 
     e.id,
-	sts.control_id;
+    sts.control_id;
 
     ", [$executionId]);
-    }
+}
 
 
     public function getExecutionsByApp($appId)

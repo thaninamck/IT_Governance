@@ -70,26 +70,27 @@ function ConclusionRemediationSection({
             mt="mt-10"
           />
 
-          {shouldShowRemediation && (
-            <div className="flex flex-row items-center gap-1">
-              <ErrorOutlineIcon sx={{ color: "var(--await-orange)" }} />
-              <span className="text-[var(--await-orange)]">
-                Vous devriez compléter la section remédiation
-              </span>
-            </div>
-          )}
-        </div>
-        <p className="mt-4 font-medium ml-16    ">Commentaire: {commentaire}</p>
 
-        <div className="flex flex-row items-center mt-8 ml-8 ">
-          <label className=" font-medium  ml-8">modifier le commentaire</label>
-
-          <div className=" w-full pr-10  mr-8">
-            <EditableTextarea
-              placeholder="Saisir un commentaire ..."
-              onSave={(newComment) => setCommentaire(newComment)}
-            />
+        {shouldShowRemediation && (
+          <div className="flex flex-row items-center gap-1">
+            <ErrorOutlineIcon sx={{ color: "var(--await-orange)" }} />
+            <span className="text-[var(--await-orange)]">
+              Vous devriez compléter la section remédiation
+            </span>
           </div>
+        )}
+      </div>
+      <div className="flex gap-20 mt-4 items-center font-medium justify-start">
+      <p className="  ml-16    ">Commentaire: </p>
+    
+      <p>{commentaire}</p>
+     
+
+      </div>
+
+      <div className="flex flex-row gap-10 items-center mt-8 ml-8 ">
+        <label className=" font-medium  ml-8">modifier le commentaire</label>
+
 
         </div>
         {/* hada jdid */}

@@ -151,9 +151,15 @@ Route::middleware(['auth:sanctum', SupervisorMiddleware::class])
     ->prefix('v1')
     ->group(function () {
         Route::controller(ExecutionController::class)->group(function () {
-            Route::get('/executions/get-execution/{execution}', 'getExecutionById');
+
+
+            Route::post('/executions/create-comment', 'createComment');
+            Route::put('/executions/update-comment/{id}', 'updateComment');     
+            Route::delete('/executions/delete-comment/{id}', 'deleteComment');  
+        
         });
-        //
+        
+
     });
 
 Route::middleware(['auth:sanctum', TesterMiddleware::class])
@@ -164,9 +170,12 @@ Route::middleware(['auth:sanctum', TesterMiddleware::class])
             Route::put('/executions/update-execution/{execution}', 'updateExecution');
             Route::put('/executions/launch-execution/{execution}', 'launchExecution');
             Route::get('/executions/get-options', 'getExecutionStatusOptions');
-            Route::get('/executions/get-execution/{execution}', 'getExecutionById');
-            // Route::patch('/executions/submit-execution-for-review/{executionID}', 'submitExecutionForReview');
-            //Route::patch('/executions/submit-execution-for-validation/{executionID}', 'submitExecutionForValidation');
+
+            Route::get('missions/{mission}/executions/get-execution/{execution}', 'getExecutionById');//correct one
+            Route::patch('/executions/submit-execution-for-review/{executionID}', 'submitExecutionForReview');
+            Route::patch('/executions/submit-execution-for-validation/{executionID}', 'submitExecutionForValidation');
+
+
         });
         Route::controller(EvidenceController::class)->group(function () {
             Route::delete('/evidences/delete-evidence/{evidenceId}', 'destroy');

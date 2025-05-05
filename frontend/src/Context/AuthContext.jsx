@@ -61,27 +61,27 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const token = getCurrentToken();
     const expiry = localStorage.getItem("token_expiry");
-    const storedUser = localStorage.getItem("user");
+    const storedUser = localStorage.getItem("User");
   
     if (token && expiry && new Date().getTime() < parseInt(expiry)) {
       if (storedUser) {
         setUser(JSON.parse(storedUser));
       } else {
         // Si pas d'utilisateur stocké mais token valide, on fetch les infos
-        fetchUser().catch(() => {
-          // En cas d'erreur, on déconnecte
-          localStorage.removeItem("token");
-          localStorage.removeItem("token_expiry");
-          localStorage.removeItem("user");
-          setUser(null);
-          navigate("/login");
-        });
+        // fetchUser().catch(() => {
+        //   // En cas d'erreur, on déconnecte
+        //   localStorage.removeItem("token");
+        //   localStorage.removeItem("token_expiry");
+        //   localStorage.removeItem("user");
+        //   setUser(null);
+        //   navigate("/login");
+        // });
       }
     } else {
       // Token invalide ou expiré
       localStorage.removeItem("token");
       localStorage.removeItem("token_expiry");
-      localStorage.removeItem("user");
+      localStorage.removeItem("User");
       setUser(null);
       navigate("/login");
     }
@@ -101,6 +101,7 @@ export const AuthProvider = ({ children }) => {
 
        const userData = {
         ...response.data.user,
+        id:response.data.user.id,
         role: response.data.user.role,
         fullName: response.data.user.fullName,
         position: response.data.user.grade ,
@@ -109,7 +110,8 @@ export const AuthProvider = ({ children }) => {
       };
       
       console.log(response.data)
-      localStorage.setItem("user", JSON.stringify(userData));
+
+      window.localStorage.setItem("User", JSON.stringify(userData));
       setUser(userData);
       setViewMode(userData.role);
       localStorage.setItem("viewMode", userData.role);
@@ -146,7 +148,7 @@ export const AuthProvider = ({ children }) => {
        localStorage.removeItem("userProfile");
        localStorage.removeItem("viewMode");
         
-        localStorage.removeItem("user");
+        localStorage.removeItem("User");
         setUser(null);
         toast.success("Déconnexion réussie !");
         navigate("/login");
@@ -235,7 +237,7 @@ export const AuthProvider = ({ children }) => {
         loginUser,
         logout,
         changePassword,
-        fetchUser,
+       fetchUser,
         loading,
         error,
         forgotPasswordChange,
