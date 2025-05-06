@@ -93,7 +93,7 @@ class ExecutionController extends BaseController
         }
     }
 
-    public function updateComment(Request $request, $id)
+    public function updateComment(Request $request,$mission, $id)
     {
         try {
             $rules = [
@@ -112,7 +112,7 @@ class ExecutionController extends BaseController
         }
     }
     
-    public function deleteComment($id)
+    public function deleteComment($mission,$id)
     {
         try {
             $this->executionService->deleteComment($id);
@@ -219,7 +219,7 @@ class ExecutionController extends BaseController
 
 
         $data = $validator->validated();
-        Log::info("data", $data);
+        Log::info("dataaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", $data);
 
         try {
             // Appel au service pour mettre à jour l'exécution
@@ -292,7 +292,7 @@ class ExecutionController extends BaseController
 
 
 
-    public function updateExecution(Request $request, $executionId)
+    public function updateExecution(Request $request,$mission, $executionId)
     {
         Log::info('executionId:', [$executionId]);
 

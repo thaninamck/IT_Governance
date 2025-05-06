@@ -110,10 +110,16 @@ function DisplayControleAppID() {
       if (AppData?.id) {
         const data = await fetchExecutionsListForCorrection(AppData.missionId, AppData.id);
         setCorrectionExecution(data);
+        console.log('correction execution',correctionExecution)
       }
     };
     loadCorrectionData();
   }, [AppData?.id]);
+
+  useEffect(() => {
+    
+    console.log("corr exec",correctionExecution);
+  }, [correctionExecution]);
 
   const handleTabChange = (event, newValue) => {
     setActivePanel(newValue === 0 ? "executer" : "corriger");
@@ -180,6 +186,7 @@ function DisplayControleAppID() {
                 ) : appData.length > 0 ? (
                   <div className="flex-1 overflow-x-auto overflow-y-auto transition-all">
                   <Table
+                  key={JSON.stringify(appData)}
                     columnsConfig={columnsConfig2}
                     rowsData={appData}
                     checkboxSelection={false}
@@ -196,8 +203,9 @@ function DisplayControleAppID() {
               <TabPanel value={1} sx={{ padding: 0 }}>
                 {loading ? (
                   <p className="text-gray-500 text-sm pl-6">Chargement...</p>
-                ) : appData.length > 0 ? (
+                ) : correctionExecution.length > 0 ? (
                   <Table
+                  key={JSON.stringify(correctionExecution)}
                     columnsConfig={columnsConfig2}
                     rowsData={correctionExecution}
                     checkboxSelection={false}

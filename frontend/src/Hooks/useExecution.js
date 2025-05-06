@@ -11,10 +11,10 @@ const useExecution = () => {
  
   const [options, setOptions] = useState([]);
  
- const fetchOptions = async () => {
+ const fetchOptions = async (missionId) => {
     setLoading(true);
     try {
-      const response = await api.get("/executions/get-options");
+      const response = await api.get(`/executions/get-options`);
       setOptions(response.data);
       console.log("options select" ,options)
     } catch (error) {
@@ -67,10 +67,11 @@ const useExecution = () => {
         }
     };
 
-    const updateExecution = async (executionId,data) => {
+    const updateExecution = async (executionId,data,missionId) => {
+      console.log('payload data',data)
         setLoading(true);
         try {
-            const response = await api.put(`/executions/update-execution/${executionId}`, data);
+            const response = await api.put(`missions/${missionId}/executions/update-execution/${executionId}`, data);
             toast.success("Mis à jour avec succées");
             return response;
         } catch (error) {
@@ -169,10 +170,10 @@ const useExecution = () => {
         }
       };
       
-      const createComment = async (commentData) => {
+      const createComment = async (commentData,missionId) => {
         setLoading(true);
         try {
-          const response = await api.post("/executions/create-comment", commentData);
+          const response = await api.post(`missions/${missionId}/executions/create-comment`, commentData);
           toast.success("Commentaire ajouté !");
           return response.status;
         } catch (error) {
@@ -185,10 +186,10 @@ const useExecution = () => {
       
 
      
-const deleteComment = async (commentId) => {
+const deleteComment = async (commentId,missionId) => {
   setLoading(true);
   try {
-    const response = await api.delete(`/executions/delete-comment/${commentId}`);
+    const response = await api.delete(`missions/${missionId}/executions/delete-comment/${commentId}`);
     toast.success("Commentaire supprimé !");
     return response.status;
   } catch (error) {
@@ -200,10 +201,10 @@ const deleteComment = async (commentId) => {
 };
 
 // Modifier un commentaire
-const editComment = async (commentId, newText) => {
+const editComment = async (commentId, newText,missionId) => {
   setLoading(true);
   try {
-    const response = await api.put(`/executions/update-comment/${commentId}`, {
+    const response = await api.put(`missions/${missionId}/executions/update-comment/${commentId}`, {
       text: newText,
     });
     

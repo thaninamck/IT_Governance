@@ -36,6 +36,7 @@ import { toast } from "react-toastify";
 function ControleExcutionPage() {
   const location = useLocation();
   const controleData = location.state?.controleData || {};
+  console.log("controoooole data", controleData);
   // Accédez à userRole et setUserRole via le contexte
   const { userRole, setUserRole } = useContext(PermissionRoleContext);
   const {
@@ -83,11 +84,6 @@ function ControleExcutionPage() {
   const navigate = useNavigate();
   const { mission, name, controlCode } = useParams();
 
-  const location = useLocation();
-  const controleData = location.state?.controleData || {};
-  console.log("controoooole data", controleData);
-
-
 
   console.log(controleData);
   const { user } = useAuth();
@@ -130,9 +126,7 @@ function ControleExcutionPage() {
   const [subProcess, setSubProcess] = useState(controleData.subProcess || "");
   const [controleID, setControleID] = useState(controleData.controlCode || "");
   const [selections, setSelections] = useState({
-    IPE: controleData.ipe,
-    Design: controleData.design,
-    Effectiveness: controleData.effectiveness,
+    
   });
   const [files, setFiles] = useState([]);
   const options = [
@@ -165,17 +159,17 @@ function ControleExcutionPage() {
     }
 
   }, [controleData.executionId, controleData.missionId]);
-  const [evidences, setEvidences] = useState([]);
-  const [steps, setSteps] = useState([]);
-  const [isToReview, setIsToReview] = useState(false);
-  const [isToValidate, setIsToValidate] = useState(false);
+  //const [evidences, setEvidences] = useState([]);
+  //const [steps, setSteps] = useState([]);
+  //const [isToReview, setIsToReview] = useState(false);
+  //const [isToValidate, setIsToValidate] = useState(false);
   const [commentaire, setCommentaire] = useState("");
-  const sourceNames = controleData.sources.map((s) => s.source_name).join(", ");
-  const [selections, setSelections] = useState({
-    IPE: true,
-    Design: false,
-    Effectiveness: true,
-  });
+  //const sourceNames = controleData.sources.map((s) => s.source_name).join(", ");
+  // const [selections, setSelections] = useState({
+  //   IPE: true,
+  //   Design: false,
+  //   Effectiveness: true,
+  // });
   const [existingComments, setExistingComments] = useState([
     // {
     //   y: 150,
@@ -193,7 +187,7 @@ function ControleExcutionPage() {
   useEffect(() => {
     console.log("Execution Data:", executionData);
 
-    console.log("Execution Dataff:", executionData?.[0]?.remarks);
+    console.log("ipeee gizan:", executionData?.[0]?.ipe);
 
     const allEvidences = executionData?.[0]?.evidences || [];
     const filteredEvidences = allEvidences.filter(
@@ -242,30 +236,30 @@ function ControleExcutionPage() {
   }, [executionData]);
 
 
-  const [isEditing, setIsEditing] = useState(true);
-  const statusOptions = ["Terminé", "En_cours", "Non_commencee"];
-  const statusColors = {
-    Terminé: "green",
-    En_cours: "orange",
-    Non_Commencée: "gray",
-  };
-  const [selectedMulti, setSelectedMulti] = useState(controleData.statusId);
+  //const [isEditing, setIsEditing] = useState(true);
+  // const statusOptions = ["Terminé", "En_cours", "Non_commencee"];
+  // const statusColors = {
+  //   Terminé: "green",
+  //   En_cours: "orange",
+  //   Non_Commencée: "gray",
+  // };
+  //const [selectedMulti, setSelectedMulti] = useState(controleData.statusId);
 
-  const [showRemediation, setShowRemediation] = useState(false);
-  const [showPopup, setShowPopup] = useState(false);
-  const [description, setDescription] = useState(
-    controleData.controlDescription || ""
-  );
-  const [testScript, setTestScript] = useState(controleData.testScript || "");
-  const [type, setType] = useState(controleData.typeName || "");
-  const [controlOwner, setControlOwner] = useState(
-    controleData.executionControlOwner || ""
-  );
-  const [majorProcess, setMajorProcess] = useState(
-    controleData.majorProcess || ""
-  );
-  const [subProcess, setSubProcess] = useState(controleData.subProcess || "");
-  const [controleID, setControleID] = useState(controleData.controlCode || "");
+  // const [showRemediation, setShowRemediation] = useState(false);
+  // const [showPopup, setShowPopup] = useState(false);
+  // const [description, setDescription] = useState(
+  //   controleData.controlDescription || ""
+  // );
+  // const [testScript, setTestScript] = useState(controleData.testScript || "");
+  // const [type, setType] = useState(controleData.typeName || "");
+  // const [controlOwner, setControlOwner] = useState(
+  //   controleData.executionControlOwner || ""
+  // );
+  // const [majorProcess, setMajorProcess] = useState(
+  //   controleData.majorProcess || ""
+  // );
+  // const [subProcess, setSubProcess] = useState(controleData.subProcess || "");
+  // const [controleID, setControleID] = useState(controleData.controlCode || "");
   useEffect(() => {
     console.log("icommentssssssss:", existingComments);
   }, [existingComments]); // Log the selectedMulti whenever it changes
@@ -277,18 +271,18 @@ function ControleExcutionPage() {
   };
 
 
-  const updateStatusBasedOnSuivi = () => {
-    setAction((prevActions) =>
-      prevActions.map((action) => ({
-        ...action,
-        status: action.suivi.trim() !== "" ? "En_cours" : "Non_commencee",
-      }))
-    );
-  };
+  // const updateStatusBasedOnSuivi = () => {
+  //   setAction((prevActions) =>
+  //     prevActions.map((action) => ({
+  //       ...action,
+  //       status: action.suivi.trim() !== "" ? "En_cours" : "Non_commencee",
+  //     }))
+  //   );
+  // };
 
-  useEffect(() => {
-    updateStatusBasedOnSuivi();
-  }, []);
+  // useEffect(() => {
+  //   updateStatusBasedOnSuivi();
+  // }, []);
   useEffect(() => {
     console.log("comments", existingComments);
   }, [existingComments]);
@@ -465,7 +459,7 @@ function ControleExcutionPage() {
   const shouldShowRemediation =
     selectedMulti === 6 || selectedMulti === 3;
 
- 
+
 
 
   const handleValidate = () => {
@@ -695,29 +689,30 @@ function ControleExcutionPage() {
       steps: testScriptData,
       status_id: selectedMulti,
     };
-    await updateExecution(controleData.executionId, payload);
+    console.log('payload',payload)
+    await updateExecution(controleData.executionId, payload, controleData.missionId);
   };
 
 
-  const handleRowClick = (rowData) => {
-    // Naviguer vers la page de détails avec l'ID du contrôle dans l'URL
-    navigate(`/remediation/${rowData.id}`, {
-      state: { remediationData: rowData },
-    });
-    // navigate('/controle', { state: { controleData: rowData } });
-    console.log("Détails du contrôle sélectionné:", rowData);
-  };
+  // const handleRowClick = (rowData) => {
+  //   // Naviguer vers la page de détails avec l'ID du contrôle dans l'URL
+  //   navigate(`/remediation/${rowData.id}`, {
+  //     state: { remediationData: rowData },
+  //   });
+  //   // navigate('/controle', { state: { controleData: rowData } });
+  //   console.log("Détails du contrôle sélectionné:", rowData);
+  // };
 
   // Check if all remediations are done
 
   const isAllRemediationDone =
-   selectedMulti != "" && action.every((remediation) => remediation?.statusName === "Terminé");
+    selectedMulti != "" && action.every((remediation) => remediation?.statusName === "Terminé");
 
   const controlStatus = isAllRemediationDone
     ? "Terminé"
     : isToReview || isToValidate
-    ? "En cours de revue"
-    : "En cours";
+      ? "En cours de revue"
+      : "En cours";
 
   const controlIcon =
     controlStatus === "Terminé" ? (
@@ -749,117 +744,114 @@ function ControleExcutionPage() {
       />
     );
 
-//*****************************can you check this please i commented it cause i donno if it causes an error ******************
-//     const isValidateDisabled =
-//     !selectedMulti || !shouldShowRemediation || !isAllRemediationDone// || !commentaire ;
-//   return (
-//     <>
-//       {isToReview || isToValidate && (
-//         <div className=" top-0 left-0 w-full h-full bg-transparent z-50 pointer-events-auto" />
-//       )}
-//       <Header user={user} />
+  //*****************************can you check this please i commented it cause i donno if it causes an error ******************
+      const isValidateDisabled =
+      !selectedMulti || !shouldShowRemediation || !isAllRemediationDone// || !commentaire ;
 
-  const handleAddCommentAtPosition = (y) => {
-    // Vérifier qu'on ne superpose pas un commentaire existant
-    const isOverlapping = existingComments.some((c) => Math.abs(c.y - y) < 50);
 
-    if (!isOverlapping) {
-      setComments([
-        ...comments,
-        {
-          y,
-          text: "",
-          tempId: Date.now(),
-        },
-      ]);
-    }
-  };
+  //     const handleAddCommentAtPosition = (y) => {
+  //       // Vérifier qu'on ne superpose pas un commentaire existant
+  //       const isOverlapping = existingComments.some((c) => Math.abs(c.y - y) < 50);
+    
+  //       if (!isOverlapping) {
+  //         setComments([
+  //           ...comments,
+  //           {
+  //             y,
+  //             text: "",
+  //             tempId: Date.now(),
+  //           },
+  //         ]);
+  //       }
+  //     };
+  //     const handleSaveComment = async (tempId, text) => {
+  //       if (!text.trim()) {
+  //         setComments(comments.filter((comment) => comment.tempId !== tempId));
+  //         return;
+  //       }
+    
+  //       const user = JSON.parse(window.localStorage.getItem("User"));
+  //       const firstName = user.firstName;
+  //       const lastName = user.lastName;
+  //       const fullName = `${firstName} ${lastName}`;
+  //       const initials = `${firstName[0] ?? ""}${lastName[0] ?? ""}`.toUpperCase();
+    
+  //       const newExistingComment = {
+  //         y: comments.find((c) => c.tempId === tempId).y,
+  //         initials: initials,
+  //         name: fullName,
+  //         text,
+  //       };
+    
+  //       const commentData = {
+  //         y: newExistingComment.y,
+  //         user_id: user.id,
+  //         execution_id: executionData?.[0]?.execution_id,
+  //         text: newExistingComment.text,
+  //       };
+    
+  //       const status = await createComment(commentData,controleData.missionId);
+  //       if (status >= 200 && status < 300) {
+  //         setExistingComments([...existingComments, newExistingComment]);
+  //         setComments(comments.filter((comment) => comment.tempId !== tempId));
+  //       } else {
+  //         toast.error("une erreur est survenue veuillez ressayez");
+  //       }
+  //     };
 
-  const handleSaveComment = async (tempId, text) => {
-    if (!text.trim()) {
-      setComments(comments.filter((comment) => comment.tempId !== tempId));
-      return;
-    }
+      
+  // const handleDeleteComment = async (commentId) => {
+  //   try {
+      
+  //     const response = await deleteComment(commentId,controleData.missionId);
+  //     if (response === 200) {
+  //       setExistingComments((prev) => prev.filter((c) => c.id !== commentId));
+  //       toast.success("Commentaire supprimé avec succès !");
+  //     }
+  //   } catch (error) {
+  //     toast.error("Erreur lors de la suppression du commentaire");
+  //     console.error(error);
+  //   }
+  // };
 
-    const user = JSON.parse(window.localStorage.getItem("User"));
-    const firstName = user.firstName;
-    const lastName = user.lastName;
-    const fullName = `${firstName} ${lastName}`;
-    const initials = `${firstName[0] ?? ""}${lastName[0] ?? ""}`.toUpperCase();
+  // const handleEdit = async (updatedComment) => {
+  //   console.log("updatedComment", updatedComment);
 
-    const newExistingComment = {
-      y: comments.find((c) => c.tempId === tempId).y,
-      initials: initials,
-      name: fullName,
-      text,
-    };
+  //   const status = await editComment(updatedComment.id, updatedComment.text,controleData.missionId);
+  //   if (status != 200) {
+  //     toast.error("erreur lors de la mise à jour");
+  //     return;
+  //   }
+  //   setExistingComments((prevComments) =>
+  //     prevComments.map((c) =>
+  //       c.id === updatedComment.id ? { ...c, text: updatedComment.text } : c
+  //     )
+  //   );
+  // };
 
-    const commentData = {
-      y: newExistingComment.y,
-      user_id: user.id,
-      execution_id: executionData?.[0]?.execution_id,
-      text: newExistingComment.text,
-    };
+  // const handleCancelComment = (tempId) => {
+  //   // Supprime simplement le commentaire non sauvegardé
+  //   setComments(comments.filter((comment) => comment.tempId !== tempId));
+  // };
+   const [comments, setComments] = useState([]);
+  // const currentUserRole = JSON.parse(localStorage.getItem("User"))?.role;
 
-    const status = await createComment(commentData);
-    if (status >= 200 && status < 300) {
-      setExistingComments([...existingComments, newExistingComment]);
-      setComments(comments.filter((comment) => comment.tempId !== tempId));
-    } else {
-      toast.error("une erreur est survenue veuillez ressayez");
-    }
-  };
-
-  const handleDeleteComment = async (commentId) => {
-    try {
-      toast.info("infos", commentId);
-      const response = await deleteComment(commentId);
-      if (response === 200) {
-        setExistingComments((prev) => prev.filter((c) => c.id !== commentId));
-        toast.success("Commentaire supprimé avec succès !");
-      }
-    } catch (error) {
-      toast.error("Erreur lors de la suppression du commentaire");
-      console.error(error);
-    }
-  };
-
-  const handleEdit = async (updatedComment) => {
-    console.log("updatedComment", updatedComment);
-
-    const status = await editComment(updatedComment.id, updatedComment.text);
-    if (status != 200) {
-      toast.error("erreur lors de la mise à jour");
-      return;
-    }
-    setExistingComments((prevComments) =>
-      prevComments.map((c) =>
-        c.id === updatedComment.id ? { ...c, text: updatedComment.text } : c
-      )
-    );
-  };
-
-  const handleCancelComment = (tempId) => {
-    // Supprime simplement le commentaire non sauvegardé
-    setComments(comments.filter((comment) => comment.tempId !== tempId));
-  };
-  const [comments, setComments] = useState([]);
-  const currentUserRole = JSON.parse(localStorage.getItem("User"))?.role;
-  return (
-    <div className="relative  ">
+    return (
+      
+       <div className="relative  ">
       <div
-  className="absolute right-0 top-0 w-16 h-full bg-transparent border-l border-none z-40"
-  onClick={(e) => {
-    if (
-      e.target === e.currentTarget &&
-      currentUserRole !== "testeur" 
-    ) {
-      const rect = e.currentTarget.getBoundingClientRect();
-      const y = e.clientY - rect.top + e.currentTarget.scrollTop;
-      handleAddCommentAtPosition(y);
-    }
-  }}
->
+        className="absolute right-0 top-0 w-16 h-full bg-transparent border-l border-none z-40"
+        // onClick={(e) => {
+        //   if (
+        //     e.target === e.currentTarget &&
+        //     currentUserRole !== "testeur"
+        //   ) {
+        //     const rect = e.currentTarget.getBoundingClientRect();
+        //     const y = e.clientY - rect.top + e.currentTarget.scrollTop;
+        //     handleAddCommentAtPosition(y);
+        //   }
+        // }}
+      >
 
         {/* Commentaires existants (ne bloquent pas les clics sur la marge) */}
         {!(isToReview || isToValidate) &&
@@ -870,7 +862,7 @@ function ControleExcutionPage() {
               style={{ top: comment.y }}
             >
               <div className="border-none" onClick={(e) => e.stopPropagation()}>
-                
+
                 <ExistingComment
                   user={{
                     id: comment.userId,
@@ -878,10 +870,10 @@ function ControleExcutionPage() {
                     name: comment.name,
                   }}
                   comment={comment.text}
-                  onDelete={() => handleDeleteComment(comment.id)}
-                  onEdit={(newText) =>
-                    handleEdit({ id: comment.id, text: newText })
-                  }
+                  // onDelete={() => handleDeleteComment(comment.id)}
+                  // onEdit={(newText) =>
+                  //   handleEdit({ id: comment.id, text: newText })
+                  // }
                 />
               </div>
             </div>
@@ -903,14 +895,14 @@ function ControleExcutionPage() {
         ))}
       </div>
 
-      {isToReview ||
-        (isToValidate && (
-          <div className="fixed top-0 left-0 w-full h-full bg-transparent z-50 pointer-events-auto" />
-        ))}
-      <Header />
-
+     
+      {isToReview || isToValidate && (
+          <div className=" top-0 left-0 w-full h-full bg-transparent z-50 pointer-events-auto" />
+        )}
+        <Header user={user} />
 
       <div className="ml-8 mr-6 pb-9 relative">
+
         <div className="flex justify-between items-center px-4 py-2">
           {location.pathname.includes("") && <Breadcrumbs />}
         </div>
@@ -943,23 +935,23 @@ function ControleExcutionPage() {
             name="Êtes-vous sûr de vouloir supprimer ce fichier ?"
           />
         )}
-    
-          <EvidencesSection
-            handleSelectionChange={handleSelectionChange}
-            files={files}
-            handleSaveFiles={handleSaveFiles}
-            handleDelete={handleDelete}
-            evidenceFiles={evidences}
-            testFiles={testFiles}
-            activePanel={activePanel}
-            setActivePanel={setActivePanel}
-            handleTabChange={handleTabChange}
-            selections={selections}
-            onStatesChange={handleStatesChange}
-            getFile={getFileURL}
-          />
-        
-     
+
+        <EvidencesSection
+          handleSelectionChange={handleSelectionChange}
+          files={files}
+          handleSaveFiles={handleSaveFiles}
+          handleDelete={handleDelete}
+          evidenceFiles={evidences}
+          testFiles={testFiles}
+          activePanel={activePanel}
+          setActivePanel={setActivePanel}
+          handleTabChange={handleTabChange}
+          selections={selections}
+          onStatesChange={handleStatesChange}
+          getFile={getFileURL}
+        />
+
+
         <ConclusionRemediationSection
           selectedMulti={selectedMulti}
           setSelectedMulti={setSelectedMulti}
@@ -997,7 +989,7 @@ function ControleExcutionPage() {
           isToReview={isToReview}
           isToValidate={isToValidate}
         />
-        
+
         {showPopup && (
           <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-md z-50">
             <PopUp
@@ -1007,8 +999,10 @@ function ControleExcutionPage() {
           </div>
         )}
       </div>
-    </>
-  );
+
+      </div>
+    
+      );
 }
 
-export default ControleExcutionPage;
+      export default ControleExcutionPage;

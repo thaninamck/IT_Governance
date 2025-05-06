@@ -6,6 +6,7 @@ use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Models\Participation;
+use Illuminate\Support\Facades\Log;
 
 class SupervisorMiddleware
 {
@@ -17,8 +18,9 @@ class SupervisorMiddleware
     public function handle(Request $request, Closure $next): Response
     {
         $user = auth()->user();
+        Log::info("utilisateur recupere",[$user]);
         $missionId = $request->route('mission'); 
-
+        Log::info("la mission",[$missionId]);
         $isManager = Participation::where('user_id', $user->id)
             ->where('mission_id', $missionId)
             ->whereHas('profile', function ($query) {

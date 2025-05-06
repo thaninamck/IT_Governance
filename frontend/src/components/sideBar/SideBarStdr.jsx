@@ -11,9 +11,9 @@ function SideBarStdr({user}) {
     const [isExpanded, setIsExpanded] = useState(false);
     const [selectedItem, setSelectedItem] = useState(null);
     const navigate = useNavigate();
-     const { logout,changeViewMode } = useAuth();
+     const { logout,changeViewMode,viewMode } = useAuth();
   
-     const menuItems = user?.role === 'admin' ? [
+     const menuItems = (user?.role === 'admin' && viewMode=== 'user') ? [
       { key: "profile", label: "Profile", path: "/myprofile" },
       { key: "missions", label: "Mes missions", path: "/missionsUserViewMode" },
       { key: "notification", label: "Notification", path: "/notification" },
