@@ -6,6 +6,7 @@ import icons from '../../assets/Icons';
 import SelectInput from './SelectInput';
 import AddClientForm from './AddClientForm';
 import useClient from '../../Hooks/useClient';
+import useUser from '../../Hooks/useUser';
 
 function AddMissionForm({ title, isOpen, onClose, initialValues, onMissionCreated }) {
   if (!isOpen) return null;
@@ -14,7 +15,10 @@ function AddMissionForm({ title, isOpen, onClose, initialValues, onMissionCreate
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   // Utilisez le hook useClient pour accéder à fetchClients et filteredRows
-  const { filteredRows, fetchClients ,handleClientCreation} = useClient();
+  const { filtereRows, fetchClients ,handleClientCreation} = useClient();
+
+   // Utilisez le hook useUser pour accéder à fetchUseret filteredRows
+   const { filteredRows, fetchUsers } = useUser();
 
   // // Fonction pour transformer les clients en options pour le SelectInput
   // useEffect(() => {
@@ -43,9 +47,23 @@ function AddMissionForm({ title, isOpen, onClose, initialValues, onMissionCreate
 
   useEffect(() => {
     setClientOptions(
-      filteredRows.map(client => ({
+      filtereRows.map(client => ({
         label: client.commercialName, // Assurez-vous d'utiliser le bon champ ici
         value: client.id,
+      }))
+    );
+  }, [filtereRows]);
+  const [UserOptions, setUserOptions] = useState([]);
+
+  useEffect(() => {
+    fetchUsers();
+  }, []);
+
+  useEffect(() => {
+    setUserOptions(
+      filteredRows.map(user=> ({
+        label: user.fullName, // Assurez-vous d'utiliser le bon champ ici
+        value: user.id,
       }))
     );
   }, [filteredRows]);
@@ -267,8 +285,8 @@ function AddMissionForm({ title, isOpen, onClose, initialValues, onMissionCreate
           </div>
         </div>
 
-        {/* Manager */}
-        <InputForm
+           {/* Manager */}
+        {/* <InputForm
   type="number"
   label="Manager"
   placeholder="Nom du manager"
@@ -277,7 +295,19 @@ function AddMissionForm({ title, isOpen, onClose, initialValues, onMissionCreate
   required={true}
   value={missionData.manager_id}
   onChange={e => setMissionData({ ...missionData, manager_id: parseInt(e.target.value) || 0 })}
-/>
+/> */}
+
+<SelectInput
+            label="Manager"
+            options={UserOptions}
+            value={missionData.manager_id}
+            onChange={e => setMissionData({ ...missionData, manager_id: e.target.value })}
+            width="420px"
+            multiSelect={false}
+            required={true}
+          />
+
+
 
         {/* Bouton Créer */}
         <Button btnName="Créer" type="submit" />

@@ -4,7 +4,7 @@ import {api }from '../Api';
 // Hook personnalisé pour la gestion des clients
 const useClient = () => {
     // État contenant la liste des clients filtrés
-    const [filteredRows, setFilteredRows] = useState([]);
+    const [filtereRows, setFiltereRows] = useState([]);
     // État pour gérer l'ouverture du modal d'ajout de client
     const [isModalOpen, setIsModalOpen] = useState(false);
     // État pour gérer l'ouverture du modal de modification de client
@@ -22,7 +22,8 @@ const useClient = () => {
             // Envoi d'une requête GET pour obtenir la liste des clients
             const response = await api.get('/getclients');
             // Mise à jour de l'état avec les données reçues
-            setFilteredRows(response.data);
+            setFiltereRows(response.data);
+            console.log('clients',filtereRows)
         } catch (error) {
             console.error('Erreur lors de la récupération des clients:', error);
         }
@@ -117,8 +118,8 @@ const useClient = () => {
 
     // Retourne toutes les états et fonctions pour être utilisées dans les composants
     return {
-        filteredRows,
-        setFilteredRows,
+        filtereRows,
+        setFiltereRows,
         isModalOpen,
         isEditModalOpen,
         setIsEditModalOpen,

@@ -20,4 +20,7 @@ class Layer extends Model
     public function exeutions(){
         return $this->hasMany(Execution::class);
     }
+    public function executions(){
+        return $this->hasMany(Execution::class);
+    }
 }

@@ -12,4 +12,11 @@ class StatusRepository
                      ->select('id', 'status_name')
                      ->get();
     }
+
+    public function getRemediationStatusOptions()
+    {
+        return Status::where('entity', 'remediation')
+                     ->select('id', 'status_name')
+                     ->get();
+    }
 }

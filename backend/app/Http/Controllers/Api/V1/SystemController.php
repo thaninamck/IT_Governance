@@ -185,7 +185,7 @@ class SystemController extends BaseController
             $system = $this->systemService->getsystemInfo($appId);
 
             if (!isset($system)) {
-                return $this->sendError('Aucun membre trouvé pour cette mission.', [], 404);
+                return $this->sendError('Aucun system trouvé pour cette mission.', [], 404);
             }
 
             return $this->sendResponse($system, 'system récupérée avec succès.');
