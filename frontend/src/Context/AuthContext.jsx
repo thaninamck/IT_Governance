@@ -215,13 +215,41 @@ export const AuthProvider = ({ children }) => {
   };
 
   const [viewMode, setViewMode] = useState(() => {
-    return localStorage.getItem("viewMode") || "admin"; // par défaut en mode admin
+    // Récupère le mode sauvegardé ou détermine le mode par défaut basé sur le rôle
+    const savedMode = localStorage.getItem("viewMode");
+    if (savedMode) return savedMode;
+    return user?.role === 'admin' ? 'admin' : 'user';
   });
   
   const changeViewMode = (mode) => {
-    setViewMode(mode);
-    localStorage.setItem("viewMode", mode);
+    if (mode !== viewMode) {
+      localStorage.setItem("viewMode", mode);
+      setViewMode(mode);
+      // Force le re-rendu des composants qui utilisent viewMode
+      window.dispatchEvent(new CustomEvent('viewModeChange', { detail: mode }));
+    }
   };
+  
+  // Synchronisation entre onglets
+  useEffect(() => {
+    const handleStorageChange = (e) => {
+      if (e.key === 'viewMode') {
+        setViewMode(e.newValue);
+      }
+    };
+  
+    const handleCustomEvent = (e) => {
+      setViewMode(e.detail);
+    };
+  
+    window.addEventListener('storage', handleStorageChange);
+    window.addEventListener('viewModeChange', handleCustomEvent);
+  
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('viewModeChange', handleCustomEvent);
+    };
+  }, []);
  
   
 

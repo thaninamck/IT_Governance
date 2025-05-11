@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\MissionResource;
 use App\Models\Mission;
 use App\Models\Participation;
+use App\Models\User;
 use App\Repositories\V1\MissionRepository;
 use App\Services\LogService;
 use App\Services\V1\MissionService;
@@ -22,13 +23,13 @@ use function Laravel\Prompts\text;
 class MissionController extends BaseController
 {
     protected $missionService;
-    protected StatisticsService $statisticsService ;
+    protected StatisticsService $statisticsService;
     protected $logService;
     protected $participationService;
     protected $notificationService;
 
 
-    public function __construct(StatisticsService $statisticsService,MissionService $missionService, LogService $logService, ParticipationService $participationService, NotificationService $notificationService)
+    public function __construct(StatisticsService $statisticsService, MissionService $missionService, LogService $logService, ParticipationService $participationService, NotificationService $notificationService)
     {
         $this->missionService = $missionService;
         $this->logService = $logService;
@@ -52,88 +53,89 @@ class MissionController extends BaseController
     }
 
     public function getMissionReport($id): JsonResponse
-{
-    try {
-        $data = ['mission_id' => $id];
+    {
+        try {
+            $data = ['mission_id' => $id];
 
-        $app_conf = $this->statisticsService->calculate('app_conf_score', $data);
-        $db_conf = $this->statisticsService->calculate('db_conf_score', $data);
-        $os_conf = $this->statisticsService->calculate('os_conf_score', $data);
-        $procedural_conf = $this->statisticsService->calculate('procedural_conf_score', $data);
-        $physical_conf = $this->statisticsService->calculate('physical_conf_score', $data);
-        $global_adv = $this->statisticsService->calculate('global_adv', $data);
+            $app_conf = $this->statisticsService->calculate('app_conf_score', $data);
+            $db_conf = $this->statisticsService->calculate('db_conf_score', $data);
+            $os_conf = $this->statisticsService->calculate('os_conf_score', $data);
+            $procedural_conf = $this->statisticsService->calculate('procedural_conf_score', $data);
+            $physical_conf = $this->statisticsService->calculate('physical_conf_score', $data);
+            $global_adv = $this->statisticsService->calculate('global_adv', $data);
 
-        // Construire la structure "systeme"
-        $systeme = [];
+            // Construire la structure "systeme"
+            $systeme = [];
 
-        foreach ($app_conf as $app) {
-            $name = $app['name'];
+            foreach ($app_conf as $app) {
+                $name = $app['name'];
 
-            $appScore = $app['score'];
-            $dbScore = collect($db_conf)->firstWhere('name', $name)['score'] ?? 0;
-            $osScore = collect($os_conf)->firstWhere('name', $name)['score'] ?? 0;
+                $appScore = $app['score'];
+                $dbScore = collect($db_conf)->firstWhere('name', $name)['score'] ?? 0;
+                $osScore = collect($os_conf)->firstWhere('name', $name)['score'] ?? 0;
 
-            $globalScore = round(($appScore + $dbScore + $osScore) / 3, 2);
+                $globalScore = round(($appScore + $dbScore + $osScore) / 3, 2);
 
-            $systeme[] = [
-                'name' => $name,
-                'score' => $globalScore
+                $systeme[] = [
+                    'name' => $name,
+                    'score' => $globalScore
+                ];
+            }
+
+            // Moyenne des scores pour chaque couche
+            $layer = [
+                'Applicative' => round(collect($app_conf)->avg('score'), 2),
+                'Base de données' => round(collect($db_conf)->avg('score'), 2),
+                'Système d\'exploitation' => round(collect($os_conf)->avg('score'), 2),
+                $physical_conf['name'] => $physical_conf['score'],
+                $procedural_conf['name'] => $procedural_conf['score']
             ];
+
+            // Moyenne globale des couches
+            $global_score = round(array_sum($layer) / count($layer), 2);
+
+            return $this->sendResponse(
+                [
+                    "app" => $app_conf,
+                    "db" => $db_conf,
+                    "os" => $os_conf,
+                    "systeme" => $systeme,
+                    "layer" => $layer,
+                    "global_score" => $global_score,
+                    "mission_adv" => $global_adv['global_advancement'],
+                    "apps_adv" => $global_adv['apps'],
+
+                ],
+                "Report generated successfully"
+            );
+        } catch (\Exception $e) {
+            return $this->sendError("An error occurred", ["error" => $e->getMessage()], 500);
         }
-
-        // Moyenne des scores pour chaque couche
-        $layer = [
-            'Applicative' => round(collect($app_conf)->avg('score'), 2),
-            'Base de données' => round(collect($db_conf)->avg('score'), 2),
-            'Système d\'exploitation' => round(collect($os_conf)->avg('score'), 2),
-            $physical_conf['name']=>$physical_conf['score'],
-            $procedural_conf['name']=>$procedural_conf['score']
-        ];
-
-        // Moyenne globale des couches
-        $global_score = round(array_sum($layer) / count($layer), 2);
-
-        return $this->sendResponse(
-            [
-                "app" => $app_conf,
-                "db" => $db_conf,
-                "os" => $os_conf,
-                "systeme" => $systeme,
-                "layer" => $layer,
-               "global_score" => $global_score,
-               "mission_adv"=>$global_adv['global_advancement'],
-               "apps_adv"=>$global_adv['apps'],
-
-            ],
-            "Report generated successfully"
-        );
-    } catch (\Exception $e) {
-        return $this->sendError("An error occurred", ["error" => $e->getMessage()], 500);
     }
-}
 
-public function getSystemReport($id): JsonResponse
-{
-    try {
-        $data = ['system_id' => $id];
+    public function getSystemReport($id): JsonResponse
+    {
+        try {
+            $data = ['system_id' => $id];
 
-        $app_conf = $this->statisticsService->calculate('app_report', $data);
-        
-       
+            $app_conf = $this->statisticsService->calculate('app_report', $data);
 
-        
-       
-        return $this->sendResponse(
-            
-               [ "app" => $app_conf],
-               
 
-            
-            "Report generated successfully"
-        );
-    } catch (\Exception $e) {
-        return $this->sendError("An error occurred", ["error" => $e->getMessage()], 500);
-     } }
+
+
+
+            return $this->sendResponse(
+
+                ["app" => $app_conf],
+
+
+
+                "Report generated successfully"
+            );
+        } catch (\Exception $e) {
+            return $this->sendError("An error occurred", ["error" => $e->getMessage()], 500);
+        }
+    }
     /**
      * Store a newly created resource in storage.
      */
@@ -160,7 +162,7 @@ public function getSystemReport($id): JsonResponse
 
             // Données validées
             $missionData = $validator->validated();
-            $missionData['status_id'] = 10; // Définir le statut par défaut non commencée
+            // $missionData['status_id'] = 7; // Définir le statut par défaut non commencée
 
             // Création de la mission
             $mission = $this->missionService->createMission($missionData);
@@ -174,8 +176,13 @@ public function getSystemReport($id): JsonResponse
 
             // Création de la participation du manager
             $this->participationService->createParticipation($participantData);
+            $this->notificationService->sendNotification(
+                $missionData['manager_id'],
+                "Vous avez été affecté à la mission '{$mission->mission_name}' comme manager.",
+                json_encode(['type' => 'mission', 'id' => $mission->id]), // Convertir en JSON
+                'mission'
+            );
 
-           
 
             // Log de l'action
             $this->logService->logUserAction(
@@ -239,7 +246,7 @@ public function getSystemReport($id): JsonResponse
                 $this->participationService->updateParticipation($participation->id, $participantData);
             }
             // Récupérer la mission avec les relations après mise à jour
-        $mission = Mission::with(['client', 'status', 'participations.user'])->find($mission->id);
+            $mission = Mission::with(['client', 'status', 'participations.user'])->find($mission->id);
             $this->logService->logUserAction(
                 auth()->user()->email ?? 'Unknown',
                 'Admin',
@@ -477,130 +484,247 @@ public function getSystemReport($id): JsonResponse
             );
 
             // Réponse JSON
+            return $this->sendResponse(new MissionResource($mission), "Mission canceled successfully");
+        } catch (\Exception $e) {
+            return $this->sendError("An error occurred", ["error" => $e->getMessage()], 500);
+        }
+    }
+
+    
+    public function getRequestStatusForMissions(): JsonResponse
+    {
+        try {
+           
+            $missions = $this->missionService->getRequestStatusForMissions();
+
+            if ($missions->isEmpty()) {
+                return $this->sendError("No arequest status missions found", []);
+            }
+
+            // Réponse JSON
+            return $this->sendResponse(MissionResource::collection($missions), "requested status mission missions retrieved successfully");
+        } catch (\Exception $e) {
+            return $this->sendError("An error occurred", ["error" => $e->getMessage()], 500);
+        }
+    }
+    public function RequestCancelMission($id): JsonResponse
+    {
+        try {
+            $user = auth()->user();
+
+        if (!$user) {
+            return $this->sendError("Utilisateur non authentifié", [], 401);
+        }
+            // Fermer la mission
+            $mission = $this->missionService->requestCancelMission($id);
+
+            if (!$mission) {
+                return $this->sendError("Mission not found", [], 404);
+            }
+
+              
+          //Récupérer tous les admins
+        $admins = User::where('role', 1)->get();
+
+        foreach ($admins as $admin) {
+            $this->notificationService->sendNotification(
+                $admin->id,
+                "L'utilisateur " . $user->first_name . ' ' . $user->last_name . " a demandé l'annulation de la mission '{$mission->mission_name}'.",
+                json_encode(['type' => 'mission', 'id' => $mission->id]),
+                'mission'
+            );
+        }
+            // Log de l'action
+            $this->logService->logUserAction(
+                auth()->user()->email ?? 'Unknown',
+                'manager',
+                "demande annulé  la mission : {$mission->mission_name}",
+                ""
+            );
+
+            // Réponse JSON
             return $this->sendResponse(new MissionResource($mission), "Mission archived successfully");
+        } catch (\Exception $e) {
+            return $this->sendError("An error occurred", ["error" => $e->getMessage()], 500);
+        }
+    }
+    public function RequestCloseMission($id): JsonResponse
+    {
+        try {
+            $user = auth()->user();
+
+            if (!$user) {
+                return $this->sendError("Utilisateur non authentifié", [], 401);
+            }
+            // Fermer la mission
+            $mission = $this->missionService->requestCloseMission($id);
+
+            if (!$mission) {
+                return $this->sendError("Mission not found", [], 404);
+            }
+             //Récupérer tous les admins
+        $admins = User::where('role', 1)->get();
+
+        foreach ($admins as $admin) {
+            $this->notificationService->sendNotification(
+                $admin->id,
+                "L'utilisateur " . $user->first_name . ' ' . $user->last_name . " a demandé de cloturé la mission '{$mission->mission_name}'.",
+                json_encode(['type' => 'cloture_mission', 'id' => $mission->id]),
+                'cloture_mission'
+            );
+        }
+
+            // Log de l'action
+            $this->logService->logUserAction(
+                auth()->user()->email ?? 'Unknown',
+                'manager',
+                "demande cloturé  la mission : {$mission->mission_name}",
+                ""
+            );
+
+            // Réponse JSON
+            return $this->sendResponse(new MissionResource($mission), "close Mission  request  successfully");
+        } catch (\Exception $e) {
+            return $this->sendError("An error occurred", ["error" => $e->getMessage()], 500);
+        }
+    }
+    public function RequestArchiveMission($id): JsonResponse
+    {
+        try {
+            $user = auth()->user();
+
+            if (!$user) {
+                return $this->sendError("Utilisateur non authentifié", [], 401);
+            }
+            // Fermer la mission
+            $mission = $this->missionService->requestArchiveMission($id);
+
+            if (!$mission) {
+                return $this->sendError("Mission not found", [], 404);
+            }
+            $admins = User::where('role', 1)->get();
+
+            foreach ($admins as $admin) {
+                $this->notificationService->sendNotification(
+                    $admin->id,
+                    "L'utilisateur " . $user->first_name . ' ' . $user->last_name . " a demandé d'archivé' la mission '{$mission->mission_name}'.",
+                    json_encode(['type' => 'mission', 'id' => $mission->id]),
+                    'mission'
+                );
+            }
+
+            // Log de l'action
+            $this->logService->logUserAction(
+                auth()->user()->email ?? 'Unknown',
+                'manager',
+                "demande d'archivage  la mission : {$mission->mission_name}",
+                ""
+            );
+
+            // Réponse JSON
+            return $this->sendResponse(new MissionResource($mission), "archive Mission request  successfully");
         } catch (\Exception $e) {
             return $this->sendError("An error occurred", ["error" => $e->getMessage()], 500);
         }
     }
    
 
-// public function stopMission($id): JsonResponse
-// {
-//     try {
-//         // Fermer la mission
-//         $mission = $this->missionService->stopMission($id);
+    public function AcceptRequestStatus($id): JsonResponse
+    {
+        try {
+            // Fermer la mission
+            $mission = $this->missionService->acceptrequestStatus($id);
 
-//         if (!$mission) {
-//             return $this->sendError("Mission not found", [], 404);
-//         }
+            if (!$mission) {
+                return $this->sendError("Mission not found", [], 404);
+            }
 
-//         // Log de l'action
-//         $this->logService->logUserAction(
-//             auth()->user()->email ?? 'Unknown',
-//             'Admin',
-//             "stop de la mission : {$mission->mission_name}",
-//             ""
-//         );
+            // Log de l'action
+            $this->logService->logUserAction(
+                auth()->user()->email ?? 'Unknown',
+                'Admin',
+                "accept la demande de changer le status de  la mission : {$mission->mission_name}",
+                ""
+            );
 
-//         // Réponse JSON
-//         return $this->sendResponse(new MissionResource($mission), "Mission archived successfully");
-//     } catch (\Exception $e) {
-//         return $this->sendError("An error occurred", ["error" => $e->getMessage()], 500);
-//     }
-// }
-
- public function stopMission($id): JsonResponse
- {
-    try {
-        // Mettre la mission en pause
-        $result = $this->missionService->stopMission($id);
-
-        if (!$result['mission']) {
-            return $this->sendError("Mission not found", [], 404);
+            // Réponse JSON
+            return $this->sendResponse(new MissionResource($mission), " status Mission  changed successfully");
+        } catch (\Exception $e) {
+            return $this->sendError("An error occurred", ["error" => $e->getMessage()], 500);
         }
-
-        // Log de l'action
-        $this->logService->logUserAction(
-            auth()->user()->email ?? 'Unknown',
-            'Admin',
-            "Mise en pause de la mission : {$result['mission']->mission_name}",
-            ""
-        );
-
-        // Réponse JSON avec le statut précédent
-        return $this->sendResponse([
-            'mission' => new MissionResource($result['mission']),
-            'previous_status_id' => $result['previous_status_id'],
-        ], "Mission paused successfully");
-    } catch (\Exception $e) {
-        return $this->sendError("An error occurred", ["error" => $e->getMessage()], 500);
     }
- }
+    public function RefuseRequestStatus($id): JsonResponse
+    {
+        try {
+            // Fermer la mission
+            $mission = $this->missionService->refuseRequestStatus($id);
 
-// public function resumeMission(Request $request, $id): JsonResponse
-// {
-//     try {
-//         // Récupérer le statut précédent depuis la requête
-//         $previousStatusId = $request->input('previous_status_id');
+            if (!$mission) {
+                return $this->sendError("Mission not found", [], 404);
+            }
 
-//         if (!$previousStatusId) {
-//             return $this->sendError("Previous status ID is required", [], 400);
-//         }
+            // Log de l'action
+            $this->logService->logUserAction(
+                auth()->user()->email ?? 'Unknown',
+                'Admin',
+                "deny la demande de changer le status de la mission : {$mission->mission_name}",
+                ""
+            );
 
-//         // Reprendre la mission
-//         $mission = $this->missionService->resumeMission($id, $previousStatusId);
-
-//         if (!$mission) {
-//             return $this->sendError("Mission not found", [], 404);
-//         }
-
-//         // Log de l'action
-//         $this->logService->logUserAction(
-//             auth()->user()->email ?? 'Unknown',
-//             'Admin',
-//             "Reprise de la mission : {$mission->mission_name}",
-//             ""
-//         );
-
-//         // Réponse JSON
-//         return $this->sendResponse(new MissionResource($mission), "Mission resumed successfully");
-//     } catch (\Exception $e) {
-//         return $this->sendError("An error occurred", ["error" => $e->getMessage()], 500);
-//     }
-// }
-
-public function resumeMission(Request $request, $id): JsonResponse
- {
-    try {
-        // Récupérer le statut précédent et la nouvelle date de début depuis la requête
-        $previousStatusId = $request->input('previous_status_id');
-        $newStartDate = $request->input('new_start_date');
-
-        if (!$previousStatusId || !$newStartDate) {
-            return $this->sendError("Previous status ID and new start date are required", [], 400);
+            // Réponse JSON
+            return $this->sendResponse(new MissionResource($mission), "Mission canceled successfully");
+        } catch (\Exception $e) {
+            return $this->sendError("An error occurred", ["error" => $e->getMessage()], 500);
         }
-
-        // Reprendre la mission
-        $mission = $this->missionService->resumeMission($id, $previousStatusId, $newStartDate);
-
-        if (!$mission) {
-            return $this->sendError("Mission not found", [], 404);
-        }
-
-        // Log de l'action
-        $this->logService->logUserAction(
-            auth()->user()->email ?? 'Unknown',
-            'Admin',
-            "Reprise de la mission : {$mission->mission_name}",
-            ""
-        );
-
-        // Réponse JSON
-        return $this->sendResponse(new MissionResource($mission), "Mission resumed successfully");
-    } catch (\Exception $e) {
-        return $this->sendError("An error occurred", ["error" => $e->getMessage()], 500);
     }
- }
+    public function stopMission($id): JsonResponse
+    {
+        try {
+            // Mettre la mission en pause
+            $result = $this->missionService->stopMission($id);
+
+            if (!$result) {
+                return $this->sendError("Mission not found", [], 404);
+            }
+
+            // Log de l'action
+            $this->logService->logUserAction(
+                auth()->user()->email ?? 'Unknown',
+                'Admin',
+                "Mise en pause de la mission : {$result->mission_name}",
+                ""
+            );
+
+            // Réponse JSON
+            return $this->sendResponse(new MissionResource($result), "Mission paused successfully");
+        } catch (\Exception $e) {
+            return $this->sendError("An error occurred", ["error" => $e->getMessage()], 500);
+        }
+    }
+
+
+    public function resumeMission($id): JsonResponse
+    {
+        try {
+            $mission = $this->missionService->resumeMission($id);
+
+            if (!$mission) {
+                return $this->sendError("Mission not found", [], 404);
+            }
+
+            // Log de l'action
+            $this->logService->logUserAction(
+                auth()->user()->email ?? 'Unknown',
+                'Admin',
+                "Reprise de la mission : {$mission->mission_name}",
+                ""
+            );
+
+            return $this->sendResponse(new MissionResource($mission), "Mission resumed successfully");
+        } catch (\Exception $e) {
+            return $this->sendError("An error occurred", ["error" => $e->getMessage()], 500);
+        }
+    }
     /**
      * Display the specified resource.
      */
@@ -614,15 +738,14 @@ public function resumeMission(Request $request, $id): JsonResponse
             }
 
             return $this->sendResponse($members, 'Liste des membres récupérée avec succès.');
-
         } catch (\Exception $e) {
             return $this->sendError('Erreur lors de la récupération des membres.', ['error' => $e->getMessage()], 500);
         }
     }
 
-    public function getSystemsByMissionID($missionId):JsonResponse
+    public function getSystemsByMissionID($missionId): JsonResponse
     {
-        try{
+        try {
             $user = auth()->user();
 
             // $systems=$this->missionService->getSystemsByMissionID($missionId);
@@ -633,81 +756,75 @@ public function resumeMission(Request $request, $id): JsonResponse
             }
 
             return $this->sendResponse($systems, 'Liste des systems récupérée avec succès.');
-
         } catch (\Exception $e) {
             return $this->sendError('Erreur lors de la récupération des systems.', ['error' => $e->getMessage()], 500);
         }
-        
     }
 
 
-//     public function getUserMissions(Request $request)
-// {
-//     $user = $request->user(); // Utilisateur authentifié
-    
-//     $missions = Mission::with(['client', 'status'])
-//         ->whereHas('participations', function($query) use ($user) {
-//             $query->where('user_id', $user->id);
-//         })
-//         ->get();
+    //     public function getUserMissions(Request $request)
+    // {
+    //     $user = $request->user(); // Utilisateur authentifié
 
-//     return response()->json($missions);
-// }
+    //     $missions = Mission::with(['client', 'status'])
+    //         ->whereHas('participations', function($query) use ($user) {
+    //             $query->where('user_id', $user->id);
+    //         })
+    //         ->get();
 
-// public function getUserMissions(Request $request)
-// {
-//     $user = $request->user();
-    
-//     $missions = Mission::with([
-//         'client:id,name', // Seulement l'id et le nom du client
-//         'status:id,name', // Seulement l'id et le nom du statut
-//         'participations.user:id,name,role' // Seulement l'id, name et role des utilisateurs participants
-//     ])
-//     ->whereHas('participations', function($query) use ($user) {
-//         $query->where('user_id', $user->id);
-//     })
-//     ->get([
-//         'id as missionId',
-//         'mission_name as missionName',
-//         'client_id',
-//         'start_date',
-//         'end_date',
-//         'audit_start_date as startAuditDate',
-//         'audit_end_date as endAuditDate',
-//         'status_id'
-//     ]);
+    //     return response()->json($missions);
+    // }
 
-//     return response()->json(
-//         $missions->map(function ($mission) use ($user) {
-//             return [
-//                 'missionId' => $mission->missionId,
-//                 'missionName' => $mission->missionName,
-//                 'clientId' => $mission->client_id,
-//                 'clientName' => $mission->client->name,
-//                 'startDate' => $mission->start_date,
-//                 'endDate' => $mission->end_date,
-//                 'startAuditDate' => $mission->startAuditDate,
-//                 'endAuditDate' => $mission->endAuditDate,
-//                 'status' => $mission->status->name,
-//                 'statusId' => $mission->status_id,
-//                 'userId' => $user->id,
-//                 'userName' => $user->name,
-//                 'userRole' => $user->role
-//             ];
-//         })
-//     );
-// }
+    // public function getUserMissions(Request $request)
+    // {
+    //     $user = $request->user();
+
+    //     $missions = Mission::with([
+    //         'client:id,name', // Seulement l'id et le nom du client
+    //         'status:id,name', // Seulement l'id et le nom du statut
+    //         'participations.user:id,name,role' // Seulement l'id, name et role des utilisateurs participants
+    //     ])
+    //     ->whereHas('participations', function($query) use ($user) {
+    //         $query->where('user_id', $user->id);
+    //     })
+    //     ->get([
+    //         'id as missionId',
+    //         'mission_name as missionName',
+    //         'client_id',
+    //         'start_date',
+    //         'end_date',
+    //         'audit_start_date as startAuditDate',
+    //         'audit_end_date as endAuditDate',
+    //         'status_id'
+    //     ]);
+
+    //     return response()->json(
+    //         $missions->map(function ($mission) use ($user) {
+    //             return [
+    //                 'missionId' => $mission->missionId,
+    //                 'missionName' => $mission->missionName,
+    //                 'clientId' => $mission->client_id,
+    //                 'clientName' => $mission->client->name,
+    //                 'startDate' => $mission->start_date,
+    //                 'endDate' => $mission->end_date,
+    //                 'startAuditDate' => $mission->startAuditDate,
+    //                 'endAuditDate' => $mission->endAuditDate,
+    //                 'status' => $mission->status->name,
+    //                 'statusId' => $mission->status_id,
+    //                 'userId' => $user->id,
+    //                 'userName' => $user->name,
+    //                 'userRole' => $user->role
+    //             ];
+    //         })
+    //     );
+    // }
 
 
-public function getUserMissions(Request $request)
-{
-    $userId = $request->user()->id;
-    $missions = $this->missionService->getUserMissions($userId);
-    
-    return response()->json($missions);
+    public function getUserMissions(Request $request)
+    {
+        $userId = $request->user()->id;
+        $missions = $this->missionService->getUserMissions($userId);
+
+        return response()->json($missions);
+    }
 }
-    
-
-
-}
-

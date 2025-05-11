@@ -18,7 +18,8 @@ class Mission extends Model
         'start_date',
         'end_date',
         'audit_start_date',
-        'audit_end_date' 
+        'audit_end_date' ,
+        'previous_status_id',
     ];
 
     protected $dates = ['start_date', 'end_date'];

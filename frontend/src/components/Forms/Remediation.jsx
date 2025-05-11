@@ -2,20 +2,15 @@ import React, { useEffect, useRef, useState } from 'react';
 import InputForm from './InputForm';
 import './FormStyle.css';
 
-function Remediation({ title, initialValues = {}, onAdd, idControle ,onClose}) {
+function Remediation({ title, initialValues = {}, onAdd, idControle, onClose }) {
   const [open, setOpen] = useState(true);
   const isFirstRender = useRef(true);
 
-  
-  
-  // États pour chaque champ
   const [description, setDescription] = useState(initialValues?.description || '');
-  const [owner_cntct, setContact] = useState(initialValues?.owner_cntct|| '');
-  const [status, setStatus] = useState(initialValues?.status || '');
-  const [start_date, setDateField] = useState(initialValues?.start_date|| '');
+  const [owner_cntct, setContact] = useState(initialValues?.owner_cntct || '');
+  const [status, setStatus] = useState(initialValues?.status || 'Non_commencee');
+  const [start_date, setDateField] = useState(initialValues?.start_date || '');
   const [end_date, setDateField1] = useState(initialValues?.end_date || '');
-
-  // État pour gérer les erreurs de validation
   const [error, setError] = useState('');
 
   const handleClose = () => {
@@ -24,163 +19,134 @@ function Remediation({ title, initialValues = {}, onAdd, idControle ,onClose}) {
     setOpen(false);
   };
 
-  // Mettre à jour les états si initialValues change
   useEffect(() => {
     if (isFirstRender.current) {
       setDescription(initialValues.description || '');
       setContact(initialValues.owner_cntct || '');
-      // setStatus(initialValues.status || 'Non_commencee');
-       setDateField(initialValues.start_date || '');
+      setStatus(initialValues.status || 'Non_commencee');
+      setDateField(initialValues.start_date || '');
       setDateField1(initialValues.end_date || '');
       isFirstRender.current = false;
     }
   }, [initialValues]);
 
-  // Fonction pour valider les dates
-  const validateDates = (startDate, endDate) => {
-    if (new Date(startDate) > new Date(endDate)) {
-      setError('La date de fin doit être postérieure à la date de début.');
-      return false;
-    }
-    setError(''); // Réinitialiser l'erreur si les dates sont valides
-    return true;
-  };
-
-  // Fonction pour gérer le changement de la date de fin
   const handleDateField1Change = (e) => {
     const selectedDate = e.target.value;
-
-    // Vérifier si la date sélectionnée est antérieure à la date de début
     if (new Date(selectedDate) < new Date(start_date)) {
       setError('La date de fin doit être postérieure à la date de début.');
-      setDateField1(''); // Réinitialiser la date de fin si elle est invalide
+      setDateField1('');
     } else {
       setError('');
       setDateField1(selectedDate);
     }
   };
 
-  // Fonction pour générer un identifiant d'action unique
-  const generateActionId = (idControle) => {
-    if (initialValues.id) {
-      return initialValues.id; // Conserver l'ID existant lors de la mise à jour
-    }
-    const now = new Date();
-    const mois = now.toLocaleString('fr-FR', { month: 'short' }); // Ex: "Sep"
-    const annee = now.getFullYear().toString().slice(-2); // Ex: "24"
-    const numeroSequentiel = String(Math.floor(Math.random() * 999)).padStart(3, '0'); // Ex: "001"
-  
-    return `ACT_${mois}${annee}_${idControle}_${numeroSequentiel}`;
-  };
-
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (!description || !owner_cntct || !start_date || !end_date) {
+      setError('Veuillez remplir tous les champs obligatoires.');
+      return;
+    }
 
-     // Vérifier que tous les champs requis sont remplis
-  if (!description || !owner_cntct /*|| !dateField ||!dateField1*/ ) {
-    setError('Veuillez remplir tous les champs obligatoires.');
-    return; // Empêcher la soumission
-  }
-
-    // Valider les dates avant de soumettre le formulaire
-    // if (!validateDates(dateField, dateField1)) {
-    //   return; // Empêcher la soumission si les dates ne sont pas valides
-    // }
-    
-    setError(''); // Réinitialiser les erreurs si tout est bon
-
+    setError('');
 
     const formData = {
-      id: initialValues?.id, //generateActionId(idControle),
-     // action_name:generateActionId(idControle),
+      id: initialValues?.id,
       description,
       owner_cntct,
       status: status || 'Non_commencee',
-       start_date,
-       end_date,
+      start_date,
+      end_date,
     };
-    setError(''); // Réinitialiser les erreurs si tout est bon
-    console.log('form data',formData)
 
     onAdd(formData);
+
+    // reset form
     setDescription('');
     setContact('');
-     setDateField('');
+    setStatus('Non_commencee');
+    setDateField('');
     setDateField1('');
-    console.log('Form Data:', formData);
-   // alert(initialValues?.id ? 'Application mise à jour avec succès !' : 'Application créée avec succès !');
+  };
+
+  const handleReset = () => {
+    setDescription('');
+    setContact('');
+    setStatus('Non_commencee');
+    setDateField('');
+    setDateField1('');
+    setError('');
   };
 
   return (
     open && (
-      <form className="mr-3 ml-2 pr-4 pl-5 mt-3 relative pb-10 bg-gray-100 w-full" onSubmit={handleSubmit}>
-        <div className="flex justify-end">
+      <form className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 max-w-6xl mx-auto mt-6 relative" onSubmit={handleSubmit}>
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-xl font-semibold text-gray-800">{title}</h2>
           <button
-            className="border-none bg-transparent p-0 text-[30px] font-medium text-gray-800 cursor-pointer hover:text-red-500"
             type="button"
             onClick={handleClose}
+            className="text-2xl font-bold  border-none text-gray-500 hover:text-red-600"
           >
             &times;
           </button>
-          
         </div>
 
-        <p className="font-medium mb-8 text-lg">{title}</p>
-        <div className="flex flex-row gap-7 ">
-          <div className='w-[60%] '>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
             <InputForm
               type="text"
               label="Description"
-              placeholder="Entrez la description de la remédiation..."
-              width="100%"
-              required={true}
-              flexDirection="flex-row gap-5 items-center mb-2"
+              placeholder="Entrez la description..."
               value={description}
               onChange={(e) => setDescription(e.target.value)}
+              required
             />
             <InputForm
               type="email"
-              label="Contact"
-              placeholder="Entrez l'e-mail de la personne concernée..."
-              width="100%"
-              required={true}
-              flexDirection="flex-row gap-12 items-center mb-2"
+              label="Contact (Email)"
+              placeholder="Ex: contact@example.com"
               value={owner_cntct}
               onChange={(e) => setContact(e.target.value)}
+              required
             />
+            
           </div>
-          <div className='w-[35%] '>
+
+          <div>
             <InputForm
               type="date"
-              label="Date Début"
-              width="50%"
-              required={true}
-              flexDirection="flex-row gap-9 items-center mb-2"
+              label="Date de début"
               value={start_date}
               onChange={(e) => setDateField(e.target.value)}
+              required
             />
             <InputForm
               type="date"
-              label="Date Fin"
-              width="50%"
-              required={true}
-              flexDirection="flex-row gap-14 items-center mb-2"
+              label="Date de fin"
               value={end_date}
-              onChange={handleDateField1Change} // Utiliser la nouvelle fonction de gestion
-              min={start_date} // L'attribut min est défini sur la date de début
+              onChange={handleDateField1Change}
+              min={start_date}
+              required
             />
           </div>
         </div>
 
-        {/* Afficher l'erreur si les dates ne sont pas valides */}
         {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
 
-        <div className="absolute bottom-0 right-2">
+        <div className="flex justify-end gap-4 mt-6">
           <button
-            className="px-4 mr-5  mb-4 py-1 bg-[var(--blue-menu)] text-white border-none rounded hover:bg-blue-700"
-            type="submit"
+            type="button"
+            onClick={handleReset}
+            className="bg-gray-300 hover:bg-gray-400  border-none text-gray-700 font-medium py-2 px-4 rounded"
           >
-            Créer
+            Réinitialiser
+          </button>
+          <button
+            type="submit"
+            className="bg-blue-600 hover:bg-blue-700 border-none text-white font-semibold py-2 px-4 rounded"
+          >
+            {initialValues?.id ? 'Mettre à jour' : 'Créer'}
           </button>
         </div>
       </form>

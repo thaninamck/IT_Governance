@@ -26,11 +26,12 @@ function InputForm({
   };
 
   return (
-    <div className={`flex flex-col ${flexDirection || ''} gap-2`}>
+    <div className={` relative flex flex-col ${flexDirection || ''} gap-1`}>
       <div className="flex items-center gap-2">
-        <label className={`text-sm mb-1 ml-1 font-medium ${customStyle || ""}`}>{label}</label>
+        <label className={`text-sm  ml-1 font-medium ${customStyle || ""}`}>{label}</label>
         {required && <span className="text-red-500">*</span>}
       </div>
+      {error && <span className=" absolute  top-16 pt-1 text-red-500 text-[9px]">Ce champ est requis</span>}
 
       {multiline ? (
         <textarea
@@ -72,7 +73,7 @@ function InputForm({
         />
       )}
 
-      {error && <span className="text-red-500 text-xs mt-1">Ce champ est requis</span>}
+      
     </div>
   );
 }

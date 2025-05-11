@@ -5,7 +5,7 @@ import CircularProgress from "@mui/material/CircularProgress"; // Import du spin
 const DecisionPopUp = ({ name, text, loading, handleConfirm, handleDeny }) => {
   return (
     <div
-  className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
+  // className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
 >
     <div
       className="rounded-lg w-auto h-auto bg-white drop-shadow-lg text-black

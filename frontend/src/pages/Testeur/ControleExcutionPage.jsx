@@ -29,6 +29,7 @@ import useRemediation from "../../Hooks/useRemediation";
 import CommentButton from "../../components/ExecutionPage/CommentButton";
 import ExistingComment from "../../components/ExecutionPage/ExistingComment";
 import { toast } from "react-toastify";
+import { Switch, FormControlLabel } from '@mui/material';
 
 // Initialize EmailJS with your userID
 // emailjs.init("oAXuwpg74dQwm0C_s"); // Replace 'YOUR_USER_ID' with your actual userID
@@ -36,8 +37,7 @@ import { toast } from "react-toastify";
 function ControleExcutionPage() {
   const location = useLocation();
   const controleData = location.state?.controleData || {};
-  // Accédez à userRole et setUserRole via le contexte
-  const { userRole, setUserRole } = useContext(PermissionRoleContext);
+  console.log("controoooole data", controleData);
   const {
     loading,
     getExecutionById,
@@ -83,11 +83,6 @@ function ControleExcutionPage() {
   const navigate = useNavigate();
   const { mission, name, controlCode } = useParams();
 
-  const location = useLocation();
-  const controleData = location.state?.controleData || {};
-  console.log("controoooole data", controleData);
-
-
 
   console.log(controleData);
   const { user } = useAuth();
@@ -110,7 +105,7 @@ function ControleExcutionPage() {
   const [isToValidate, setIsToValidate] = useState(false);
   const sourceNames = controleData.sources.map(s => s.source_name).join(', ');
   const [isEditing, setIsEditing] = useState(true);
-  const [selectedMulti, setSelectedMulti] = useState(controleData.statusId);
+  const [selectedMulti, setSelectedMulti] = useState();
 
   const statusOptions = ["Terminé", "en cours", "Non commencée"];
   const statusColors = {
@@ -130,9 +125,7 @@ function ControleExcutionPage() {
   const [subProcess, setSubProcess] = useState(controleData.subProcess || "");
   const [controleID, setControleID] = useState(controleData.controlCode || "");
   const [selections, setSelections] = useState({
-    IPE: controleData.ipe,
-    Design: controleData.design,
-    Effectiveness: controleData.effectiveness,
+    
   });
   const [files, setFiles] = useState([]);
   const options = [
@@ -165,17 +158,17 @@ function ControleExcutionPage() {
     }
 
   }, [controleData.executionId, controleData.missionId]);
-  const [evidences, setEvidences] = useState([]);
-  const [steps, setSteps] = useState([]);
-  const [isToReview, setIsToReview] = useState(false);
-  const [isToValidate, setIsToValidate] = useState(false);
+  //const [evidences, setEvidences] = useState([]);
+  //const [steps, setSteps] = useState([]);
+  //const [isToReview, setIsToReview] = useState(false);
+  //const [isToValidate, setIsToValidate] = useState(false);
   const [commentaire, setCommentaire] = useState("");
-  const sourceNames = controleData.sources.map((s) => s.source_name).join(", ");
-  const [selections, setSelections] = useState({
-    IPE: true,
-    Design: false,
-    Effectiveness: true,
-  });
+  //const sourceNames = controleData.sources.map((s) => s.source_name).join(", ");
+  // const [selections, setSelections] = useState({
+  //   IPE: true,
+  //   Design: false,
+  //   Effectiveness: true,
+  // });
   const [existingComments, setExistingComments] = useState([
     // {
     //   y: 150,
@@ -193,7 +186,7 @@ function ControleExcutionPage() {
   useEffect(() => {
     console.log("Execution Data:", executionData);
 
-    console.log("Execution Dataff:", executionData?.[0]?.remarks);
+    console.log("ipeee gizan:", executionData?.[0]?.ipe);
 
     const allEvidences = executionData?.[0]?.evidences || [];
     const filteredEvidences = allEvidences.filter(
@@ -237,35 +230,36 @@ function ControleExcutionPage() {
     setEvidences(filteredEvidences);
     setTestFiles(filteredTestFiles);
     setSteps(executionData?.[0]?.steps || []);
+    setSelectedMulti(executionData?.[0]?.status_id)
     setIsToReview(executionData?.[0]?.execution_is_to_review);
     setIsToValidate(executionData?.[0]?.execution_is_to_validate);
   }, [executionData]);
 
 
-  const [isEditing, setIsEditing] = useState(true);
-  const statusOptions = ["Terminé", "En_cours", "Non_commencee"];
-  const statusColors = {
-    Terminé: "green",
-    En_cours: "orange",
-    Non_Commencée: "gray",
-  };
-  const [selectedMulti, setSelectedMulti] = useState(controleData.statusId);
+  //const [isEditing, setIsEditing] = useState(true);
+  // const statusOptions = ["Terminé", "En_cours", "Non_commencee"];
+  // const statusColors = {
+  //   Terminé: "green",
+  //   En_cours: "orange",
+  //   Non_Commencée: "gray",
+  // };
+  //const [selectedMulti, setSelectedMulti] = useState(controleData.statusId);
 
-  const [showRemediation, setShowRemediation] = useState(false);
-  const [showPopup, setShowPopup] = useState(false);
-  const [description, setDescription] = useState(
-    controleData.controlDescription || ""
-  );
-  const [testScript, setTestScript] = useState(controleData.testScript || "");
-  const [type, setType] = useState(controleData.typeName || "");
-  const [controlOwner, setControlOwner] = useState(
-    controleData.executionControlOwner || ""
-  );
-  const [majorProcess, setMajorProcess] = useState(
-    controleData.majorProcess || ""
-  );
-  const [subProcess, setSubProcess] = useState(controleData.subProcess || "");
-  const [controleID, setControleID] = useState(controleData.controlCode || "");
+  // const [showRemediation, setShowRemediation] = useState(false);
+  // const [showPopup, setShowPopup] = useState(false);
+  // const [description, setDescription] = useState(
+  //   controleData.controlDescription || ""
+  // );
+  // const [testScript, setTestScript] = useState(controleData.testScript || "");
+  // const [type, setType] = useState(controleData.typeName || "");
+  // const [controlOwner, setControlOwner] = useState(
+  //   controleData.executionControlOwner || ""
+  // );
+  // const [majorProcess, setMajorProcess] = useState(
+  //   controleData.majorProcess || ""
+  // );
+  // const [subProcess, setSubProcess] = useState(controleData.subProcess || "");
+  // const [controleID, setControleID] = useState(controleData.controlCode || "");
   useEffect(() => {
     console.log("icommentssssssss:", existingComments);
   }, [existingComments]); // Log the selectedMulti whenever it changes
@@ -277,18 +271,18 @@ function ControleExcutionPage() {
   };
 
 
-  const updateStatusBasedOnSuivi = () => {
-    setAction((prevActions) =>
-      prevActions.map((action) => ({
-        ...action,
-        status: action.suivi.trim() !== "" ? "En_cours" : "Non_commencee",
-      }))
-    );
-  };
+  // const updateStatusBasedOnSuivi = () => {
+  //   setAction((prevActions) =>
+  //     prevActions.map((action) => ({
+  //       ...action,
+  //       status: action.suivi.trim() !== "" ? "En_cours" : "Non_commencee",
+  //     }))
+  //   );
+  // };
 
-  useEffect(() => {
-    updateStatusBasedOnSuivi();
-  }, []);
+  // useEffect(() => {
+  //   updateStatusBasedOnSuivi();
+  // }, []);
   useEffect(() => {
     console.log("comments", existingComments);
   }, [existingComments]);
@@ -387,7 +381,68 @@ function ControleExcutionPage() {
     setActivePanel(newValue === 0 ? "evidence" : "test");
   };
 
+  // const handleSaveFiles = async (formData) => {
+  //   const formDataToSend = new FormData();
+  //   const execution_id = executionData[0].execution_id;
+  //   const is_f_test = activePanel === "test";
+
+  //   // Ajouter chaque fichier avec ses métadonnées
+  //   let index = 0;
+  //   for (const [key, file] of formData.entries()) {
+  //     formDataToSend.append(`files[${index}]`, file); // Le fichier lui-même
+  //     formDataToSend.append(`files[${index}][execution_id]`, execution_id);
+  //     formDataToSend.append(`files[${index}][is_f_test]`, is_f_test);
+  //     index++;
+  //   }
+
+  //   // Vérification du contenu de FormData (pour debug)
+  //   for (let pair of formDataToSend.entries()) {
+  //     console.log(pair[0], pair[1]);
+  //   }
+
+  //   const response = await uploadEvidences(controleData.missionId,formDataToSend);
+  //   console.log("response data", response.data);
+  //   if (response.status === 200) {
+  //     if (activePanel === "evidence") {
+  //       setEvidences((prevFiles) => [...prevFiles, ...response.data]);
+  //     } else if (activePanel === "test") {
+  //       console.log("actual yest files", testFiles);
+  //       console.log("test file", formData);
+  //       setTestFiles((prevFiles) => [...prevFiles, ...response.data]);
+  //     }
+  //   }
+  // };
+
   const handleSaveFiles = async (formData) => {
+    // Configuration des limites
+    const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50MB en bytes
+    const MAX_TOTAL_SIZE = 200 * 1024 * 1024; // 200MB en bytes
+    const MAX_FILE_COUNT = 10;
+
+    // Vérification du nombre de fichiers
+    if (formData.getAll('files').length > MAX_FILE_COUNT) {
+        toast.info(`Vous ne pouvez uploader que ${MAX_FILE_COUNT} fichiers maximum.`);
+        return;
+    }
+
+    // Vérification de la taille des fichiers et du total
+    let totalSize = 0;
+    const files = formData.getAll('files');
+    
+    for (const file of files) {
+        if (file.size > MAX_FILE_SIZE) {
+            alert(`Le fichier ${file.name} dépasse la taille maximale de 50MB.`);
+            return;
+        }
+        totalSize += file.size;
+    }
+
+    if (totalSize > MAX_TOTAL_SIZE) {
+      toast.info(`La taille totale des fichiers (${(totalSize / (1024 * 1024)).toFixed(2)}MB) dépasse la limite de 200MB.`);
+        return;
+    }
+
+    // Si tout est OK, procéder à l'envoi
     const formDataToSend = new FormData();
     const execution_id = executionData[0].execution_id;
     const is_f_test = activePanel === "test";
@@ -395,40 +450,46 @@ function ControleExcutionPage() {
     // Ajouter chaque fichier avec ses métadonnées
     let index = 0;
     for (const [key, file] of formData.entries()) {
-      formDataToSend.append(`files[${index}]`, file); // Le fichier lui-même
-      formDataToSend.append(`files[${index}][execution_id]`, execution_id);
-      formDataToSend.append(`files[${index}][is_f_test]`, is_f_test);
-      index++;
+        formDataToSend.append(`files[${index}]`, file);
+        formDataToSend.append(`files[${index}][execution_id]`, execution_id);
+        formDataToSend.append(`files[${index}][is_f_test]`, is_f_test);
+        index++;
     }
 
     // Vérification du contenu de FormData (pour debug)
     for (let pair of formDataToSend.entries()) {
-      console.log(pair[0], pair[1]);
+        console.log(pair[0], pair[1]);
     }
 
-    const response = await uploadEvidences(formDataToSend);
-    console.log("response data", response.data);
-    if (response.status === 200) {
-      if (activePanel === "evidence") {
-        setEvidences((prevFiles) => [...prevFiles, ...response.data]);
-      } else if (activePanel === "test") {
-        console.log("actual yest files", testFiles);
-        console.log("test file", formData);
-        setTestFiles((prevFiles) => [...prevFiles, ...response.data]);
-      }
+    try {
+        const response = await uploadEvidences(formDataToSend);
+        console.log("response data", response.data);
+        if (response.status === 200) {
+            if (activePanel === "evidence") {
+                setEvidences((prevFiles) => [...prevFiles, ...response.data]);
+            } else if (activePanel === "test") {
+                console.log("actual test files", testFiles);
+                console.log("test file", formData);
+                setTestFiles((prevFiles) => [...prevFiles, ...response.data]);
+            }
+        }
+    } catch (error) {
+        console.error("Erreur lors de l'upload:", error);
+        toast.error("Une erreur est survenue lors de l'envoi des fichiers.");
     }
-  };
+};
 
   const handleDeleteConfirm = async () => {
     setOpenDeletePopup(false); // Fermer la popup de confirmation
     if (activePanel === "evidence") {
-      const response = await deleteEvidence(deletedEvidence.evidence_id);
-      if (response === 200) {
+      const response = await deleteEvidence(controleData.missionId,deletedEvidence.evidence_id);
+      if (response >= 200) {
         setEvidences((prevFiles) =>
           prevFiles.filter(
             (file) => file.evidence_id !== deletedEvidence.evidence_id
           )
         );
+        toast.success("Evidences ajoutés avec succees")
       }
     } else if (activePanel === "test") {
       console.log("ID du test file supprimé :", deletedTestFile.evidence_id);
@@ -464,8 +525,11 @@ function ControleExcutionPage() {
 
   const shouldShowRemediation =
     selectedMulti === 6 || selectedMulti === 3;
+    console.log('selectedmulti',selectedMulti)
 
- 
+    console.log('showRemediation',shouldShowRemediation)
+
+
 
 
   const handleValidate = () => {
@@ -695,29 +759,31 @@ function ControleExcutionPage() {
       steps: testScriptData,
       status_id: selectedMulti,
     };
-    await updateExecution(controleData.executionId, payload);
+    console.log('payload',payload)
+    await updateExecution(controleData.executionId, payload, controleData.missionId);
   };
 
 
-  const handleRowClick = (rowData) => {
-    // Naviguer vers la page de détails avec l'ID du contrôle dans l'URL
-    navigate(`/remediation/${rowData.id}`, {
-      state: { remediationData: rowData },
-    });
-    // navigate('/controle', { state: { controleData: rowData } });
-    console.log("Détails du contrôle sélectionné:", rowData);
-  };
+  // const handleRowClick = (rowData) => {
+  //   // Naviguer vers la page de détails avec l'ID du contrôle dans l'URL
+  //   navigate(`/remediation/${rowData.id}`, {
+  //     state: { remediationData: rowData },
+  //   });
+  //   // navigate('/controle', { state: { controleData: rowData } });
+  //   console.log("Détails du contrôle sélectionné:", rowData);
+  // };
 
   // Check if all remediations are done
 
   const isAllRemediationDone =
-   selectedMulti != "" && action.every((remediation) => remediation?.statusName === "Terminé");
+    selectedMulti != null  && action.every((remediation) => remediation?.statusName === "Terminé");
+    console.log('isAllRemediation',isAllRemediationDone)
 
   const controlStatus = isAllRemediationDone
     ? "Terminé"
     : isToReview || isToValidate
-    ? "En cours de revue"
-    : "En cours";
+      ? "En cours de revue"
+      : "En cours";
 
   const controlIcon =
     controlStatus === "Terminé" ? (
@@ -749,168 +815,49 @@ function ControleExcutionPage() {
       />
     );
 
-//*****************************can you check this please i commented it cause i donno if it causes an error ******************
-//     const isValidateDisabled =
-//     !selectedMulti || !shouldShowRemediation || !isAllRemediationDone// || !commentaire ;
-//   return (
-//     <>
-//       {isToReview || isToValidate && (
-//         <div className=" top-0 left-0 w-full h-full bg-transparent z-50 pointer-events-auto" />
-//       )}
-//       <Header user={user} />
+  //*****************************can you check this please i commented it cause i donno if it causes an error ******************
+      // const isValidateDisabled = (hadi khass nwelilha )
+      // !selectedMulti || !shouldShowRemediation || !isAllRemediationDone// || !commentaire ;
 
-  const handleAddCommentAtPosition = (y) => {
-    // Vérifier qu'on ne superpose pas un commentaire existant
-    const isOverlapping = existingComments.some((c) => Math.abs(c.y - y) < 50);
+        const isValidateDisabled = 
+       !selectedMulti ||( !shouldShowRemediation && !isAllRemediationDone)// || !commentaire ;
 
-    if (!isOverlapping) {
-      setComments([
-        ...comments,
-        {
-          y,
-          text: "",
-          tempId: Date.now(),
-        },
-      ]);
-    }
-  };
+       console.log('isValidated',isValidateDisabled)
 
-  const handleSaveComment = async (tempId, text) => {
-    if (!text.trim()) {
-      setComments(comments.filter((comment) => comment.tempId !== tempId));
-      return;
-    }
+   const [comments, setComments] = useState([]);
+  // const currentUserRole = JSON.parse(localStorage.getItem("User"))?.role;
 
-    const user = JSON.parse(window.localStorage.getItem("User"));
-    const firstName = user.firstName;
-    const lastName = user.lastName;
-    const fullName = `${firstName} ${lastName}`;
-    const initials = `${firstName[0] ?? ""}${lastName[0] ?? ""}`.toUpperCase();
+  const [overlayEnabled, setOverlayEnabled] = useState(true); // toggle admin
 
-    const newExistingComment = {
-      y: comments.find((c) => c.tempId === tempId).y,
-      initials: initials,
-      name: fullName,
-      text,
-    };
+  const shouldShowOverlay = (isToReview || isToValidate) && overlayEnabled;
 
-    const commentData = {
-      y: newExistingComment.y,
-      user_id: user.id,
-      execution_id: executionData?.[0]?.execution_id,
-      text: newExistingComment.text,
-    };
-
-    const status = await createComment(commentData);
-    if (status >= 200 && status < 300) {
-      setExistingComments([...existingComments, newExistingComment]);
-      setComments(comments.filter((comment) => comment.tempId !== tempId));
-    } else {
-      toast.error("une erreur est survenue veuillez ressayez");
-    }
-  };
-
-  const handleDeleteComment = async (commentId) => {
-    try {
-      toast.info("infos", commentId);
-      const response = await deleteComment(commentId);
-      if (response === 200) {
-        setExistingComments((prev) => prev.filter((c) => c.id !== commentId));
-        toast.success("Commentaire supprimé avec succès !");
-      }
-    } catch (error) {
-      toast.error("Erreur lors de la suppression du commentaire");
-      console.error(error);
-    }
-  };
-
-  const handleEdit = async (updatedComment) => {
-    console.log("updatedComment", updatedComment);
-
-    const status = await editComment(updatedComment.id, updatedComment.text);
-    if (status != 200) {
-      toast.error("erreur lors de la mise à jour");
-      return;
-    }
-    setExistingComments((prevComments) =>
-      prevComments.map((c) =>
-        c.id === updatedComment.id ? { ...c, text: updatedComment.text } : c
-      )
-    );
-  };
-
-  const handleCancelComment = (tempId) => {
-    // Supprime simplement le commentaire non sauvegardé
-    setComments(comments.filter((comment) => comment.tempId !== tempId));
-  };
-  const [comments, setComments] = useState([]);
-  const currentUserRole = JSON.parse(localStorage.getItem("User"))?.role;
-  return (
-    <div className="relative  ">
-      <div
-  className="absolute right-0 top-0 w-16 h-full bg-transparent border-l border-none z-40"
-  onClick={(e) => {
-    if (
-      e.target === e.currentTarget &&
-      currentUserRole !== "testeur" 
-    ) {
-      const rect = e.currentTarget.getBoundingClientRect();
-      const y = e.clientY - rect.top + e.currentTarget.scrollTop;
-      handleAddCommentAtPosition(y);
-    }
-  }}
->
-
-        {/* Commentaires existants (ne bloquent pas les clics sur la marge) */}
-        {!(isToReview || isToValidate) &&
-          existingComments.map((comment, index) => (
-            <div
-              key={`existing-${index}`}
-              className="absolute border-none right-4"
-              style={{ top: comment.y }}
-            >
-              <div className="border-none" onClick={(e) => e.stopPropagation()}>
-                
-                <ExistingComment
-                  user={{
-                    id: comment.userId,
-                    initials: comment.initials,
-                    name: comment.name,
-                  }}
-                  comment={comment.text}
-                  onDelete={() => handleDeleteComment(comment.id)}
-                  onEdit={(newText) =>
-                    handleEdit({ id: comment.id, text: newText })
-                  }
-                />
-              </div>
-            </div>
-          ))}
-
-        {/* Commentaires en cours d'édition à mettre dans la page de revue  */}
-        {comments.map((comment) => (
-          <div
-            key={`temp-${comment.tempId}`}
-            className="absolute right-4"
-            style={{ top: comment.y }}
-            onClick={(e) => e.stopPropagation()} // Bloque le clic parent
-          >
-            <CommentButton
-              onSave={(text) => handleSaveComment(comment.tempId, text)}
-              onCancel={() => handleCancelComment(comment.tempId)}
+ 
+    return (
+      
+       <div className="  ">
+        <Header user={user} />
+        <div className="flex flex-row w-full justify-between">
+    
+      
+<div className=" w-[96%]">
+        
+        {user?.role === 'admin' && (isToReview || isToValidate) && (
+          <div className=" mx-12 mt-6">
+        <FormControlLabel
+          control={
+            <Switch
+              checked={overlayEnabled}
+              onChange={(e) => setOverlayEnabled(e.target.checked)}
+              color="primary"
             />
-          </div>
-        ))}
-      </div>
-
-      {isToReview ||
-        (isToValidate && (
-          <div className="fixed top-0 left-0 w-full h-full bg-transparent z-50 pointer-events-auto" />
-        ))}
-      <Header />
-
+          }
+          label={overlayEnabled ? 'Overlay ON' : 'Overlay OFF'}
+        />
+        </div>
+      )}
 
       <div className="ml-8 mr-6 pb-9 relative">
+
         <div className="flex justify-between items-center px-4 py-2">
           {location.pathname.includes("") && <Breadcrumbs />}
         </div>
@@ -919,6 +866,9 @@ function ControleExcutionPage() {
           <h1 className="font-medium text-base">Statut : {controlStatus}</h1>
           {controlIcon}
         </div>
+        {shouldShowOverlay && (
+          <div className="fixed top-30 left-0  w-full h-full bg-transparent z-50 pointer-events-auto " />
+        )}
 
         <DescriptionTestScriptSection
           description={description}
@@ -943,23 +893,23 @@ function ControleExcutionPage() {
             name="Êtes-vous sûr de vouloir supprimer ce fichier ?"
           />
         )}
-    
-          <EvidencesSection
-            handleSelectionChange={handleSelectionChange}
-            files={files}
-            handleSaveFiles={handleSaveFiles}
-            handleDelete={handleDelete}
-            evidenceFiles={evidences}
-            testFiles={testFiles}
-            activePanel={activePanel}
-            setActivePanel={setActivePanel}
-            handleTabChange={handleTabChange}
-            selections={selections}
-            onStatesChange={handleStatesChange}
-            getFile={getFileURL}
-          />
-        
-     
+
+        <EvidencesSection
+          handleSelectionChange={handleSelectionChange}
+          files={files}
+          handleSaveFiles={handleSaveFiles}
+          handleDelete={handleDelete}
+          evidenceFiles={evidences}
+          testFiles={testFiles}
+          activePanel={activePanel}
+          setActivePanel={setActivePanel}
+          handleTabChange={handleTabChange}
+          selections={selections}
+          onStatesChange={handleStatesChange}
+          getFile={getFileURL}
+        />
+
+
         <ConclusionRemediationSection
           selectedMulti={selectedMulti}
           setSelectedMulti={setSelectedMulti}
@@ -995,9 +945,12 @@ function ControleExcutionPage() {
           handleSaveModifications={handleSaveModifications}
           loading={loading}
           isToReview={isToReview}
+          status={executionData?.[0]?.status_name}
           isToValidate={isToValidate}
+       
+
         />
-        
+
         {showPopup && (
           <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-md z-50">
             <PopUp
@@ -1006,9 +959,68 @@ function ControleExcutionPage() {
             />
           </div>
         )}
+        
       </div>
-    </>
-  );
+      </div>
+      <div
+        className=/*absolute right-0 top-0*/" w-[4%]  bg-transparent z-40   "
+        // onClick={(e) => {
+        //   if (
+        //     e.target === e.currentTarget &&
+        //     currentUserRole !== "testeur"
+        //   ) {
+        //     const rect = e.currentTarget.getBoundingClientRect();
+        //     const y = e.clientY - rect.top + e.currentTarget.scrollTop;
+        //     handleAddCommentAtPosition(y);
+        //   }
+        // }}
+      >
+
+        {/* Commentaires existants (ne bloquent pas les clics sur la marge) */}
+        {!(isToReview || isToValidate) &&
+          existingComments.map((comment, index) => (
+            <div
+              key={`existing-${index}`}
+              className="absolute border-none  right-3"
+              style={{ top: comment.y }}
+            >
+              <div className="border-none " onClick={(e) => e.stopPropagation()}>
+
+                <ExistingComment
+                  user={{
+                    id: comment.userId,
+                    initials: comment.initials,
+                    name: comment.name,
+                  }}
+                  comment={comment.text}
+                  // onDelete={() => handleDeleteComment(comment.id)}
+                  // onEdit={(newText) =>
+                  //   handleEdit({ id: comment.id, text: newText })
+                  // }
+                />
+              </div>
+            </div>
+          ))}
+
+        {/* Commentaires en cours d'édition à mettre dans la page de revue  */}
+        {comments.map((comment) => (
+          <div
+            key={`temp-${comment.tempId}`}
+            className="absolute right-4 "
+            style={{ top: comment.y }}
+            onClick={(e) => e.stopPropagation()} // Bloque le clic parent
+          >
+            <CommentButton
+              onSave={(text) => handleSaveComment(comment.tempId, text)}
+              onCancel={() => handleCancelComment(comment.tempId)}
+            />
+          </div>
+        ))}
+      </div>
+</div>
+      </div>
+    
+      );
 }
 
-export default ControleExcutionPage;
+      export default ControleExcutionPage;

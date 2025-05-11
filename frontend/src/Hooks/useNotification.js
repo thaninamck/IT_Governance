@@ -11,21 +11,23 @@ const useUser = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [notifications, setNotifications] = useState([]);
-
+  const unreadCount = notifications.filter(n => !n.isRead).length;
   // Fonction pour récupérer l'URL selon le type de notification
   const getNotificationUrl = (notification) => {
-    switch (notification.url?.type) {
+    
+    switch (notification?.type) {
+      
       case "mission":
         return `/missions/${notification.url.id}`;
       case "affectation_cntrl":
+      case "cloture_mission":
         return `/missions`;
-      case "meeting":
-        return `/meetings/${notification.url.id}`;
       case "security":
         return "#";
       default:
         return "/";
     }
+    
   };
 
   // Fonction pour formater les notifications
@@ -153,6 +155,7 @@ const useUser = () => {
     error,
     notifications,
     user,
+    unreadCount,
   };
 };
 

@@ -25,24 +25,24 @@ const useExecution = () => {
   }
 
   const getExecutionById =  async ($missionId,$id) => {
-        setLoading(true);
-        try {
-        const response = await api.get(`missions/${$missionId}/executions/get-execution/${$id}`);
-        return response.data;
-        } catch (error) {
-        setError(error);
-        //toast.error("Failed to fetch execution");
-        } finally {
-        setLoading(false);
-        }
-    };
+    setLoading(true);
+    try {
+    const response = await api.get(`missions/${$missionId}/executions/get-execution/${$id}`);
+    return response.data;
+    } catch (error) {
+    setError(error);
+    //toast.error("Failed to fetch execution");
+    } finally {
+    setLoading(false);
+    }
+};
 
     const getFileURL = `http://127.0.0.1:8000/storage/evidences/`;
       
-    const deleteEvidence = async (evidenceId) => {
+    const deleteEvidence = async (missionId,evidenceId) => {
         setLoading(true);
         try {
-            const response = await api.delete(`/evidences/delete-evidence/${evidenceId}`);
+            const response = await api.delete(`missions/${missionId}/evidences/delete-evidence/${evidenceId}`);
            // toast.success("Evidence deleted successfully");
             return response.status;
         } catch (error) {
@@ -53,11 +53,12 @@ const useExecution = () => {
         }
     };
 
-    const uploadEvidences = async (data) => {
+    const uploadEvidences = async (missionId,data) => {
         setLoading(true);
         try {
-            const response = await fileApi.post(`/evidences/upload`, data);
-            toast.success("Evidences ajoutés avec succees");
+            const response = await fileApi.post(`missions/${missionId}/evidences/upload`, data);
+           
+            // toast.success("Evidences ajoutés avec succees");
             return response;
         } catch (error) {
             setError(error);
@@ -67,10 +68,11 @@ const useExecution = () => {
         }
     };
 
-    const updateExecution = async (executionId,data) => {
+    const updateExecution = async (executionId,data,missionId) => {
+      console.log('payload data',data)
         setLoading(true);
         try {
-            const response = await api.put(`/executions/update-execution/${executionId}`, data);
+            const response = await api.put(`missions/${missionId}/executions/update-execution/${executionId}`, data);
             toast.success("Mis à jour avec succées");
             return response;
         } catch (error) {
@@ -88,7 +90,7 @@ const useExecution = () => {
         console.log ('app data', appData)
         const endpoint =
           (appData.role === "admin" || appData.profile === "manager"|| appData.profile === "superviseur")
-            ? `/missions/${appData.id}/getexecutionsList`
+            ? `/missions/${appData.id}/getAllexecutionsList`
             : `/missions/${appData.missionId}/${appData.id}/getexecutionsListForTesteur`;
         const response = await api.get(endpoint);
         return response.data;
@@ -169,10 +171,10 @@ const useExecution = () => {
         }
       };
       
-      const createComment = async (commentData) => {
+      const createComment = async (commentData,missionId) => {
         setLoading(true);
         try {
-          const response = await api.post("/executions/create-comment", commentData);
+          const response = await api.post(`missions/${missionId}/executions/create-comment`, commentData);
           toast.success("Commentaire ajouté !");
           return response.status;
         } catch (error) {
@@ -183,27 +185,25 @@ const useExecution = () => {
         }
       };
       
-
-     
-const deleteComment = async (commentId) => {
-  setLoading(true);
-  try {
-    const response = await api.delete(`/executions/delete-comment/${commentId}`);
-    toast.success("Commentaire supprimé !");
-    return response.status;
-  } catch (error) {
-    setError(error);
-    toast.error("Erreur lors de la suppression du commentaire");
-  } finally {
-    setLoading(false);
-  }
-};
+      const deleteComment = async (commentId,missionId) => {
+        setLoading(true);
+        try {
+          const response = await api.delete(`missions/${missionId}/executions/delete-comment/${commentId}`);
+          toast.success("Commentaire supprimé !");
+          return response.status;
+        } catch (error) {
+          setError(error);
+          toast.error("Erreur lors de la suppression du commentaire");
+        } finally {
+          setLoading(false);
+        }
+      };
 
 // Modifier un commentaire
-const editComment = async (commentId, newText) => {
+const editComment = async (commentId, newText,missionId) => {
   setLoading(true);
   try {
-    const response = await api.put(`/executions/update-comment/${commentId}`, {
+    const response = await api.put(`missions/${missionId}/executions/update-comment/${commentId}`, {
       text: newText,
     });
     

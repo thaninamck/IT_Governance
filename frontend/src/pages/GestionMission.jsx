@@ -23,15 +23,26 @@ import ImportCsvButton from "../components/ImportXcelButton";
 import StatusMission from "../components/StatusMission";
 import useGestionMission from "../Hooks/useGestionMission";
 import { useAuth } from "../Context/AuthContext";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import SideBarStdr from "../components/sideBar/SideBarStdr";
 
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import CancelIcon from '@mui/icons-material/Cancel';
 
+
+import { useProfile } from "../Context/ProfileContext";
 
 function GestionMission() {
   const navigate = useNavigate();
- const { user,viewMode} = useAuth();
- 
+  const { user, viewMode, changeViewMode } = useAuth();
+  const { profile } = useProfile();
+  const location = useLocation();
+  useEffect(() => {
+    if (user?.role === 'admin' && location.pathname.includes('/missionsUserViewMode')) {
+      changeViewMode('user');
+    }
+  }, [location.pathname, user, changeViewMode]);
+
 
   const {
     rowsData2,
@@ -46,7 +57,7 @@ function GestionMission() {
     snackbarMessage,
     pendingActions,
     activeView,
-   // user,
+    // user,
     setActiveView,
     setIsModalOpen,
     setIsEditModalOpen,
@@ -68,17 +79,19 @@ function GestionMission() {
     handlePopupClose,
     isMissionCreated,
     handleRowClick,
-  } = useGestionMission(user,viewMode);
+    changeStatus,
+    denyChangeStatus,
+  } = useGestionMission(user, viewMode, profile);
 
   console.log(user)
   // Colonnes de la table
   const columnsConfig2 = [
     { field: "clientName", headerName: "Client", width: 170 },
     { field: "missionName", headerName: "Mission", width: 170 },
-    ...(user?.role === "admin" 
+    ...(user?.role === "admin"
       ? [{ field: "manager", headerName: "Manager", width: 200 }]
       : [{ field: "profileName", headerName: "Profile", width: 150 }]
-  ),
+    ),
     { field: "startDate", headerName: "Date de début", width: 150 },
     { field: "endDate", headerName: "Date fin", width: 150 },
     {
@@ -99,75 +112,119 @@ function GestionMission() {
         return <StatusMission status={params.row.status} />;
       },
     },
-    { field: "actions", headerName: "Actions", width: 80 },
+    ...(activeView === "requeststatus"
+      ? [{
+        field: "request",
+        headerName: "Action",
+        width: 200,
+        customRenderCell: (params) => {
+          return (
+            <div className="flex gap-4">
+              <CheckCircleIcon
+                className="text-green-600 cursor-pointer hover:text-green-800"
+                onClick={() => changeStatus(params.row)}
+              />
+              <CancelIcon
+                className="text-red-600 cursor-pointer hover:text-red-800"
+                onClick={() => denyChangeStatus(params.row)}
+              />
+            </div>
+          );
+        },
+      }]
+      : [{
+        field: "actions",
+        headerName: "Actions",
+        width: 80,
+      }]
+    )
+
+
   ];
 
   // Actions sur les lignes de la table
   const rowActions = [
-    ...(user?.role === "admin" 
+    ...(user?.role === "admin"
       ? [
-          {
-            icon: <ArchiveRoundedIcon sx={{ marginRight: "5px" }} />,
-            label: "archivée",
-            onClick: handleArchiverRow,
-            disabled: (selectedRow) =>
-              !selectedRow || !["clôturée", "en_retard"].includes(selectedRow.status),
-          },
-        ]
+        {
+          icon: <ArchiveRoundedIcon sx={{ marginRight: "5px" }} />,
+          label: "archivée",
+          onClick: handleArchiverRow,
+          disabled: (selectedRow) =>
+            !selectedRow || !["clôturée", "en_retard"].includes(selectedRow.status),
+        },
+      ]
       : []),
+      ...(user?.role === "user" ||user?.role==="admin"
+        ? [
     {
       icon: <LockOpenRoundedIcon sx={{ marginRight: "5px" }} />,
       label: "Clôturée",
       onClick: handleCloturerRow,
-      disabled: (selectedRow) =>
-        !selectedRow || !["en_cours", "en_retard"].includes(selectedRow.status),
+      disabled: (selectedRow) => {
+        console.log("selectedRow", selectedRow); // Ce log s'exécutera quand la ligne est évaluée
+        return (
+          !selectedRow || 
+          selectedRow.profileName !== 'manager' ||
+          !["en_cours", "en_retard"].includes(selectedRow.status)
+        );
+      },
+      
+      
     },
-    ...(user?.role === "admin" 
+  
+  ]
+  : []),
+    ...(user?.role === "admin"
       ? [
-          {
-            icon: <HighlightOffRoundedIcon sx={{ marginRight: "5px" }} />,
-            label: "Annulée",
-            onClick: handleCancelRow,
-            disabled: (selectedRow) =>
-              !selectedRow ||
-              !["non_commencee", "en_cours", "en_attente"].includes(selectedRow.status),
-          },
-        ]
+        {
+          icon: <HighlightOffRoundedIcon sx={{ marginRight: "5px" }} />,
+          label: "Annulée",
+          onClick: handleCancelRow,
+          disabled: (selectedRow) =>
+            !selectedRow ||
+            !["non_commencee", "en_cours", "en_attente", "en_attente_annulation"].includes(selectedRow.status),
+        },
+      ]
       : []),
-    ...(user?.role === "admin" 
+    ...(user?.role === "admin"
       ? [
-          {
-            icon: (selectedRow) =>
-              selectedRow?.status === "en_attente" ? (
-                <PlayCircleOutlineRoundedIcon sx={{ marginRight: "5px" }} />
-              ) : (
-                <PauseCircleOutlineRoundedIcon sx={{ marginRight: "5px" }} />
-              ),
-            label: (selectedRow) =>
-              selectedRow?.status === "en_attente" ? "Reprendre" : "Pause",
-            onClick: handlePauseRow,
-            disabled: (selectedRow) =>
-              !selectedRow || !["en_cours", "en_attente"].includes(selectedRow.status),
-          },
-        ]
+        {
+          icon: (selectedRow) =>
+            selectedRow?.status === "en_attente" ? (
+              <PlayCircleOutlineRoundedIcon sx={{ marginRight: "5px" }} />
+            ) : (
+              <PauseCircleOutlineRoundedIcon sx={{ marginRight: "5px" }} />
+            ),
+          label: (selectedRow) =>
+            selectedRow?.status === "en_attente" ? "Reprendre" : "Pause",
+          onClick: handlePauseRow,
+          disabled: (selectedRow) =>
+            !selectedRow || !["en_cours", "en_attente", "non_commencee"].includes(selectedRow.status),
+        },
+      ]
       : []),
+      ...(user?.role === "admin" 
+        ? [
     {
       icon: <SquarePen className="mr-2" />,
       label: "Modifier",
       onClick: handleEditRow,
     },
-    ...(user?.role === "admin" 
+  ]
+  : []),
+    ...(user?.role === "admin"
       ? [
-          {
-            icon: (
-              <DeleteOutlineRoundedIcon
-                sx={{ color: "var(--alert-red)", marginRight: "5px" }}
-              />
-            ),
-            label: "Supprimer mission",
-            onClick: handleDeleteRow,
-          },
-        ]
+        {
+          icon: (
+            <DeleteOutlineRoundedIcon
+              sx={{ color: "var(--alert-red)", marginRight: "5px" }}
+            />
+          ),
+          label: "Supprimer mission",
+          onClick: handleDeleteRow,
+        },
+      ]
       : []),
     {
       icon: (
@@ -178,22 +235,23 @@ function GestionMission() {
     },
   ];
 
-  console.log(missionsToDisplay)
+  console.log('mission to display',missionsToDisplay)
   return (
     <div className="flex">
-      {user?.role === "admin" ? (
+      {user?.role === "admin" && viewMode === "admin" ? (
         <SideBar user={user} />
       ) : (
         <SideBarStdr user={user} />
       )}
-      
+
+
       <div className="flex-1 flex flex-col h-screen overflow-y-auto">
         <HeaderBis />
         <HeaderWithAction
           title="Missions"
           buttonLabel="Créer une mission"
-           onButtonClick={() => setIsModalOpen(true)}
-        user={user}
+          onButtonClick={() => setIsModalOpen(true)}
+          user={user}
         />
         <div className="flex items-center justify-center mb-6">
           <SearchBar
@@ -203,21 +261,23 @@ function GestionMission() {
           />
         </div>
         <div className="flex justify-end items-center gap-4 pr-10 mb-6">
-          <ImportCsvButton onDataImported={handleDataImported} />
+          {user?.role === "admin" &&
+            <ImportCsvButton onDataImported={handleDataImported} />
+          }
           <ExportButton
             rowsData={filteredRows}
-            headers={columnsConfig2.map((col) => col.headerName)}
+            columns={columnsConfig2}
             fileName="missions"
           />
         </div>
 
         {/* Boutons pour basculer entre les vues */}
-        {user?.role === "admin"  &&
+        {user?.role === "admin" &&
           <div className="flex border-b-2 border-gray-300 mb-3 ml-8 ">
             <button
               className={`px-4 py-2 ${activeView === "active"
-                  ? "rounded-l rounded-r-none border-none bg-gray-200 text-gray-700 "
-                  : "rounded-none text-[var(--subfont-gray)] border-none "
+                ? "rounded-l rounded-r-none border-none bg-gray-200 text-gray-700 "
+                : "rounded-none text-[var(--subfont-gray)] border-none "
                 } `}
               onClick={() => setActiveView("active")}
             >
@@ -225,12 +285,21 @@ function GestionMission() {
             </button>
             <button
               className={`px-4 py-2 ${activeView === "archived"
-                  ? " rounded-r rounded-l-none  border-none bg-gray-200 text-gray-700"
-                  : "rounded-none text-[var(--subfont-gray)] border-none"
+                ? " rounded-r rounded-l-none  border-none bg-gray-200 text-gray-700"
+                : "rounded-none text-[var(--subfont-gray)] border-none"
                 } `}
               onClick={() => setActiveView("archived")}
             >
               Missions Archivées
+            </button>
+            <button
+              className={`px-4 py-2 ${activeView === "requeststatus"
+                ? " rounded-r rounded-l-none  border-none bg-gray-200 text-gray-700"
+                : "rounded-none text-[var(--subfont-gray)] border-none"
+                } `}
+              onClick={() => setActiveView("requeststatus")}
+            >
+              Request status mission
             </button>
           </div>}
 
@@ -252,7 +321,7 @@ function GestionMission() {
               rowsData={missionsToDisplay}
               checkboxSelection={false}
               // getRowLink={getRowLink}
-              onRowClick={handleRowClick}
+              onRowClick={activeView === "requeststatus" ? null : handleRowClick} 
               headerTextBackground={"white"}
               headerBackground="var(--blue-menu)"
               // rowActions={rowActions}
@@ -261,26 +330,11 @@ function GestionMission() {
               )}
             />
           )}
-          {/* <AdminActionsPanel
-        pendingActions={pendingActions}
-        onValidateAction={handleValidateAction}
-        onRejectAction={handleRejectAction}
-      /> */}
+         
         </div>
 
       </div>
-      {/*  <AddRisqueForm
-      title="Créer un nouveau risque"
-      isOpen={isModalOpen}
-      onClose={closeModal}
-      onRisqueCreated={handleMissionCreation}
-    />*/}
-      {/* <AddControleForm
-      title="Créer un nouveau risque"
-      isOpen={isModalOpen}
-      onClose={closeModal}
-      onControleCreated={handleMissionCreation}
-    /> */}
+     
       <AddMissionForm
         title={"Ajouter une mission"}
         isOpen={isModalOpen}
@@ -322,7 +376,6 @@ function GestionMission() {
           />
         </div>
       )}
-
 
     </div>
   );

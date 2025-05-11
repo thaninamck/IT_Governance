@@ -8,8 +8,21 @@ export default function MultiSelectButtons({ readOnly, onSelectionChange = () =>
   const [isInitialized, setIsInitialized] = useState(false);
 
   // Initialiser l'état local une seule fois à partir des props
+  // useEffect(() => {
+  //   if (selections && !isInitialized) {
+  //     const convertedSelections = Object.fromEntries(
+  //       Object.entries(selections).map(([key, value]) => [
+  //         key,
+  //         value ? "Conforme" : "Non Conforme",
+  //       ])
+  //     );
+  //     setSelected(convertedSelections);
+  //     setIsInitialized(true); // Ne plus réinitialiser après
+  //   }
+  // }, [selections, isInitialized]);
+
   useEffect(() => {
-    if (selections && !isInitialized) {
+    if (selections) {
       const convertedSelections = Object.fromEntries(
         Object.entries(selections).map(([key, value]) => [
           key,
@@ -17,9 +30,8 @@ export default function MultiSelectButtons({ readOnly, onSelectionChange = () =>
         ])
       );
       setSelected(convertedSelections);
-      setIsInitialized(true); // Ne plus réinitialiser après
     }
-  }, [selections, isInitialized]);
+  }, [selections]);
 
   // Fonction de changement de sélection
   const toggleSelection = (option) => {

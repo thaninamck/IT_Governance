@@ -86,7 +86,7 @@ const Workplan = () => {
       id: id,
       description: description,
       owner: owner,
-      layers: layers.map((layer) => ({
+      layers: layers?.map((layer) => ({
         id: layer.id,
         name: layer.name,
         risks: [],

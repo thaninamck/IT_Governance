@@ -121,6 +121,7 @@ function UserViewMode() {
         <HeaderWithAction
           title="Missions"
         user={user}
+      
         />
         <div className="flex items-center justify-center mb-6">
           <SearchBar

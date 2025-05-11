@@ -4,7 +4,7 @@ import { useAuth } from "../Context/AuthContext"; // Contexte d'authentification
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { useParams } from "react-router-dom";
-const useWorkplan = () => {
+const useWorkplan = (missionId) => {
   const {id}=useParams();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
@@ -35,10 +35,10 @@ const useWorkplan = () => {
   };
 
 
-  const fetchTesters = async (id) => {
+  const fetchTesters = async (missionId) => {
     setLoading(true);
     try {
-      const response = await api.get(`/missions/${id}/testers`);
+      const response = await api.get(`/missions/${missionId}/testers`);
       const data = response.data;
       setTesters(data);
      console.log("testers",data);
@@ -70,7 +70,7 @@ const useWorkplan = () => {
   useEffect(() => {
     //const missionId = 1; 
     fetchOptions(id);
-    fetchTesters(id);
+    fetchTesters(missionId);
   }, []); 
 
   const deleteExecutions = async (executionsIds) => {

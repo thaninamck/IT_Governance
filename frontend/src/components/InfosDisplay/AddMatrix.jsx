@@ -10,6 +10,7 @@ function AddMatrix({ user,missionId ,dataFormat}) {
 const [modifActivated, setModifActivated] = useState(false);
 const [viewOnly, setViewOnly] = useState(true);
 
+console.log('mission data ',dataFormat)
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate()
   const handleAddMatrix = () => {
@@ -51,81 +52,153 @@ useEffect(()=>{
  // console.log('tstst',controleListe);
 },[controleListe])
 
+// function transformExecutionsToAppStructure(executions) {
+//   const applications = {};
 
-  function transformExecutionsToAppStructure(executions) {
-    const applications = {};
+//   executions.forEach(exec => {
+//     const appId = exec.systemId;
+//     const layerId = exec.layerId;
+//     const riskId = exec.riskId;
+//     const controlId = exec.controlId;
+//     const executionId=exec.executionId;
+//     const covId=exec.coverageId;
+//     const userId=exec.userId;
+//     // Si l'application n'existe pas, on l'ajoute
+//     if (!applications[appId]) {
+//       applications[appId] = {
+//         id: appId,
+//         description: exec.systemName,
+//         owner: exec.systemOwner,
+//         layers: {},
+//       };
+//     }
+
+//     const app = applications[appId];
+
+//     // Si le layer n'existe pas, on l'ajoute
+//     if (!app.layers[layerId]) {
+//       app.layers[layerId] = {
+//         id: layerId,
+//         name: exec.layerName,
+//         risks: {},
+//       };
+//     }
+
+//     const layer = app.layers[layerId];
+
+//     // Si le risque n'existe pas, on l'ajoute
+//     if (!layer.risks[riskId]) {
+//       layer.risks[riskId] = {
+//         id: riskId,
+//         nom: exec.riskName,
+//         description: exec.riskDescription,
+//         owner: exec.riskOwner,
+//         code:exec.riskCode,
+//         controls: [],
+//       };
+//     }
+
+//     const risk = layer.risks[riskId];
+
+//     // Ajout du contrôle (tu peux dédupliquer ici si besoin)
+//     risk.controls.push({
+//       id: controlId,
+//       executionId: executionId,
+//       covId: covId,
+//       description: exec.controlDescription,
+//       majorProcess:exec.majorProcess, // à récupérer si disponible
+//       subProcess: "N/A", // idem
+//       code:exec.controlCode,
+//       type: exec.executionEffectiveness || "N/A",
+//       testScript: exec.executionRemark || "",
+//       owner: exec.executionControlOwner || "",
+//       controlTester: userId || "", 
+//     });
+//   });
+
+//   // Maintenant on convertit le map en tableau imbriqué
+//   return Object.values(applications).map(app => ({
+//     ...app,
+//     layers: Object.values(app.layers).map(layer => ({
+//       ...layer,
+//       risks: Object.values(layer.risks),
+//     })),
+//   }));
+// }
   
-    executions.forEach(exec => {
-      const appId = exec.systemId;
-      const layerId = exec.layerId;
-      const riskId = exec.riskId;
-      const controlId = exec.controlId;
-      const executionId=exec.executionId;
-      const covId=exec.coverageId;
-  
-      // Si l'application n'existe pas, on l'ajoute
-      if (!applications[appId]) {
-        applications[appId] = {
-          id: appId,
-          description: exec.systemName,
-          owner: exec.systemOwner,
-          layers: {},
-        };
-      }
-  
-      const app = applications[appId];
-  
-      // Si le layer n'existe pas, on l'ajoute
-      if (!app.layers[layerId]) {
-        app.layers[layerId] = {
-          id: layerId,
-          name: exec.layerName,
-          risks: {},
-        };
-      }
-  
-      const layer = app.layers[layerId];
-  
-      // Si le risque n'existe pas, on l'ajoute
-      if (!layer.risks[riskId]) {
-        layer.risks[riskId] = {
-          id: riskId,
-          nom: exec.riskName,
-          description: exec.riskDescription,
-          owner: exec.riskOwner,
-          code:exec.riskCode,
-          controls: [],
-        };
-      }
-  
-      const risk = layer.risks[riskId];
-  
-      // Ajout du contrôle (tu peux dédupliquer ici si besoin)
-      risk.controls.push({
-        id: controlId,
-        executionId: executionId,
-        covId: covId,
-        description: exec.controlDescription,
-        majorProcess:exec.majorProcess, // à récupérer si disponible
-        subProcess: "N/A", // idem
-        code:exec.controlCode,
-        type: exec.executionEffectiveness || "N/A",
-        testScript: exec.executionRemark || "",
-        owner: exec.executionControlOwner || "",
-        testeur: exec.userFullName || "", 
-      });
+function transformExecutionsToAppStructure(executions) {
+  const applications = {};
+console.log("executions",executions)
+  executions.forEach(exec => {
+    const appId = exec.systemId;
+    const layerId = exec.layerId;
+    const riskId = exec.riskId;
+    const controlId = exec.controlId;
+    const executionId=exec.executionId;
+    const covId=exec.coverageId;
+    const userId=exec.userId;
+    // Si l'application n'existe pas, on l'ajoute
+    if (!applications[appId]) {
+      applications[appId] = {
+        id: appId,
+        description: exec.systemName,
+        owner: exec.systemOwner,
+        layers: {},
+      };
+    }
+
+    const app = applications[appId];
+
+    // Si le layer n'existe pas, on l'ajoute
+    if (!app.layers[layerId]) {
+      app.layers[layerId] = {
+        id: layerId,
+        name: exec.layerName,
+        risks: {},
+      };
+    }
+
+    const layer = app.layers[layerId];
+
+    // Si le risque n'existe pas, on l'ajoute
+    if (!layer.risks[riskId]) {
+      layer.risks[riskId] = {
+        id: riskId,
+        nom: exec.riskName,
+        description: exec.riskDescription,
+        owner: exec.riskOwner,
+        code:exec.riskCode,
+        controls: [],
+      };
+    }
+
+    const risk = layer.risks[riskId];
+
+    // Ajout du contrôle (tu peux dédupliquer ici si besoin)
+    risk.controls.push({
+      id: controlId,
+      executionId: executionId,
+      covId: covId,
+      description: exec.controlDescription,
+      majorProcess:exec.majorProcess, // à récupérer si disponible
+      subProcess: exec.subProcess ||"N/A", // idem
+      code:exec.controlCode,
+      type: exec.typeName || "N/A",
+      testScript: exec.testScript || "",
+      owner: exec.executionControlOwner || "",
+      controlTester: userId || "", 
     });
-  
-    // Maintenant on convertit le map en tableau imbriqué
-    return Object.values(applications).map(app => ({
-      ...app,
-      layers: Object.values(app.layers).map(layer => ({
-        ...layer,
-        risks: Object.values(layer.risks),
-      })),
-    }));
-  }
-  
+  });
+
+  // Maintenant on convertit le map en tableau imbriqué
+  return Object.values(applications).map(app => ({
+    ...app,
+    layers: Object.values(app.layers).map(layer => ({
+      ...layer,
+      risks: Object.values(layer.risks),
+    })),
+  }));
+}
   return (
     <div className="p-4 mb-1">
   {/* Titre avec icône */}
@@ -141,7 +214,7 @@ useEffect(()=>{
     ) : controleListe && controleListe.length > 0 ? (
       <>
         {/* Boutons Modifier + Ajouter */}
-        {user?.role === 'admin' && (
+         {(user?.role === 'admin' || dataFormat.profileName==='manager') && ( 
           <div className="flex justify-end pr-5 gap-4 mb-2">
             
             {!modifActivated && (
@@ -161,7 +234,7 @@ useEffect(()=>{
               Ajouter
             </button>
           </div>
-        )}
+       )} 
 
         {/* Matrice */}
         <Matrix
@@ -172,6 +245,7 @@ useEffect(()=>{
           unlockModification={modifActivated}
           stopModification={() => setModifActivated(false)}
           viewOnly={viewOnly}
+          missionId={missionId}
                   />
       </>
     ) : (

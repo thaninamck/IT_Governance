@@ -6,15 +6,20 @@ import { useAuth } from '../Context/AuthContext';
 import SideBarStdr from '../components/sideBar/SideBarStdr';
 
 function Notification() {
-   const { user} = useAuth();
+   const { user,viewMode} = useAuth();
   return (
     <div className="flex ">
       {/* Barre latérale fixe */}
-      {user?.role === "admin" ? (
+      {/* {user?.role === "admin" ? (
         <SideBar user={user} />
       ) : (
         <SideBarStdr user={user} />
-      )}
+      )} */}
+         {user?.role === "admin" && viewMode !== "user" ? (
+  <SideBar user={user} />
+) : (
+  <SideBarStdr user={user} />
+)}
 
       {/* Contenu principal défilable */}
       <div className=" flex-1 flex flex-col h-screen overflow-y-auto">

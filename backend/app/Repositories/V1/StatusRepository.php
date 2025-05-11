@@ -19,4 +19,19 @@ class StatusRepository
                      ->select('id', 'status_name')
                      ->get();
     }
+
+    public function getMissionStatusByName(string $name)
+    {
+        return Status::
+                     where('status_name', $name)
+                     ->first();
+    }
+
+    public function getMissionStatusById(int $id)
+    {
+        return Status::
+                     where('id', $id)
+                     ->first();
+    }
+    
 }

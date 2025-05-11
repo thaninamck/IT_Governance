@@ -93,7 +93,7 @@ class ExecutionController extends BaseController
         }
     }
 
-    public function updateComment(Request $request, $id)
+    public function updateComment(Request $request,$mission, $id)
     {
         try {
             $rules = [
@@ -112,7 +112,7 @@ class ExecutionController extends BaseController
         }
     }
     
-    public function deleteComment($id)
+    public function deleteComment($mission,$id)
     {
         try {
             $this->executionService->deleteComment($id);
@@ -167,7 +167,7 @@ class ExecutionController extends BaseController
         try {
             $rules = [
                 'user_id' => 'required|int',
-                'y'=> 'required|int',
+                'y'=> 'required|numeric',
                 'text'=> 'required|string',
                 'execution_id'=>'required|int'
             ];
@@ -251,6 +251,23 @@ class ExecutionController extends BaseController
             return $this->sendError('Erreur lors de la récupération des exécutions.', ['error' => $e->getMessage()], 500);
         }
     }
+    public function getAllExecutionsByApp($appId)
+    {
+        try {
+
+            $executions = ExecutionResource::collection($this->executionService->getAllExecutionsByApp($appId));
+            if ($executions->isEmpty()) {
+                return $this->sendError('Aucune exécution trouvée pour cette system.', [], 404);
+            }
+
+            return $this->sendResponse(
+                $executions,
+                'Liste des exécutions récupérée avec succès.'
+            );
+        } catch (\Exception $e) {
+            return $this->sendError('Erreur lors de la récupération des exécutions.', ['error' => $e->getMessage()], 500);
+        }
+    }
 
     public function getExecutionsByMissionAndSystemAndTester($missionId, $appId)
     {
@@ -292,7 +309,7 @@ class ExecutionController extends BaseController
 
 
 
-    public function updateExecution(Request $request, $executionId)
+    public function updateExecution(Request $request,$mission, $executionId)
     {
         Log::info('executionId:', [$executionId]);
 

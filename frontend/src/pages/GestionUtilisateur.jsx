@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import SideBar from "../components/sideBar/SideBar";
 import HeaderBis from "../components/Header/HeaderBis";
 import Table from "../components/Table";
@@ -21,7 +21,13 @@ import { Snackbar } from "@mui/material";
 import useUser from "../Hooks/useUser";
 import { useAuth } from "../Context/AuthContext";
 function GestionUtilisateur() {
-   const { user} = useAuth();
+    const { viewMode, changeViewMode, user } = useAuth();
+   
+     useEffect(() => {
+       if (user?.role === 'admin' && viewMode !== 'admin') {
+         changeViewMode('admin');
+       }
+     }, [user, viewMode, changeViewMode]);
   const {
     filteredRows,
     setFilteredRows,

@@ -16,7 +16,7 @@ function SearchBar({ columnsConfig, initialRows, onSearch }) {
   };
 
   const handleSearch = () => {
-    const filtered = initialRows.filter((row) => {
+    const filtered = initialRows?.filter((row) => {
       //Vérifie si le searchQuery correspond à l'une des colonnes
       const matchesSearch =
         searchQuery === "" ||

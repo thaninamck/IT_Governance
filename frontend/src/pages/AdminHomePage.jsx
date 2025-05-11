@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import SideBar from '../components/sideBar/SideBar';
 import HeaderBis from '../components/Header/HeaderBis';
@@ -9,7 +9,13 @@ import {useAuth} from '../Context/AuthContext'
 
 function AdminHomePage() {
   
-  const { user} = useAuth();
+ const { viewMode, changeViewMode, user } = useAuth();
+    
+      useEffect(() => {
+        if (user?.role === 'admin' && viewMode !== 'admin') {
+          changeViewMode('admin');
+        }
+      }, [user, viewMode, changeViewMode]);
 
   return (
     <div className="flex ">

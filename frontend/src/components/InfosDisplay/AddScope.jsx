@@ -7,6 +7,7 @@ import DecisionPopUp from '../PopUps/DecisionPopUp';
 import { useNavigate, useParams } from 'react-router-dom';
 import { api } from '../../Api';
 import { useSystem } from '../../Hooks/useSystem';
+import { useBreadcrumb } from '../../Context/BreadcrumbContext';
 
 function AddScope({ dataFormat,title, text, text1, onToggleForm, showForm, user, missionId,missionName }) {
   const {
@@ -27,10 +28,12 @@ function AddScope({ dataFormat,title, text, text1, onToggleForm, showForm, user,
     handleDecisionResponse
   } = useSystem(missionId, user, showForm, onToggleForm,missionName);
 
+  console.log('applications',applications)
+  const { addBreadcrumb } = useBreadcrumb();
   const columnsConfig = [
-    { field: 'name', headerName: 'Nom', width: 170, editable: true },
+    { field:'name', headerName: 'Nom', width: 160, editable: true },
     { field: 'description', headerName: 'Description', editable: true, width: 220, expandable: true },
-    { field: 'ownerName', headerName: 'Owner', width: 170 },
+    { field: 'ownerName', headerName: 'Owner', width: 200 },
     { field: 'ownerContact', headerName: 'Contact', width: 200 },
     {
       field: "layers",
@@ -68,7 +71,7 @@ function AddScope({ dataFormat,title, text, text1, onToggleForm, showForm, user,
   },
     // Ajouter la colonne "actions" conditionnellement
     ...((dataFormat?.profileName === 'manager' || user?.role === 'admin')
-      ? [{ field: 'actions', headerName: 'Action', width: 80 }]
+      ? [{ field: 'actions', headerName: 'Action', width: 70 }]
       : [])
   ];
  
@@ -80,10 +83,12 @@ function AddScope({ dataFormat,title, text, text1, onToggleForm, showForm, user,
 
   const navigate = useNavigate(); // Hook pour la navigation
   const handleRowClick = (rowData) => {
-    // Naviguer vers la page de détails avec l'ID du contrôle dans l'URL
-    //navigate(`/missions/${missionId}/${rowData.name}`, { state: { AppData: rowData } });
-    navigate(`/missions/${missionName}/${rowData.name}`, { state: { AppData: rowData } });
+    navigate(`/missions/${missionName}/${rowData.name}`, { state: {appId: rowData.id, AppData: rowData } });
     console.log('Détails du app sélectionné:', rowData);
+
+    addBreadcrumb(rowData?.name, `/missions/${missionName}/${rowData.name}`, 
+      { appId: rowData.id, AppData: rowData });
+    console.log('appId:', rowData.id);
   };
 
 
@@ -115,7 +120,7 @@ function AddScope({ dataFormat,title, text, text1, onToggleForm, showForm, user,
             handleDeny={() => handleDecisionResponse(false)}
           />
         </div>
-      )}
+       )}
 
       {(showForm || isAddingAnother) && (
         <NewAppForm title={''} 
@@ -142,7 +147,7 @@ function AddScope({ dataFormat,title, text, text1, onToggleForm, showForm, user,
       )}
 
       {applications.length > 0 && (
-        <div className={`mt-6 flex-1 overflow-x-auto overflow-y-auto h-[250px] transition-all ${isDeletePopupOpen ? 'blur-sm' : ''}`}>
+        <div className={`mt-6 flex-1  flex justify-center  overflow-x-auto overflow-y-auto h-[250px] transition-all ${isDeletePopupOpen ? 'blur-sm' : ''}`}>
           <Table
             key={JSON.stringify(applications)}
             columnsConfig={columnsConfig}

@@ -82,6 +82,10 @@ public function submitExecutionForFinalValidation($executionId)
     {
         return $this->executionRepository->getExecutionsByApp($appId);
     }
+    public function getAllExecutionsByApp($appId)
+    {
+        return $this->executionRepository->getAllExecutionsByApp($appId);
+    }
 
     public function getExecutionsByMissionAndTester($missionId,$userId)
     {

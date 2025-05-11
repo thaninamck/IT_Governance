@@ -3,18 +3,24 @@
 namespace App\Services\V1;
 
 use App\Models\Mission;
+use App\Models\Status;
 use App\Models\User;
 use App\Repositories\V1\MissionRepository;
+use App\Repositories\V1\StatusRepository;
+use Illuminate\Support\Facades\Log;
 
 class MissionService
 {
     protected MissionRepository $missionRepository;
+    protected StatusRepository $statusRepository;
     protected ParticipationService $participationService;
 
-    public function __construct(MissionRepository $missionRepository, ParticipationService $participationService)
+
+    public function __construct(MissionRepository $missionRepository, ParticipationService $participationService,StatusRepository $statusRepository)
     {
         $this->missionRepository = $missionRepository;
         $this->participationService = $participationService;
+        $this->statusRepository= $statusRepository;
     }
 
     public function getAllMissions()
@@ -168,35 +174,153 @@ public function getMissionSystemsById($id){
 
     public function createMission(array $data): Mission
     {
-        $data['status_id'] = 10; //NON commencée
+        $status=$this->statusRepository->getMissionStatusByName(Status::STATUS_NON_COMMENCEE);
+       
+        if (!$status) {
+            throw new \Exception("Statut 'non_commencee' pour les missions introuvable.");
+        }
+    
+        $data['status_id'] =$status->id ; //NON commencée
         return $this->missionRepository->createMission($data);
     }
 
     public function closeMission(int $id):Mission
     {
-        return $this->missionRepository->closeMission($id);
+
+        $status=$this->statusRepository->getMissionStatusByName('clôturée');
+       
+        if (!$status) {
+            throw new \Exception("Statut 'clôturé' pour les missions introuvable.");
+        }
+    
+        $status_id =$status->id ; //clôturé
+        logger()->info('Status ID récupéré pour clôturé : ' . $status_id);
+        return $this->missionRepository->closeMission($id,$status_id);
     }
     public function archiveMission(int $id):Mission
     {
-        return $this->missionRepository->archiveMission($id);
+        $status=$this->statusRepository->getMissionStatusByName('archivée');
+       
+        if (!$status) {
+            throw new \Exception("Statut 'archivée' pour les missions introuvable.");
+        }
+    
+        $status_id =$status->id ; //archivé
+        return $this->missionRepository->archiveMission($id,$status_id);
     }
     public function cancelMission(int $id):Mission
     {
-        return $this->missionRepository->cancelMission($id);
+        $status=$this->statusRepository->getMissionStatusByName(Status::STATUS_Annulée);
+       
+        if (!$status) {
+            throw new \Exception("Statut 'annulée' pour les missions introuvable.");
+        }
+    
+        $status_id =$status->id ; //annulée
+        logger()->info('Status ID récupéré pour annulation : ' . $status_id);
+
+        return $this->missionRepository->cancelMission($id,$status_id);
     }
-    public function stopMission(int $id): array
+
+    public function requestCancelMission(int $id):Mission
     {
-        return $this->missionRepository->stopMission($id);
+        $status=$this->statusRepository->getMissionStatusByName('en_attente_annulation');
+       
+        if (!$status) {
+            throw new \Exception("Statut 'en_attente_annulation' pour les missions introuvable.");
+        }
+    
+        $status_id =$status->id ; //en_attente_annulation
+        return $this->missionRepository->requestCancelMission($id,$status_id);
+    }
+    public function requestCloseMission(int $id):Mission
+    {
+        $status=$this->statusRepository->getMissionStatusByName('en_attente_de_clôture');
+       
+        if (!$status) {
+            throw new \Exception("Statut 'en_attente_de_clôture' pour les missions introuvable.");
+        }
+    
+        $status_id =$status->id ; //en_attente_de_clôture
+        return $this->missionRepository->requestCloseMission($id ,$status_id);
+    }
+    public function requestArchiveMission(int $id):Mission
+    {
+        $status=$this->statusRepository->getMissionStatusByName('en_attente_archivage');
+       
+        if (!$status) {
+            throw new \Exception("Statut 'en_attente_archivage' pour les missions introuvable.");
+        }
+    
+        $status_id =$status->id ; //en_attente_archivage
+        return $this->missionRepository->requestArchiveMission($id,$status_id);
+    }
+   
+    public function acceptrequestStatus(int $id): Mission
+    {
+        $mission = $this->missionRepository->findMissionById($id);
+        $statusName = $this->statusRepository->getMissionStatusById($mission->status_id);
+        
+        $status = null;
+    
+        if ($statusName->status_name === 'en_attente_archivage') {
+            $status = $this->statusRepository->getMissionStatusByName('archivée');
+            $mission->previous_status_id = null;
+        } elseif ($statusName->status_name  === 'en_attente_annulation') {
+            $status = $this->statusRepository->getMissionStatusByName(Status::STATUS_Annulée);
+            $mission->previous_status_id = null;
+        } elseif ($statusName->status_name  === 'en_attente_de_clôture') {
+            $status = $this->statusRepository->getMissionStatusByName('clôturée');
+            $mission->previous_status_id = null;
+        } else {
+            throw new \Exception("Le statut actuel '{$statusName}' ne correspond à aucun traitement prévu.");
+        }
+    
+        if (!$status) {
+            throw new \Exception("Le nouveau statut pour la mission est introuvable.");
+        }
+    
+        $status_id = $status->id;
+    
+        return $this->missionRepository->acceptrequestStatus($id, $status_id);
     }
     
-    public function resumeMission(int $id, int $previousStatusId, string $newStartDate): ?Mission
+    public function refuseRequestStatus(int $id):Mission
+    {
+        return $this->missionRepository->refuseRequestStatus($id);
+    }
+
+    public function stopMission(int $id): Mission
+    {
+        $status=$this->statusRepository->getMissionStatusByName('en_attente');
+       
+        if (!$status) {
+            throw new \Exception("Statut 'en_attente' pour les missions introuvable.");
+        }
+    
+        $status_id =$status->id ; //en_attente
+        return $this->missionRepository->stopMission($id,$status_id);
+    }
+    
+    public function resumeMission(int $id): ?Mission
 {
-    return $this->missionRepository->resumeMission($id, $previousStatusId, $newStartDate );
+    $mission = $this->missionRepository->findMissionById($id);
+     $statusName = $this->statusRepository->getMissionStatusById($mission->status_id);
+
+     if ($statusName->status_name !=='en_attente') {
+        throw new \Exception("La mission n'est pas en pause.");
+    }
+    
+    return $this->missionRepository->resumeMission($id);
 }
 
     public function getArchivedMissions()
 {
     return $this->missionRepository->getArchivedMissions();
+}
+public function getRequestStatusForMissions()
+{
+    return $this->missionRepository->getRequestStatusForMissions();
 }
 
     public function updateMission($id, array $data): ?Mission

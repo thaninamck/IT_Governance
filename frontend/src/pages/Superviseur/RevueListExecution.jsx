@@ -220,8 +220,8 @@ function RevueListExecution( {dataFormat}) {
                             columnsConfig={columnsConfig2}
                             rowsData={revueMissionData}
                             checkboxSelection={false}
-                            headerTextBackground={"white"}
-                            headerBackground="var(--blue-menu)"
+                           // headerTextBackground={"black"}
+                            headerBackground="var(--blue-nav)"
                             rowActions={rowActions}
                         />
                         </div>

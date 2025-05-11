@@ -41,10 +41,11 @@ function DisplayControleAppID() {
     "/rapportmission/:missionName",
   ];
 
-  const [appData, setAppData] = useState([]);
+ const [appData, setAppData] = useState([]);
   const [correctionExecution, setCorrectionExecution] = useState([]);
   const [activePanel, setActivePanel] = useState("executer");
 
+  console.log("appDATA",appData)
   const columnsConfig2 = [
     { field: "riskCode", headerName: "Risk Code", width: 80, expandable: true },
     { field: "riskDescription", headerName: "Risk Description", width: 200, expandable: true },
@@ -63,20 +64,21 @@ function DisplayControleAppID() {
         const isCorrection = activePanel === "corriger";
         const isToReview = params.row.isToReview;
         const isToValidate = params.row.isToValidate;
-    
+        const status =params.row.statusName;
+
         let buttonLabel = "Exécuter";
         let buttonColor = "bg-blue-500 hover:bg-blue-600";
-    
-        if (isCorrection) {
-          if (!isToReview && !isToValidate) {
+
+        // if (isCorrection) {
+          if (!isToReview && !isToValidate && status) {
             buttonLabel = "À corriger";
             buttonColor = "bg-orange-500 hover:bg-orange-600";
-          } else if (isToReview && isToValidate) {
+          } else if (isToReview && isToValidate && status) {
             buttonLabel = "Valider";
             buttonColor = "bg-green-500 hover:bg-green-600";
           }
-        }
-    
+        // }
+
         return (
           <button
             onClick={() =>
@@ -91,8 +93,8 @@ function DisplayControleAppID() {
         );
       },
     }
-    
-    
+
+
   ];
 
   useEffect(() => {
@@ -104,16 +106,27 @@ function DisplayControleAppID() {
     };
     loadData();
   }, [user, profile, AppData?.id]);
-  
+
+
+
+
   useEffect(() => {
     const loadCorrectionData = async () => {
       if (AppData?.id) {
         const data = await fetchExecutionsListForCorrection(AppData.missionId, AppData.id);
         setCorrectionExecution(data);
+        console.log('correction execution', correctionExecution)
       }
     };
     loadCorrectionData();
   }, [AppData?.id]);
+
+  
+
+  useEffect(() => {
+
+    console.log("corr exec", correctionExecution);
+  }, [correctionExecution]);
 
   const handleTabChange = (event, newValue) => {
     setActivePanel(newValue === 0 ? "executer" : "corriger");
@@ -130,90 +143,115 @@ function DisplayControleAppID() {
         {breadcrumbRoutes.some((route) => location.pathname.startsWith(route)) && <Breadcrumbs />}
         <AppInfo appId={AppData.id} />
         <Separator text="List des Contrôles" />
-        
-        <div className="flex-1  transition-all">
-          <Tabs
-            color="success"
-            aria-label="Control Tabs"
-            defaultValue={0}
-            onChange={handleTabChange}
-            sx={{
-              "--Tabs-spacing": "0px",
-              borderRadius: "8px",
-              boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-              backgroundColor: "white",
-              width: "100%",
-            }}
-          >
-            <TabList
-              sx={{
-              
-                borderBottom: "1px solid #e0e0e0",
-                backgroundColor: "#f9fafb",
-                padding: "0.5rem 0",
-                "& .MuiTab-root": {
-                  fontWeight: "600",
-                  textTransform: "capitalize",
-                  padding: "10px 20px",
-                  borderRadius: "8px 8px 0 0",
-                  transition: "all 0.2s ease",
-                  "&:hover": {
-                    backgroundColor: "#e0f2fe",
-                    color: "#1e40af",
-                  },
-                  "&[aria-selected='true']": {
-                    backgroundColor: "#dbeafe",
-                    color: "#1e40af",
-                    borderBottom: "2px solid #1e40af",
-                  },
-                },
-              }}
+        {
+          (AppData?.profile === 'manager' || AppData?.profile === 'superviseur' || user?.role === 'admin') ? (
+            appData.length > 0 ? (
+              <div className="flex-1 overflow-x-auto overflow-y-auto transition-all">
+              <Table
+                key={JSON.stringify(appData)}
+                columnsConfig={columnsConfig2}
+                rowsData={appData}
+                checkboxSelection={false}
+                // onRowClick={handleRowClick}
+                headerTextBackground="white"
+                headerBackground="var(--blue-menu)"
+              />
+              </div>
+            ) : (
+              <p className="text-gray-500 text-sm pl-6">Aucun contrôle disponible</p>
+            )
+
+          ): (
+              <div className = "flex-1  transition-all">
+            <Tabs
+              color = "success"
+              aria-label="Control Tabs"
+        defaultValue={0}
+        onChange={handleTabChange}
+        sx={{
+          "--Tabs-spacing": "0px",
+          borderRadius: "8px",
+          boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+          backgroundColor: "white",
+          width: "100%",
+        }}
             >
-              <Tab disableIndicator>Exécuter</Tab>
-              <Tab disableIndicator>Corriger</Tab>
-            </TabList>
+        <TabList
+          sx={{
 
-            <div className="bg-white py-4 rounded-b-lg">
-              <TabPanel value={0} sx={{ padding: 0 }}>
-                {loading ? (
-                  <p className="text-gray-500 text-sm pl-6">Chargement...</p>
-                ) : appData.length > 0 ? (
-                  <div className="flex-1 overflow-x-auto overflow-y-auto transition-all">
-                  <Table
-                    columnsConfig={columnsConfig2}
-                    rowsData={appData}
-                    checkboxSelection={false}
-                   // onRowClick={handleRowClick}
-                    headerTextBackground="white"
-                    headerBackground="var(--blue-menu)"
-                  />
-                  /</div>
-                ) : (
-                  <p className="text-gray-500 text-sm pl-6">Aucun contrôle disponible</p>
-                )}
-              </TabPanel>
+            borderBottom: "1px solid #e0e0e0",
+            backgroundColor: "#f9fafb",
+            padding: "0.5rem 0",
+            "& .MuiTab-root": {
+              fontWeight: "600",
+              textTransform: "capitalize",
+              padding: "10px 20px",
+              borderRadius: "8px 8px 0 0",
+              transition: "all 0.2s ease",
+              "&:hover": {
+                backgroundColor: "#e0f2fe",
+                color: "#1e40af",
+              },
+              "&[aria-selected='true']": {
+                backgroundColor: "#dbeafe",
+                color: "#1e40af",
+                borderBottom: "2px solid #1e40af",
+              },
+            },
+          }}
+        >
+          <Tab disableIndicator>Exécuter</Tab>
+          <Tab disableIndicator>Corriger</Tab>
+        </TabList>
 
-              <TabPanel value={1} sx={{ padding: 0 }}>
-                {loading ? (
-                  <p className="text-gray-500 text-sm pl-6">Chargement...</p>
-                ) : appData.length > 0 ? (
-                  <Table
-                    columnsConfig={columnsConfig2}
-                    rowsData={correctionExecution}
-                    checkboxSelection={false}
-                   // onRowClick={handleRowClick}
-                    headerTextBackground="white"
-                    headerBackground="var(--blue-menu)"
-                  />
-                ) : (
-                  <p className="text-gray-500 text-sm pl-6">Aucun contrôle disponible</p>
-                )}
-              </TabPanel>
-            </div>
-          </Tabs>
+        <div className="bg-white py-4 rounded-b-lg">
+          <TabPanel value={0} sx={{ padding: 0 }}>
+            {loading ? (
+              <p className="text-gray-500 text-sm pl-6">Chargement...</p>
+            ) : appData.length > 0 ? (
+              <div className="flex-1 overflow-x-auto overflow-y-auto transition-all">
+                <Table
+                  key={JSON.stringify(appData)}
+                  columnsConfig={columnsConfig2}
+                  rowsData={appData}
+                  checkboxSelection={false}
+                  // onRowClick={handleRowClick}
+                  headerTextBackground="white"
+                  headerBackground="var(--blue-menu)"
+                />
+                </div>
+            ) : (
+              <p className="text-gray-500 text-sm pl-6">Aucun contrôle disponible</p>
+            )}
+          </TabPanel>
+
+          <TabPanel value={1} sx={{ padding: 0 }}>
+            {loading ? (
+              <p className="text-gray-500 text-sm pl-6">Chargement...</p>
+            ) : correctionExecution.length > 0 ? (
+              <div className="flex-1 overflow-x-auto overflow-y-auto transition-all">
+              <Table
+                key={JSON.stringify(correctionExecution)}
+                columnsConfig={columnsConfig2}
+                rowsData={correctionExecution}
+                checkboxSelection={false}
+                // onRowClick={handleRowClick}
+                headerTextBackground="white"
+                headerBackground="var(--blue-menu)"
+              />
+              </div>
+            ) : (
+              <p className="text-gray-500 text-sm pl-6">Aucun contrôle disponible</p>
+            )}
+          </TabPanel>
         </div>
-      </div>
+      </Tabs>
     </div>
+  )
+}
+       
+      </div >
+    </div >
   );
 }
 

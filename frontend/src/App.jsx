@@ -208,23 +208,27 @@ const rowsData3 = [
           <Route path='/revue' element={<GestionRevue/>}/>
           <Route path='/revue/:missionRevue' element={<RevueListExecution/>}/>
           <Route path='/revue/revueExecution/:controlCode' element={<ReviewExecution/>}/>
-          <Route path='/notification' element={<Notification/>}/>
+          
           <Route path='/changePw' element={<ChangePassword/>}/>
+          <Route path='/login' element={<Login  />}></Route>
+
+          
           <Route path='/adminHomePage' element={<AdminHomePage/>}/>
           <Route path='/controlsManager' element={<ManageControls/>}/>
-          <Route path='/login' element={<Login  />}></Route>
-          <Route path='/myprofile' element={<MyProfile/>}></Route>
           <Route path='/missions' element={<GestionMission/>}></Route>
+          <Route path='/myprofile' element={<MyProfile/>}></Route>
           <Route path='/missionsUserViewMode' element={<UserViewMode/>}></Route>
-          
+          <Route path='/notification' element={<Notification/>}/>
+          <Route path='/utilisateurs' element={<GestionUtilisateur/>}></Route>
+          <Route path='/clients' element={<GestionClient/>}></Route>
+          <Route path='/settings' element={<Settings/>}></Route>
+         
           
           <Route path="/missions/:mission" element={<MissionDetail />} />
           <Route path='/rapportmissions/:mission' element={<MissionReport/>}></Route>
           <Route path="/missions/:mission/:name" element={<DisplayControleAppID />} />
 
-          <Route path='/utilisateurs' element={<GestionUtilisateur/>}></Route>
-          <Route path='/clients' element={<GestionClient/>}></Route>
-          <Route path='/settings' element={<Settings/>}></Route>
+          
           <Route path='/control' element={<ControleExcutionPage/>}></Route>
 
           <Route path='/missions/:mission/:name/:controlCode' element={<ControleExcutionPage/>}></Route>

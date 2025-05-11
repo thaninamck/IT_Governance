@@ -1,5 +1,5 @@
 // src/components/GestionClient.js
-import React, { useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
 import SideBar from '../components/sideBar/SideBar';
 import HeaderBis from '../components/Header/HeaderBis';
 import Table from '../components/Table';
@@ -16,7 +16,13 @@ import { useAuth } from '../Context/AuthContext';
 
 
 function GestionClient() {
-    const { user} = useAuth();
+    const { viewMode, changeViewMode, user } = useAuth();
+
+  useEffect(() => {
+    if (user?.role === 'admin' && viewMode !== 'admin') {
+      changeViewMode('admin');
+    }
+  }, [user, viewMode, changeViewMode]);
     // Configuration des colonnes pour la table
     const columnsConfig = [
         { field: 'commercialName', headerName: 'Nom', width: 250 },
@@ -30,8 +36,8 @@ function GestionClient() {
 
     // Utiliser le hook useClients pour gérer la logique des clients
     const {
-        filteredRows,
-        setFilteredRows,
+        filtereRows,
+        setFiltereRows,
         isModalOpen,
         isEditModalOpen,
         setIsEditModalOpen,
@@ -72,24 +78,24 @@ function GestionClient() {
 
                 {/* Barre de recherche */}
                 <div className="flex items-center justify-center mb-6">
-                    <SearchBar columnsConfig={columnsConfig} initialRows={filteredRows} onSearch={setFilteredRows} />
+                    <SearchBar columnsConfig={columnsConfig} initialRows={filtereRows} onSearch={setFiltereRows} />
                 </div>
 
                 {/* Bouton d'exportation */}
                 <div className="flex justify-end items-center pr-10 mb-6">
-                    <ExportButton rowsData={filteredRows} headers={columnsConfig.map(col => col.headerName)} fileName={fileName} />
+                    <ExportButton rowsData={filtereRows} headers={columnsConfig.map(col => col.headerName)} fileName={fileName} />
                 </div>
 
                 {/* Tableau des clients */}
                 <div className={`flex-1 overflow-x-auto overflow-y-auto h-[400px] transition-all ${isDeletePopupOpen ? 'blur-sm' : ''}`}>
-                    <Table key={JSON.stringify(filteredRows)} columnsConfig={columnsConfig} rowsData={filteredRows} checkboxSelection={false} headerBackground="var(--blue-nav)" rowActions={rowActions} />
+                    <Table key={JSON.stringify(filtereRows)} columnsConfig={columnsConfig} rowsData={filtereRows} checkboxSelection={false} headerBackground="var(--blue-nav)" rowActions={rowActions} />
                 </div>
             </div>
 
             {/* Modals */}
             <AddClientForm title={'Ajouter un Client'} isOpen={isModalOpen} onClose={closeModal} onClientCreated={handleClientCreation} />
             {isEditModalOpen && <AddClientForm title={'Modifier un client'} isOpen={isEditModalOpen} onClose={() => setIsEditModalOpen(false)} initialValues={selectedClient} onClientCreated={handleUpdateClient} />}
-            {isDeletePopupOpen && <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1"><DecisionPopUp name={filteredRows.find(row => row.id === selectedClientId)?.commercialName || 'ce client'} text="Êtes-vous sûr(e) de vouloir supprimer le client ?" handleConfirm={confirmDeleteClient} handleDeny={closeDeletePopup} /></div>}
+            {isDeletePopupOpen && <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1"><DecisionPopUp name={filtereRows.find(row => row.id === selectedClientId)?.commercialName || 'ce client'} text="Êtes-vous sûr(e) de vouloir supprimer le client ?" handleConfirm={confirmDeleteClient} handleDeny={closeDeletePopup} /></div>}
         </div>
     );
 }

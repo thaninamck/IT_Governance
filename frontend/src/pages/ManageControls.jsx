@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import HeaderBis from "../components/Header/HeaderBis";
 import SideBar from "../components/sideBar/SideBar";
 import Tabs from "@mui/joy/Tabs";
@@ -26,7 +26,13 @@ import AddControlForm from "../components/Forms/AddControleForm";
 import DecisionPopUp from "../components/PopUps/DecisionPopUp";
 import { useAuth } from "../Context/AuthContext";
 const ManageControls = () => {
-   const { user} = useAuth();
+   const { viewMode, changeViewMode, user } = useAuth();
+  
+    useEffect(() => {
+      if (user?.role === 'admin' && viewMode !== 'admin') {
+        changeViewMode('admin');
+      }
+    }, [user, viewMode, changeViewMode]);
   const [isOpen, setIsOpen] = useState(false);
   const [isOpenRisk, setIsOpenRisk] = useState(false);
   const [transformedData, setTransformeData] = useState({});

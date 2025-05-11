@@ -4,12 +4,13 @@ import "./Header.css";
 import icons from '../../assets/Icons'; // Importer l'objet contenant les icônes
 import NotificationPopup from '../Notification/NotificationPopup';
 import { useAuth } from '../../Context/AuthContext'; // Importer le contexte
+import useNotification from '../../Hooks/useNotification';
 
 function HeaderBis() {
     const navigate = useNavigate();
     const [showNotifications, setShowNotifications] = useState(false);
-    const [unreadCount, setUnreadCount] = useState(3); // Exemple : 3 notifications non lues
-
+    //const [unreadCount, setUnreadCount] = useState(); // Exemple : 3 notifications non lues
+    const { unreadCount } = useNotification();
     // Utiliser le contexte d'authentification
     const { logout } = useAuth();
 
@@ -30,18 +31,25 @@ function HeaderBis() {
           {/* Notifications - Affichage du popup */}
           <div className="notification_wrapper">
             <div className="notification_icon_container">
-              <icons.notifications
-                className="icon_notifications"
-                sx={{ color: 'var(--blue-icons)', cursor: 'pointer', marginRight: "10px" }}
-                onClick={() => {
-                  setShowNotifications(!showNotifications);
-                  setUnreadCount(0); // Réinitialiser les notifications non lues quand le popup est ouvert
-                }}
-              />
+            <icons.notifications 
+  className={`icon_notifications ${unreadCount > 0 ? 'animate-pulse' : ''}`} 
+  sx={{ color: 'var(--blue-icons)', cursor: 'pointer' }} 
+  onClick={() => {
+    setShowNotifications(!showNotifications);
+  //  setUnreadCount(0); // reset une fois ouvert
+  }} 
+/>
+            {unreadCount > 0 && (
+  <span className="notification_marker animate-push-up">
+    {unreadCount}
+  </span>
+)}
             </div>
 
             {showNotifications && (
-              <NotificationPopup setUnreadCount={setUnreadCount} />
+              <NotificationPopup 
+             // setUnreadCount={setUnreadCount} 
+              />
             )}
           </div>
 

@@ -29,6 +29,7 @@ class RemediationResource extends JsonResource
                 return [
                     'id' => $evidence->id,
                     'file_name' => $evidence->file_name,
+                    'stored_name'=>$evidence->stored_name,
                 ];
             }),
 

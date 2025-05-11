@@ -31,6 +31,7 @@ function Matrix({
   unlockModification,
   stopModification,
   viewOnly,
+  missionId
 }) {
   const {
     createExecutions,
@@ -39,7 +40,7 @@ function Matrix({
     saveloading,
     deleteExecutions,
     updateMultipleExecutions,
-  } = useWorkplan();
+  } = useWorkplan(missionId);
   const [saveWork, setSaveWork] = useState(false);
   const [flattenedData, setFlattenedData] = useState([]);
   const [selectedControls, setSelectedControls] = useState([]);
@@ -119,7 +120,7 @@ function Matrix({
                 // controlTester: "",
                 executionId: control.executionId,
                 covId: control.covId,
-                controlTester: control.testeur,
+                controlTester: control.controlTester,
                 modifiable: !viewOnly,
               });
             }
@@ -721,7 +722,7 @@ function Matrix({
       riskOwner: row.riskOwner,
       missionName:JSON.parse(localStorage.getItem("missionData")).missionName ||"non définie",
 
-      //controlTester: row.controlTester,
+      controlTester: row.controlTester,
     }));
 
     // Stocker les lignes extraites dans ton état
@@ -753,262 +754,522 @@ setShowExecutionDeleteConfirmation(true)
     console.log("hhjdkdkdkd", controlsToUpdate);
   }, [controlsToUpdate]);
 
-  return (
-    <>
-      <div className="flex  items-center justify-start mb-6"></div>
+//   return (
+//     <>
+//       <div className="flex  items-center justify-start mb-6"></div>
 
-      <div
-        className="flex items-center gap-4 justify-end my-5 mr-4 space-x-4"
-        style={{
-          display:
-            user?.role !== "admin" /* || userRole === 'manager'*/
-              ? "flex"
-              : "none",
-        }}
+//       <div
+//         className="flex items-center gap-4 justify-end my-5 mr-4 space-x-4"
+//         style={{
+//           display:
+//             user?.role !== "admin" /* || userRole === 'manager'*/
+//               ? "flex"
+//               : "none",
+//         }}
+//       >
+//         {/* Label */}
+//         <label className="text-gray-900 font-semibold">Owner</label>
+
+//         {/* Input Field */}
+//         <div className="relative flex items-center bg-white rounded-md border border-gray-300 w-60 px-3 py-2">
+//           <User className="text-gray-500 mr-2" size={16} />
+//           <input
+//             type="text"
+//             onChange={(e) => setOwner(e.target.value)}
+//             className="bg-transparent outline-none w-full"
+//             placeholder="Owner"
+//             value={owner}
+//           />
+//         </div>
+//         <div>{editMessage && <p>{editMessage}</p>}</div>
+
+//         {/* Button */}
+//         <button
+//           onClick={handleUpdateOwner}
+//           className="bg-blue-menu text-white px-4 py-2 rounded-md hover:bg-blue-900"
+//         >
+//           Ajouter
+//         </button>
+
+//         <div className="flex items-center  space-x-4">
+//           {/* Label */}
+//           <label className="text-gray-900 font-semibold">Testeur</label>
+
+//           {/* Dropdown */}
+//           <div className="relative z-30 w-60">
+//             <div
+//               className="flex items-center bg-white rounded-md border border-gray-300 px-3 py-2 cursor-pointer"
+//               onClick={() => setIsOpen(!isOpen)}
+//             >
+//               <User className="text-gray-500 mr-2" size={16} />
+//               <span className="flex-1 text-gray-700">
+//                 {selectedTester.designation}
+//               </span>
+//               <ChevronDown className="text-gray-500" size={16} />
+//             </div>
+//             {isOpen && (
+//               <ul className="absolute w-full bg-white border border-gray-300 rounded-md shadow-md mt-1">
+//                 {loading ? (
+//                   <li className="px-3 py-2">Chargement des testeurs...</li> // Afficher un message de chargement
+//                 ) : testers.length > 0 ? (
+//                   testers.map((tester) => (
+//                     <li
+//                       key={tester.id}
+//                       className="px-3 py-2 hover:bg-gray-100 cursor-pointer"
+//                       onClick={() => {
+//                         setSelectedTester(tester);
+//                         handleUpdateTesters(tester);
+//                         setIsOpen(false);
+//                       }}
+//                     >
+//                       {tester.designation}
+//                     </li>
+//                   ))
+//                 ) : (
+//                   <li className="px-3 py-2">Aucun testeur trouvé</li> // Message si pas de testeurs
+//                 )}
+//               </ul>
+//             )}
+//           </div>
+//         </div>
+
+//         <div className="   ">
+//           {atLeastOneApp && (
+//             <button
+//               onClick={() => {
+//                 setSaveWork(true);
+//               }}
+//               className="bg-blue-menu text-white px-4 py-2 rounded-md hover:bg-blue-900"
+//             >
+//               valider
+//             </button>
+//           )}
+//         </div>
+//       </div>
+//       <div className="flex justify-end mr-4 gap-2">
+//       {selectedRows.length > 0 && (
+//         <button
+//           className="bg-alert-red text-white px-4 py-2 rounded-md hover:bg-red-700 flex items-center gap-2"
+//           onClick={
+//             fromScopeModification
+//               ? handleShowDeleteExecutionConfirmation
+//               : handleAtWorkplanDelete
+//           }
+//         >
+//           <Trash size={18} />
+//           Supprimer
+//         </button>
+//       )}
+//       {fromScopeModification && selectedRows.length > 0 && (
+//         <>
+//           {modify ? (
+//             <button
+//               className="bg-blue-conf text-white px-4 py-2 rounded-md hover:bg-red-700 flex items-center gap-2"
+//               onClick={handleModifyLines}
+//             >
+//               Modifier
+//             </button>
+//           ) : (
+//             <button
+//               className="bg-blue-conf text-white px-4 py-2 rounded-md flex items-center gap-2"
+//               onClick={handleSaveModifictaion}
+//             >
+//               Enregistrer les modifications
+//             </button>
+//           )}
+//         </>
+//       )}</div>
+
+//       {saveWork && (
+//         <DecisionPopUp
+//           handleConfirm={handleSave}
+//           handleDeny={() => setSaveWork(false)}
+//           name="Confirmation"
+//           text="Êtes-vous sûr de vouloir valider les modifications ?"
+//           loading={saveloading}
+//         />
+//       )}
+//       {showExecutionDeleteConfirmation && (
+//         <DecisionPopUp
+//           handleConfirm={handleFromScopeDelete}
+//           handleDeny={() => setShowExecutionDeleteConfirmation(false)}
+//           name="Confirmation"
+//           text="Êtes-vous sûr de vouloir supprimer ces contrôles ? Cette action est irréversible."
+
+//           loading={loading}
+//         />
+//       )}
+//       <div className="m-3">
+//         <TableContainer component={Paper} className="overflow-auto ">
+//           <Table>
+//             <TableHead>
+//               <TableRow className="bg-blue-nav">
+//                 {/* Application */}
+//                 <TableCell
+//                   align="center"
+//                   style={{ width: 500 }}
+//                   className="border border-subfont-gray"
+//                 >
+//                   Application
+//                 </TableCell>
+
+//                 {/* Risques */}
+//                 <TableCell
+//                   align="center"
+//                   style={{ width: 950 }}
+//                   className="border border-subfont-gray"
+//                 >
+//                   Risques
+//                 </TableCell>
+
+//                 {/* Contrôles */}
+//                 <TableCell
+//                   colSpan={6} // 7 colonnes pour Contrôles
+//                   align="center"
+//                   className="border border-subfont-gray"
+//                 >
+//                   Contrôles
+//                 </TableCell>
+//               </TableRow>
+//             </TableHead>
+
+//             <TableBody>
+//               <TableRow>
+//                 <TableCell colSpan={14} style={{ padding: 0 }}>
+//                   <Paper style={{ height: 550, width: "100%" }}>
+//                     <DataGrid
+//                       sx={{
+//                         // Style pour les en-têtes de colonnes
+//                         "& .MuiDataGrid-columnHeader": {
+//                           backgroundColor: "#E9EFF8", // Couleur de fond verte
+//                         },
+//                         // Style pour les lignes au survol
+//                         "& .MuiDataGrid-row:hover": {
+//                           backgroundColor: "#E8F5E9", // Couleur de fond au survol
+//                         },
+//                       }}
+//                       rows={flattenedData}
+//                       onRowClick={handleRowClick}
+//                       // rows={searchResults}
+//                       columns={columns}
+//                       pageSize={5}
+//                       checkboxSelection={unlockModification}
+//                       isCellEditable={(params) => {
+//                         console.log(
+//                           "fromScopeModification",
+//                           fromScopeModification
+//                         );
+
+//                         const row = flattenedData.find(
+//                           (row) => row.id === params.row.id
+//                         );
+//                         return row?.modifiable || false;
+//                       }}
+//                       disableRowSelectionOnClick
+//                       onRowSelectionModelChange={(newSelection) => {
+//                         setSelectedControls(newSelection);
+//                       }}
+//                       rowSelectionModel={selectedControls}
+//                       rowsPerPageOptions={[5, 10, 20]}
+//                       editMode="cell"
+//                       onCellEditStop={(params, event) => {
+//                         console.log("Edition terminée sur la cellule", params);
+
+//                         const { id, field } = params;
+//                         const newValue = event.target.value;
+
+//                         // Mettre à jour le tableau de données avec la nouvelle valeur
+//                         setFlattenedData((prevData) => {
+//                           const updatedData = prevData.map((row) => {
+//                             if (row.id === id) {
+//                               console.log("le row est trouvé", field);
+//                               row[field] = newValue; // Mettre à jour la cellule
+//                               switch (field) {
+//                                 case "controlDescription":
+//                                   row["controlModified"] = true;
+//                                   break;
+
+//                                 case "riskDescription":
+//                                   row["riskModified"] = true;
+//                                   break;
+//                               }
+//                             }
+//                             return row;
+//                           });
+//                           return updatedData;
+//                         });
+//                       }}
+//                       //disableSelectionOnClick
+//                     />
+//                   </Paper>
+//                 </TableCell>
+//               </TableRow>
+//             </TableBody>
+//           </Table>
+//         </TableContainer>
+//       </div>
+//     </>
+//   );
+// }
+
+// export default Matrix;
+
+return (
+  <>
+    <div className="flex  items-center justify-start mb-6"></div>
+
+    <div
+      className="flex items-center gap-4 justify-end my-5 mr-4 space-x-4"
+      style={{
+        display:
+          user?.role !== "admin" /* || userRole === 'manager'*/
+            ? "flex"
+            : "none",
+      }}
+    >
+      {/* Label */}
+      <label className="text-gray-900 font-semibold">Owner</label>
+
+      {/* Input Field */}
+      <div className="relative flex items-center bg-white rounded-md border border-gray-300 w-60 px-3 py-2">
+        <User className="text-gray-500 mr-2" size={16} />
+        <input
+          type="text"
+          onChange={(e) => setOwner(e.target.value)}
+          className="bg-transparent outline-none w-full"
+          placeholder="Owner"
+          value={owner}
+        />
+      </div>
+      <div>{editMessage && <p>{editMessage}</p>}</div>
+
+      {/* Button */}
+      <button
+        onClick={handleUpdateOwner}
+        className="bg-blue-menu text-white px-4 py-2 rounded-md hover:bg-blue-900"
       >
+        Ajouter
+      </button>
+
+      <div className="flex items-center  space-x-4">
         {/* Label */}
-        <label className="text-gray-900 font-semibold">Owner</label>
+        <label className="text-gray-900 font-semibold">Testeur</label>
 
-        {/* Input Field */}
-        <div className="relative flex items-center bg-white rounded-md border border-gray-300 w-60 px-3 py-2">
-          <User className="text-gray-500 mr-2" size={16} />
-          <input
-            type="text"
-            onChange={(e) => setOwner(e.target.value)}
-            className="bg-transparent outline-none w-full"
-            placeholder="Owner"
-            value={owner}
-          />
-        </div>
-        <div>{editMessage && <p>{editMessage}</p>}</div>
-
-        {/* Button */}
-        <button
-          onClick={handleUpdateOwner}
-          className="bg-blue-menu text-white px-4 py-2 rounded-md hover:bg-blue-900"
-        >
-          Ajouter
-        </button>
-
-        <div className="flex items-center  space-x-4">
-          {/* Label */}
-          <label className="text-gray-900 font-semibold">Testeur</label>
-
-          {/* Dropdown */}
-          <div className="relative z-30 w-60">
-            <div
-              className="flex items-center bg-white rounded-md border border-gray-300 px-3 py-2 cursor-pointer"
-              onClick={() => setIsOpen(!isOpen)}
-            >
-              <User className="text-gray-500 mr-2" size={16} />
-              <span className="flex-1 text-gray-700">
-                {selectedTester.designation}
-              </span>
-              <ChevronDown className="text-gray-500" size={16} />
-            </div>
-            {isOpen && (
-              <ul className="absolute w-full bg-white border border-gray-300 rounded-md shadow-md mt-1">
-                {loading ? (
-                  <li className="px-3 py-2">Chargement des testeurs...</li> // Afficher un message de chargement
-                ) : testers.length > 0 ? (
-                  testers.map((tester) => (
-                    <li
-                      key={tester.id}
-                      className="px-3 py-2 hover:bg-gray-100 cursor-pointer"
-                      onClick={() => {
-                        setSelectedTester(tester);
-                        handleUpdateTesters(tester);
-                        setIsOpen(false);
-                      }}
-                    >
-                      {tester.designation}
-                    </li>
-                  ))
-                ) : (
-                  <li className="px-3 py-2">Aucun testeur trouvé</li> // Message si pas de testeurs
-                )}
-              </ul>
-            )}
+        {/* Dropdown */}
+        <div className="relative z-30 w-60">
+          <div
+            className="flex items-center bg-white rounded-md border border-gray-300 px-3 py-2 cursor-pointer"
+            onClick={() => setIsOpen(!isOpen)}
+          >
+            <User className="text-gray-500 mr-2" size={16} />
+            <span className="flex-1 text-gray-700">
+              {selectedTester.designation}
+            </span>
+            <ChevronDown className="text-gray-500" size={16} />
           </div>
-        </div>
-
-        <div className="   ">
-          {atLeastOneApp && (
-            <button
-              onClick={() => {
-                setSaveWork(true);
-              }}
-              className="bg-blue-menu text-white px-4 py-2 rounded-md hover:bg-blue-900"
-            >
-              valider
-            </button>
+          {isOpen && (
+            <ul className="absolute w-full bg-white border border-gray-300 rounded-md shadow-md mt-1">
+              {loading ? (
+                <li className="px-3 py-2">Chargement des testeurs...</li> // Afficher un message de chargement
+              ) : testers.length > 0 ? (
+                testers.map((tester) => (
+                  <li
+                    key={tester.id}
+                    className="px-3 py-2 hover:bg-gray-100 cursor-pointer"
+                    onClick={() => {
+                      setSelectedTester(tester);
+                      handleUpdateTesters(tester);
+                      setIsOpen(false);
+                    }}
+                  >
+                    {tester.designation}
+                  </li>
+                ))
+              ) : (
+                <li className="px-3 py-2">Aucun testeur trouvé</li> // Message si pas de testeurs
+              )}
+            </ul>
           )}
         </div>
       </div>
-      <div className="flex justify-end mr-4 gap-2">
-      {selectedRows.length > 0 && (
-        <button
-          className="bg-alert-red text-white px-4 py-2 rounded-md hover:bg-red-700 flex items-center gap-2"
-          onClick={
-            fromScopeModification
-              ? handleShowDeleteExecutionConfirmation
-              : handleAtWorkplanDelete
-          }
-        >
-          <Trash size={18} />
-          Supprimer
-        </button>
-      )}
-      {fromScopeModification && selectedRows.length > 0 && (
-        <>
-          {modify ? (
-            <button
-              className="bg-blue-conf text-white px-4 py-2 rounded-md hover:bg-red-700 flex items-center gap-2"
-              onClick={handleModifyLines}
-            >
-              Modifier
-            </button>
-          ) : (
-            <button
-              className="bg-blue-conf text-white px-4 py-2 rounded-md flex items-center gap-2"
-              onClick={handleSaveModifictaion}
-            >
-              Enregistrer les modifications
-            </button>
-          )}
-        </>
-      )}</div>
 
-      {saveWork && (
-        <DecisionPopUp
-          handleConfirm={handleSave}
-          handleDeny={() => setSaveWork(false)}
-          name="Confirmation"
-          text="Êtes-vous sûr de vouloir valider les modifications ?"
-          loading={saveloading}
-        />
-      )}
-      {showExecutionDeleteConfirmation && (
-        <DecisionPopUp
-          handleConfirm={handleFromScopeDelete}
-          handleDeny={() => setShowExecutionDeleteConfirmation(false)}
-          name="Confirmation"
-          text="Êtes-vous sûr de vouloir supprimer ces contrôles ? Cette action est irréversible."
+      <div className="   ">
+        {atLeastOneApp && (
+          <button
+            onClick={() => {
+              setSaveWork(true);
+            }}
+            className="bg-blue-menu text-white px-4 py-2 rounded-md hover:bg-blue-900"
+          >
+            valider
+          </button>
+        )}
+      </div>
+    </div>
+    <div className="flex justify-end mr-4 gap-2">
+    {selectedRows.length > 0 && (
+      <button
+        className="bg-alert-red text-white px-4 py-2 rounded-md hover:bg-red-700 flex items-center gap-2"
+        onClick={
+          fromScopeModification
+            ? handleShowDeleteExecutionConfirmation
+            : handleAtWorkplanDelete
+        }
+      >
+        <Trash size={18} />
+        Supprimer
+      </button>
+    )}
+    {fromScopeModification && selectedRows.length > 0 && (
+      <>
+        {modify ? (
+          <button
+            className="bg-blue-conf text-white px-4 py-2 rounded-md hover:bg-red-700 flex items-center gap-2"
+            onClick={handleModifyLines}
+          >
+            Modifier
+          </button>
+        ) : (
+          <button
+            className="bg-blue-conf text-white px-4 py-2 rounded-md flex items-center gap-2"
+            onClick={handleSaveModifictaion}
+          >
+            Enregistrer les modifications
+          </button>
+        )}
+      </>
+    )}</div>
 
-          loading={loading}
-        />
-      )}
-      <div className="m-3">
-        <TableContainer component={Paper} className="overflow-auto ">
-          <Table>
-            <TableHead>
-              <TableRow className="bg-blue-nav">
-                {/* Application */}
-                <TableCell
-                  align="center"
-                  style={{ width: 500 }}
-                  className="border border-subfont-gray"
-                >
-                  Application
-                </TableCell>
+    {saveWork && (
+      <DecisionPopUp
+        handleConfirm={handleSave}
+        handleDeny={() => setSaveWork(false)}
+        name="Confirmation"
+        text="Êtes-vous sûr de vouloir valider les modifications ?"
+        loading={saveloading}
+      />
+    )}
+    {showExecutionDeleteConfirmation && (
+      <DecisionPopUp
+        handleConfirm={handleFromScopeDelete}
+        handleDeny={() => setShowExecutionDeleteConfirmation(false)}
+        name="Confirmation"
+        text="Êtes-vous sûr de vouloir supprimer ces contrôles ? Cette action est irréversible."
 
-                {/* Risques */}
-                <TableCell
-                  align="center"
-                  style={{ width: 950 }}
-                  className="border border-subfont-gray"
-                >
-                  Risques
-                </TableCell>
+        loading={loading}
+      />
+    )}
+    <div className="m-3">
+      <TableContainer component={Paper} className="overflow-auto ">
+        <Table>
+          <TableHead>
+            <TableRow className="bg-blue-nav">
+              {/* Application */}
+              <TableCell
+                align="center"
+                style={{ width: 500 }}
+                className="border border-subfont-gray"
+              >
+                Application
+              </TableCell>
 
-                {/* Contrôles */}
-                <TableCell
-                  colSpan={6} // 7 colonnes pour Contrôles
-                  align="center"
-                  className="border border-subfont-gray"
-                >
-                  Contrôles
-                </TableCell>
-              </TableRow>
-            </TableHead>
+              {/* Risques */}
+              <TableCell
+                align="center"
+                style={{ width: 950 }}
+                className="border border-subfont-gray"
+              >
+                Risques
+              </TableCell>
 
-            <TableBody>
-              <TableRow>
-                <TableCell colSpan={14} style={{ padding: 0 }}>
-                  <Paper style={{ height: 550, width: "100%" }}>
-                    <DataGrid
-                      sx={{
-                        // Style pour les en-têtes de colonnes
-                        "& .MuiDataGrid-columnHeader": {
-                          backgroundColor: "#E9EFF8", // Couleur de fond verte
-                        },
-                        // Style pour les lignes au survol
-                        "& .MuiDataGrid-row:hover": {
-                          backgroundColor: "#E8F5E9", // Couleur de fond au survol
-                        },
-                      }}
-                      rows={flattenedData}
-                      onRowClick={handleRowClick}
-                      // rows={searchResults}
-                      columns={columns}
-                      pageSize={5}
-                      checkboxSelection={unlockModification}
-                      isCellEditable={(params) => {
-                        console.log(
-                          "fromScopeModification",
-                          fromScopeModification
-                        );
+              {/* Contrôles */}
+              <TableCell
+                colSpan={6} // 7 colonnes pour Contrôles
+                align="center"
+                className="border border-subfont-gray"
+              >
+                Contrôles
+              </TableCell>
+            </TableRow>
+          </TableHead>
 
-                        const row = flattenedData.find(
-                          (row) => row.id === params.row.id
-                        );
-                        return row?.modifiable || false;
-                      }}
-                      disableRowSelectionOnClick
-                      onRowSelectionModelChange={(newSelection) => {
-                        setSelectedControls(newSelection);
-                      }}
-                      rowSelectionModel={selectedControls}
-                      rowsPerPageOptions={[5, 10, 20]}
-                      editMode="cell"
-                      onCellEditStop={(params, event) => {
-                        console.log("Edition terminée sur la cellule", params);
+          <TableBody>
+            <TableRow>
+              <TableCell colSpan={14} style={{ padding: 0 }}>
+                <Paper style={{ height: 550, width: "100%" }}>
+                  <DataGrid
+                    sx={{
+                      // Style pour les en-têtes de colonnes
+                      "& .MuiDataGrid-columnHeader": {
+                        backgroundColor: "#E9EFF8", // Couleur de fond verte
+                      },
+                      // Style pour les lignes au survol
+                      "& .MuiDataGrid-row:hover": {
+                        backgroundColor: "#E8F5E9", // Couleur de fond au survol
+                      },
+                    }}
+                    rows={flattenedData}
+                    onRowClick={handleRowClick}
+                    // rows={searchResults}
+                    columns={columns}
+                    pageSize={5}
+                    checkboxSelection={unlockModification}
+                    isCellEditable={(params) => {
+                      console.log(
+                        "fromScopeModification",
+                        fromScopeModification
+                      );
 
-                        const { id, field } = params;
-                        const newValue = event.target.value;
+                      const row = flattenedData.find(
+                        (row) => row.id === params.row.id
+                      );
+                      return row?.modifiable || false;
+                    }}
+                    disableRowSelectionOnClick
+                    onRowSelectionModelChange={(newSelection) => {
+                      setSelectedControls(newSelection);
+                    }}
+                    rowSelectionModel={selectedControls}
+                    rowsPerPageOptions={[5, 10, 20]}
+                    editMode="cell"
+                    onCellEditStop={(params, event) => {
+                      console.log("Edition terminée sur la cellule", params);
 
-                        // Mettre à jour le tableau de données avec la nouvelle valeur
-                        setFlattenedData((prevData) => {
-                          const updatedData = prevData.map((row) => {
-                            if (row.id === id) {
-                              console.log("le row est trouvé", field);
-                              row[field] = newValue; // Mettre à jour la cellule
-                              switch (field) {
-                                case "controlDescription":
-                                  row["controlModified"] = true;
-                                  break;
+                      const { id, field } = params;
+                      const newValue = event.target.value;
 
-                                case "riskDescription":
-                                  row["riskModified"] = true;
-                                  break;
-                              }
+                      // Mettre à jour le tableau de données avec la nouvelle valeur
+                      setFlattenedData((prevData) => {
+                        const updatedData = prevData.map((row) => {
+                          if (row.id === id) {
+                            console.log("le row est trouvé", field);
+                            row[field] = newValue; // Mettre à jour la cellule
+                            switch (field) {
+                              case "controlDescription":
+                                row["controlModified"] = true;
+                                break;
+
+                              case "riskDescription":
+                                row["riskModified"] = true;
+                                break;
                             }
-                            return row;
-                          });
-                          return updatedData;
+                          }
+                          return row;
                         });
-                      }}
-                      //disableSelectionOnClick
-                    />
-                  </Paper>
-                </TableCell>
-              </TableRow>
-            </TableBody>
-          </Table>
-        </TableContainer>
-      </div>
-    </>
-  );
+                        return updatedData;
+                      });
+                    }}
+                    //disableSelectionOnClick
+                  />
+                </Paper>
+              </TableCell>
+            </TableRow>
+          </TableBody>
+        </Table>
+      </TableContainer>
+    </div>
+  </>
+);
 }
 
 export default Matrix;

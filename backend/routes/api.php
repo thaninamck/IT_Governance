@@ -152,11 +152,10 @@ Route::middleware(['auth:sanctum', SupervisorMiddleware::class])
     ->group(function () {
         Route::controller(ExecutionController::class)->group(function () {
 
-
-            Route::post('/executions/create-comment', 'createComment');
-            Route::put('/executions/update-comment/{id}', 'updateComment');     
-            Route::delete('/executions/delete-comment/{id}', 'deleteComment');  
-        
+            Route::post('missions/{mission}/executions/create-comment', 'createComment');
+            Route::put('missions/{mission}/executions/update-comment/{id}', 'updateComment');     
+            Route::delete('missions/{mission}/executions/delete-comment/{id}', 'deleteComment');  
+      
         });
         
 
@@ -167,9 +166,9 @@ Route::middleware(['auth:sanctum', TesterMiddleware::class])
     ->group(function () {
         Route::controller(ExecutionController::class)->group(function () {
             Route::get('/missions/{mission}/executions-for-tester', 'getExecutionsByMissionAndTester');
-            Route::put('/executions/update-execution/{execution}', 'updateExecution');
+            Route::put('missions/{mission}/executions/update-execution/{execution}', 'updateExecution');
             Route::put('/executions/launch-execution/{execution}', 'launchExecution');
-            Route::get('/executions/get-options', 'getExecutionStatusOptions');
+          //  Route::get('/executions/get-options', 'getExecutionStatusOptions');
 
             Route::get('missions/{mission}/executions/get-execution/{execution}', 'getExecutionById');//correct one
             Route::patch('/executions/submit-execution-for-review/{executionID}', 'submitExecutionForReview');
@@ -178,8 +177,8 @@ Route::middleware(['auth:sanctum', TesterMiddleware::class])
 
         });
         Route::controller(EvidenceController::class)->group(function () {
-            Route::delete('/evidences/delete-evidence/{evidenceId}', 'destroy');
-            Route::post('/evidences/upload', 'storeMultiple');
+            Route::delete('missions/{mission}/evidences/delete-evidence/{evidenceId}', 'destroy');
+            Route::post('missions/{mission}/evidences/upload', 'storeMultiple');
         });
     });
 
@@ -242,6 +241,12 @@ Route::prefix('v1')->group(function () {
         Route::get('/missions/{appId}/getexecutionsList', 'getExecutionsByApp');
     });
 });
+
+Route::prefix('v1')->group(function () {
+    Route::controller(ExecutionController::class)->group(function () {
+        Route::get('/missions/{appId}/getAllexecutionsList', 'getAllExecutionsByApp');
+    });
+});
 Route::middleware('auth:sanctum')->prefix('v1')->group(function () {
     Route::controller(ExecutionController::class)->group(function () {
         Route::get('/missions/{missionId}/{appId}/getexecutionsListForTesteur', 'getExecutionsByMissionAndSystemAndTester');
@@ -259,6 +264,25 @@ Route::middleware('auth:sanctum')->prefix('v1')->group(function () {
     Route::controller(MissionController::class)->group(function () {
         Route::get('/mission/{missionid}/getsystems', 'getSystemsByMissionID');
     });
+
+    Route::controller(MissionController::class)->group(function () {
+        Route::put('/missions/{id}/requestcancelmission', 'RequestCancelMission');
+    });
+    Route::controller(MissionController::class)->group(function () {
+        Route::put('/missions/{id}/requestCloseMission', 'RequestCloseMission');
+    });
+    Route::controller(MissionController::class)->group(function () {
+        Route::put('/missions/{id}/requestArchiveMission', 'RequestArchiveMission');
+    });
+});
+Route::prefix('v1')->controller(MissionController::class)->group(function () {
+    Route::put('/acceptrequeststatus/{id}', 'AcceptRequestStatus');
+});
+Route::prefix('v1')->controller(MissionController::class)->group(function () {
+    Route::get('/missions/getrequeststatusmission', 'getRequestStatusForMissions');
+});
+Route::prefix('v1')->controller(MissionController::class)->group(function () {
+    Route::put('/refuseRequestStatus/{id}', 'RefuseRequestStatus');
 });
 //gestion layers
 Route::prefix('v1')->group(function () {
@@ -329,7 +353,7 @@ Route::prefix('v1')->controller(MissionController::class)->group(function () {
     Route::put('/stopmission/{id}', 'stopMission');
 });
 Route::prefix('v1')->controller(MissionController::class)->group(function () {
-    Route::put('/cancelmission/{id}', 'cancelMission');
+    Route::put('/missions/{id}/cancelmission', 'cancelMission');
 });
 Route::prefix('v1')->controller(MissionController::class)->group(function () {
     Route::put('/closemission/{id}', 'closeMission');
@@ -441,6 +465,9 @@ Route::prefix('v1')->controller(ExecutionController::class)->group(function () {
 
 Route::prefix('v1')->controller(ExecutionController::class)->group(function () {
     Route::get('/executions/get-execution/{execution}', 'getExecutionById');
+});
+Route::prefix('v1')->controller(ExecutionController::class)->group(function () {
+    Route::get('/executions/get-options', 'getExecutionStatusOptions');
 });
 
 

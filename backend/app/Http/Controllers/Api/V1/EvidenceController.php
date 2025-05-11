@@ -56,7 +56,7 @@ public function storeRemediationMultiple(Request $request)
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy( $evidenceId)
+    public function destroy($mission, $evidenceId)
     {
         try {
             $this->evidenceService->deleteFile($evidenceId);

@@ -5,6 +5,7 @@ import EmailIcon from "@mui/icons-material/Email";
 import PasswordChange from "../components/Forms/PasswordChange";
 import HeaderBis from "../components/Header/HeaderBis";
 import { useAuth } from "../Context/AuthContext";
+import SideBarStdr from "../components/sideBar/SideBarStdr";
 
 const MyProfile = () => {
   // const user = {
@@ -16,10 +17,18 @@ const MyProfile = () => {
   //   email: "email@email.com"
   // };
 
-  const { user} = useAuth();
+  const { user, viewMode} = useAuth();
   return (
     <div className="flex flex-wrap min-h-screen bg-gray-100">
-      <SideBar user={user} />
+
+
+      {user?.role === "admin" && viewMode !== "user" ? (
+  <SideBar user={user} />
+) : (
+  <SideBarStdr user={user} />
+)}
+
+      
       <div className="flex-1  flex flex-col bg-white overflow-auto  ">
         <HeaderBis />
         <div className="flex flex-col items-center justify-center  sm:flex-row gap-20 items-center">
