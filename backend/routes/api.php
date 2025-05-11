@@ -90,11 +90,13 @@ Route::middleware(['auth:sanctum', AdminMiddleware::class])
         });
     });
 
+
 Route::middleware(['auth:sanctum', AdminMiddleware::class])
     ->prefix('v1')
     ->group(function () {
         Route::controller(UserController::class)->group(function () {
             Route::get('/users', 'index');
+            Route::get('/grades', 'getGrades');
             Route::post('/insert-user', 'store');
             Route::post('/reset-user/{id}', 'resetUser');
             Route::patch('/update-user/{id}', 'updateUser');

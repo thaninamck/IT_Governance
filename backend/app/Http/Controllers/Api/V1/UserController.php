@@ -46,14 +46,25 @@ class UserController extends BaseController
      * Store a newly created resource in storage.
      */
 
-
+     public function getGrades() {
+        $grades = $this->userService->getGrades();  // Appel de la méthode pour récupérer les grades
+    
+        // Vérifier si des grades ont été récupérés
+        if ($grades->isEmpty()) {
+            return $this->sendError("No grades found", []); // Retourner une erreur si aucun grade n'est trouvé
+        }
+    
+        // Retourner une réponse réussie avec les grades récupérés
+        return $this->sendResponse($grades, "Grades retrieved successfully");
+    }
+    
     public function store(Request $request): JsonResponse
     {
         try {
             $rules = [
                 'first_name' => 'required|string|max:255',
                 'last_name' => 'required|string|max:255',
-                'grade' => 'nullable|string|max:255',
+                'position_id' => 'nullable|integer|max:255',
                 'phone_number' => 'nullable|string|max:255',
                 'email' => 'required|email|unique:users',
                 'role'=> 'sometimes|integer',
@@ -71,6 +82,7 @@ class UserController extends BaseController
             }
 
             $userData = $validator->validated();
+            Log::info("user to create",$userData);
 
             $user = $this->userService->createUser($userData);
 
@@ -163,7 +175,7 @@ public function resetUser(Request $request, $id): JsonResponse
                 'first_name' => 'sometimes|string|max:255',
                 'last_name' => 'sometimes|string|max:255',
                 'email' => 'sometimes|email|unique:users,email,' . $id,
-                'grade' => 'sometimes|string|max:25',
+                'position_id' => 'sometimes|integer|max:25',
                 'phone_number' => 'sometimes|string',
                 'role' => 'sometimes|integer|in:0,1',
                 'is_active' => 'sometimes|boolean'

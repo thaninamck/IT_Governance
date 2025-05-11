@@ -19,11 +19,12 @@ return new class extends Migration
             $table->string('email', 255)->unique();
             $table->string('password');
             $table->integer('role')->default('0'); 
-            $table->string('grade', 255)->nullable();
+           
             $table->string('phone_number', 255)->nullable();
             $table->boolean('is_active')->default(false);
             $table->timestamp('last_activity')->nullable();
             $table->timestamp('last_password_change')->nullable();
+            $table->foreignId('position_id')->constrained('positions');
 
             $table->boolean('must_change_password')->default(true);
             $table->timestamps(); 

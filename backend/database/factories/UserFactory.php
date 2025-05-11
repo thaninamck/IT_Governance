@@ -1,7 +1,7 @@
 <?php
-
 namespace Database\Factories;
 
+use App\Models\Position;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
@@ -29,11 +29,11 @@ class UserFactory extends Factory
             'email' => fake()->unique()->safeEmail(),
             'password' => static::$password ??= Hash::make('passwordpass'),
             'remember_token' => Str::random(10),
-            'grade' => fake()->randomElement(['junior1', 'junior2', 'directeur IT','senior2','senior1','manager','assistant manager','senior manager']),
             'is_active' => fake()->boolean(),
             'phone_number' => fake()->phoneNumber(),
             'last_activity' => fake()->dateTime(),
-            'role' => fake()->randomElement(['0']),
+            'position_id' => fake()->randomElement(Position::pluck('id')->toArray()), // Ajout de position_id
+            'role' => fake()->randomElement(['0']), // Assigner un rôle 'user'
         ];
     }
 

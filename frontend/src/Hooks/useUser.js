@@ -33,7 +33,8 @@ const useUser = () => {
         nom: user.firstName, // Concaténation du nom et du prénom
         prenom: user.lastName,
         fullName: `${user.firstName} ${user.lastName}`,
-        grade: user.grade,
+        grade: user.position.name,
+        position_id:user.position.id,
         email: user.email,
         contact: user.phoneNumber,
         lastPasswordChange: user.lastPasswordChange ? user.lastPasswordChange.split("T")[0] : "pas encore changé",
@@ -51,6 +52,25 @@ const useUser = () => {
       setLoading(false);
     }
   };
+
+  const fetchGrades = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await api.get("/grades"); 
+      return   response.data.map(grade => ({
+        label: grade.name,  
+        value: grade.id     
+      }));
+    } catch (error) {
+      setError("Erreur lors de la récupération des grades.");
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+
 
   const handleDeleteRow = async (selectedRow) => {
     setSelectedAppId(selectedRow.id);
@@ -153,7 +173,7 @@ const useUser = () => {
     const formattedApp = {
       first_name: updatedApp.prenom,
       last_name: updatedApp.nom,
-      grade: updatedApp.grade,
+      position_id: updatedApp.position_id,
       phone_number: updatedApp.contact,
       email: updatedApp.email,
       role: updatedApp.role === "Admin" ? 1 : 0,
@@ -200,7 +220,7 @@ const useUser = () => {
     const formattedUser = {
       first_name: newUser.prenom,
       last_name: newUser.nom,
-      grade: newUser.grade,
+      position_id: newUser.position_id,
       phone_number: newUser.contact,
       email: newUser.email,
       password: newUser.password,
@@ -211,6 +231,7 @@ const useUser = () => {
     try {
       setLoading(true);
       setError(null);
+      console.log("user to create",formattedUser)
       const response = await api.post("/insert-user", formattedUser);
       console.log("response", response);
       setFilteredRows((prevRows) => [
@@ -272,6 +293,7 @@ const useUser = () => {
     loading,
     error,
     handleDeleteRow,
+    fetchGrades,
     isEditModalOpen,
     selectedApp,
     setIsEditModalOpen,

@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Models;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
@@ -25,12 +26,13 @@ class User extends Authenticatable
         'last_name',
         'email',
         'password',
-        'grade',
+        
         'is_active',
         'last_activity',
        'must_change_password',
        'last_password_change',
         'role', 
+        'position_id',
     ];
 
     /**
@@ -75,5 +77,8 @@ class User extends Authenticatable
         return $this->morphMany(\Illuminate\Notifications\DatabaseNotification::class, 'notifiable');
     }
 
-
+    public function position(): BelongsTo
+    {
+        return $this->belongsTo(Position::class);
+    }
 }

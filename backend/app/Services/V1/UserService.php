@@ -1,6 +1,7 @@
 <?php
 namespace App\Services\V1;
 
+use App\Models\Position;
 use App\Repositories\V1\UserRepository;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
@@ -8,6 +9,7 @@ class UserService
 {
 
     protected UserRepository $userRepository;
+
 
     public function __construct(UserRepository $userRepository)
     {
@@ -17,6 +19,9 @@ class UserService
     public function getAllUsers()
     {
         return $this->userRepository->getAllUsers();
+    }
+    public function getGrades(){
+        return Position::all();
     }
 
     public function createUser(array $data): User

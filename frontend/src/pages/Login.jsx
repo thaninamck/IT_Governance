@@ -25,7 +25,9 @@ const Login = () => {
     setErrorMessage("");
 
     // Valider les champs
-    if (!username || !password || !captchaValue) {
+    if (!username || !password 
+      // || !captchaValue
+    ) {
       setErrorMessage("Veuillez remplir tous les champs.");
       return;
     }
