@@ -53,7 +53,7 @@ function DisplayControleAppID() {
     { field: "controlDescription", headerName: "Description", width: 200, expandable: true },
     { field: "executionControlOwner", headerName: "Owner", width: 120, expandable: true },
     { field: "layerName", headerName: "Layer", width: 100, expandable: true },
-    { field: "etat", headerName: "State", width: 150, expandable: true },
+    { field: "executionEtat", headerName: "State", width: 150, expandable: true },
     { field: "statusName", headerName: "Status", width: 150, expandable: true },
     { field: "userFullName", headerName: "Tester", width: 150, expandable: true },
     {
@@ -101,6 +101,7 @@ function DisplayControleAppID() {
     const loadData = async () => {
       if ((user?.role || profile) && AppData?.id) {
         const data = await fetchExecutionsListForApp(AppData);
+
         setAppData(data);
       }
     };

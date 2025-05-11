@@ -58,7 +58,10 @@ class ExecutionResource extends JsonResource
         'majorProcess' => $this->major_process,
         'subProcess' => $this->sub_process,
         'typeName' => $this->type_name,
-
+       'remediations' => json_decode($this->remediations ?? '[]', true),
+       'executionEtat' => $this->execution_status ?? null,
+       'remarks' => json_decode($this->remarks ?? '[]', true), 
+       
         'userId' => $this->user_id,
         'userFullName' => $this->tester_full_name,
 'testScript' => $this->formatStepsText($this->steps),
