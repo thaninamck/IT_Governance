@@ -7,7 +7,7 @@ class UserRepository
 {
     public function getAllUsers()
     {
-        return User::all();
+        return User::with(['position'])->get();
     }
 
     public function createUser(array $data): User

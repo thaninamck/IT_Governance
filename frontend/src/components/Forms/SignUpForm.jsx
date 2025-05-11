@@ -42,9 +42,9 @@ function SignUpForm({ title, username, password, onUsernameChange, onPasswordCha
         onChange={onPasswordChange}
       />
 
-      <div className="flex justify-center">
+      {/* <div className="flex justify-center">
       <ReCAPTCHA size="normal" sitekey="6LfzaOwqAAAAAGyx4zcdwN8kT5AH6Ov891S4nS0P" onChange={onCaptchaChange} />
-      </div>
+      </div> */}
 
       {/* Message d'erreur global */}
       {typeof errorMessage === "string" && errorMessage && <p className="text-red-500 text-sm">{errorMessage}</p>}
