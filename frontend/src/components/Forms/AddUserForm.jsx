@@ -16,17 +16,17 @@ function AddUserForm({
 }) {
   if (!isOpen) return null;
 
-  const { fetchGrades } = useUser(); // Utilisation du fetchGrades du hook useUser
+  const { fetchGrades } = useUser();
 
-  // Déplacer la fonction getCurrentDate ici
   const getCurrentDate = () => new Date().toISOString().split("T")[0];
 
-  const [userData, setUserData] = useState({
+  const defaultUserData = {
     username: "",
     nom: "",
     prenom: "",
     position_id: "",
     position_name: "",
+    lastPasswordChange: "pas encore changé",
     email: "",
     contact: "",
     dateField: "",
@@ -34,8 +34,9 @@ function AddUserForm({
     status: "Actif",
     role: "Utilisateur normal",
     password: "",
-  });
+  };
 
+  const [userData, setUserData] = useState(defaultUserData);
   const [isUpdating, setIsUpdating] = useState(false);
   const [error, setError] = useState("");
   const [internalLoading, setInternalLoading] = useState(false);
@@ -51,19 +52,24 @@ function AddUserForm({
 
   useEffect(() => {
     const fetchGradesData = async () => {
-      const fetchedGrades = await fetchGrades(); // Appel de la fonction fetchGrades
-      setGrades(fetchedGrades); // Mise à jour de l'état grades avec les données récupérées
+      const fetchedGrades = await fetchGrades();
+      setGrades(fetchedGrades);
     };
 
-    fetchGradesData(); // Récupérer les grades à chaque fois que le formulaire est ouvert
+    fetchGradesData();
+  }, [fetchGrades]);
 
-    if (initialValues) {
-      setUserData(initialValues);
-      setIsUpdating(true);
-    } else {
-      setIsUpdating(false);
+  useEffect(() => {
+    if (isOpen) {
+      if (initialValues) {
+        setUserData(initialValues);
+        setIsUpdating(true);
+      } else {
+        setUserData(defaultUserData);
+        setIsUpdating(false);
+      }
     }
-  }, [fetchGrades, initialValues]); // Ajout de fetchGrades dans la liste des dépendances
+  }, [isOpen, initialValues]);
 
   useEffect(() => {
     if (userData.nom && userData.prenom) {
@@ -120,7 +126,6 @@ function AddUserForm({
       //   setInternalLoading(false);
       // }
     }
-    console.log(updatedUser);
 
     await onUserCreated(updatedUser);
     onClose();
@@ -187,9 +192,7 @@ function AddUserForm({
             value={userData.contact}
             onChange={(e) => {
               const value = e.target.value;
-
-              // N'autorise que les chiffres et le "+" au début, limite à 13 caractères
-              if (/^(\+?[0-9]{0,9})$/.test(value)) {
+              if (/^(\+?[0-9]{0,10})$/.test(value)) {
                 setUserData({ ...userData, contact: value });
               }
             }}
