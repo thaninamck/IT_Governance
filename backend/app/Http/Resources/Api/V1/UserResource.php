@@ -29,6 +29,7 @@ class UserResource extends JsonResource
             }),
 
             'role' => $this->role == 0 ? 'user' : 'admin',
+            'grade'=>$this->grade,
             'lastActivity' => $this->last_activity,
             'lastPasswordChange' => $this->last_password_change,
             'isActive' => $this->is_active,

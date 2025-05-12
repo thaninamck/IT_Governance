@@ -75,11 +75,24 @@ class SystemService
         // Associer au système à la mission
        // $this->missionRepository->attachSystem($missionId, $system->id);
 
-// Créer les layers et les associer au système
+// // Créer les layers et les associer au système
+// $layers = [];
+// foreach ($data['layerName'] as $layerName) {
+//     $layer = $this->layerService->createLayer($layerName,$system->id);
+//     $layers[] = $layer; // Stocke les layers créés
+// }
+
+// Créer les layers uniquement s'ils n'existent pas
 $layers = [];
 foreach ($data['layerName'] as $layerName) {
-    $layer = $this->layerService->createLayer($layerName,$system->id);
-    $layers[] = $layer; // Stocke les layers créés
+    $existingLayer = $this->layerService->findLayerByNameAndSystemId($layerName, $system->id);
+
+    if (!$existingLayer) {
+        $layer = $this->layerService->createLayer($layerName, $system->id);
+        $layers[] = $layer;
+    } else {
+        $layers[] = $existingLayer; // Optionnel : ajouter même les existants à la liste
+    }
 }
 
 // Charger les layers pour la réponse

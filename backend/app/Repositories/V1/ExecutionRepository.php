@@ -9,6 +9,7 @@ use App\Models\StepExecution;
 use App\Models\StepTestScript;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
+use League\CommonMark\Node\Query\OrExpr;
 
 class ExecutionRepository
 {
@@ -392,7 +393,7 @@ GROUP BY
             u.id, u.first_name, u.last_name
     ", [$appId]);
     }
-    
+
 
 
 
@@ -782,6 +783,31 @@ GROUP BY
             ->where('is_to_validate', false)
             ->whereHas('layer.system.mission', function ($query) use ($missionId) {
                 $query->where('id', $missionId);
+            })
+            ->get();
+    }
+    //admin
+    public function getAllExecutionReview($missionId, $appId)
+    {
+        return Execution::with([
+            'user',
+            'user.participations.profile',
+            'status',
+            'layer',
+            'layer.system',
+            'layer.system.mission',
+            'coverage',
+            'steps.control'
+        ])
+            ->where(function ($query) {
+                $query->where('is_to_review', true)
+                    ->orWhere('is_to_validate', true);
+            })
+            ->whereHas('layer.system.mission', function ($query) use ($missionId) {
+                $query->where('id', $missionId);
+            })
+            ->whereHas('layer.system', function ($query) use ($appId) {
+                $query->where('id', $appId);
             })
             ->get();
     }

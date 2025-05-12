@@ -36,4 +36,11 @@ class LayerService
         }
         return $this->layerRepository->deleteLayer($id);
     }
+    public function findLayerByNameAndSystemId(string $name, int $systemId)
+{
+    return Layer::where('name', $name)
+                ->where('system_id', $systemId)
+                ->first();
+}
+
 }

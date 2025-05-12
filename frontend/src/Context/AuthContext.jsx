@@ -109,7 +109,7 @@ export const AuthProvider = ({ children }) => {
         email:response.data.user.email
       };
       
-      console.log(response.data)
+      console.log('userData',response.data)
 
       window.localStorage.setItem("User", JSON.stringify(userData));
       setUser(userData);

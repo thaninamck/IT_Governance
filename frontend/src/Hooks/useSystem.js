@@ -38,6 +38,7 @@ export const useSystem = (missionId, user, showForm, onToggleForm,missionName) =
           prevApps.map(row => row.id === app.id ? response.data : row)
         );
         setSelectedApp(null);
+        await fetchMissionSystems();
         onToggleForm();
       } else {
         console.log('add  app',app)

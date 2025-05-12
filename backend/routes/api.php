@@ -428,6 +428,11 @@ Route::middleware('auth:sanctum')->prefix('v1')->group(function () {
         Route::get('/revue/{missionId}/getexecutionreviewedforSuperviseur', 'getexecutionReviewBySuperviseur');
     });
 });
+Route::middleware('auth:sanctum')->prefix('v1')->group(function () {
+    Route::controller(ExecutionController::class)->group(function () {
+        Route::get('/revue/{missionId}/{appId}/getAllExecutionReview', 'getAllExecutionReview');
+    });
+});
 // Route::prefix('v1')->controller(ExecutionController::class)->group(function () {
 //     Route::get('/revue/getmissionexecutionreviewedforSuperviseur', 'getmissionReviewBySuperviseur');
 // });

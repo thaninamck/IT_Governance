@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { api } from "../Api"; 
 import { useNavigate } from "react-router-dom";
 
-const useRevue = (activeView) => {
+const useRevue = (activeView,user) => {
     const navigate = useNavigate(); 
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
@@ -45,7 +45,7 @@ const useRevue = (activeView) => {
                 console.log("sup",response.data)
             } else if (missionRevueData.profileName === 'manager') {
                 response = await api.get(`/revue/${missionRevueData.id}/getexecutionreviewedforManager`);
-            } else {
+            }else {
                 throw new Error("Profil non pris en charge pour la revue.");
             }
 
@@ -58,6 +58,24 @@ const useRevue = (activeView) => {
         }
     };
 
+    const fetchRevueExecutionsForApp = async (appRevueData) => {
+        setLoading(true);
+        try {
+            let response;
+
+        console.log('apprevue',appRevueData)
+                response = await api.get(`/revue/${appRevueData.missionId}/${appRevueData.id}/getAllExecutionReview`);
+                console.log("admin",response.data)
+          
+
+            return response?.data || [];
+        } catch (err) {
+            setError(err.message);
+            return [];
+        } finally {
+            setLoading(false);
+        }
+    };
     const handleRowClick = (rowData) => {
         navigate(`/revue/${rowData.missionName}`, { state: { missionRevueData: rowData } });
         console.log('Détails du mission revue sélectionné:', rowData);
@@ -71,6 +89,7 @@ const useRevue = (activeView) => {
         setFilteredRows,
         fetchRevueExecutions,
         handleRowClick,
+        fetchRevueExecutionsForApp,
 
     };
 };
