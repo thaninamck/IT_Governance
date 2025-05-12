@@ -51,7 +51,7 @@ const MyProfile = () => {
               </div>
             </div>
           </div>
-          <PasswordChange />
+          {/* <PasswordChange /> */}
         </div>
       </div>
     </div>
