@@ -253,14 +253,14 @@ function GestionMission() {
           onButtonClick={() => setIsModalOpen(true)}
           user={user}
         />
-        <div className="flex items-center justify-center mb-6">
+        <div className="flex items-center justify-center ">
           <SearchBar
             columnsConfig={columnsConfig2}
             initialRows={rowsData2}
             onSearch={handleSearchResults}
           />
         </div>
-        <div className="flex justify-end items-center gap-4 pr-10 mb-6">
+        <div className="flex justify-end items-center gap-4 pr-10 ">
           {user?.role === "admin" &&
             <ImportCsvButton onDataImported={handleDataImported} />
           }
@@ -304,7 +304,7 @@ function GestionMission() {
           </div>}
 
         <div
-          className={`flex-1 overflow-x-auto overflow-y-auto h-[400px] transition-all ${isDeletePopupOpen ? "blur-sm" : ""
+          className={`flex-1 overflow-x-auto overflow-y-auto mx-5 mb-5 h-[500px] transition-all ${isDeletePopupOpen ? "blur-sm" : ""
             }`}
         >
           {missionsToDisplay.length === 0 ? (

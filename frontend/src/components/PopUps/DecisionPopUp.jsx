@@ -17,7 +17,7 @@ const DecisionPopUp = ({ name, text, loading, handleConfirm, handleDeny }) => {
       >
         &times;
       </div>
-      <h2 className="sm:w-auto sm:h-auto text-blue-menu sm:text-xl sm:font-semibold text-xs mt-3">
+      <h2 className="text-center sm:w-auto sm:h-auto text-blue-menu sm:text-xl sm:font-semibold text-xs mt-3">
         {text}
       </h2>
       <span className="text-[var(--subfont-gray)] text-center">{name}</span>

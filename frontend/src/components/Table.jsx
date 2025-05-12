@@ -46,8 +46,8 @@ function ExpandableCell({ value, maxInitialLength = 50, onExpand }) {
         // backgroundColor: isExpanded ? '#f0f0f0' : 'transparent',
         border: isExpanded ? "1px solid #ddd" : "none",
         transition: "all 0.3s ease",
-        minHeight: isExpanded ? "100px" : "auto", // Hauteur minimale quand étendu
-        maxHeight: isExpanded ? "none" : "50px", // Limiter la hauteur initiale
+        minHeight: isExpanded ? "120px" : "auto", // Hauteur minimale quand étendu
+        maxHeight: isExpanded ? "none" : "60px", // Limiter la hauteur initiale
         overflow: "visible",
         paddingTop: "8px",
       }}
@@ -158,7 +158,7 @@ function Table({
     const isAnyCellExpanded = Object.keys(expandedCells).some(
       (key) => key.startsWith(`${params.id}-`) && expandedCells[key]
     );
-    return isAnyCellExpanded ? "auto" : 60; // Par défaut 50px, auto si une cellule est étendue
+    return isAnyCellExpanded ? "auto" : 70; // Par défaut 50px, auto si une cellule est étendue
   };
 
   const columns = [
@@ -381,7 +381,7 @@ function Table({
             borderBottom: "1px solid #ddd",
             whiteSpace: "normal",
             wordWrap: "break-word",
-            overflow: "visible",
+            overflow: "auto",
             textOverflow: "clip",
             alignItems: "center", // Centrer le contenu verticalement
             display: "flex",
