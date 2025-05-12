@@ -41,34 +41,63 @@ function AddScope({ dataFormat,title, text, text1, onToggleForm, showForm, user,
       width: 200,
       expandable: true,
       customRenderCell: (params) => {
-       // console.log("Couche value:", params.value); // Debugging line
-
         const layers = Array.isArray(params.value) ? params.value : [];
-       // console.log('cc',layers)
-
-
+        const [showAll, setShowAll] = React.useState(false);
+        const maxVisible = 3;
+    
+        if (layers.length === 0) {
+          return <span className="text-gray-400">Aucune donnée</span>;
+        }
+    
         return (
-          <div className="flex flex-wrap gap-1">
-          {layers.length > 0 ? (
-            layers.map((layer, index) => (
+          <div className="flex flex-wrap gap-1 items-center">
+            {(showAll ? layers : layers.slice(0, maxVisible)).map((layer, index) => (
               <div
                 key={index}
-                title={layer.name} // Affiche le nom complet au survol
-                className="px-2 py-1 text-xs bg-blue-100 text-blue-600 rounded-full border border-white shadow cursor-pointer"
+                title={layer.name}
+                className="px-2 py-1 text-xs bg-blue-100 text-blue-600 rounded-full border border-white shadow"
               >
-                {layer.name} {/* Affiche le nom complet */}
-                
-                {/* OU pour les initiales seulement : */}
-                {/* {layer.name.substring(0, 3).toUpperCase()} */}
+                {layer.name}
               </div>
-            ))
-          ) : (
-            <span className="text-gray-400">Aucune donnée</span>
-          )}
-        </div>
-      );
-    }
-  },
+            ))}
+            
+            {!showAll && layers.length > maxVisible && (
+              <div className="flex items-center">
+                <div 
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setShowAll(true);
+                  }}
+                  className="px-2 py-1 text-xs bg-gray-100 text-gray-600 rounded-full cursor-help group"
+                  title={layers.slice(maxVisible).map(l => l.name).join(', ')}
+                >
+                  +{layers.length - maxVisible} more
+                  <div className="absolute hidden group-hover:block z-10 bottom-full left-0 mb-2 p-2 bg-white shadow-lg rounded max-w-xs max-h-60 overflow-y-auto">
+                    {layers.slice(maxVisible).map((layer, index) => (
+                      <div key={index} className="px-2 py-1 text-xs">
+                        {layer.name}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+            
+            {showAll && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setShowAll(false);
+                }}
+                className="ml-1 border-none text-xs text-gray-400  hover:text-gray-600"
+              >
+               ▲ close
+              </button>
+            )}
+          </div>
+        );
+      }
+    },
     // Ajouter la colonne "actions" conditionnellement
     ...((dataFormat?.profileName === 'manager' || user?.role === 'admin')
       ? [{ field: 'actions', headerName: 'Action', width: 70 }]
@@ -147,7 +176,7 @@ function AddScope({ dataFormat,title, text, text1, onToggleForm, showForm, user,
       )}
 
       {applications.length > 0 && (
-        <div className={`mt-6 flex-1  flex justify-center  overflow-x-auto overflow-y-auto h-[250px] transition-all ${isDeletePopupOpen ? 'blur-sm' : ''}`}>
+        <div className={`mt-6 flex-1  flex justify-center  overflow-x-auto overflow-y-auto h-[350px] transition-all ${isDeletePopupOpen ? 'blur-sm' : ''}`}>
           <Table
             key={JSON.stringify(applications)}
             columnsConfig={columnsConfig}
