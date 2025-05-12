@@ -16,7 +16,7 @@ import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 
 function RevueListExecution( {dataFormat}) {
 
-    const { loading, error, fetchRevueExecutions } = useRevue();
+    const { loading, error, fetchRevueExecutions ,fetchRevueExecutionsForApp} = useRevue();
 
     const navigate = useNavigate();
     const { user } = useAuth();
@@ -94,7 +94,7 @@ function RevueListExecution( {dataFormat}) {
 
                 return (
 
-                    <span className={` px-2 py-1 rounded ${color}`}>
+                    <span className={` px-2  rounded ${color}`}>
                         {params.row.executionStatus}
 
                     </span>
@@ -116,21 +116,10 @@ function RevueListExecution( {dataFormat}) {
                 </button>
             ),
         },
-        { field: "actions", headerName: "Actions", width: 80 },
+       
     ];
 
-    const rowActions = [
-        {
-            icon: <LockOpenRoundedIcon sx={{ marginRight: "5px" }} />,
-            label: "Clôturée",
-            // onClick: handleCloturerRow,
-        },
-        {
-            icon: <VisibilityIcon sx={{ color: "var(--font-gray)", marginRight: "5px" }} />,
-            label: "Voir rapport",
-            // onClick: handleViewReport,
-        },
-    ];
+   
     const handleSearchResults = (results) => setFilteredRows(results);
     // Appel API à l'affichage
 
@@ -144,6 +133,20 @@ function RevueListExecution( {dataFormat}) {
         };
         loadData();
     }, [dataFormat]);
+
+ 
+    useEffect(() => {
+        const loadData = async () => {
+          
+                const data = await fetchRevueExecutionsForApp(dataFormat);
+                console.log('admin review',data)
+                setRevueMissionData(data);
+                setFilteredRows(data);
+            
+        };
+        loadData();
+    }, [dataFormat]);
+    
 
     { loading && <p className="text-center mt-10">Chargement...</p> }
     { error && <p className="text-red-500 text-center mt-4">{error}</p> }
@@ -222,7 +225,7 @@ function RevueListExecution( {dataFormat}) {
                             checkboxSelection={false}
                            // headerTextBackground={"black"}
                             headerBackground="var(--blue-nav)"
-                            rowActions={rowActions}
+                           
                         />
                         </div>
                         </>

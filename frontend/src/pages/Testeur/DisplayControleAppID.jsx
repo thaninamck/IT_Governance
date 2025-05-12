@@ -14,6 +14,8 @@ import TabList from "@mui/joy/TabList";
 import Tab from "@mui/joy/Tab";
 import TabPanel from "@mui/joy/TabPanel";
 import useExecution from '../../Hooks/useExecution';
+import RevueListExecution from '../Superviseur/RevueListExecution';
+import useRevue from '../../Hooks/useRevue';
 
 function DisplayControleAppID() {
 
@@ -24,6 +26,8 @@ function DisplayControleAppID() {
     fetchExecutionsListForCorrection
   } = useExecution();
 
+ 
+
   const { profile } = useProfile();
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -31,7 +35,7 @@ function DisplayControleAppID() {
   const AppData = location.state?.AppData;
   console.log("APPDATA", AppData)
   const { mission, name } = useParams();
-
+  const { fetchRevueExecutionsForApp } = useRevue();
   const breadcrumbRoutes = [
     "/missions",
     "/missions/:mission/:nomApp",
@@ -53,7 +57,48 @@ function DisplayControleAppID() {
     { field: "controlDescription", headerName: "Description", width: 200, expandable: true },
     { field: "executionControlOwner", headerName: "Owner", width: 120, expandable: true },
     { field: "layerName", headerName: "Layer", width: 100, expandable: true },
-    { field: "executionEtat", headerName: "State", width: 150, expandable: true },
+    {
+      field: "executionEtat",
+      headerName: "État d'exécution",
+      width: 150,
+      expandable: true,
+      customRenderCell: (params) => {
+        const status = params.value?.toLowerCase();
+        let colorClass = "text-gray-800";
+        let label = params.value;
+        
+        if (status === "non commencé") {
+          colorClass = "text-gray-500";
+        } else if (status === "en cours") {
+          colorClass = "text-blue-500";
+        } else if (status === "en cours de remediation") {
+          colorClass = "text-orange-400";
+        } else if (status === "terminé mais pas soumis") {
+          colorClass = "text-yellow-400";
+        } else if (status === "en cours de revue") {
+          colorClass = "text-purple-500";
+        } else if (status === "terminé et validé") {
+          colorClass = "text-green-500";
+        } else if (status === "a coriger") {
+          colorClass = "text-red-500";
+        } else if (status === "en cours de validation") {
+          colorClass = "text-green-700";
+        }
+        
+    
+        return (
+          <div className='flex items-center justify-center w-full'>
+          <span
+            className={`text-sm text-center  ${colorClass}`}
+           
+          >
+            {label}
+          </span>
+          </div>
+        );
+      },
+    }
+,    
     { field: "statusName", headerName: "Status", width: 150, expandable: true },
     { field: "userFullName", headerName: "Tester", width: 150, expandable: true },
     {
@@ -250,6 +295,12 @@ function DisplayControleAppID() {
     </div>
   )
 }
+{
+   user?.role === 'admin' &&
+   <RevueListExecution  dataFormat={AppData} />
+
+}
+
        
       </div >
     </div >

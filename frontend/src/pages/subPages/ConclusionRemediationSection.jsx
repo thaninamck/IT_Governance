@@ -43,6 +43,7 @@ function ConclusionRemediationSection({
 
 }) {
   const { options } = useExecution();
+  
   const statuses = options.map((status) => ({
     label: status.status_name,
     value: status.id,

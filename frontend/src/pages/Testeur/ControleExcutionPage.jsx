@@ -48,7 +48,9 @@ function ControleExcutionPage() {
     createComment,
     deleteComment,
     editComment,
+    options,
   } = useExecution();
+
 
 
   const {
@@ -107,6 +109,12 @@ function ControleExcutionPage() {
   const [isEditing, setIsEditing] = useState(true);
   const [selectedMulti, setSelectedMulti] = useState();
 
+  const statuses = options.map((status) => ({
+    label: status.status_name,
+    value: status.id,
+  }));
+  const selectedStatusLabel = statuses.find(status => status.value === selectedMulti)?.label;
+
   const statusOptions = ["Terminé", "en cours", "Non commencée"];
   const statusColors = {
     Terminé: "green",
@@ -128,7 +136,7 @@ function ControleExcutionPage() {
     
   });
   const [files, setFiles] = useState([]);
-  const options = [
+  const Options = [
     { label: "Applied", value: "Applied" },
     { label: "Partially Applied", value: "Partially Applied" },
     { label: "Not Applied", value: "Not Applied" },
@@ -523,12 +531,18 @@ function ControleExcutionPage() {
     // console.log('evd',newSelection)
   };
 
+  // const shouldShowRemediation =
+  //   selectedMulti === 6 || selectedMulti === 3;
+  //   console.log('selectedmulti',selectedMulti)
+
+  //   console.log('showRemediation',shouldShowRemediation)
+
   const shouldShowRemediation =
-    selectedMulti === 6 || selectedMulti === 3;
-    console.log('selectedmulti',selectedMulti)
+    selectedStatusLabel === "not applied" ||
+            selectedStatusLabel=== "partially applied"
+    console.log('selectedmulti',selectedStatusLabel)
 
     console.log('showRemediation',shouldShowRemediation)
-
 
 
 
@@ -914,8 +928,8 @@ function ControleExcutionPage() {
           selectedMulti={selectedMulti}
           setSelectedMulti={setSelectedMulti}
           shouldShowRemediation={
-            selectedMulti === 6 ||
-            selectedMulti === 3
+            selectedStatusLabel === "not applied" ||
+            selectedStatusLabel=== "partially applied"
           }
           commentaire={commentaire}
           setCommentaire={setCommentaire}
