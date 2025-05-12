@@ -29,7 +29,7 @@ const handleLogout = () => {
         <icons.home 
           className="icon_home" 
           sx={{ color: 'var(--blue-icons)', cursor: 'pointer' }} 
-          onClick={() => navigate('/')} 
+          onClick={() => navigate('/missions')} 
         />
 
         {/* Notifications - Affichage du popup */}

@@ -10,6 +10,7 @@ import useUser from '../../Hooks/useUser';
 
 function AddMissionForm({ title, isOpen, onClose, initialValues, onMissionCreated }) {
   if (!isOpen) return null;
+  const [loading, setLoading] = useState(false);
 
   // États pour la modale d'ajout de client et la liste dynamique des clients
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -310,7 +311,20 @@ function AddMissionForm({ title, isOpen, onClose, initialValues, onMissionCreate
 
 
         {/* Bouton Créer */}
-        <Button btnName="Créer" type="submit" />
+        {/* <Button btnName="Créer" type="submit" /> */}
+
+        <div className="flex justify-center mt-4 mb-2">
+  <button
+    type="submit"
+    className="bg-[var(--blue-menu)] border-none hover:bg-blue-700 text-white font-medium py-2 px-6 rounded"
+    disabled={loading}
+  >
+    {initialValues?.id
+      ? (loading ? "Mise à jour en cours..." : "Mettre à jour")
+      : (loading ? "Création en cours..." : "Créer")}
+  </button>
+</div>
+
       </form>
 
       {/* Modale d'ajout de client */}

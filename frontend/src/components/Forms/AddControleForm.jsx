@@ -232,9 +232,21 @@ const sourcesOptions = formatOptions(sourceOptions, "name", "id");
         </div>
 
         {/* Bouton Créer */}
-        <div className="mt-6 text-right">
+        {/* <div className="mt-6 text-right">
           <Button loading={loading} btnName="Créer" type="submit" />
-        </div>
+        </div> */}
+        <div className="flex justify-center mt-4 mb-2">
+  <button
+    type="submit"
+    className="bg-[var(--blue-menu)] border-none hover:bg-blue-700 text-white font-medium py-2 px-6 rounded"
+    disabled={loading}
+  >
+    {initialValues?.id
+      ? (loading ? "Mise à jour en cours..." : "Mettre à jour")
+      : (loading ? "Création en cours..." : "Créer")}
+  </button>
+</div>
+
       </form>
     </div>
   );
