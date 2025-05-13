@@ -149,6 +149,8 @@ e.ipe,
 e.design,
 e.effectiveness,
 e.comment,
+e.cntrl_modification AS execution_description,
+c.description AS control_description,
 st.id AS status_id,
     json_agg(DISTINCT jsonb_build_object(
         'step_execution_id', se.id,
@@ -186,7 +188,9 @@ WHERE e.id = ?
 GROUP BY 
     e.id,
     sts.control_id,
+	c.description,
     st.id;
+	
 
     ", [$executionId]);
     }
