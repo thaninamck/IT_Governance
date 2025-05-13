@@ -35,10 +35,11 @@ const useWorkplan = (missionId) => {
   };
 
 
-  const fetchTesters = async (missionId) => {
+  const fetchTesters = async (id) => {
     setLoading(true);
     try {
-      const response = await api.get(`/missions/${missionId}/testers`);
+      console.warn("le id",id)
+      const response = await api.get(`/missions/${id}/testers`);
       const data = response.data;
       setTesters(data);
      console.log("testers",data);
@@ -70,7 +71,7 @@ const useWorkplan = (missionId) => {
   useEffect(() => {
     //const missionId = 1; 
     fetchOptions(id);
-    fetchTesters(missionId);
+    fetchTesters(id);
   }, []); 
 
   const deleteExecutions = async (executionsIds) => {
