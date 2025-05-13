@@ -14,6 +14,7 @@ use App\Http\Controllers\Api\V1\LayerController;
 use App\Http\Controllers\Api\V1\LogController;
 use App\Http\Controllers\Api\V1\MissionController;
 use App\Http\Controllers\Api\V1\SourceController;
+use App\Http\Controllers\Api\V1\StatusController;
 use App\Http\Controllers\Api\V1\TypeController;
 use App\Models\Layer;
 
@@ -54,6 +55,23 @@ Route::prefix('v1')->group(function () {
 Route::prefix('v1')->group(function () { 
     Route::controller(SourceController::class)->group(function () {
         Route::delete('/deletesource/{id}', 'deleteSource');
+    });
+});
+
+Route::prefix('v1')->group(function () { 
+    Route::controller(StatusController::class)->group(function () {
+        Route::get('/getstatus', 'index');
+    });
+});
+
+Route::prefix('v1')->group(function () { 
+    Route::controller(StatusController::class)->group(function () {
+        Route::post('/createstatus', 'store');
+    });
+});
+Route::prefix('v1')->group(function () { 
+    Route::controller(StatusController::class)->group(function () {
+        Route::delete('/deletestatus/{id}', 'deleteStatus');
     });
 });
 
