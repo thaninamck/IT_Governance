@@ -4,7 +4,7 @@ import Button from '../Button';
 import AddButton from '../AddButton';
 import SelectInput from './SelectInput';
 
-function AddCategorieForm({ title, label, placeholder, options, onAdd }) {
+function AddCategorieForm({ title, label,label1, placeholder, options, onAdd }) {
   const [selectedValue, setSelectedValue] = useState('');
   const [codeValue, setCodeValue] = useState('');
   const [nameValue, setNameValue] = useState('');
@@ -66,7 +66,7 @@ function AddCategorieForm({ title, label, placeholder, options, onAdd }) {
               <form className="flex flex-row items-center justify-between gap-6" onSubmit={handleSubmit}>
                 <InputForm
                   type="text"
-                  label="Code"
+                  label={label1}
                   placeholder="Code "
                   width="120px"
                   flexDirection="flex-col"
