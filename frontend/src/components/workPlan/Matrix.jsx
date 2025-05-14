@@ -584,7 +584,7 @@ function Matrix({
       (navigationType === "PUSH" && !fromScopeModification && !viewOnly) ||
       navigationType === "POP"
     ) {
-      console.log("jexecute");
+      
       setFlattenedData([]);
     }
   }, [navigationType]);
