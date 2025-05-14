@@ -31,7 +31,7 @@ function Matrix({
   unlockModification,
   stopModification,
   viewOnly,
-  missionId
+  missionId,
 }) {
   const {
     createExecutions,
@@ -132,42 +132,37 @@ function Matrix({
     return result;
   };
 
-
- 
-  
-  
   // Fonction pour fusionner les nouvelles données avec flattenedData existant
   const mergeData = (newData, existingData) => {
     const mergedData = [...existingData];
-  
+
     newData.forEach((newItem) => {
       const existingItemIndex = mergedData.findIndex(
         (item) => item.id === newItem.id
       );
-  
+
       if (existingItemIndex !== -1) {
         const existingItem = mergedData[existingItemIndex];
-  
+
         // Vérifier s'il y a une différence entre existingItem et newItem
         const hasDifference = Object.keys(newItem).some((key) => {
           return newItem[key] !== existingItem[key];
         });
-  
+
         if (!hasDifference) {
           // Si aucune différence, tu peux décider de garder l'existant ou le remplacer
           // mergedData[existingItemIndex] = newItem; // optionnel
         }
-  
+
         // Sinon (s'il y a une différence), on garde existingItem tel quel (rien à faire)
       } else {
         // Si c’est un nouvel élément, on l’ajoute
         mergedData.push(newItem);
       }
     });
-  
+
     return mergedData;
   };
-  
 
   const handleEditStop = (params, event) => {
     console.log("Edition terminée sur la cellule", params);
@@ -484,6 +479,13 @@ function Matrix({
   };
 
   const handleUpdateOwner = () => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  
+    if (!emailRegex.test(owner)) {
+      toast.warn("Veuillez entrer une adresse email valide pour l'Owner.");
+      return;
+    }
+  
     updateCells(selectedItems, flattenedData, owner);
     setOwner("");
     setSelectedControl({});
@@ -491,7 +493,7 @@ function Matrix({
     setSelectedApp({});
     setSelectedItems([]);
   };
-
+  
   // Gestion des cases à cocher pour les risques
   const handleRiskCheckboxChange = (id) => (event) => {
     // console.log("id slcted", id);
@@ -521,7 +523,9 @@ function Matrix({
         riskModified: item.riskModified,
         riskOwner: item.riskOwner,
         controlId: item.controlId,
-        missionName:JSON.parse(localStorage.getItem("missionData"))?.missionName ||"non définie",
+        missionName:
+          JSON.parse(localStorage.getItem("missionData"))?.missionName ||
+          "non définie",
         controlDescription: item.controlDescription,
         controlModified: item.controlModified,
         controlOwner: item.controlOwner,
@@ -548,8 +552,6 @@ function Matrix({
     setFlattenedData([]);
     navigate(-1);
   };
-
- 
 
   // Gestion des sélections pour les testeurs
   /*const handleTesterChange = (id, testerId) => (event) => {
@@ -584,14 +586,12 @@ function Matrix({
       (navigationType === "PUSH" && !fromScopeModification && !viewOnly) ||
       navigationType === "POP"
     ) {
-      
       setFlattenedData([]);
     }
   }, [navigationType]);
 
   useEffect(() => {
     if (!fromScopeModification && !viewOnly) {
-      console.log("je recupere les sonnees de local storage ");
       const savedData = localStorage.getItem("flattenedData");
       if (savedData) {
         const parsedData = JSON.parse(savedData);
@@ -607,8 +607,7 @@ function Matrix({
     // if (!fromScopeModification && !viewOnly) {
     if (data) {
       const transformedData = transformData(data);
-      console.log("mm", transformedData);
-      console.log("je met a jour flattened data  lorsqu data change ", data);
+
       // Utiliser une fonction de mise à jour pour éviter les dépendances cycliques
 
       let mergedData = [];
@@ -618,11 +617,11 @@ function Matrix({
 
         // if ( viewOnly === true) {
         //   //alert("je suis dans le if")
-          mergedData = mergeData(transformedData, prevFlattenedData);
-          // if (fromScopeModification===true) {
-          //   mergedData = mergeData(prevFlattenedData, prevFlattenedData);
+        mergedData = mergeData(transformedData, prevFlattenedData);
+        // if (fromScopeModification===true) {
+        //   mergedData = mergeData(prevFlattenedData, prevFlattenedData);
 
-          // }
+        // }
         // } else{
         //   mergedData = mergeData(transformedData, prevFlattenedData);
 
@@ -651,8 +650,6 @@ function Matrix({
       selectedControls.includes(row.id)
     );
     setSelectedRows(fullSelectedRows);
-
-    
   }, [selectedControls]);
 
   const handleFromScopeDelete = async () => {
@@ -660,7 +657,6 @@ function Matrix({
     const idsToDelete = {
       executionsIds: selectedRows.map((row) => row.executionId),
     };
-   
 
     // Appeler la fonction pour supprimer les exécutions
     const undeletableIds = await deleteExecutions(idsToDelete);
@@ -674,10 +670,8 @@ function Matrix({
             undeletableIds.includes(row.executionId)
         )
       );
-      ;
     }
-    window.location.reload()
-
+    window.location.reload();
   };
 
   const handleAtWorkplanDelete = () => {
@@ -718,7 +712,9 @@ function Matrix({
         riskModification: row.riskDescription,
       }),
       riskOwner: row.riskOwner,
-      missionName:JSON.parse(localStorage.getItem("missionData")).missionName ||"non définie",
+      missionName:
+        JSON.parse(localStorage.getItem("missionData")).missionName ||
+        "non définie",
 
       controlTester: row.controlTester,
     }));
@@ -741,531 +737,525 @@ function Matrix({
     stopModification();
   };
 
-  const [showExecutionDeleteConfirmation,setShowExecutionDeleteConfirmation]=useState(false)
- const  handleShowDeleteExecutionConfirmation=()=>{
-setShowExecutionDeleteConfirmation(true)
-  }
+  const [showExecutionDeleteConfirmation, setShowExecutionDeleteConfirmation] =
+    useState(false);
+  const handleShowDeleteExecutionConfirmation = () => {
+    setShowExecutionDeleteConfirmation(true);
+  };
   useEffect(() => {
     console.log("flattenedData", flattenedData);
   }, [flattenedData]);
- 
 
-//   return (
-//     <>
-//       <div className="flex  items-center justify-start mb-6"></div>
+  //   return (
+  //     <>
+  //       <div className="flex  items-center justify-start mb-6"></div>
 
-//       <div
-//         className="flex items-center gap-4 justify-end my-5 mr-4 space-x-4"
-//         style={{
-//           display:
-//             user?.role !== "admin" /* || userRole === 'manager'*/
-//               ? "flex"
-//               : "none",
-//         }}
-//       >
-//         {/* Label */}
-//         <label className="text-gray-900 font-semibold">Owner</label>
+  //       <div
+  //         className="flex items-center gap-4 justify-end my-5 mr-4 space-x-4"
+  //         style={{
+  //           display:
+  //             user?.role !== "admin" /* || userRole === 'manager'*/
+  //               ? "flex"
+  //               : "none",
+  //         }}
+  //       >
+  //         {/* Label */}
+  //         <label className="text-gray-900 font-semibold">Owner</label>
 
-//         {/* Input Field */}
-//         <div className="relative flex items-center bg-white rounded-md border border-gray-300 w-60 px-3 py-2">
-//           <User className="text-gray-500 mr-2" size={16} />
-//           <input
-//             type="text"
-//             onChange={(e) => setOwner(e.target.value)}
-//             className="bg-transparent outline-none w-full"
-//             placeholder="Owner"
-//             value={owner}
-//           />
-//         </div>
-//         <div>{editMessage && <p>{editMessage}</p>}</div>
+  //         {/* Input Field */}
+  //         <div className="relative flex items-center bg-white rounded-md border border-gray-300 w-60 px-3 py-2">
+  //           <User className="text-gray-500 mr-2" size={16} />
+  //           <input
+  //             type="text"
+  //             onChange={(e) => setOwner(e.target.value)}
+  //             className="bg-transparent outline-none w-full"
+  //             placeholder="Owner"
+  //             value={owner}
+  //           />
+  //         </div>
+  //         <div>{editMessage && <p>{editMessage}</p>}</div>
 
-//         {/* Button */}
-//         <button
-//           onClick={handleUpdateOwner}
-//           className="bg-blue-menu text-white px-4 py-2 rounded-md hover:bg-blue-900"
-//         >
-//           Ajouter
-//         </button>
+  //         {/* Button */}
+  //         <button
+  //           onClick={handleUpdateOwner}
+  //           className="bg-blue-menu text-white px-4 py-2 rounded-md hover:bg-blue-900"
+  //         >
+  //           Ajouter
+  //         </button>
 
-//         <div className="flex items-center  space-x-4">
-//           {/* Label */}
-//           <label className="text-gray-900 font-semibold">Testeur</label>
+  //         <div className="flex items-center  space-x-4">
+  //           {/* Label */}
+  //           <label className="text-gray-900 font-semibold">Testeur</label>
 
-//           {/* Dropdown */}
-//           <div className="relative z-30 w-60">
-//             <div
-//               className="flex items-center bg-white rounded-md border border-gray-300 px-3 py-2 cursor-pointer"
-//               onClick={() => setIsOpen(!isOpen)}
-//             >
-//               <User className="text-gray-500 mr-2" size={16} />
-//               <span className="flex-1 text-gray-700">
-//                 {selectedTester.designation}
-//               </span>
-//               <ChevronDown className="text-gray-500" size={16} />
-//             </div>
-//             {isOpen && (
-//               <ul className="absolute w-full bg-white border border-gray-300 rounded-md shadow-md mt-1">
-//                 {loading ? (
-//                   <li className="px-3 py-2">Chargement des testeurs...</li> // Afficher un message de chargement
-//                 ) : testers.length > 0 ? (
-//                   testers.map((tester) => (
-//                     <li
-//                       key={tester.id}
-//                       className="px-3 py-2 hover:bg-gray-100 cursor-pointer"
-//                       onClick={() => {
-//                         setSelectedTester(tester);
-//                         handleUpdateTesters(tester);
-//                         setIsOpen(false);
-//                       }}
-//                     >
-//                       {tester.designation}
-//                     </li>
-//                   ))
-//                 ) : (
-//                   <li className="px-3 py-2">Aucun testeur trouvé</li> // Message si pas de testeurs
-//                 )}
-//               </ul>
-//             )}
-//           </div>
-//         </div>
+  //           {/* Dropdown */}
+  //           <div className="relative z-30 w-60">
+  //             <div
+  //               className="flex items-center bg-white rounded-md border border-gray-300 px-3 py-2 cursor-pointer"
+  //               onClick={() => setIsOpen(!isOpen)}
+  //             >
+  //               <User className="text-gray-500 mr-2" size={16} />
+  //               <span className="flex-1 text-gray-700">
+  //                 {selectedTester.designation}
+  //               </span>
+  //               <ChevronDown className="text-gray-500" size={16} />
+  //             </div>
+  //             {isOpen && (
+  //               <ul className="absolute w-full bg-white border border-gray-300 rounded-md shadow-md mt-1">
+  //                 {loading ? (
+  //                   <li className="px-3 py-2">Chargement des testeurs...</li> // Afficher un message de chargement
+  //                 ) : testers.length > 0 ? (
+  //                   testers.map((tester) => (
+  //                     <li
+  //                       key={tester.id}
+  //                       className="px-3 py-2 hover:bg-gray-100 cursor-pointer"
+  //                       onClick={() => {
+  //                         setSelectedTester(tester);
+  //                         handleUpdateTesters(tester);
+  //                         setIsOpen(false);
+  //                       }}
+  //                     >
+  //                       {tester.designation}
+  //                     </li>
+  //                   ))
+  //                 ) : (
+  //                   <li className="px-3 py-2">Aucun testeur trouvé</li> // Message si pas de testeurs
+  //                 )}
+  //               </ul>
+  //             )}
+  //           </div>
+  //         </div>
 
-//         <div className="   ">
-//           {atLeastOneApp && (
-//             <button
-//               onClick={() => {
-//                 setSaveWork(true);
-//               }}
-//               className="bg-blue-menu text-white px-4 py-2 rounded-md hover:bg-blue-900"
-//             >
-//               valider
-//             </button>
-//           )}
-//         </div>
-//       </div>
-//       <div className="flex justify-end mr-4 gap-2">
-//       {selectedRows.length > 0 && (
-//         <button
-//           className="bg-alert-red text-white px-4 py-2 rounded-md hover:bg-red-700 flex items-center gap-2"
-//           onClick={
-//             fromScopeModification
-//               ? handleShowDeleteExecutionConfirmation
-//               : handleAtWorkplanDelete
-//           }
-//         >
-//           <Trash size={18} />
-//           Supprimer
-//         </button>
-//       )}
-//       {fromScopeModification && selectedRows.length > 0 && (
-//         <>
-//           {modify ? (
-//             <button
-//               className="bg-blue-conf text-white px-4 py-2 rounded-md hover:bg-red-700 flex items-center gap-2"
-//               onClick={handleModifyLines}
-//             >
-//               Modifier
-//             </button>
-//           ) : (
-//             <button
-//               className="bg-blue-conf text-white px-4 py-2 rounded-md flex items-center gap-2"
-//               onClick={handleSaveModifictaion}
-//             >
-//               Enregistrer les modifications
-//             </button>
-//           )}
-//         </>
-//       )}</div>
+  //         <div className="   ">
+  //           {atLeastOneApp && (
+  //             <button
+  //               onClick={() => {
+  //                 setSaveWork(true);
+  //               }}
+  //               className="bg-blue-menu text-white px-4 py-2 rounded-md hover:bg-blue-900"
+  //             >
+  //               valider
+  //             </button>
+  //           )}
+  //         </div>
+  //       </div>
+  //       <div className="flex justify-end mr-4 gap-2">
+  //       {selectedRows.length > 0 && (
+  //         <button
+  //           className="bg-alert-red text-white px-4 py-2 rounded-md hover:bg-red-700 flex items-center gap-2"
+  //           onClick={
+  //             fromScopeModification
+  //               ? handleShowDeleteExecutionConfirmation
+  //               : handleAtWorkplanDelete
+  //           }
+  //         >
+  //           <Trash size={18} />
+  //           Supprimer
+  //         </button>
+  //       )}
+  //       {fromScopeModification && selectedRows.length > 0 && (
+  //         <>
+  //           {modify ? (
+  //             <button
+  //               className="bg-blue-conf text-white px-4 py-2 rounded-md hover:bg-red-700 flex items-center gap-2"
+  //               onClick={handleModifyLines}
+  //             >
+  //               Modifier
+  //             </button>
+  //           ) : (
+  //             <button
+  //               className="bg-blue-conf text-white px-4 py-2 rounded-md flex items-center gap-2"
+  //               onClick={handleSaveModifictaion}
+  //             >
+  //               Enregistrer les modifications
+  //             </button>
+  //           )}
+  //         </>
+  //       )}</div>
 
-//       {saveWork && (
-//         <DecisionPopUp
-//           handleConfirm={handleSave}
-//           handleDeny={() => setSaveWork(false)}
-//           name="Confirmation"
-//           text="Êtes-vous sûr de vouloir valider les modifications ?"
-//           loading={saveloading}
-//         />
-//       )}
-//       {showExecutionDeleteConfirmation && (
-//         <DecisionPopUp
-//           handleConfirm={handleFromScopeDelete}
-//           handleDeny={() => setShowExecutionDeleteConfirmation(false)}
-//           name="Confirmation"
-//           text="Êtes-vous sûr de vouloir supprimer ces contrôles ? Cette action est irréversible."
+  //       {saveWork && (
+  //         <DecisionPopUp
+  //           handleConfirm={handleSave}
+  //           handleDeny={() => setSaveWork(false)}
+  //           name="Confirmation"
+  //           text="Êtes-vous sûr de vouloir valider les modifications ?"
+  //           loading={saveloading}
+  //         />
+  //       )}
+  //       {showExecutionDeleteConfirmation && (
+  //         <DecisionPopUp
+  //           handleConfirm={handleFromScopeDelete}
+  //           handleDeny={() => setShowExecutionDeleteConfirmation(false)}
+  //           name="Confirmation"
+  //           text="Êtes-vous sûr de vouloir supprimer ces contrôles ? Cette action est irréversible."
 
-//           loading={loading}
-//         />
-//       )}
-//       <div className="m-3">
-//         <TableContainer component={Paper} className="overflow-auto ">
-//           <Table>
-//             <TableHead>
-//               <TableRow className="bg-blue-nav">
-//                 {/* Application */}
-//                 <TableCell
-//                   align="center"
-//                   style={{ width: 500 }}
-//                   className="border border-subfont-gray"
-//                 >
-//                   Application
-//                 </TableCell>
+  //           loading={loading}
+  //         />
+  //       )}
+  //       <div className="m-3">
+  //         <TableContainer component={Paper} className="overflow-auto ">
+  //           <Table>
+  //             <TableHead>
+  //               <TableRow className="bg-blue-nav">
+  //                 {/* Application */}
+  //                 <TableCell
+  //                   align="center"
+  //                   style={{ width: 500 }}
+  //                   className="border border-subfont-gray"
+  //                 >
+  //                   Application
+  //                 </TableCell>
 
-//                 {/* Risques */}
-//                 <TableCell
-//                   align="center"
-//                   style={{ width: 950 }}
-//                   className="border border-subfont-gray"
-//                 >
-//                   Risques
-//                 </TableCell>
+  //                 {/* Risques */}
+  //                 <TableCell
+  //                   align="center"
+  //                   style={{ width: 950 }}
+  //                   className="border border-subfont-gray"
+  //                 >
+  //                   Risques
+  //                 </TableCell>
 
-//                 {/* Contrôles */}
-//                 <TableCell
-//                   colSpan={6} // 7 colonnes pour Contrôles
-//                   align="center"
-//                   className="border border-subfont-gray"
-//                 >
-//                   Contrôles
-//                 </TableCell>
-//               </TableRow>
-//             </TableHead>
+  //                 {/* Contrôles */}
+  //                 <TableCell
+  //                   colSpan={6} // 7 colonnes pour Contrôles
+  //                   align="center"
+  //                   className="border border-subfont-gray"
+  //                 >
+  //                   Contrôles
+  //                 </TableCell>
+  //               </TableRow>
+  //             </TableHead>
 
-//             <TableBody>
-//               <TableRow>
-//                 <TableCell colSpan={14} style={{ padding: 0 }}>
-//                   <Paper style={{ height: 550, width: "100%" }}>
-//                     <DataGrid
-//                       sx={{
-//                         // Style pour les en-têtes de colonnes
-//                         "& .MuiDataGrid-columnHeader": {
-//                           backgroundColor: "#E9EFF8", // Couleur de fond verte
-//                         },
-//                         // Style pour les lignes au survol
-//                         "& .MuiDataGrid-row:hover": {
-//                           backgroundColor: "#E8F5E9", // Couleur de fond au survol
-//                         },
-//                       }}
-//                       rows={flattenedData}
-//                       onRowClick={handleRowClick}
-//                       // rows={searchResults}
-//                       columns={columns}
-//                       pageSize={5}
-//                       checkboxSelection={unlockModification}
-//                       isCellEditable={(params) => {
-//                         console.log(
-//                           "fromScopeModification",
-//                           fromScopeModification
-//                         );
+  //             <TableBody>
+  //               <TableRow>
+  //                 <TableCell colSpan={14} style={{ padding: 0 }}>
+  //                   <Paper style={{ height: 550, width: "100%" }}>
+  //                     <DataGrid
+  //                       sx={{
+  //                         // Style pour les en-têtes de colonnes
+  //                         "& .MuiDataGrid-columnHeader": {
+  //                           backgroundColor: "#E9EFF8", // Couleur de fond verte
+  //                         },
+  //                         // Style pour les lignes au survol
+  //                         "& .MuiDataGrid-row:hover": {
+  //                           backgroundColor: "#E8F5E9", // Couleur de fond au survol
+  //                         },
+  //                       }}
+  //                       rows={flattenedData}
+  //                       onRowClick={handleRowClick}
+  //                       // rows={searchResults}
+  //                       columns={columns}
+  //                       pageSize={5}
+  //                       checkboxSelection={unlockModification}
+  //                       isCellEditable={(params) => {
+  //                         console.log(
+  //                           "fromScopeModification",
+  //                           fromScopeModification
+  //                         );
 
-//                         const row = flattenedData.find(
-//                           (row) => row.id === params.row.id
-//                         );
-//                         return row?.modifiable || false;
-//                       }}
-//                       disableRowSelectionOnClick
-//                       onRowSelectionModelChange={(newSelection) => {
-//                         setSelectedControls(newSelection);
-//                       }}
-//                       rowSelectionModel={selectedControls}
-//                       rowsPerPageOptions={[5, 10, 20]}
-//                       editMode="cell"
-//                       onCellEditStop={(params, event) => {
-//                         console.log("Edition terminée sur la cellule", params);
+  //                         const row = flattenedData.find(
+  //                           (row) => row.id === params.row.id
+  //                         );
+  //                         return row?.modifiable || false;
+  //                       }}
+  //                       disableRowSelectionOnClick
+  //                       onRowSelectionModelChange={(newSelection) => {
+  //                         setSelectedControls(newSelection);
+  //                       }}
+  //                       rowSelectionModel={selectedControls}
+  //                       rowsPerPageOptions={[5, 10, 20]}
+  //                       editMode="cell"
+  //                       onCellEditStop={(params, event) => {
+  //                         console.log("Edition terminée sur la cellule", params);
 
-//                         const { id, field } = params;
-//                         const newValue = event.target.value;
+  //                         const { id, field } = params;
+  //                         const newValue = event.target.value;
 
-//                         // Mettre à jour le tableau de données avec la nouvelle valeur
-//                         setFlattenedData((prevData) => {
-//                           const updatedData = prevData.map((row) => {
-//                             if (row.id === id) {
-//                               console.log("le row est trouvé", field);
-//                               row[field] = newValue; // Mettre à jour la cellule
-//                               switch (field) {
-//                                 case "controlDescription":
-//                                   row["controlModified"] = true;
-//                                   break;
+  //                         // Mettre à jour le tableau de données avec la nouvelle valeur
+  //                         setFlattenedData((prevData) => {
+  //                           const updatedData = prevData.map((row) => {
+  //                             if (row.id === id) {
+  //                               console.log("le row est trouvé", field);
+  //                               row[field] = newValue; // Mettre à jour la cellule
+  //                               switch (field) {
+  //                                 case "controlDescription":
+  //                                   row["controlModified"] = true;
+  //                                   break;
 
-//                                 case "riskDescription":
-//                                   row["riskModified"] = true;
-//                                   break;
-//                               }
-//                             }
-//                             return row;
-//                           });
-//                           return updatedData;
-//                         });
-//                       }}
-//                       //disableSelectionOnClick
-//                     />
-//                   </Paper>
-//                 </TableCell>
-//               </TableRow>
-//             </TableBody>
-//           </Table>
-//         </TableContainer>
-//       </div>
-//     </>
-//   );
-// }
+  //                                 case "riskDescription":
+  //                                   row["riskModified"] = true;
+  //                                   break;
+  //                               }
+  //                             }
+  //                             return row;
+  //                           });
+  //                           return updatedData;
+  //                         });
+  //                       }}
+  //                       //disableSelectionOnClick
+  //                     />
+  //                   </Paper>
+  //                 </TableCell>
+  //               </TableRow>
+  //             </TableBody>
+  //           </Table>
+  //         </TableContainer>
+  //       </div>
+  //     </>
+  //   );
+  // }
 
-// export default Matrix;
+  // export default Matrix;
 
-return (
-  <>
-    <div className="flex  items-center justify-start mb-6"></div>
+  return (
+    <>
+      <div className="flex items-center justify-start mb-6" />
 
-    <div
-      className="flex items-center gap-4 justify-end my-5 mr-4 space-x-4"
-      style={{
-        display:
-          user?.role !== "admin" /* || userRole === 'manager'*/
-            ? "flex"
-            : "none",
-      }}
-    >
-      {/* Label */}
-      <label className="text-gray-900 font-semibold">Owner</label>
-
-      {/* Input Field */}
-      <div className="relative flex items-center bg-white rounded-md border border-gray-300 w-60 px-3 py-2">
-        <User className="text-gray-500 mr-2" size={16} />
-        <input
-          type="text"
-          onChange={(e) => setOwner(e.target.value)}
-          className="bg-transparent outline-none w-full"
-          placeholder="Owner"
-          value={owner}
-        />
-      </div>
-      <div>{editMessage && <p>{editMessage}</p>}</div>
-
-      {/* Button */}
-      <button
-        onClick={handleUpdateOwner}
-        className="bg-blue-menu text-white px-4 py-2 rounded-md hover:bg-blue-900"
-      >
-        Ajouter
-      </button>
-
-      <div className="flex items-center  space-x-4">
-        {/* Label */}
-        <label className="text-gray-900 font-semibold">Testeur</label>
-
-        {/* Dropdown */}
-        <div className="relative z-30 w-60">
-          <div
-            className="flex items-center bg-white rounded-md border border-gray-300 px-3 py-2 cursor-pointer"
-            onClick={() => setIsOpen(!isOpen)}
-          >
-            <User className="text-gray-500 mr-2" size={16} />
-            <span className="flex-1 text-gray-700">
-              {selectedTester.designation}
-            </span>
-            <ChevronDown className="text-gray-500" size={16} />
+      {user?.role !== "admin" && (
+        <div className="flex flex-wrap items-center justify-between gap-4 bg-white border border-gray-200 shadow-md rounded-xl px-6 py-4 mx-4 mb-6">
+          {/* Owner */}
+          <div className="flex items-center gap-2">
+            <label className="text-sm font-semibold text-gray-800">Owner</label>
+            <div className="flex items-center bg-white border border-gray-300 rounded-md px-3 py-2 w-60 shadow-sm">
+              <User className="text-gray-500 mr-2" size={16} />
+              <input
+                type="email"
+                onChange={(e) => setOwner(e.target.value)}
+                className="bg-transparent outline-none w-full text-sm text-gray-700"
+                placeholder="Email du propriétaire"
+                value={owner}
+              />
+            </div>
+            <button
+              onClick={handleUpdateOwner}
+              className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition"
+            >
+              Ajouter
+            </button>
           </div>
-          {isOpen && (
-            <ul className="absolute w-full bg-white border border-gray-300 rounded-md shadow-md mt-1">
-              {loading ? (
-                <li className="px-3 py-2">Chargement des testeurs...</li> // Afficher un message de chargement
-              ) : testers.length > 0 ? (
-                testers.map((tester) => (
-                  <li
-                    key={tester.id}
-                    className="px-3 py-2 hover:bg-gray-100 cursor-pointer"
-                    onClick={() => {
-                      setSelectedTester(tester);
-                      handleUpdateTesters(tester);
-                      setIsOpen(false);
-                    }}
-                  >
-                    {tester.designation}
-                  </li>
-                ))
-              ) : (
-                <li className="px-3 py-2">Aucun testeur trouvé</li> // Message si pas de testeurs
+
+          {/* Testeur */}
+          <div className="flex items-center gap-2 relative">
+            <label className="text-sm font-semibold text-gray-800">
+              Testeur
+            </label>
+            <div className="relative w-60">
+              <div
+                className="flex items-center bg-white border border-gray-300 rounded-md px-3 py-2 shadow-sm cursor-pointer"
+                onClick={() => setIsOpen(!isOpen)}
+              >
+                <User className="text-gray-500 mr-2" size={16} />
+                <span className="flex-1 text-sm text-gray-700">
+                  {selectedTester.designation}
+                </span>
+                <ChevronDown className="text-gray-500" size={16} />
+              </div>
+              {isOpen && (
+                <ul className="absolute w-full bg-white border border-gray-300 rounded-md shadow-md mt-1 z-30 max-h-60 overflow-y-auto">
+                  {loading ? (
+                    <li className="px-3 py-2 text-sm">Chargement...</li>
+                  ) : testers.length > 0 ? (
+                    testers.map((tester) => (
+                      <li
+                        key={tester.id}
+                        className="px-3 py-2 text-sm hover:bg-gray-100 cursor-pointer"
+                        onClick={() => {
+                          setSelectedTester(tester);
+                          handleUpdateTesters(tester);
+                          setIsOpen(false);
+                        }}
+                      >
+                        {tester.designation}
+                      </li>
+                    ))
+                  ) : (
+                    <li className="px-3 py-2 text-sm">Aucun testeur</li>
+                  )}
+                </ul>
               )}
-            </ul>
+            </div>
+          </div>
+
+          {/* Bouton Valider */}
+          {atLeastOneApp && (
+            <button
+              onClick={() => setSaveWork(true)}
+              className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition"
+            >
+              Valider
+            </button>
           )}
         </div>
-      </div>
+      )}
 
-      <div className="   ">
-        {atLeastOneApp && (
+      {/* Actions (Suppression / Modification) */}
+      <div className="flex justify-end mx-4 gap-3">
+        {selectedRows.length > 0 && (
           <button
-            onClick={() => {
-              setSaveWork(true);
-            }}
-            className="bg-blue-menu text-white px-4 py-2 rounded-md hover:bg-blue-900"
+            className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 flex items-center gap-2 transition"
+            onClick={
+              fromScopeModification
+                ? handleShowDeleteExecutionConfirmation
+                : handleAtWorkplanDelete
+            }
           >
-            valider
+            <Trash size={18} />
+            Supprimer
           </button>
         )}
+        {fromScopeModification &&
+          selectedRows.length > 0 &&
+          (modify ? (
+            <button
+              className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 flex items-center gap-2 transition"
+              onClick={handleModifyLines}
+            >
+              Modifier
+            </button>
+          ) : (
+            <button
+              className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 flex items-center gap-2 transition"
+              onClick={handleSaveModifictaion}
+            >
+              Enregistrer les modifications
+            </button>
+          ))}
       </div>
-    </div>
-    <div className="flex justify-end mr-4 gap-2">
-    {selectedRows.length > 0 && (
-      <button
-        className="bg-alert-red text-white px-4 py-2 rounded-md hover:bg-red-700 flex items-center gap-2"
-        onClick={
-          fromScopeModification
-            ? handleShowDeleteExecutionConfirmation
-            : handleAtWorkplanDelete
-        }
-      >
-        <Trash size={18} />
-        Supprimer
-      </button>
-    )}
-    {fromScopeModification && selectedRows.length > 0 && (
-      <>
-        {modify ? (
-          <button
-            className="bg-blue-conf text-white px-4 py-2 rounded-md hover:bg-red-700 flex items-center gap-2"
-            onClick={handleModifyLines}
-          >
-            Modifier
-          </button>
-        ) : (
-          <button
-            className="bg-blue-conf text-white px-4 py-2 rounded-md flex items-center gap-2"
-            onClick={handleSaveModifictaion}
-          >
-            Enregistrer les modifications
-          </button>
-        )}
-      </>
-    )}</div>
 
-    {saveWork && (
-      <DecisionPopUp
-        handleConfirm={handleSave}
-        handleDeny={() => setSaveWork(false)}
-        name="Confirmation"
-        text="Êtes-vous sûr de vouloir valider les modifications ?"
-        loading={saveloading}
-      />
-    )}
-    {showExecutionDeleteConfirmation && (
-      <DecisionPopUp
-        handleConfirm={handleFromScopeDelete}
-        handleDeny={() => setShowExecutionDeleteConfirmation(false)}
-        name="Confirmation"
-        text="Êtes-vous sûr de vouloir supprimer ces contrôles ? Cette action est irréversible."
+      {editMessage && (
+        <p className="text-sm text-gray-600 text-center mt-4">{editMessage}</p>
+      )}
 
-        loading={loading}
-      />
-    )}
-    <div className="m-3">
-      <TableContainer component={Paper} className="overflow-auto ">
-        <Table>
-          <TableHead>
-            <TableRow className="bg-blue-nav">
-              {/* Application */}
-              <TableCell
-                align="center"
-                style={{ width: 500 }}
-                className="border border-subfont-gray"
-              >
-                Application
-              </TableCell>
+      {showExecutionDeleteConfirmation && (
+        <DecisionPopUp
+          handleConfirm={handleFromScopeDelete}
+          handleDeny={() => setShowExecutionDeleteConfirmation(false)}
+          name="Confirmation"
+          text="Êtes-vous sûr de vouloir supprimer ces contrôles ? Cette action est irréversible."
+          loading={loading}
+        />
+      )}
+      {saveWork && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+          <DecisionPopUp
+            handleConfirm={handleSave}
+            handleDeny={() => setSaveWork(false)}
+            name="Confirmation"
+            text="Êtes-vous sûr de vouloir valider les modifications ?"
+            loading={saveloading}
+          />
+        </div>
+      )}
+      <div className="m-3">
+        <TableContainer component={Paper} className="overflow-auto ">
+          <Table>
+            <TableHead>
+              <TableRow className="bg-blue-nav">
+                {/* Application */}
+                <TableCell
+                  align="center"
+                  style={{ width: 500 }}
+                  className="border border-subfont-gray"
+                >
+                  Application
+                </TableCell>
 
-              {/* Risques */}
-              <TableCell
-                align="center"
-                style={{ width: 950 }}
-                className="border border-subfont-gray"
-              >
-                Risques
-              </TableCell>
+                {/* Risques */}
+                <TableCell
+                  align="center"
+                  style={{ width: 950 }}
+                  className="border border-subfont-gray"
+                >
+                  Risques
+                </TableCell>
 
-              {/* Contrôles */}
-              <TableCell
-                colSpan={6} // 7 colonnes pour Contrôles
-                align="center"
-                className="border border-subfont-gray"
-              >
-                Contrôles
-              </TableCell>
-            </TableRow>
-          </TableHead>
+                {/* Contrôles */}
+                <TableCell
+                  colSpan={6} // 7 colonnes pour Contrôles
+                  align="center"
+                  className="border border-subfont-gray"
+                >
+                  Contrôles
+                </TableCell>
+              </TableRow>
+            </TableHead>
 
-          <TableBody>
-            <TableRow>
-              <TableCell colSpan={14} style={{ padding: 0 }}>
-                <Paper style={{ height: 550, width: "100%" }}>
-                  <DataGrid
-                    sx={{
-                      // Style pour les en-têtes de colonnes
-                      "& .MuiDataGrid-columnHeader": {
-                        backgroundColor: "#E9EFF8", // Couleur de fond verte
-                      },
-                      // Style pour les lignes au survol
-                      "& .MuiDataGrid-row:hover": {
-                        backgroundColor: "#E8F5E9", // Couleur de fond au survol
-                      },
-                    }}
-                    rows={flattenedData}
-                    onRowClick={handleRowClick}
-                    // rows={searchResults}
-                    columns={columns}
-                    pageSize={5}
-                    checkboxSelection={unlockModification}
-                    isCellEditable={(params) => {
-                      console.log(
-                        "fromScopeModification",
-                        fromScopeModification
-                      );
+            <TableBody>
+              <TableRow>
+                <TableCell colSpan={14} style={{ padding: 0 }}>
+                  <Paper style={{ height: 550, width: "100%" }}>
+                    <DataGrid
+                      sx={{
+                        // Style pour les en-têtes de colonnes
+                        "& .MuiDataGrid-columnHeader": {
+                          backgroundColor: "#E9EFF8", // Couleur de fond verte
+                        },
+                        // Style pour les lignes au survol
+                        "& .MuiDataGrid-row:hover": {
+                          backgroundColor: "#E8F5E9", // Couleur de fond au survol
+                        },
+                      }}
+                      rows={flattenedData}
+                      onRowClick={handleRowClick}
+                      // rows={searchResults}
+                      columns={columns}
+                      pageSize={5}
+                      checkboxSelection={unlockModification}
+                      isCellEditable={(params) => {
+                        console.log(
+                          "fromScopeModification",
+                          fromScopeModification
+                        );
 
-                      const row = flattenedData.find(
-                        (row) => row.id === params.row.id
-                      );
-                      return row?.modifiable || false;
-                    }}
-                    disableRowSelectionOnClick
-                    onRowSelectionModelChange={(newSelection) => {
-                      setSelectedControls(newSelection);
-                    }}
-                    rowSelectionModel={selectedControls}
-                    rowsPerPageOptions={[5, 10, 20]}
-                    editMode="cell"
-                    onCellEditStop={(params, event) => {
-                      console.log("Edition terminée sur la cellule", params);
+                        const row = flattenedData.find(
+                          (row) => row.id === params.row.id
+                        );
+                        return row?.modifiable || false;
+                      }}
+                      disableRowSelectionOnClick
+                      onRowSelectionModelChange={(newSelection) => {
+                        setSelectedControls(newSelection);
+                      }}
+                      rowSelectionModel={selectedControls}
+                      rowsPerPageOptions={[5, 10, 20]}
+                      editMode="cell"
+                      onCellEditStop={(params, event) => {
+                        console.log("Edition terminée sur la cellule", params);
 
-                      const { id, field } = params;
-                      const newValue = event.target.value;
+                        const { id, field } = params;
+                        const newValue = event.target.value;
 
-                      // Mettre à jour le tableau de données avec la nouvelle valeur
-                      setFlattenedData((prevData) => {
-                        const updatedData = prevData.map((row) => {
-                          if (row.id === id) {
-                            console.log("le row est trouvé", field);
-                            row[field] = newValue; // Mettre à jour la cellule
-                            switch (field) {
-                              case "controlDescription":
-                                row["controlModified"] = true;
-                                break;
+                        // Mettre à jour le tableau de données avec la nouvelle valeur
+                        setFlattenedData((prevData) => {
+                          const updatedData = prevData.map((row) => {
+                            if (row.id === id) {
+                              console.log("le row est trouvé", field);
+                              row[field] = newValue; // Mettre à jour la cellule
+                              switch (field) {
+                                case "controlDescription":
+                                  row["controlModified"] = true;
+                                  break;
 
-                              case "riskDescription":
-                                row["riskModified"] = true;
-                                break;
+                                case "riskDescription":
+                                  row["riskModified"] = true;
+                                  break;
+                              }
                             }
-                          }
-                          return row;
+                            return row;
+                          });
+                          return updatedData;
                         });
-                        return updatedData;
-                      });
-                    }}
-                    //disableSelectionOnClick
-                  />
-                </Paper>
-              </TableCell>
-            </TableRow>
-          </TableBody>
-        </Table>
-      </TableContainer>
-    </div>
-  </>
-);
+                      }}
+                      //disableSelectionOnClick
+                    />
+                  </Paper>
+                </TableCell>
+              </TableRow>
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </div>
+    </>
+  );
 }
 
 export default Matrix;

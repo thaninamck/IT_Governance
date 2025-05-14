@@ -61,7 +61,7 @@ const useWorkplan = (idMission) => {
       // Formater les données comme requis par l'API
       //const formattedData = { executions: executionsData };
 
-      const response = await api.post(`/missions/${id}/insert-executions`, executionsData);
+      const response = await api.post(`/missions/${missionId}/insert-executions`, executionsData);
       setExecutions(response.data); 
       toast.success("Controles ajoutées avec succès.");
     } catch (err) {
