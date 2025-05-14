@@ -7,10 +7,10 @@ import useWorkplan from "../../Hooks/useWorkplan";
 import { NotificationDialog } from "../../components/workPlan/NotificationDialog";
 import { ConfirmationDialog } from "../../components/workPlan/ConfirmationDialog";
 import { useAuth } from "../../Context/AuthContext";
-import { useLocation } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 const Workplan = () => {
   const location = useLocation();
-  const missionId = location.state?.missionId;
+  const {missionId} = useParams();
   
   const [appDuplicationDialogOpen, setappDuplicationDialogOpen] =
     useState(false);
@@ -90,7 +90,7 @@ const Workplan = () => {
       id: id,
       description: description,
       owner: owner,
-      layers: layers?.map((layer) => ({
+      layers: layers.map((layer) => ({
         id: layer.id,
         name: layer.name,
         risks: [],
@@ -537,7 +537,6 @@ const Workplan = () => {
           handleSaveexecutions={handleSaveexecutions}
           fromScopeModification={false}
           unlockModification={true}
-
           viewOnly={false}
           missionId={missionId}
         ></Matrix>

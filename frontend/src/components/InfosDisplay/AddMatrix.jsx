@@ -130,7 +130,7 @@ useEffect(()=>{
   
 function transformExecutionsToAppStructure(executions) {
   const applications = {};
-console.log("executions",executions)
+
   executions.forEach(exec => {
     const appId = exec.systemId;
     const layerId = exec.layerId;

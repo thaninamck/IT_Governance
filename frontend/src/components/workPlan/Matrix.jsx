@@ -41,7 +41,6 @@ function Matrix({
     deleteExecutions,
     updateMultipleExecutions,
   } = useWorkplan(missionId);
-  console.error("missionnnnnnnnnnnnnnnnnnnnnnnnnnnId",missionId)
   const [saveWork, setSaveWork] = useState(false);
   const [flattenedData, setFlattenedData] = useState([]);
   const [selectedControls, setSelectedControls] = useState([]);
