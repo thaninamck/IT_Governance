@@ -7,7 +7,11 @@ import useWorkplan from "../../Hooks/useWorkplan";
 import { NotificationDialog } from "../../components/workPlan/NotificationDialog";
 import { ConfirmationDialog } from "../../components/workPlan/ConfirmationDialog";
 import { useAuth } from "../../Context/AuthContext";
+import { useLocation } from "react-router-dom";
 const Workplan = () => {
+  const location = useLocation();
+  const missionId = location.state?.missionId;
+  
   const [appDuplicationDialogOpen, setappDuplicationDialogOpen] =
     useState(false);
   const [startWithriskDialogOpen, setstartWithriskDialogOpen] = useState(false);
@@ -533,7 +537,9 @@ const Workplan = () => {
           handleSaveexecutions={handleSaveexecutions}
           fromScopeModification={false}
           unlockModification={true}
+
           viewOnly={false}
+          missionId={missionId}
         ></Matrix>
       </div>
     </main>

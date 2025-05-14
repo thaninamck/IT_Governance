@@ -14,8 +14,10 @@ console.log('mission data ',dataFormat)
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate()
   const handleAddMatrix = () => {
-   // navigate(`/missions/${missionId}/Workplan`);
-    navigate(`/missions/${missionId}/Workplan`);
+    navigate(`/missions/${missionId}/Workplan`, {
+      state: { missionId }
+    });
+    
   }
 
  // const [controleListe, setControleListe] = useState(data1);
