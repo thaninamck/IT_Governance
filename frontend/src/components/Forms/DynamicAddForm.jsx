@@ -61,7 +61,7 @@ function DynamicAddForm({ title, label, placeholder, onAdd, fetchEndpoint, creat
             </div>
             <div className='flex flex-col h-[110px] w-[400px]'>
               {error && <p className="text-red-500 text-sm">{error}</p>}
-              <form className="flex flex-row items-center justify-between" onSubmit={handleSubmit}>
+              <form className="flex flex-row items-end justify-between" onSubmit={handleSubmit}>
                 <InputForm
                   type="text"
                   label={label}
@@ -71,7 +71,7 @@ function DynamicAddForm({ title, label, placeholder, onAdd, fetchEndpoint, creat
                   value={inputValue}
                   onChange={(e) => {
                     setInputValue(e.target.value);
-                    setError('');
+                    
                   }}
                 />
                 <Button btnName="Enregistrer" type="submit" />

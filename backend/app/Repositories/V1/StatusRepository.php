@@ -60,4 +60,10 @@ class StatusRepository
 
         return $name;
     }
+
+    public function hasRelatedData(Status $status): bool
+    {
+        return 
+        $status->executions()->exists();
+    }
 }

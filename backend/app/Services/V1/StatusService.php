@@ -37,6 +37,9 @@ class StatusService
         if(!$status){
             return null;
         }
+        if ($this->statusRepository->hasRelatedData($status)) {
+            throw new \Exception("Impossible de supprimer ce satatus, des données lui sont encore associées.");
+        }
         return $this->statusRepository->deleteStatus($id);
     }
 }

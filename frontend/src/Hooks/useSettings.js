@@ -83,22 +83,7 @@ const useSettings = ({ fetchEndpoint, createEndpoint, deleteEndpoint, labelKey =
     }
   };
 
-  const fetchStatus = async () => {
-    try {
-      const response = await api.get('/getstatus');
-      setItems(response.data.map(item => ({
-        label: item.statusName,
-        value: item.id.toString(),
-      })));
-    } catch (error) {
-      console.error('Erreur lors de la récupération des status:', error);
-    }
-  };
-
-  useEffect(() => {
-    fetchStatus();
-  }, []);
-
+  
   
 
 

@@ -2,14 +2,14 @@ import React, { useEffect, useState } from 'react'
 import AddCategorieForm from '../../components/Forms/AddCategorieForm'
 import DynamicAddForm from '../../components/Forms/DynamicAddForm'
 import api from '../../Api';
-import AddSourceForm from '../../components/Forms/AddSourceForm';
+import AddStatusForm from '../../components/Forms/AddStatusForm';
 
 function Parametrage() {
 
   return (
     <div className='flex flex-col'>
 
-      <AddCategorieForm
+      {/* <AddCategorieForm
         title="Gérer les Catégories"
         label="Catégorie"
         label1="Code"
@@ -18,8 +18,8 @@ function Parametrage() {
           { label: "Major Process", value: "1" },
           { label: "Sub Process", value: "2" },
         ]}
-        onAdd={(newItem) => console.log("Nouvelle catégorie ajoutée:", newItem)} />
-        <AddSourceForm
+        onAdd={(newItem) => console.log("Nouvelle catégorie ajoutée:", newItem)} /> */}
+        <AddStatusForm
         title="Gérer les Status"
         label="Status"
         label1="entité"
@@ -28,7 +28,7 @@ function Parametrage() {
         ]}
         onAdd={(newItem) => console.log("Nouvelle catégorie ajoutée:", newItem)} />
 
-      <DynamicAddForm
+      {/* <DynamicAddForm
         title="Gérer les Couches"
         label="Couches"
         placeholder="Nom de la couche"
@@ -38,7 +38,7 @@ function Parametrage() {
         labelKey='layerName'
         itemKey='layer'
         onAdd={(newItem) => console.log("Nouvelle couche ajoutée:", newItem)}
-      />
+      /> */}
 
       <DynamicAddForm
         title="Gérer les Source"
