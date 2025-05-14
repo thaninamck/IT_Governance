@@ -549,9 +549,7 @@ function Matrix({
     navigate(-1);
   };
 
-  useEffect(() => {
-    console.log("selectedControls", selectedControls);
-  }, [selectedControls]);
+ 
 
   // Gestion des sélections pour les testeurs
   /*const handleTesterChange = (id, testerId) => (event) => {
@@ -654,7 +652,7 @@ function Matrix({
     );
     setSelectedRows(fullSelectedRows);
 
-    console.log("✅ Selected full rows:", fullSelectedRows);
+    
   }, [selectedControls]);
 
   const handleFromScopeDelete = async () => {
@@ -662,7 +660,7 @@ function Matrix({
     const idsToDelete = {
       executionsIds: selectedRows.map((row) => row.executionId),
     };
-    console.log("handleFromScopeDelete", idsToDelete);
+   
 
     // Appeler la fonction pour supprimer les exécutions
     const undeletableIds = await deleteExecutions(idsToDelete);
@@ -750,9 +748,7 @@ setShowExecutionDeleteConfirmation(true)
   useEffect(() => {
     console.log("flattenedData", flattenedData);
   }, [flattenedData]);
-  useEffect(() => {
-    console.log("hhjdkdkdkd", controlsToUpdate);
-  }, [controlsToUpdate]);
+ 
 
 //   return (
 //     <>

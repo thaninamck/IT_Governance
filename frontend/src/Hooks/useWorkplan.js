@@ -4,8 +4,11 @@ import { useAuth } from "../Context/AuthContext"; // Contexte d'authentification
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { useParams } from "react-router-dom";
-const useWorkplan = (missionId) => {
-  const {id}=useParams();
+const useWorkplan = (idMission) => {
+ const {missionId}=useParams();
+ useEffect(() => {
+  console.log("mision dans usehook d",missionId)
+}, [missionId])
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [saveloading, setSaveLoading] = useState(false);
@@ -16,10 +19,10 @@ const useWorkplan = (missionId) => {
   const [risks, setRisks] = useState([]);
   const [testers, setTesters] = useState([]);
   const [executions, setExecutions] = useState([]);
-  const fetchOptions = async (id) => {
+  const fetchOptions = async (missionId) => {
     setLoading(true);
     try {
-      const response = await api.get(`/missions/${id}/workplanOptions`);
+      const response = await api.get(`/missions/${missionId}/workplanOptions`);
       const data = response.data;
 
       setApplications(data.applications);
@@ -69,11 +72,11 @@ const useWorkplan = (missionId) => {
     }
   };
   useEffect(() => {
-    //const missionId = 1; 
-    fetchOptions(id);
-    fetchTesters(missionId);
-  }, []); 
-
+    
+    fetchOptions(missionId);
+    fetchTesters(idMission);
+  }, []);
+  
   const deleteExecutions = async (executionsIds) => {
     
     try {

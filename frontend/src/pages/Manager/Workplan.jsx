@@ -11,6 +11,10 @@ import { useLocation, useParams } from "react-router-dom";
 const Workplan = () => {
   const location = useLocation();
   const {missionId} = useParams();
+  useWorkplan(missionId);
+  useEffect(() => {
+    console.log("misionid",missionId)
+  }, [missionId])
   
   const [appDuplicationDialogOpen, setappDuplicationDialogOpen] =
     useState(false);
@@ -32,18 +36,114 @@ const Workplan = () => {
   }, [application]); //juste pour surveiller l'app
 
   // Charger l'état sauvegardé au montage
+  // useEffect(() => {
+  //   const savedNodes =
+  //     JSON.parse(window.localStorage.getItem("appNodes")) || [];
+  //   const savedEdges = JSON.parse(window.localStorage.getItem("edges")) || [];
+  //   const savedApp =
+  //     JSON.parse(window.localStorage.getItem("application")) || {};
+  //   console.log("savedNodes", savedNodes);
+  //   setAppNodes(savedNodes);
+  //   setEdges(savedEdges);
+  //   setApplication(savedApp);
+  // }, []);
   useEffect(() => {
-    const savedNodes =
-      JSON.parse(window.localStorage.getItem("appNodes")) || [];
-    const savedEdges = JSON.parse(window.localStorage.getItem("edges")) || [];
-    const savedApp =
-      JSON.parse(window.localStorage.getItem("application")) || {};
-    console.log("savedNodes", savedNodes);
-    setAppNodes(savedNodes);
-    setEdges(savedEdges);
-    setApplication(savedApp);
+    const savedApp = JSON.parse(window.localStorage.getItem("application"));
+    if (!savedApp || !savedApp.id) return;
+  
+    setApplication(savedApp); // remettre dans le state
+  
+    const reconstructedNodes = [];
+    const reconstructedEdges = [];
+  
+    const appX = 335;
+    const appY = 166;
+  
+    // Node application
+    reconstructedNodes.push({
+      id: savedApp.id,
+      type: "app",
+      position: { x: appX, y: appY },
+      data: { label: savedApp.description },
+    });
+  
+    savedApp.layers?.forEach((layer, layerIndex) => {
+      const layerX = appX + 500;
+      const layerY = appY + layerIndex * 100;
+  
+      // Node layer
+      reconstructedNodes.push({
+        id: layer.id,
+        type: "layer",
+        position: { x: layerX, y: layerY },
+        data: {
+          label: layer.name,
+          onRiskDrop: (event) => onRiskDrop(event, layer.id), // garde l'interaction
+        },
+      });
+  
+      // Edge app → layer
+      reconstructedEdges.push({
+        id: `e-${savedApp.id}-${layer.id}`,
+        source: savedApp.id,
+        target: layer.id,
+        label: "",
+      });
+  
+      layer.risks?.forEach((risk, riskIndex) => {
+        const riskNodeId = `${layer.id}_${risk.id}`;
+        const riskX = appX + 100;
+        const riskY = appY + 200 + riskIndex * 100;
+  
+        // Node risk
+        reconstructedNodes.push({
+          id: riskNodeId,
+          type: "risk",
+          position: { x: riskX, y: riskY },
+          data: {
+            riskData: risk,
+            onControlDrop: (event) =>
+              onControlDrop(event, risk.id, layer.id),
+          },
+        });
+  
+        // Edge layer → risk
+        reconstructedEdges.push({
+          id: `e-${layer.id}-${riskNodeId}`,
+          source: layer.id,
+          target: riskNodeId,
+          label: "",
+        });
+  
+        risk.controls?.forEach((control, ctrlIndex) => {
+          const controlNodeId = `${layer.id}_${risk.id}_${control.id}_${ctrlIndex}`;
+          const controlX = riskX + 500;
+          const controlY = riskY + ctrlIndex * 100;
+  
+          // Node control
+          reconstructedNodes.push({
+            id: controlNodeId,
+            type: "cntrl",
+            position: { x: controlX, y: controlY },
+            data: { controlData: control },
+          });
+  
+          // Edge risk → control
+          reconstructedEdges.push({
+            id: `e-${risk.id}-${controlNodeId}`,
+            source: riskNodeId,
+            target: controlNodeId,
+            label: "",
+          });
+        });
+      });
+    });
+  
+    // Appliquer les résultats
+    setAppNodes(reconstructedNodes);
+    setEdges(reconstructedEdges);
   }, []);
-
+  
   // Sauvegarder l'état à chaque modification
   useEffect(() => {
     window.localStorage.setItem("appNodes", JSON.stringify(appNodes));
