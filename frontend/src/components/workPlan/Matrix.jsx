@@ -1012,7 +1012,7 @@ function Matrix({
     <>
       <div className="flex items-center justify-start mb-6" />
 
-      {user?.role !== "admin" && (
+      {user?.role === "manageur"  &&(
         <div className="flex flex-wrap items-center justify-between gap-4 bg-white border border-gray-200 shadow-md rounded-xl px-6 py-4 mx-4 mb-6">
           {/* Owner */}
           <div className="flex items-center gap-2">

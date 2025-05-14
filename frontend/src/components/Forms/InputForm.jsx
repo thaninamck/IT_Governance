@@ -26,7 +26,7 @@ function InputForm({
   };
 
   return (
-    <div className={` relative flex flex-col ${flexDirection || ''} gap-1`}>
+    <div className={` relative  flex flex-col ${flexDirection || ''} gap-1`}>
       <div className="flex items-center gap-2">
         <label className={`text-sm  ml-1 font-medium ${customStyle || ""}`}>{label}</label>
         {required && <span className="text-red-500">*</span>}
@@ -42,7 +42,7 @@ function InputForm({
           }`}
           placeholder={placeholder}
           style={{
-            width: "100%",
+            width: width || "100%",
             minWidth,
             minHeight: "80px", // Hauteur minimale pour le textarea
             resize: "none", // Empêche le redimensionnement manuel
@@ -63,7 +63,7 @@ function InputForm({
           }`}
           placeholder={placeholder}
           style={{
-            width: "100%",
+            width: width || "100%",
             minWidth,
           }}
           value={value}
