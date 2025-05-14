@@ -106,11 +106,12 @@ class ExecutionRepository
         JOIN public.systems s ON s.mission_id = m.id
         JOIN public.layers l ON l.system_id = s.id
         JOIN public.executions e ON e.layer_id = l.id
-        JOIN public.step_executions se ON e.id = se.execution_id
-        JOIN public.step_test_scripts sts ON se.step_id = sts.id
-        JOIN public.controls c ON c.id = sts.control_id
-        JOIN public.cntrl_risk_covs cov ON e.id = cov.execution_id
-        JOIN public.risks r ON r.id = cov.risk_id
+       LEFT JOIN public.step_executions se ON e.id = se.execution_id
+		LEFT JOIN public.step_test_scripts sts ON se.step_id = sts.id
+
+        LEFT JOIN public.controls c ON c.id = sts.control_id
+       LEFT  JOIN public.cntrl_risk_covs cov ON e.id = cov.execution_id
+       LEFT JOIN public.risks r ON r.id = cov.risk_id
         LEFT JOIN public.statuses st ON e.status_id = st.id
         LEFT JOIN public.major_processes mp ON c.major_id = mp.id
         LEFT JOIN public.sub_processes sp ON c.sub_id = sp.id
