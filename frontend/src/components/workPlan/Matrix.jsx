@@ -514,7 +514,8 @@ function Matrix({
   };
 
   const handleSave = async () => {
-    // console.log("flattenedData", flattenedData);
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  
     const dataToSend = {
       executions: flattenedData.map((item) => ({
         layerId: item.layerId,
@@ -532,19 +533,24 @@ function Matrix({
         controlTester: item.controlTester,
       })),
     };
-    // Vérification des champs obligatoires
-    const missingFields = flattenedData.some(
-      (item) => !item.controlTester || !item.riskOwner || !item.controlOwner
+  
+    // Vérification des champs obligatoires et de la validité des emails
+    const hasInvalidFields = flattenedData.some(
+      (item) =>
+        !item.controlTester ||
+        !item.riskOwner ||
+        !item.controlOwner ||
+        !emailRegex.test(item.riskOwner) ||
+        !emailRegex.test(item.controlOwner)
     );
-
-    if (missingFields) {
-      toast.error(
-        "Veuillez affecter tous les contrôles à leurs testeurs et tous les risques/contrôles à leurs propriétaires."
+  
+    if (hasInvalidFields) {
+      toast.warn(
+        "Tous les champs doivent être complétés. Les propriétaires (risque et contrôle) doivent avoir des adresses email valides."
       );
-      handleSaveexecutions(dataToSend);
       return;
     }
-
+  
     console.log("dataToSend", dataToSend);
     await createExecutions(dataToSend);
     setSaveWork(false);
@@ -552,6 +558,7 @@ function Matrix({
     setFlattenedData([]);
     navigate(-1);
   };
+  
 
   // Gestion des sélections pour les testeurs
   /*const handleTesterChange = (id, testerId) => (event) => {
@@ -595,9 +602,7 @@ function Matrix({
       const savedData = localStorage.getItem("flattenedData");
       if (savedData) {
         const parsedData = JSON.parse(savedData);
-        console.log("je mets a jour car saved data est pas vide");
         setFlattenedData(parsedData); // Mettre à jour flattenedData avec les données sauvegardées
-        console.log("savedData", parsedData); // Vérifier les données chargées
       }
     }
   }, []);
@@ -613,7 +618,6 @@ function Matrix({
       let mergedData = [];
 
       setFlattenedData((prevFlattenedData) => {
-        console.log("prev flattened data dans le if", prevFlattenedData);
 
         // if ( viewOnly === true) {
         //   //alert("je suis dans le if")
@@ -627,7 +631,6 @@ function Matrix({
 
         // }
 
-        console.log("mergedData", mergedData); // Vérifier les données fusionnées
         return mergedData;
       });
 
@@ -639,7 +642,6 @@ function Matrix({
   useEffect(() => {
     if (fromScopeModification === false && viewOnly === false) {
       //if (flattenedData.length > 0) {
-      console.log("je set dans localstorage");
       localStorage.setItem("flattenedData", JSON.stringify(flattenedData));
       //}
     }
