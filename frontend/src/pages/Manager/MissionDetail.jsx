@@ -29,7 +29,7 @@ function MissionDetail() {
   };
 
   const missionData = location.state?.missionData; // Récupérer les données envoyées
-  console.log(missionData)
+  
 
   // Mettre à jour le profil au moment où la mission est sélectionnée
 useEffect(() => {
@@ -37,9 +37,9 @@ useEffect(() => {
     updateProfile(missionData.profileName); // Mettre à jour le profil dans le context
   }
 }, [missionData, updateProfile]);
-console.log('profile',profile)
 
-console.log("mission manel",missionData)
+
+
 
   // Liste des chemins où les breadcrumbs doivent s'afficher
   const breadcrumbRoutes = [
