@@ -138,21 +138,27 @@ function DisplayControleAppID() {
             console.error("Exception API lors du lancement :", error);
           }
         };
+
+        const handleClick = () => {
+          if (params.row.executionLaunchedAt = null) {
+            console.log('launchedAt', params.row.executionLaunchedAt)
+            handleLaunchExecution();
+          } else {
+            navigate(`/missions/${mission}/${name}/${params.row.controlCode}`, {
+              state: { controleData: params.row },
+            });
+          }
+        };
+        
     
         return (
           <button
         
-            onClick={ (params.row.executionLaunchedAt !=null ? handleLaunchExecution 
-              :
-              navigate(`/missions/${mission}/${name}/${params.row.controlCode}`, {
-                state: { controleData: params.row },
-              })
-            )}
+          onClick={handleClick}
             className={`flex items-center justify-center ${buttonColor} text-white font-semibold border-none h-[40px] w-[100px] rounded shadow`}
           >
-            {params.row.executionLaunchedAt !=null ? <span>consulter</span> :
-             {buttonLabel}
-             }
+           {params.row.executionLaunchedAt != null ? <span>consulter</span> : buttonLabel}
+
            
           </button>
         );

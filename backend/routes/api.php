@@ -169,7 +169,7 @@ Route::middleware(['auth:sanctum', TesterMiddleware::class])
         Route::controller(ExecutionController::class)->group(function () {
             Route::get('/missions/{mission}/executions-for-tester', 'getExecutionsByMissionAndTester');
             Route::put('missions/{mission}/executions/update-execution/{execution}', 'updateExecution');
-            Route::put('/executions/launch-execution/{execution}', 'launchExecution');
+            // Route::put('/executions/launch-execution/{execution}', 'launchExecution');
           //  Route::get('/executions/get-options', 'getExecutionStatusOptions');
 
             Route::get('missions/{mission}/executions/get-execution/{execution}', 'getExecutionById');//correct one
@@ -233,6 +233,11 @@ Route::prefix('v1')->controller(ParticipationController::class)->group(function 
 });
 
 //gestion scope controle
+Route::prefix('v1')->group(function () {
+    Route::controller(ExecutionController::class)->group(function () {
+        Route::put('/executions/launch-execution/{execution}', 'launchExecution');
+    });
+});
 Route::prefix('v1')->group(function () {
     Route::controller(ExecutionController::class)->group(function () {
         Route::get('/missions/{missionId}/getmatrix', 'getExecutionsByMission');
