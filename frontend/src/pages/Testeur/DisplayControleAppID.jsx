@@ -18,6 +18,7 @@ import RevueListExecution from '../Superviseur/RevueListExecution';
 import useRevue from '../../Hooks/useRevue';
 
 function DisplayControleAppID() {
+ 
 
   const {
     loading,
@@ -106,41 +107,63 @@ function DisplayControleAppID() {
       headerName: "Action",
       width: 120,
       customRenderCell: (params) => {
-        const isCorrection = activePanel === "corriger";
+        console.log('paeamq',params)
         const isToReview = params.row.isToReview;
         const isToValidate = params.row.isToValidate;
-        const status =params.row.statusName;
-
+        const status = params.row.statusName;
+    
         let buttonLabel = "Exécuter";
         let buttonColor = "bg-blue-500 hover:bg-blue-600";
-
-        // if (isCorrection) {
-          if (!isToReview && !isToValidate && status) {
-            buttonLabel = "À corriger";
-            buttonColor = "bg-orange-500 hover:bg-orange-600";
-          } else if (isToReview && isToValidate && status) {
-            buttonLabel = "Valider";
-            buttonColor = "bg-green-500 hover:bg-green-600";
+    
+        if (!isToReview && !isToValidate && status) {
+          buttonLabel = "À corriger";
+          buttonColor = "bg-orange-500 hover:bg-orange-600";
+        } else if (isToReview && isToValidate && status) {
+          buttonLabel = "Valider";
+          buttonColor = "bg-green-500 hover:bg-green-600";
+        }
+    
+        const handleLaunchExecution = async () => {
+          try {
+            
+            const response = await api.put(`/executions/launch-execution/${params.row.id}`);
+            if (response.status === 200) {
+              navigate(`/missions/${mission}/${name}/${params.row.controlCode}`, {
+                state: { controleData: params.row },
+              });
+            } else {
+              console.error("Erreur lors du lancement de l'exécution :", response);
+            }
+          } catch (error) {
+            console.error("Exception API lors du lancement :", error);
           }
-        // }
-
+        };
+    
         return (
           <button
-            onClick={() =>
+        
+            onClick={ (params.row.executionLaunchedAt !=null ? handleLaunchExecution 
+              :
               navigate(`/missions/${mission}/${name}/${params.row.controlCode}`, {
                 state: { controleData: params.row },
               })
-            }
+            )}
             className={`flex items-center justify-center ${buttonColor} text-white font-semibold border-none h-[40px] w-[100px] rounded shadow`}
           >
-            {buttonLabel}
+            {params.row.executionLaunchedAt !=null ? <span>consulter</span> :
+             {buttonLabel}
+             }
+           
           </button>
         );
       },
     }
+    
 
 
   ];
+
+ 
 
   useEffect(() => {
     const loadData = async () => {
