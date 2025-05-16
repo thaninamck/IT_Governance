@@ -26,7 +26,7 @@ import AddControlForm from "../components/Forms/AddControleForm";
 import DecisionPopUp from "../components/PopUps/DecisionPopUp";
 import { useAuth } from "../Context/AuthContext";
 const ManageControls = () => {
-   const { user} = useAuth();
+  const { user } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const [isOpenRisk, setIsOpenRisk] = useState(false);
   const [transformedData, setTransformeData] = useState({});
@@ -92,22 +92,41 @@ const ManageControls = () => {
     setIsOpen(false);
   };
 
-  const formatRisksData = (data) => {
-    return data.map((row) => ({
-      code: row[0],
-      name: row[1],
-      description: row[2],
-    }));
-  };
-  const findIdByName = (list, name) => {
-    if (!list || !name) return null;
-    const found = list.find((item) => item[1] === name);
-    return found ? { id: found[0], name } : null;
-  };
 
-  const findControlByCode = (controls, code) => {
-    return controls.find((control) => control.code === code);
-  };
+const formatRisksData = (data) => {
+  // Vérification de la structure
+  const expectedHeader = ['Code', 'Name', 'Description'];
+
+  if (
+    !Array.isArray(data) ||
+    data.length === 0 ||
+    !Array.isArray(data[0]) ||
+    data[0].length !== expectedHeader.length ||
+    !expectedHeader.every((col, i) => col === data[0][i])
+  ) {
+    toast.warn(
+      <div>
+        <img src="/struct-risk.png" alt="warning" className="w-full h-9 mt-1" />
+        <p><strong>Structure du tableau des risques invalide :</strong></p>
+        <p>L'en-tête doit être exactement :</p>
+        <ol>
+          {expectedHeader.map((col, idx) => (
+            <li key={idx}><strong>{col}</strong></li>
+          ))}
+        </ol>
+      </div>
+    );
+    return [];
+  }
+
+  // Formatage des données sans l'en-tête
+  return data.slice(1).map((row) => ({
+    code: row[0] || null,
+    name: row[1] || null,
+    description: row[2] || null,
+  }));
+};
+
 
   const formatControlsData = (data, controlsData) => {
     if (!Array.isArray(data) || data.length < 2) return { controls: [] };
@@ -115,17 +134,60 @@ const ManageControls = () => {
       console.error("controlsData n'est pas un tableau valide :", controlsData);
       return { controls: [] };
     }
-
+  
+    const expectedHeaders = [
+      "Code",
+      "Description",
+      "Test Script",
+      "Type Name",
+      "Major Process Code",
+      "Major Process Description",
+      "Sub Process Code",
+      "Sub Process Name",
+      "Sources",
+    ];
+  
+    const headers = data[0].map((h) => h.trim());
+    const isValidStructure = expectedHeaders.every(
+      (expected, index) => headers[index] === expected
+    );
+  
+    if (!isValidStructure) {
+      toast.warn(
+        <div className="flex flex-col items-start space-x-3">
+          <img src="/struct-cntrl.png" alt="warning" className="w-full h-9 mt-1" />
+          <div className="text-sm text-gray-800">
+            <p className="font-semibold mb-1">Structure du tableau invalide</p>
+            <p className="mb-1">
+              L'en-tête doit respecter exactement le format suivant :
+            </p>
+            <ol className="list-decimal list-inside space-y-1 text-gray-700">
+              <li><strong>Code</strong></li>
+              <li><strong>Description</strong></li>
+              <li><strong>Test Script(écrites en étapes séparées par des chiffres ex : "1. Étape 1", "2. Étape 2")</strong></li>
+              <li><strong>Type Name</strong></li>
+              <li><strong>Major Process Code</strong></li>
+              <li><strong>Major Process Description</strong></li>
+              <li><strong>Sub Process Code</strong></li>
+              <li><strong>Sub Process Name</strong></li>
+              <li><strong>Sources</strong></li>
+            </ol>
+          </div>
+        </div>
+      );
+      
+      return { controls: [] };
+    }
+  
     const formattedData = [];
-
+  
     for (let i = 1; i < data.length; i++) {
       const row = data[i];
-      if (row.length === 0) continue; // Ignorer les lignes vides
-
-      // Vérifier si le contrôle existe déjà
+      if (row.length === 0) continue;
+  
       const existingControl = findControlByCode(controlsData, row[0]);
-      if (existingControl) continue; // Ignorer si le contrôle existe déjà
-
+      if (existingControl) continue;
+  
       const control = {
         code: row[0] || null,
         description: row[1] || null,
@@ -170,19 +232,20 @@ const ManageControls = () => {
                 trimmedName
               );
               return {
-                id: sourceId || null, // Met null si l'ID n'est pas trouvé
-                name: sourceId ? undefined : trimmedName, // Met le nom seulement si l'ID est null
+                id: sourceId || null,
+                name: sourceId ? undefined : trimmedName,
               };
             })
           : [],
       };
-
+  
       formattedData.push(control);
     }
-
+  
     console.log("Formatted Data:", formattedData);
     return formattedData;
   };
+  
 
   const handleDataImported = (data) => {
     console.log("Données importées :", data);
@@ -306,7 +369,8 @@ const ManageControls = () => {
   const [selectedRisk, setSelectedRisk] = useState(null);
   const [selectedControl, setSelectedControl] = useState(null);
   const [openDeleteControlDialog, setOpenDeleteControlDialog] = useState(false);
-  const [openMultipleControlDeleteDialog, setOpenMultipleControlDeleteDialog] = useState(false);
+  const [openMultipleControlDeleteDialog, setOpenMultipleControlDeleteDialog] =
+    useState(false);
 
   const handleDeleteControlClick = (selectedRow) => {
     setSelectedControl(selectedRow);
@@ -496,13 +560,12 @@ const ManageControls = () => {
   const [selectedRows, setSelectedRows] = useState([]);
   const handleControlSelectionChange = (selectedRows) => {
     console.log("Lignes sélectionnées :", selectedRows);
-    setSelectedControls(selectedRows); 
+    setSelectedControls(selectedRows);
   };
   const handleSelectionChange = (selectedRows) => {
     console.log("Lignes sélectionnées :", selectedRows);
-    setSelectedRisks(selectedRows); 
+    setSelectedRisks(selectedRows);
   };
-
 
   const handleConfirmDeleteMultipleControls = async () => {
     if (selectedControls.length === 0) {
@@ -511,7 +574,7 @@ const ManageControls = () => {
     }
     const ids = selectedControls.map((control) => control.id);
     try {
-      await deleteMultipleControls(ids); 
+      await deleteMultipleControls(ids);
       setSelectedControls([]); // Réinitialisation de la sélection après suppression
       setOpenMultipleControlDeleteDialog(false); // Fermeture de la popup
     } catch (error) {
@@ -520,8 +583,6 @@ const ManageControls = () => {
 
     setOpenMultipleControlDeleteDialog(false);
   };
-
-
 
   const handleConfirmDeleteMultiple = async () => {
     if (selectedRisks.length === 0) {
@@ -638,7 +699,7 @@ const ManageControls = () => {
                       onClick={() => setOpenMultipleDeleteDialog(true)}
                       disabled={selectedRisks.length === 0} // Désactive si rien n'est sélectionné
                     >
-                      Supprimer 
+                      Supprimer
                     </Button>
                   )}
                   {isFormOpen && (
@@ -674,16 +735,15 @@ const ManageControls = () => {
                   )}
 
                   {openMultipleDeleteDialog && (
-                    <div  className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+                    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
                       <DecisionPopUp
-                      name="Cette action est irréversible."
-                      text="Êtes-vous sûr de vouloir supprimer ces risques ?"
-                      loading={loading}
-                      handleConfirm={handleConfirmDeleteMultiple} // Appelle la suppression multiple
-                      handleDeny={() => setOpenDialog(false)}
-                    />
+                        name="Cette action est irréversible."
+                        text="Êtes-vous sûr de vouloir supprimer ces risques ?"
+                        loading={loading}
+                        handleConfirm={handleConfirmDeleteMultiple} // Appelle la suppression multiple
+                        handleDeny={() => setOpenDialog(false)}
+                      />
                     </div>
-                    
                   )}
                   {openDialog && (
                     <div className="fixed inset-0 flex items-center justify-center bg-gray-500 bg-opacity-50 z-50">
@@ -731,7 +791,7 @@ const ManageControls = () => {
                       onClick={() => setOpenMultipleControlDeleteDialog(true)}
                       disabled={selectedControls.length === 0} // Désactive si rien n'est sélectionné
                     >
-                      Supprimer 
+                      Supprimer
                     </Button>
                   )}
                 </div>
@@ -765,17 +825,17 @@ const ManageControls = () => {
                     />
                   )}
                   {openMultipleControlDeleteDialog && (
-                                        <div  className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-<DecisionPopUp
-                      name="Cette action est irréversible."
-                      text="Êtes-vous sûr de vouloir supprimer ces controles ?"
-                      loading={loading}
-                      handleConfirm={handleConfirmDeleteMultipleControls} // Appelle la suppression multiple
-                      handleDeny={() => setOpenMultipleControlDeleteDialog(false)}
-                    />
-                                        </div>
-
-                    
+                    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+                      <DecisionPopUp
+                        name="Cette action est irréversible."
+                        text="Êtes-vous sûr de vouloir supprimer ces controles ?"
+                        loading={loading}
+                        handleConfirm={handleConfirmDeleteMultipleControls} // Appelle la suppression multiple
+                        handleDeny={() =>
+                          setOpenMultipleControlDeleteDialog(false)
+                        }
+                      />
+                    </div>
                   )}
                   {openDeleteControlDialog && (
                     <div className="fixed inset-0 flex items-center justify-center bg-gray-500 bg-opacity-50 z-50">
