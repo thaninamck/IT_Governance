@@ -255,11 +255,11 @@ const ManageControls = () => {
   const handleUpdateRisk = async (id, updatedData) => {
     try {
       const response = await updateRisk(id, updatedData);
-      console.log("Mise à jour réussie :", response);
+     
 
       closeRiskWindow();
     } catch (error) {
-      console.error("Erreur lors de la mise à jour du risque", error);
+      
       toast.error("Échec de la mise à jour du risque !");
     }
   };

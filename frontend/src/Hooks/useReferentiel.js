@@ -45,7 +45,7 @@ const useReferentiel = () => {
       toast.success("Risque mis à jour avec succès !");
       setRisksData((prevRisks) =>
         prevRisks.map((risk) =>
-          risk.id === riskId ? { ...risk, ...updatedData } : risk
+          risk.id === riskId ? { ...risk, ...response.data } : risk
         )
       );
       return response.data;
