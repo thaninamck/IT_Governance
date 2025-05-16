@@ -139,6 +139,7 @@ class ControlController extends BaseController
         return $this->sendResponse( $result, "Control updated successfully");
 
     } catch (\Throwable $th) {
+        Log::error("erroer lors de la mise a jpur du controle ",[$th->getMessage()]);
         return $this->sendError("", ["error"=> $th->getMessage()]);
     }
        

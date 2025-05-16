@@ -34,9 +34,7 @@ class Control extends Model
     // public function executions(){
     //     return $this->hasMany(Execution::class);
     // }
-    public function remediations(){
-        return $this->hasMany(Remediation::class);
-    }
+    
 
 
     protected static function boot()

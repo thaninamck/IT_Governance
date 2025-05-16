@@ -221,7 +221,7 @@ const useReferentiel = () => {
       } else {
         // Si le code status n'est pas 2xx, on considère comme une erreur
         setError("Erreur lors de la mise à jour du contrôle.");
-        toast.error("Échec de la mise à jour du contrôle !");
+        toast.error("Échec de la mise à jour du contrôle : certaines étapes sont liées à des exécutions en cours.");
       }
     } catch (error) {
       setError("Erreur lors de la mise à jour du contrôle.");

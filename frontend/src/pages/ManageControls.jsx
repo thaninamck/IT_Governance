@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext } from "react";
 import HeaderBis from "../components/Header/HeaderBis";
 import SideBar from "../components/sideBar/SideBar";
 import Tabs from "@mui/joy/Tabs";
@@ -26,13 +26,7 @@ import AddControlForm from "../components/Forms/AddControleForm";
 import DecisionPopUp from "../components/PopUps/DecisionPopUp";
 import { useAuth } from "../Context/AuthContext";
 const ManageControls = () => {
-   const { viewMode, changeViewMode, user } = useAuth();
-  
-    useEffect(() => {
-      if (user?.role === 'admin' && viewMode !== 'admin') {
-        changeViewMode('admin');
-      }
-    }, [user, viewMode, changeViewMode]);
+   const { user} = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const [isOpenRisk, setIsOpenRisk] = useState(false);
   const [transformedData, setTransformeData] = useState({});
@@ -255,11 +249,11 @@ const ManageControls = () => {
   const handleUpdateRisk = async (id, updatedData) => {
     try {
       const response = await updateRisk(id, updatedData);
-     
+      console.log("Mise à jour réussie :", response);
 
       closeRiskWindow();
     } catch (error) {
-      
+      console.error("Erreur lors de la mise à jour du risque", error);
       toast.error("Échec de la mise à jour du risque !");
     }
   };
@@ -680,13 +674,16 @@ const ManageControls = () => {
                   )}
 
                   {openMultipleDeleteDialog && (
-                    <DecisionPopUp
+                    <div  className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+                      <DecisionPopUp
                       name="Cette action est irréversible."
                       text="Êtes-vous sûr de vouloir supprimer ces risques ?"
                       loading={loading}
                       handleConfirm={handleConfirmDeleteMultiple} // Appelle la suppression multiple
                       handleDeny={() => setOpenDialog(false)}
                     />
+                    </div>
+                    
                   )}
                   {openDialog && (
                     <div className="fixed inset-0 flex items-center justify-center bg-gray-500 bg-opacity-50 z-50">
@@ -768,13 +765,17 @@ const ManageControls = () => {
                     />
                   )}
                   {openMultipleControlDeleteDialog && (
-                    <DecisionPopUp
+                                        <div  className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+<DecisionPopUp
                       name="Cette action est irréversible."
                       text="Êtes-vous sûr de vouloir supprimer ces controles ?"
                       loading={loading}
                       handleConfirm={handleConfirmDeleteMultipleControls} // Appelle la suppression multiple
                       handleDeny={() => setOpenMultipleControlDeleteDialog(false)}
                     />
+                                        </div>
+
+                    
                   )}
                   {openDeleteControlDialog && (
                     <div className="fixed inset-0 flex items-center justify-center bg-gray-500 bg-opacity-50 z-50">

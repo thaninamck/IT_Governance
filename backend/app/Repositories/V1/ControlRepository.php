@@ -14,7 +14,7 @@ class ControlRepository
 
     public function getControlById(int $id)
     {
-        return Control::with(['type', 'majorProcess','subProcess','sources','steps','remediations','executions'])->where('id',$id,'is_archived',false)->first();
+        return Control::with(['type', 'majorProcess','subProcess','sources','steps'])->where('id',$id,'is_archived',false)->first();
     }
 
     public function createControl(array $data)
@@ -50,7 +50,7 @@ class ControlRepository
     }
     
 public function hasRelatedData(Control $control){
-    return $control->remediations()->exists() || $control->executions()->exists();
+    return $control->steps()->whereHas('executions')->exists() ;
 }
     
 public function deleteControl(Control $control){
