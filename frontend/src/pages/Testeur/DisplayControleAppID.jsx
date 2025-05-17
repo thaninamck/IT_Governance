@@ -126,7 +126,8 @@ function DisplayControleAppID() {
         const handleLaunchExecution = async () => {
           try {
             
-            const response = await api.put(`/executions/launch-execution/${params.row.id}`);
+            const response = await api.put(`missions/${params.row.missionId}/executions/launch-execution/${params.row.id}`);
+            console.log('respp launch at',response )
             if (response.status === 200) {
               navigate(`/missions/${mission}/${name}/${params.row.controlCode}`, {
                 state: { controleData: params.row },
@@ -140,7 +141,7 @@ function DisplayControleAppID() {
         };
 
         const handleClick = () => {
-          if (params.row.executionLaunchedAt = null) {
+          if (params.row.executionLaunchedAt === null) {
             console.log('launchedAt', params.row.executionLaunchedAt)
             handleLaunchExecution();
           } else {

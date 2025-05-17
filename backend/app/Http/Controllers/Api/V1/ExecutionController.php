@@ -434,10 +434,10 @@ class ExecutionController extends BaseController
             return $this->sendError("Error while retrieving execution status options", ['error' => $e->getMessage()], 500);
         }
     }
-    public function launchExecution($executionId)
+    public function launchExecution($missionId,$executionId)
     {
         try {
-            return $this->executionService->launchExecution($executionId) ? $this->sendResponse("Execution launched successfully", [], 200) : $this->sendError("launching execution failed", [], 404);
+            return $this->executionService->launchExecution($missionId,$executionId) ? $this->sendResponse("Execution launched successfully", [], 200) : $this->sendError("launching execution failed", [], 404);
         } catch (\Exception $e) {
             return $this->sendError("Error while launching execution", ['error' => $e->getMessage()], 500);
         }

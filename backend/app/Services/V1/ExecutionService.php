@@ -360,7 +360,7 @@ public function updateMultipleExecutions(array $executionsData)
 }
 
 
-public function launchExecution($executionId)
+public function launchExecution($missionId,$executionId)
 {
     $raw=[
         'launched_at' => now(),
