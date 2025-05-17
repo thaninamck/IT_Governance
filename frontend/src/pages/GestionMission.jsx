@@ -25,12 +25,14 @@ import useGestionMission from "../Hooks/useGestionMission";
 import { useAuth } from "../Context/AuthContext";
 import { useLocation, useNavigate } from "react-router-dom";
 import SideBarStdr from "../components/sideBar/SideBarStdr";
-
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CancelIcon from '@mui/icons-material/Cancel';
-
-
 import { useProfile } from "../Context/ProfileContext";
+import Spinner from "../components/Spinner";
+import Tabs from "@mui/joy/Tabs";
+import TabList from "@mui/joy/TabList";
+import Tab from "@mui/joy/Tab";
+import TabPanel from "@mui/joy/TabPanel";
 
 function GestionMission() {
   const navigate = useNavigate();
@@ -43,8 +45,20 @@ function GestionMission() {
     }
   }, [location.pathname, user, changeViewMode]);
 
+  const tabStyles = {
+    width: "fit-content",
+    backgroundColor: "transparent",
+    
+    "--joy-palette-neutral-plainColor": "var(--subfont-gray)",
+    "&.Mui-selected": {
+      bgcolor: "var(--gray-200)",
+      color: "var(--gray-700)",
+      borderRadius: "8px 8px 0 0",
+    },
+  };
 
   const {
+    loading,
     rowsData2,
     filteredRows,
     isModalOpen,
@@ -272,7 +286,7 @@ function GestionMission() {
         </div>
 
         {/* Boutons pour basculer entre les vues */}
-        {user?.role === "admin" &&
+        {/* {user?.role === "admin" &&
           <div className="flex border-b-2 border-gray-300 mb-3 ml-8 ">
             <button
               className={`px-4 py-2 ${activeView === "active"
@@ -301,13 +315,33 @@ function GestionMission() {
             >
               Request status mission
             </button>
-          </div>}
+          </div>} */}
 
+
+{user?.role === "admin" && (
+  <Tabs
+    value={activeView}
+    onChange={(_, v) => setActiveView(v)}
+    aria-label="Mission tabs"
+    sx={{ ml:4,mr:4, mb: 1, borderBottom: "2px solid #d1d5db" }}
+  >
+    <TabList sx={{ gap: 0 }}>
+      <Tab value="active" sx={tabStyles}>Missions Actives</Tab>
+      <Tab value="archived" sx={tabStyles}>Missions Archivées</Tab>
+      <Tab value="requeststatus" sx={tabStyles}>Request status mission</Tab>
+    </TabList>
+  </Tabs>
+)}
         <div
           className={`flex-1 overflow-x-auto overflow-y-auto mx-5 mb-5 h-[500px] transition-all ${isDeletePopupOpen ? "blur-sm" : ""
             }`}
         >
-          {missionsToDisplay.length === 0 ? (
+          {loading ? (
+                    <div className="flex items-center justify-center mt-9 w-full h-full">
+                      <Spinner color="var(--blue-menu)" />
+                    </div>
+                  ) :
+          missionsToDisplay.length === 0 ? (
             <p className="text-center text-subfont-gray mt-20">
               Aucune mission pour le moment. Vous pouvez charger un
               fichier Excel ?

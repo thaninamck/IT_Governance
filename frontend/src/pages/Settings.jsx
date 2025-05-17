@@ -7,8 +7,11 @@ import Logs from "./subPages/logs";
 import Parametrage from "./subPages/Parametrage";
 import PasswordPolicyConfig from "./subPages/PasswordPolicyConfig";
 import MyProfile from "./MyProfile";
+import { useAuth } from "../Context/AuthContext";
 
 function Settings() {
+  
+    const { user, viewMode, changeViewMode } = useAuth();
   // État pour gérer l'onglet actif
   const [activeTab, setActiveTab] = useState("logs");
 
@@ -30,12 +33,16 @@ function Settings() {
   return (
     <div className="flex">
       {/* Sidebar pour la navigation */}
-      <SideBar userRole="admin" className="flex-shrink-0 h-full fixed" />
+      <SideBar user={user} />
 
       {/* Contenu principal */}
       <div className="flex-1 flex flex-col h-screen overflow-y-auto">
         <HeaderBis />
-        <HeaderWithAction title="Settings" buttonLabel="" />
+        <HeaderWithAction 
+        title="Settings" 
+        bg_transparent='bg-transparent'
+        user={user}
+        />
         <HeaderSettings activeTab={activeTab} setActiveTab={setActiveTab} renderTabContent={renderTabContent} />
       </div>
     </div>

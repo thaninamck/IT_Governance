@@ -10,6 +10,7 @@ import useAuth from "./useAuth";
 
 const useGestionMission = (user,viewMode,profile) => {
   const { addBreadcrumb } = useBreadcrumb();
+  
  // const { user } = useAuth();
   const [rowsData2, setRowsData2] = useState([]);
   const [filteredRows, setFilteredRows] = useState([]);
@@ -45,6 +46,8 @@ const useGestionMission = (user,viewMode,profile) => {
       // Optionnel: afficher un message à l'utilisateur
       setSnackbarMessage("Erreur lors du chargement des missions");
       setSnackbarOpen(true);
+    }finally {
+      setLoading(false);
     }
   };
 
@@ -348,6 +351,7 @@ const missionsToDisplay =
   const handlePopupClose = () => setIsMissionCreated(false);
   // Retourner les états et fonctions nécessaires
   return {
+    loading,
     rowsData2,
     filteredRows,
     isModalOpen,
