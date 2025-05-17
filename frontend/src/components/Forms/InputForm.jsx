@@ -6,7 +6,7 @@ function InputForm({
   placeholder,
   type = "text", // Par défaut "text"
   width,
-  flexDirection,
+  flexDirection="flex-col",
   value,
   onChange,
   required = false,
@@ -26,7 +26,7 @@ function InputForm({
   };
 
   return (
-    <div className={` relative  flex flex-col ${flexDirection || ''} gap-1`}>
+    <div className={` relative  flex  ${flexDirection || ''} gap-1`}>
       <div className="flex items-center gap-2">
         <label className={`text-sm  ml-1 font-medium ${customStyle || ""}`}>{label}</label>
         {required && <span className="text-red-500">*</span>}
