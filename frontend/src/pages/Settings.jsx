@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import HeaderSettings from "../components/Header/HeaderSettings";
 import HeaderBis from "../components/Header/HeaderBis";
 import SideBar from "../components/sideBar/SideBar";
@@ -7,16 +7,8 @@ import Logs from "./subPages/logs";
 import Parametrage from "./subPages/Parametrage";
 import PasswordPolicyConfig from "./subPages/PasswordPolicyConfig";
 import MyProfile from "./MyProfile";
-import { useAuth } from "../Context/AuthContext";
 
 function Settings() {
-   const { viewMode, changeViewMode, user } = useAuth();
-  
-    useEffect(() => {
-      if (user?.role === 'admin' && viewMode !== 'admin') {
-        changeViewMode('admin');
-      }
-    }, [user, viewMode, changeViewMode]);
   // État pour gérer l'onglet actif
   const [activeTab, setActiveTab] = useState("logs");
 
@@ -38,11 +30,12 @@ function Settings() {
   return (
     <div className="flex">
       {/* Sidebar pour la navigation */}
-      <SideBar user={user} className="flex-shrink-0 h-full fixed" />
+      <SideBar userRole="admin" className="flex-shrink-0 h-full fixed" />
+
       {/* Contenu principal */}
       <div className="flex-1 flex flex-col h-screen overflow-y-auto">
         <HeaderBis />
-        <HeaderWithAction title="Settings" buttonLabel=""  user={user} />
+        <HeaderWithAction title="Settings" buttonLabel="" />
         <HeaderSettings activeTab={activeTab} setActiveTab={setActiveTab} renderTabContent={renderTabContent} />
       </div>
     </div>
