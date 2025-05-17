@@ -2,6 +2,7 @@
 
 namespace App\Repositories\V1;
 use App\Http\Resources\Api\V1\UserResource;
+use App\Models\Position;
 use App\Models\User;
 class UserRepository
 {
@@ -112,4 +113,26 @@ class UserRepository
     {
         return User::whereIn('id', $userIds)->get();
     }
+
+    public function createGrade(string $name):Position
+{
+    return Position::create(['name' => $name]);
+}
+
+public function findGradeById(int $id)
+{
+    return Position::find($id);
+}
+
+public function deleteGrade(int $id): ?string
+{
+    $grade=Position::find($id);
+    if(!$grade){
+        return null;
+    }
+    $name= $grade->name;
+    $grade->delete();
+
+    return $name;
+}
 }

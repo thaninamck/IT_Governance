@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\V1;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\Api\V1\PositionsResource;
 use App\Models\User;
 use Illuminate\Http\Request;
 use App\Services\V1\UserService;
@@ -57,7 +58,73 @@ class UserController extends BaseController
         // Retourner une réponse réussie avec les grades récupérés
         return $this->sendResponse($grades, "Grades retrieved successfully");
     }
+
+    public function Grades() {
+        $grades = $this->userService->getGrades();  // Appel de la méthode pour récupérer les grades
     
+        // Vérifier si des grades ont été récupérés
+        if ($grades->isEmpty()) {
+            return $this->sendError("No grades found", []); // Retourner une erreur si aucun grade n'est trouvé
+        }
+    
+        // Retourner une réponse réussie avec les grades récupérés
+       // return $this->sendResponse($grades, "Grades retrieved successfully");
+        return $this->sendResponse(PositionsResource::collection($grades),"grade retrived successfully");
+    }
+    
+    public function createGrade(Request $request):JsonResponse
+    {
+        try{
+            $rules = [
+                'name' => 'required|string|max:255', 
+            ];
+    
+            $validator =Validator::make($request->all(),$rules);
+
+            if($validator->fails()){
+                return $this->sendError("validation failed",$validator->errors(),422);
+            }
+
+            $gradeData=$validator->validated();
+
+            $grade = $this->userService->createGrade($gradeData['name']);
+
+            $this->logService->logUserAction(
+                auth()->user()->email ??'Unknown',
+                'Admin',
+                "Création d'un grade de user {$grade->name}",
+                "" 
+            );
+            $response=[
+                'grade' =>new PositionsResource($grade),
+                'message'=>' created successfully'
+            ];
+            return $this->sendResponse($response,"grade created successfully",201);
+        }catch(\Exception $e){
+            return $this->sendError("An error occured",["error"=>$e->getMessage()],500);
+        }
+    }
+
+    public function deleteGrade($id):JsonResponse
+    {
+        try{
+            $name =$this->userService->deleteGrade($id);
+            if(!$name){
+                return $this->sendError("type not found",[],404);
+            }
+            $this->logService->logUserAction(
+                auth()->user()->email ?? 'Unknown',
+                'Admin',
+                "Suppression  d'un grade de user:{$name}",
+                " "
+            );    
+            return $this->sendResponse(['success'=>true],"grade deleted successfully");
+
+        }catch(\Exception $e)
+        {
+            return $this->sendError("an erroe occured",['error'=>$e->getMessage()],500);
+        }
+    }
     public function store(Request $request): JsonResponse
     {
         try {
