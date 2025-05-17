@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
+import { toast } from 'react-toastify';
 import { api } from '../Api';
-
-
 
 const useSettings = ({ fetchEndpoint, createEndpoint, deleteEndpoint, labelKey = 'name', itemKey, onAdd }) => {
   const [selectedValue, setSelectedValue] = useState('');
@@ -29,13 +28,13 @@ const useSettings = ({ fetchEndpoint, createEndpoint, deleteEndpoint, labelKey =
   const fetchLayers = async () => {
     try {
       const response = await api.get(fetchEndpoint);
-      console.log("resp settings",response.data)
       setItems(response.data.map(item => ({
         label: item[labelKey],
         value: item.id.toString(),
       })));
     } catch (error) {
-      console.error('Erreur lors de la récupération des layers:', error);
+      console.error('Erreur lors de la récupération des données:', error);
+      toast.error("Erreur lors du chargement des données");
     }
   };
 
@@ -55,15 +54,21 @@ const useSettings = ({ fetchEndpoint, createEndpoint, deleteEndpoint, labelKey =
 
     try {
       const response = await api.post(createEndpoint, { name: inputValue });
-      const newItem = { label: response.data[itemKey][labelKey], value: response.data[itemKey].id.toString() };
+      const newItem = {
+        label: response.data[itemKey][labelKey],
+        value: response.data[itemKey].id.toString()
+      };
 
       setItems([...items, newItem]);
       setInputValue('');
       setError('');
-      onAdd(newItem);
+      setShowForm(false);
+      toast.success("Élément ajouté avec succès");
+      if (onAdd) onAdd(newItem);
     } catch (error) {
       console.error('Erreur lors de l’ajout :', error);
       setError("Une erreur est survenue lors de l'ajout.");
+      toast.error("Erreur lors de l'ajout");
     }
   };
 
@@ -76,18 +81,16 @@ const useSettings = ({ fetchEndpoint, createEndpoint, deleteEndpoint, labelKey =
     try {
       await api.delete(`${deleteEndpoint}/${itemToDelete}`);
       setItems(items.filter(item => item.value !== itemToDelete));
+      toast.success("Élément supprimé avec succès");
     } catch (error) {
       console.error('Erreur lors de la suppression :', error);
       setError("Une erreur est survenue lors de la suppression.");
+      toast.error("Erreur lors de la suppression");
     } finally {
       setDeleteConfirmationOpen(false);
       setItemToDelete(null);
     }
   };
-
-  
-  
-
 
   const cancelDelete = () => {
     setDeleteConfirmationOpen(false);
@@ -110,7 +113,8 @@ const useSettings = ({ fetchEndpoint, createEndpoint, deleteEndpoint, labelKey =
     cancelDelete,
     logs,
     filteredLogs,
-    fetchLogs, 
+    fetchLogs,
+    
   };
 };
 

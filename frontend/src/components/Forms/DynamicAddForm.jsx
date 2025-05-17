@@ -30,7 +30,7 @@ function DynamicAddForm({ title, label, placeholder, onAdd, fetchEndpoint, creat
     onAdd,
   });
 
-  console.log("selectedvalue settings",selectedValue)
+  console.log("selectedvalue settings", selectedValue)
   return (
     <div className='border-b border-gray-300 p-4'>
       <p className='font-bold'>{title}</p>
@@ -72,10 +72,17 @@ function DynamicAddForm({ title, label, placeholder, onAdd, fetchEndpoint, creat
                   value={inputValue}
                   onChange={(e) => {
                     setInputValue(e.target.value);
-                    
+
                   }}
                 />
-                <Button btnName="Enregistrer" type="submit" />
+
+                <button
+
+                  type="submit"
+                  disabled={!inputValue.trim()}
+                  className={`mt-2 bg-[var(--blue-menu)] border-none text-white ${!inputValue.trim() ? 'opacity-50 cursor-not-allowed' : ''}`}
+                >Enregistrer</button>
+
               </form>
             </div>
           </div>
