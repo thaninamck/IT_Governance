@@ -121,6 +121,7 @@ function UserViewMode() {
         <HeaderWithAction
           title="Missions"
         user={user}
+        bg_transparent={'bg-transparent'}
       
         />
         <div className="flex items-center justify-center mb-6">

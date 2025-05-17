@@ -65,7 +65,7 @@ const DisplayEquipe = ({ equipe: initialEquipe, missionId, onTeamUpdate, user })
 
       <div className="flex flex-col sm:flex-wrap gap-4 sm:gap-x-6">
         {localEquipe.map((membre, index) => (
-          <div key={index} className="flex flex-col sm:flex-row gap-2 sm:gap-6 items-start sm:items-center">
+          <div key={index} className="flex flex-col justify-between sm:flex-row gap-2 sm:gap-6 items-start sm:items-center">
             <InfoDisplayComponent 
               BoxContent={membre.full_name} 
               borderWidth="220px" 
