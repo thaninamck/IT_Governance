@@ -434,6 +434,24 @@ class ExecutionController extends BaseController
             return $this->sendError("Error while retrieving execution status options", ['error' => $e->getMessage()], 500);
         }
     }
+    public function getEffectiveExecutionsByMission($mission)
+    {
+        try {
+            $data = $this->executionService->getEffectiveExecutionsByMission($mission);
+            return $this->sendResponse($data, "Executions  retrieved successfully", 200);
+        } catch (\Exception $e) {
+            return $this->sendError("Error while retrieving executions", ['error' => $e->getMessage()], 500);
+        }
+    }
+    public function getIneffectiveExecutionsByMission($mission)
+    {
+        try {
+            $data = $this->executionService->getIneffectiveExecutionsByMission($mission);
+            return $this->sendResponse($data, "Executions  retrieved successfully", 200);
+        } catch (\Exception $e) {
+            return $this->sendError("Error while retrieving executions", ['error' => $e->getMessage()], 500);
+        }
+    }
     public function launchExecution($executionId)
     {
         try {

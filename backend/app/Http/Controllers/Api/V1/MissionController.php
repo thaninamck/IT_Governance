@@ -113,6 +113,10 @@ class MissionController extends BaseController
         }
     }
 
+    public function getMissionsInprogress(){
+       return  $data = $this->statisticsService->calculate('missions_in_progress', []);
+
+    }
     public function getSystemReport($id): JsonResponse
     {
         try {

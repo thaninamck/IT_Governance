@@ -3,6 +3,7 @@
 namespace App\Repositories\V1;
 
 use App\Models\Mission;
+use DB;
 
 class MissionRepository
 {
@@ -355,4 +356,62 @@ public function getUserMissions($userId)
         $missions = Mission::forUser($userId)->get();
         return $missions;
 }
+
+
+
+public function getMissionsInprogress()
+{
+    $results = DB::select('
+        SELECT 
+            m.id,
+            m.mission_name AS mission,
+            m.start_date,
+            m.end_date,
+            c.commercial_name AS client,
+
+            COUNT(e.id) AS total_executions,
+            COUNT(*) FILTER (WHERE e.launched_at IS NOT NULL) AS launched_executions,
+            COUNT(*) FILTER (WHERE e.launched_at IS NULL) AS not_launched_executions,
+
+            COUNT(*) FILTER (
+                WHERE e.is_to_review = true AND e.is_to_validate = true
+            ) AS finalized_executions,
+
+            COUNT(*) FILTER (
+                WHERE e.is_to_review = false AND e.is_to_validate = false 
+            ) AS not_finalized_executions,
+
+            COUNT(*) FILTER (
+                WHERE stt.status_name = \'applied\'
+            ) AS effective_controls,
+
+            COUNT(*) FILTER (
+                WHERE stt.status_name IS DISTINCT FROM \'applied\'
+            ) AS noneffective_controls,
+
+            COUNT(*) FILTER (WHERE stt.status_name = \'not applied\') AS not_applied_controls,
+            COUNT(*) FILTER (WHERE stt.status_name = \'partially applied\') AS partially_applied_controls,
+            COUNT(*) FILTER (WHERE stt.status_name = \'not tested\') AS not_tested_controls,
+            COUNT(*) FILTER (WHERE stt.status_name = \'not applicable\') AS not_applicable_controls
+
+        FROM public.missions m 
+        JOIN public.clients c ON c.id = m.client_id
+        JOIN public.statuses st ON m.status_id = st.id
+        JOIN public.systems s ON s.mission_id = m.id
+        LEFT JOIN public.layers l ON s.id = l.system_id
+        JOIN public.executions e ON e.layer_id = l.id
+        LEFT JOIN public.statuses stt ON stt.id = e.status_id
+
+        WHERE st.status_name = \'en_cours\'
+
+        GROUP BY m.id, m.mission_name, m.start_date, m.end_date, c.commercial_name
+
+        ORDER BY m.id
+    ');
+
+    return $results;
+}
+
+
+
 }

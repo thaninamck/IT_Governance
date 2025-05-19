@@ -113,10 +113,25 @@ Route::middleware(['auth:sanctum', AdminMiddleware::class])
             Route::put('/updateclientID/{id}', 'updateClient');
             Route::delete('/deleteclientID/{id}', 'deleteClient');
         });
+        Route::controller(MissionController::class)->group(function () {
+            Route::get('/dashboard', 'getMissionsInprogress');
+
+        });
+        Route::controller(ExecutionController::class)->group(function () {
+            Route::get('/dashboard/missions/{mission}/effective-controls', 'getEffectiveExecutionsByMission');
+            Route::get('/dashboard/missions/{mission}/ineffective-controls', 'getineffectiveExecutionsByMission');
+
+        });
     });
 
+    Route::controller(MissionController::class)->group(function () {
+        Route::get('/dashboard/{mission}', 'getMissionsInprogress');
 
+    });
+    Route::controller(ExecutionController::class)->group(function () {
+        Route::get('/dashboard/missions/{mission}/ineffective-controls', 'getIneffectiveExecutionsByMission');
 
+    });
 
 Route::middleware(['auth:sanctum', ManagerMiddleware::class])
     ->prefix('v1')

@@ -57,7 +57,14 @@ public function getExecutionById($executionId)
 {
     return $this->executionRepository->getExecutionById($executionId);
 }
-
+public function geteffectiveExecutionsByMission($missionId)
+{
+    return $this->executionRepository->getEffectiveExecutionsByMission($missionId);
+}
+public function getIneffectiveExecutionsByMission($missionId)
+{
+    return $this->executionRepository->getIneffectiveExecutionsByMission($missionId);
+}
 public function submitExecutionForReview($executionId)
 {
     return $this->executionRepository->updateExecutionStatus($executionId,true,false);
