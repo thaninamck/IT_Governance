@@ -154,18 +154,21 @@ Route::middleware(['auth:sanctum', ManagerMiddleware::class])
         //MissionController Routes
         Route::controller(MissionController::class)->group(function () {
             Route::get('/missions/{mission}/dsp-report', 'getMissionReport');
-            Route::get('/missions/systems/{app}/system-report', 'getSystemReport');
+            Route::get('/missions/{mission}/systems/{app}/system-report', 'getSystemReport');
             Route::get('/missions/{mission}/report', 'getManagerMissionReport');
 
             
         });
+
+        Route::controller(RemediationController::class)->group(function () {
+            Route::get('/missions/{mission}/report/executions/{execution}', 'getRemediationsByExecution');
+           
+            
+        });
+        
     });
     Route::get('/missions/systems/{app}/system-report', [MissionController::class,'getSystemReport']);
-
-//  Route::controller(ParticipationController::class)->group(function () {
-//     Route::get('/missions/{mission}/testers', 'getTestersByMissionID');
-// });
-
+   
 Route::middleware(['auth:sanctum', SupervisorMiddleware::class])
     ->prefix('v1')
     ->group(function () {
