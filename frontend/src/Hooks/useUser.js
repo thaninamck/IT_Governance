@@ -26,15 +26,15 @@ const useUser = () => {
     setError(null);
     try {
       const response = await api.get("/users"); // Récupération des utilisateurs depuis l'API
-
+console.log("user",response.data)
       // Transformation des données
       const transformedUsers = response.data.map((user) => ({
         id: user.id,
         nom: user.firstName, // Concaténation du nom et du prénom
         prenom: user.lastName,
         fullName: `${user.firstName} ${user.lastName}`,
-        grade: user.position.name,
-        position_id:user.position.id,
+        // grade: user.position.name,
+        // position_id:user.position.id,
         email: user.email,
         contact: user.phoneNumber,
         lastPasswordChange: user.lastPasswordChange ? user.lastPasswordChange.split("T")[0] : "pas encore changé",
