@@ -4,7 +4,7 @@ import Table from '../Table';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CancelIcon from '@mui/icons-material/Cancel';
 
-function Control({ data ,grid_cols='grid-cols-1'}) {
+function Control({ data ,grid_cols='grid-cols-1',size}) {
     const [selected, setSelected] = useState(null);
 
     const getColor = (nom) => {
@@ -21,6 +21,27 @@ function Control({ data ,grid_cols='grid-cols-1'}) {
             default: return 'bg-white';
         }
     };
+    const sizeStyles = {
+        small: {
+            text: 'text-[10px]',
+            SousText:'text-[12px]',
+            barContainerWidth: 'w-[60%]',
+            dateText: 'text-[10px]',
+        },
+        medium: {
+            text: 'text-[13px]',
+            SousText:'text-[15px]',
+            barContainerWidth: 'w-[70%]',
+            dateText: 'text-xs',
+        },
+        large: {
+            text: 'text-[15px]',
+            SousText:'text-[16px]',
+            barContainerWidth: 'w-full',
+            dateText: 'text-sm',
+        }
+    };
+    const styles = sizeStyles[size] || sizeStyles.medium;
 
     const columnsConfig2 = [
 
@@ -49,8 +70,8 @@ function Control({ data ,grid_cols='grid-cols-1'}) {
                             setSelected(item);
                           }}
                     >
-                        <p className='text-xs py-1 text-center font-medium'>{item.nom}</p>
-                        <span className='text-right font-semibold   text-black text-sm'>
+                        <p className={`${styles.text} py-1 text-center font-medium`}>{item.nom}</p>
+                        <span className={`${styles.SousText} text-right font-semibold   text-black `}>
                             {item.pourcentage}%
                         </span>
                     </div>

@@ -10,7 +10,7 @@ import BarProgressComponent from './BarProgressComponent';
 
 dayjs.extend(duration);
 
-function MissionCards({ data}) {
+function MissionCards({ data,size = 'medium'}) {
 
    const  controlData=[
         {id:"1", nom:"Commencé",pourcentage:`${data.controlCommencé.pourcentageTotale}`},
@@ -29,27 +29,56 @@ function MissionCards({ data}) {
     const total = data.controls?.length || 0;
     const done = data.controls?.filter(c => c.status === 'done').length || 0;
     const progressPercent = total > 0 ? Math.round((done / total) * 100) : 0;
-
+    const sizeStyles = {
+        small: {
+            text: 'text-[12px]',
+            SousText:'text-[12px]',
+            Wcercle:'w-12',
+            Hcercle:'h-12',
+            barHeight: 'h-[4px]',
+            barContainerWidth: 'w-[60%]',
+            dateText: 'text-[10px]',
+        },
+        medium: {
+            text: 'text-[16px]',
+            SousText:'text-[14px]',
+            Wcercle:'w-14',
+            Hcercle:'h-14',
+            barHeight: 'h-[5px]',
+            barContainerWidth: 'w-[70%]',
+            dateText: 'text-xs',
+        },
+        large: {
+            text: 'text-[18px]',
+            SousText:'text-[14px]',
+            Wcercle:'w-20',
+            Hcercle:'h-20',
+            barHeight: 'h-[12px]',
+            barContainerWidth: 'w-full',
+            dateText: 'text-sm',
+        }
+    };
+    const styles = sizeStyles[size] || sizeStyles.medium;
 
     return (
         <div  onClick={handleClick}
-        className='border border-blue-500 p-4  shadow-md rounded-md flex flex-col gap-2  sm:w-[300px] md:w-[340px] lg:w-[240px] max-w-full'>
+        className='border border-blue-500 p-4  shadow-md rounded-md flex flex-col gap-2  sm:w-[300px] md:w-[340px] lg:w-[300px] max-w-full'>
         
-            <h3 className='text-center font-bold text-sm'>{data.missionName}</h3>
-            <p className='text-xs  text-gray-600 text-center'>Client : {data.client}</p>
-            <p className='text-xs text-gray-600 text-center'>Nombre de contrôles : {total}</p>
+            <h3 className={`text-center font-bold ${styles.text}`}>{data.missionName}</h3>
+            <p className={`${styles.SousText}  text-gray-600 text-center`}>Client : {data.client}</p>
+            <p className={`${styles.SousText} text-gray-600 text-center`}>Nombre de contrôles : {total}</p>
 
             {/* Avancement des contrôles */}
             <div className='flex justify-center items-center gap-2 mt-4'>
-            <div className='w-14 h-14'>
+            <div className={`${styles.Wcercle} ${styles.Hcercle}`}>
                 <CircularProgressbarComponent progressPercent={progressPercent}/>
                 </div>
-                <p className='text-xs text-center font-semibold'>Avancement de la mission</p>
+                <p className={`${styles.SousText} text-center font-semibold`}>Avancement de la mission</p>
             </div>
             {/* Barre temporelle */}
-            <BarProgressComponent data={data} size="small"/>
+            <BarProgressComponent data={data} size={size}/>
             <div className='mt-2 '>
-                <Control data={controlData} stopPropagation={true}/>
+                <Control data={controlData} stopPropagation={true} size={size}/>
             </div>
 
 

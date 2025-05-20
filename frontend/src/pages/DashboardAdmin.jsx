@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import SideBar from '../components/sideBar/SideBar'
 import SideBarStdr from '../components/sideBar/SideBarStdr'
 import HeaderBis from '../components/Header/HeaderBis'
@@ -8,7 +8,7 @@ import HeaderWithAction from '../components/Header/HeaderWithAction';
 
 
 //const TOTAL_CARDS = 10; // Exemple de 10 missions
-const ITEMS_PER_PAGE = 4;
+//const ITEMS_PER_PAGE = 3;
 
 function DashboardAdmin() {
 
@@ -17,6 +17,45 @@ function DashboardAdmin() {
     const [currentPage, setCurrentPage] = useState(0);
     const intervalRef = useRef(null);
 
+    const [itemsPerPage, setItemsPerPage] = useState(getItemsPerPage());
+    const [cardsSize, setCardsSize] = useState(getcardsSize());
+    function getItemsPerPage() {
+        const width = window.innerWidth;
+        if (width >= 1300) return 5; // grands écrans
+        if (width >= 992) return 3; // tablettes / laptop
+        if (width >= 768) return 2; // petits laptops / tablettes
+        return 1; // mobiles
+    }
+
+    function getcardsSize() {
+        const width = window.innerWidth;
+        if (width >= 1300) return 'large'; // grands écrans
+        if (width >= 992) return 'medium'; // tablettes / laptop
+        if (width >= 768) return 'small'; // petits laptops / tablettes
+        return 'medium'; // mobiles
+    }
+
+    console.log('cardssize',cardsSize)
+
+    useEffect(() => {
+        const handleResize = () => {
+            setItemsPerPage(getItemsPerPage());
+            setCurrentPage(0); // réinitialiser à la première page
+        };
+
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
+    
+    useEffect(() => {
+        const handleResize = () => {
+            setCardsSize(getcardsSize());
+            
+        };
+
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
 
     // On génère 10 fausses cartes avec un index
     // const missions = Array.from({ length: TOTAL_CARDS }, (_, i) => i);
@@ -109,9 +148,9 @@ function DashboardAdmin() {
     ]
 
     
-    const totalPages = Math.ceil(missionData.length / ITEMS_PER_PAGE);
-    const startIndex = currentPage * ITEMS_PER_PAGE;
-    const currentMissions = missionData.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+    const totalPages = Math.ceil(missionData.length / itemsPerPage);
+    const startIndex = currentPage * itemsPerPage;
+    const currentMissions = missionData.slice(startIndex, startIndex + itemsPerPage);
 
     const startAutoScroll = (direction) => {
         if (intervalRef.current) return; // ne pas dupliquer les intervals
@@ -158,7 +197,7 @@ function DashboardAdmin() {
                     bg_transparent={'bg-transparent'}
                 />
 
-                <div className="relative flex flex-row items-center justify-center gap-4  pl-1">
+                <div className="relative flex flex-row items-center justify-center ">
 
                     {/* Zones de scroll gauche/droite */}
                     <div
@@ -171,15 +210,15 @@ function DashboardAdmin() {
                     ◀
                     </div>
                    
-                    <div className="flex flex-wrap mb-8 justify-center gap-6 px-2 sm:px-4 md:px-4 lg:px-6 transition-all duration-500">
+                    <div className="mt-12 flex flex-wrap mb-8 justify-center gap-6 px-2 sm:px-4 md:px-4 lg:px-6 transition-all duration-500">
 
                         {currentMissions.map((mission, index) => (
-                            <MissionCards data={mission} key={mission.id || index}  />
+                            <MissionCards data={mission} key={mission.id || index} size={cardsSize}  />
                         ))}
                     </div>
 
                     <div
-                       className={`w-8 z-10 cursor-pointer ${currentPage === totalPages - 1 ? 'opacity-50 cursor-not-allowed' : ''}`}
+                       className={` z-10 cursor-pointer ${currentPage === totalPages - 1 ? 'opacity-50 cursor-not-allowed' : ''}`}
                         onClick={handleNext}
                         disabled={currentPage === totalPages - 1}
                         // onMouseEnter={() => startAutoScroll('right')}

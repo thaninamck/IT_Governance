@@ -26,19 +26,22 @@ function BarProgressComponent({ data, size = 'medium' }) {
     const sizeStyles = {
         small: {
             text: 'text-[10px]',
+            SousText:'text-[11px]',
             barHeight: 'h-[4px]',
             barContainerWidth: 'w-[60%]',
             dateText: 'text-[10px]',
         },
         medium: {
             text: 'text-xs',
+            SousText:'text-[11px]',
             barHeight: 'h-[5px]',
             barContainerWidth: 'w-[70%]',
             dateText: 'text-xs',
         },
         large: {
-            text: 'text-l',
-            barHeight: 'h-[12px]',
+            text: 'text-[14px]',
+            SousText:'text-[11px]',
+            barHeight: 'h-[10px]',
             barContainerWidth: 'w-full',
             dateText: 'text-sm',
         }
@@ -59,7 +62,7 @@ function BarProgressComponent({ data, size = 'medium' }) {
                         style={{ width: `${timePercent}%` }}
                     />
                 </div>
-                <span className={`font-medium whitespace-nowrap ${styles.text} ${textColor}`}>
+                <span className={`font-medium whitespace-nowrap ${styles.SousText} ${textColor}`}>
                     ⏳ Il reste {formattedRemaining}
                 </span>
             </div>
