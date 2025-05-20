@@ -336,9 +336,9 @@ public function getRequestStatusForMissions()
             return null;
         }
         // Vérifier si la mission a des relations avec des exécutions ou des remédiations
-        if ($this->missionRepository->hasRelatedData($mission)) {
-            throw new \Exception("impossible de supprimer cette mission,des données lui sont encore associées.");
-        }
+        // if ($this->missionRepository->hasRelatedData($mission)) {
+        //     throw new \Exception("impossible de supprimer cette mission,des données lui sont encore associées.");
+        // }
 
         // Supprimer les participants associés à la mission
         $this->participationService->deleteParticipation($mission->id);

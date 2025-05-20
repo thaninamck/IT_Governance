@@ -30,10 +30,11 @@ export const useSystem = (missionId, user, showForm, onToggleForm,missionName) =
   
 
   const handleAddApp = async (app) => {
+    
     try {
       if (selectedApp) {
          // Mise à jour de l'application existante
-        const response = await api.put(`/updatesystemId/${app.id}`, app);
+        const response = await api.put(`/missions/${missionId}/updatesystemId/${app.id}`, app);
         setApplications(prevApps => 
           prevApps.map(row => row.id === app.id ? response.data : row)
         );
@@ -65,7 +66,7 @@ export const useSystem = (missionId, user, showForm, onToggleForm,missionName) =
   const confirmDeleteMission = async () => {
     try {
       if (selectedAppId !== null) {
-        await api.delete(`/deletesystemId/${selectedAppId}`);
+        await api.delete(`/missions/${missionId}/deletesystemId/${selectedAppId}`);
         setApplications(prev => prev.filter(row => row.id !== selectedAppId));
       }
     } catch (error) {

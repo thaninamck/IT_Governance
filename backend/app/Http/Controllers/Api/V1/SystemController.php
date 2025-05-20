@@ -122,7 +122,7 @@ class SystemController extends BaseController
     }
 }
 
-    public function updateSystem(Request $request,$id):JsonResponse
+    public function updateSystem(Request $request,$missionId,$id):JsonResponse
     {
         try{
             $rules=[
@@ -139,7 +139,7 @@ class SystemController extends BaseController
                 return $this->sendError("validation failed",$validator->errors());
             }
             $validatedData = $validator->validated();
-            $system=$this->systemService->updateSystem($id, $validatedData);
+            $system=$this->systemService->updateSystem($missionId,$id, $validatedData);
 
             if(!$system){
                 return $this->sendError("system not found update",[],404);
@@ -158,10 +158,10 @@ class SystemController extends BaseController
         }
     }
 
-    public function deleteSystem($id):JsonResponse
+    public function deleteSystem($missionId,$id):JsonResponse
     {
         try{
-            $name =$this->systemService->deleteSystem($id);
+            $name =$this->systemService->deleteSystem($missionId,$id);
             if(!$name){
                 return $this->sendError("system not found",[],404);
             }

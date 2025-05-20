@@ -138,7 +138,7 @@ $system->load('layers');
 
   
 
-    public function updateSystem($id, array $data): ?System
+    public function updateSystem($missionId,$id, array $data): ?System
     {
         // Trouver le système à mettre à jour avec ses layers
         $system = $this->systemRepository->findSystemById($id);
@@ -195,7 +195,7 @@ $system->load('layers');
         return $updatedSystem;
     }
 
-    public function deleteSystem(int $id): ?string
+    public function deleteSystem(int $missionId,int $id): ?string
 {
     $system = $this->systemRepository->findSystemById($id);
     if (!$system) {

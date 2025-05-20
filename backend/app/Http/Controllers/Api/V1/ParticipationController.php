@@ -69,7 +69,7 @@ class ParticipationController extends BaseController
     }
 
     
-    public function deleteParticipant($id): JsonResponse
+    public function deleteParticipant($missionId,$id): JsonResponse
     {
         try {
             $user_id = $this->participationService->deleteParticipationById($id);

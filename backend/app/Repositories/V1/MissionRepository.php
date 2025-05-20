@@ -76,7 +76,8 @@ class MissionRepository
 
     public function hasRelatedData(Mission $mission): bool
     {
-        return $mission->executions()->exists() ||
+        return 
+      //  $mission->executions()->exists()||
         $mission->remediations()->exists();
 
     }
