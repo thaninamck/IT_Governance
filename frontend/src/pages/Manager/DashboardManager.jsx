@@ -1,16 +1,14 @@
-import React, { useState } from 'react'
+import React from 'react'
 import SideBar from '../../components/sideBar/SideBar'
 import SideBarStdr from '../../components/sideBar/SideBarStdr'
 import HeaderBis from '../../components/Header/HeaderBis'
 import HeaderWithAction from '../../components/Header/HeaderWithAction'
 import { useAuth } from '../../Context/AuthContext'
 import { useLocation } from 'react-router-dom'
-import MissionCards from '../../components/TBmission/MissionCards'
 import CircularProgressbarComponent from '../../components/TBmission/CircularProgressbarComponent'
 import BarProgressComponent from '../../components/TBmission/BarProgressComponent'
-import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
-import Table from '../../components/Table'
 import Control from '../../components/TBmission/Control'
+import RemediationActionData from '../../components/TBmission/RemediationActionData'
 
 function DashboardManager() {
 
@@ -41,7 +39,7 @@ function DashboardManager() {
         { id: "2", nom: "Terminé", pourcentage: `${missionData.actionTerminé}` },
         { id: "3", nom: "En cours", pourcentage: `${missionData.actionEnCours}` }
     ]
-    const RemédiationActionData = [
+    const remediationActionData = [
         { id: "1", nom: "CTRL_987", NbrAction: "3", pourcentageTerminé: "20%", pourcentageEncours: "80%" },
         { id: "2", nom: "CTRL_901", NbrAction: "7", pourcentageTerminé: "70%", pourcentageEncours: "30%" },
         { id: "3", nom: "CTRL_320", NbrAction: "1", pourcentageTerminé: "0%", pourcentageEncours: "100%" },
@@ -49,17 +47,6 @@ function DashboardManager() {
         { id: "5", nom: "CTRL_097", NbrAction: "11", pourcentageTerminé: "20%", pourcentageEncours: "80%" },
         { id: "6", nom: "CTRL_653", NbrAction: "20", pourcentageTerminé: "20%", pourcentageEncours: "80%" },
     ]
-
-    
-
-    const [openDropdowns, setOpenDropdowns] = useState({});
-    const toggleDropdown = (id) => {
-        setOpenDropdowns((prev) => ({
-            ...prev,
-            [id]: !prev[id],
-        }));
-    };
-
     const getColor = (nom) => {
         switch (nom.toLowerCase()) {
             case 'commencé': return 'bg-yellow-100';
@@ -108,39 +95,11 @@ function DashboardManager() {
                 {/*Control data*/}
                 <div className=' px-16'>
                     <Control data={controlData} grid_cols='grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4' />
-                    {/* <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6'>
-
-                        {controlData.map((item) => (
-                            <div
-                                key={item.id}
-                                className={`w-[90%] cursor-pointer flex py-4 justify-center items-center  gap-4 rounded shadow-sm hover:shadow-md transition duration-200 ${getColor(item.nom)}`}
-
-                            >
-                                <p className='text-l  text-center font-medium'>{item.nom}</p>
-                                <span className='text-right font-semibold  px-1 text-black text-l'>
-                                    {item.pourcentage}%
-                                </span>
-                            </div>
-                        ))}
-                    </div> */}
                 </div>
                 {/*status Control data*/}
                 <div className=' px-16 py-8'>
                     <h3 className="text-xl font-bold mb-4">Status Controles</h3>
                     <Control data={statusControlData} grid_cols='grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-2' />
-                    {/* <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-2 gap-6'>
-                        {statusControlData.map((item) => (
-                            <div
-                                key={item.id}
-                                className={`w-[90%] cursor-pointer  border flex py-2 justify-between px-8 items-center  gap-4 rounded shadow-sm hover:shadow-md transition duration-200 ${getColor(item.nom)}`}
-                            >
-                                <p className='text-l  text-center font-medium'>{item.nom}</p>
-                                <span className='text-right font-semibold  px-1 text-black text-sm'>
-                                    {item.pourcentage}%
-                                </span>
-                            </div>
-                        ))}
-                    </div> */}
                 </div>
                 {/*Remeddiation data*/}
                 <div className='px-16 py-8'>
@@ -176,62 +135,10 @@ function DashboardManager() {
                         )}
                     </div>
                 </div>
-
                 {/* Control Remédiation data*/}
                 <div className='px-16 pb-4 mb-8 '>
-                    <RemédiationActionData data={RemédiationActionData}/>
-                    {/* <div className='max-h-[250px] overflow-y-auto overflow-x-hidden pr-2'>
-                        <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-1 gap-3'>
-                            {RemédiationActionData.map((item) => (
-                                <div
-                                    key={item.id}
-                                    className={`flex  flex-col px-4 `}
-                                >
-                                    <div
-                                        className={`border border-black cursor-pointer border-l-4 border-l-orange-600 flex  justify-between py-1 px-4 items-center gap-4 rounded shadow-sm hover:shadow-md transition duration-200 ${getColor(item.nom)}`}
-                                    >
-                                        <p className='w-[10%] text-l font-medium'>{item.nom}</p>
-                                        <div className='flex flex-row justify-between w-[45%]'>
-                                            <div className='flex items-center gap-3'>
-                                                <p className='text-center text-[10px] font-medium'>{item.NbrAction} Actions</p>
-                                            </div>
-                                            <div className='flex items-center gap-3'>
-                                                <div className="w-10 h-10">
-                                                    <CircularProgressbarComponent progressPercent={parseInt(item.pourcentageTerminé)} />
-                                                </div>
-                                                <p className='text-center text-[10px] font-medium'>Terminé</p>
-                                            </div>
-                                            <div className='flex items-center gap-3'>
-                                                <div className="w-10 h-10">
-                                                    <CircularProgressbarComponent progressPercent={parseInt(item.pourcentageEncours)} />
-                                                </div>
-                                                <p className='text-center text-[10px] font-medium'>En cours</p>
-                                            </div>
-                                        </div>
-                                        <button className='border-none cursor-pointer' onClick={() => toggleDropdown(item.id)}>
-                                            <KeyboardArrowDownIcon />
-                                        </button>
-                                    </div>
-                                    {openDropdowns[item.id] && (
-                                        <div className="mt-2  flex justify-center">
-                                            <Table
-                                                key={JSON.stringify(ControlActionData)}
-                                                columnsConfig={columnsConfig2}
-                                                rowsData={ControlActionData}
-                                                checkboxSelection={false}
-                                                headerTextBackground="white"
-                                                headerBackground="var(--blue-menu)"
-                                            />
-                                        </div>
-                                    )}
-                                </div>
-                            ))}
-                        </div>
-                    </div> */}
+                    <RemediationActionData data={remediationActionData} getColor={getColor} />
                 </div>
-
-
-
             </div>
         </div>
     )
