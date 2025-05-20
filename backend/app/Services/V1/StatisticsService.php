@@ -10,6 +10,7 @@ use App\Services\calculations\CalculationServiceInterface;
 use App\Services\calculations\calculationWeightsStrategies\DefaultStatusWeightStrategy;
 use App\Services\Calculations\DBScoreConformityCalculator;
 use App\Services\Calculations\GeneralAdvancementCalculator;
+use App\Services\Calculations\ManagerReportCalculator;
 use App\Services\Calculations\OSScoreConformityCalculator;
 use App\Services\Calculations\PhysicalLayerGlobalConformityScoreCalculator;
 use App\Services\Calculations\ProceduralLayerGlobalConformityScoreCalculator;
@@ -35,7 +36,9 @@ class StatisticsService
             'global_adv' => new GeneralAdvancementCalculator($systemRepository, new DefaultStatusWeightStrategy()),
             'app_report' => new SystemStatsCalculator($systemRepository, new DefaultStatusWeightStrategy()),
             'missions_in_progress' => new AdminDashboardCalculator($missionRepository),
-            // Tu peux en rajouter d'autres ici
+            'manager_mission_report' => new ManagerReportCalculator($missionRepository),
+
+           
         ];
     }
 
