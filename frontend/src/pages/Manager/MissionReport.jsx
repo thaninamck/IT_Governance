@@ -155,11 +155,11 @@ const data =
   const { user } = useAuth();
   return (
     <div>
-      <Header user={user} />
+      {/* <Header user={user} />
 
       <div className="my-3 mx-4">
         <Breadcrumbs routes={breadcrumbs} />
-      </div>
+      </div> */}
 
       <div className="flex justify-end mr-4">
         <button
