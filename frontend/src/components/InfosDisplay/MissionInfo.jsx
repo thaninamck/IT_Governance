@@ -21,6 +21,7 @@ const MissionInfo = ({ dataFormat, user, missionId }) => {
   const fetchMissionData = async () => {
     try {
       const response = await api.get(`/missions/${missionId}/members`);
+      console.log("mimi",response.data)
       setMissionData(response.data);
     } catch (err) {
       setError(err.message);
@@ -119,6 +120,8 @@ const MissionInfo = ({ dataFormat, user, missionId }) => {
 
         <div className=" pt-1">
           <DisplayEquipe 
+          profileName={dataFormat?.profileName}
+        
             equipe={missionData.members}
             missionId={missionData.id}
             user={user}

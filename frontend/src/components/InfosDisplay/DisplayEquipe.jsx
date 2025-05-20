@@ -12,7 +12,8 @@ import {
   Button
 } from '@mui/material';
 
-const DisplayEquipe = ({ equipe: initialEquipe, missionId, onTeamUpdate, user }) => {  
+const DisplayEquipe = ({ equipe: initialEquipe, missionId, onTeamUpdate, user,profileName }) => {  
+  console.log("ppname",profileName)
   const [localEquipe, setLocalEquipe] = useState(initialEquipe);
   const [openDialog, setOpenDialog] = useState(false);
   const [memberToDelete, setMemberToDelete] = useState(null);
@@ -39,7 +40,7 @@ const DisplayEquipe = ({ equipe: initialEquipe, missionId, onTeamUpdate, user })
      
       setLocalEquipe(prev => prev.filter(m => m.id !== memberToDelete));
       
-      const response = await api.delete(`deletemember/${memberToDelete}`);
+      const response = await api.delete(`/missions/${missionId}/deletemember/${memberToDelete}`);
       
       if (!response.data.success) {
         // Rollback si l'API échoue
@@ -78,7 +79,7 @@ const DisplayEquipe = ({ equipe: initialEquipe, missionId, onTeamUpdate, user })
               labelWidth="100px" 
               label="Rôle:" 
             />
-            {(user?.role === "admin") && (
+            {(user?.role === "admin" || profileName==="manager") && (
               <DeleteOutlineIcon 
                 sx={{ 
                   color: 'red', 
