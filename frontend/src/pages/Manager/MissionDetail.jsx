@@ -29,7 +29,7 @@ function MissionDetail() {
   };
 
   const missionData = location.state?.missionData; // Récupérer les données envoyées
-  
+  console.log("Missiondata sélectionnée :", missionData);
 
   // Mettre à jour le profil au moment où la mission est sélectionnée
 useEffect(() => {
