@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import SideBar from '../../components/sideBar/SideBar'
 import SideBarStdr from '../../components/sideBar/SideBarStdr'
 import HeaderBis from '../../components/Header/HeaderBis'
@@ -9,6 +9,7 @@ import CircularProgressbarComponent from '../../components/TBmission/CircularPro
 import BarProgressComponent from '../../components/TBmission/BarProgressComponent'
 import Control from '../../components/TBmission/Control'
 import RemediationActionData from '../../components/TBmission/RemediationActionData'
+import MissionReport from './MissionReport'
 
 function DashboardManager() {
 
@@ -65,6 +66,7 @@ function DashboardManager() {
             default: return 'bg-white';
         }
     };
+    const [activeView, setActiveView] = useState("DB_Standard");
     return (
         <div className="flex">
             {user?.role === "admin" && viewMode === "admin" ? (
@@ -75,12 +77,37 @@ function DashboardManager() {
 
             <div className="flex-1 flex flex-col h-screen overflow-y-auto">
                 <HeaderBis />
-                <HeaderWithAction
-                    title={`La mission ${missionData.missionName}`}
-                    user={user}
-                    bg_transparent={'bg-transparent'}
-                />
-                <div className="flex flex-col md:flex-row  pb-6 px-10 gap-6">
+                <div className='flex flex-row items-end pr-14 justify-between '>
+                    <HeaderWithAction
+                        title={`La mission ${missionData.missionName}`}
+                        user={user}
+                        bg_transparent={'bg-transparent'}
+                    />
+                    <div className="flex border-b-2 border-gray-300 mb-3 ml-8 ">
+                        <button
+                            className={`px-2 py-2 ${activeView === "DB_Standard"
+                                ? "rounded-l rounded-r-none border-none bg-gray-200 text-gray-700 "
+                                : "rounded-none text-[var(--subfont-gray)] border-none "
+                                } `}
+                            onClick={() => setActiveView("DB_Standard")}
+                        >
+                            Standar
+                        </button>
+                        <button
+                            className={`px-4 py-2 ${activeView === "DB_DSP"
+                                ? " rounded-r rounded-l-none  border-none bg-gray-200 text-gray-700"
+                                : "rounded-none text-[var(--subfont-gray)] border-none"
+                                } `}
+                            onClick={() => setActiveView("DB_DSP")}
+                        >
+                            DSP
+                        </button>
+                    </div>
+                </div>
+
+{(activeView ==='DB_Standard') && (
+<>
+                <div className="mt-4 flex flex-col md:flex-row  pb-6 px-10 gap-6">
                     <div className='w-full md:w-[40%] flex flex-col justify-center items-center gap-2'>
                         <div className='w-32 h-32'>
                             <CircularProgressbarComponent progressPercent={progressPercent} />
@@ -139,6 +166,9 @@ function DashboardManager() {
                 <div className='px-16 pb-4 mb-8 '>
                     <RemediationActionData data={remediationActionData} getColor={getColor} />
                 </div>
+                </>
+)}
+{activeView==="DB_DSP" && (<MissionReport/>)}
             </div>
         </div>
     )
