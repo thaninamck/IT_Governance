@@ -30,12 +30,13 @@ use App\Http\Controllers\Api\V1\TypeController;
 use App\Models\Profile;
 use App\Models\User;
 
+//*******************************************************Admin*********************************************************************
 Route::middleware(['auth:sanctum', AdminMiddleware::class])
     ->prefix('v1')
     ->group(function () {
         // Users
         Route::controller(UserController::class)->group(function () {
-            //  Route::get('/users', 'index');
+            Route::get('/users', 'index');
             Route::post('/insert-user', 'store');
             Route::post('/reset-user/{id}', 'resetUser');
             Route::put('/update-user/{id}', 'updateUser');
@@ -49,7 +50,6 @@ Route::middleware(['auth:sanctum', AdminMiddleware::class])
             Route::post('/reset-user', 'resetUser');
             Route::get('/getsettingsValue', 'getsettingsValue');
             Route::put('/updatesettingsValue/{id}', 'updatesettingsValue');
-
         });
 
         // Logs
@@ -82,17 +82,20 @@ Route::middleware(['auth:sanctum', AdminMiddleware::class])
         // Missions
         Route::controller(MissionController::class)->group(function () {
             //  Route::get('/getmissions/myMissions', 'getUserMissions');
-            // Route::get('/getmissions', 'index');
-            // Route::post('/createmissions', 'store');
-            // Route::put('/updatemissionID/{id}', 'updateMission');
-            // Route::delete('/deletemissionID/{id}', 'deleteMission');
+            Route::get('/getmissions', 'index');
+            Route::post('/createmissions', 'store');
+            Route::put('/updatemissionID/{id}', 'updateMission');
+            Route::delete('/deletemissionID/{id}', 'deleteMission');
             Route::post('/insertmissions', 'storeMultiple');
-            // Route::put('/closemission/{id}', 'closeMission');
-            // Route::put('/archivemission/{id}', 'archiveMission');
-            // Route::put('/cancelmission/{id}', 'cancelMission');
-            // Route::put('/stopmission/{id}', 'stopMission');
-            // Route::put('/resumemission/{id}', 'resumeMission');
+            Route::put('/closemission/{id}', 'closeMission');
+            Route::put('/archivemission/{id}', 'archiveMission');
+            Route::put('/missions/{id}/cancelmission', 'cancelMission');
+            Route::put('/stopmission/{id}', 'stopMission');
+            Route::put('/resumemission/{id}', 'resumeMission');
             Route::get('/archivedmissions', 'getArchivedMissions');
+            Route::put('/acceptrequeststatus/{id}', 'AcceptRequestStatus');
+            Route::put('/refuseRequestStatus/{id}', 'RefuseRequestStatus');
+            Route::get('/missions/getrequeststatusmission', 'getRequestStatusForMissions');
         });
     });
 
@@ -115,17 +118,19 @@ Route::middleware(['auth:sanctum', AdminMiddleware::class])
             Route::post('/insert-users', 'storeMultiple');
         });
 
+
         // Clients
         Route::controller(ClientController::class)->group(function () {
             Route::get('/getclients', 'index');
             Route::post('/createclient', 'store');
             Route::put('/updateclientID/{id}', 'updateClient');
             Route::delete('/deleteclientID/{id}', 'deleteClient');
+            //  Route::post('/insertclients', 'storeMultiple');
         });
     });
 
 
-
+//**********************************************************Manager****************************************************************
 
 Route::middleware(['auth:sanctum', ManagerMiddleware::class])
     ->prefix('v1')
@@ -139,24 +144,36 @@ Route::middleware(['auth:sanctum', ManagerMiddleware::class])
             Route::post('/executions/update-executions', 'updateMultipleExecutions');
         });
 
+        //ParticipationController Routes 
         Route::controller(ParticipationController::class)->group(function () {
-
             Route::get('/missions/{mission}/testers', 'getTestersByMissionID');
+            Route::post('/missions/{mission}/createmembers', 'store');
+            Route::delete('/missions/{mission}/deletemember/{id}', 'deleteParticipant');
         });
 
         //MissionController Routes
         Route::controller(MissionController::class)->group(function () {
             Route::get('/missions/{mission}/report', 'getMissionReport');
             Route::get('/missions/systems/{app}/system-report', 'getSystemReport');
-
+            Route::put('/missions/{mission}/requestCloseMission', 'RequestCloseMission');
         });
-    });
-    Route::get('/missions/{mission}/report', [MissionController::class,'getMissionReport']);
-    Route::get('/missions/systems/{app}/system-report', [MissionController::class,'getSystemReport']);
 
-//  Route::controller(ParticipationController::class)->group(function () {
-//     Route::get('/missions/{mission}/testers', 'getTestersByMissionID');
-// });
+        Route::prefix('v1')->group(function () {
+            Route::controller(OwnerController::class)->group(function () {
+                Route::post('/createowner', 'store');
+            });
+        });
+            Route::controller(SystemController::class)->group(function () {
+                Route::post('/mission/{mission}/createsystem', 'storeSystemForMission');
+                Route::put('/missions/{mission}/updatesystemId/{id}', 'updateSystem');
+                Route::delete('/missions/{mission}/deletesystemId/{id}', 'deleteSystem');
+            });
+      
+       
+    });
+// Route::post('/insert-executions', [ExecutionController::class, 'createExecutions'])->middleware(ManagerMiddleware::class,'auth:sanctum');
+
+// **************************************************Superviseur****************************************************************
 
 Route::middleware(['auth:sanctum', SupervisorMiddleware::class])
     ->prefix('v1')
@@ -164,14 +181,12 @@ Route::middleware(['auth:sanctum', SupervisorMiddleware::class])
         Route::controller(ExecutionController::class)->group(function () {
 
             Route::post('missions/{mission}/executions/create-comment', 'createComment');
-            Route::put('missions/{mission}/executions/update-comment/{id}', 'updateComment');     
-            Route::delete('missions/{mission}/executions/delete-comment/{id}', 'deleteComment');  
-      
+            Route::put('missions/{mission}/executions/update-comment/{id}', 'updateComment');
+            Route::delete('missions/{mission}/executions/delete-comment/{id}', 'deleteComment');
         });
-        
-
     });
 
+//***************************************************************Testeur************************************************** */
 Route::middleware(['auth:sanctum', TesterMiddleware::class])
     ->prefix('v1')
     ->group(function () {
@@ -179,14 +194,14 @@ Route::middleware(['auth:sanctum', TesterMiddleware::class])
             Route::get('/missions/{mission}/executions-for-tester', 'getExecutionsByMissionAndTester');
             Route::put('missions/{mission}/executions/update-execution/{execution}', 'updateExecution');
             Route::put('missions/{mission}/executions/launch-execution/{execution}', 'launchExecution');
-          //  Route::get('/executions/get-options', 'getExecutionStatusOptions');
 
-            Route::get('missions/{mission}/executions/get-execution/{execution}', 'getExecutionById');//correct one
+            Route::get('missions/{mission}/executions/get-execution/{execution}', 'getExecutionById'); //correct one
             Route::patch('/executions/submit-execution-for-review/{executionID}', 'submitExecutionForReview');
             Route::patch('/executions/submit-execution-for-validation/{executionID}', 'submitExecutionForValidation');
 
             Route::get('/missions/{mission}/{appId}/getexecutionsListForTesteurForCorrection', 'getExecutionsByMissionAndSystemAndTesterFiltered');
             Route::get('/missions/{mission}/{appId}/getexecutionsListForTesteur', 'getExecutionsByMissionAndSystemAndTester');
+            Route::get('/missions/{mission}/executions',  'getExecutionsByMission'); // je pense pas que khdemt biha
 
 
         });
@@ -194,9 +209,20 @@ Route::middleware(['auth:sanctum', TesterMiddleware::class])
             Route::delete('missions/{mission}/evidences/delete-evidence/{evidenceId}', 'destroy');
             Route::post('missions/{mission}/evidences/upload', 'storeMultiple');
         });
+        Route::controller(MissionController::class)->group(function () {
+            Route::get('/missions/{mission}/members', 'getMembersByMission');
+            Route::get('/mission/{mission}/getsystems', 'getSystemsByMissionID');
+        });
+      
     });
 
-//Route::post('/evidences/upload', [ExecutionController::class,'storeFile']);
+//**************************************Général **************************************************************************** */
+
+Route::get('/missions/{mission}/report', [MissionController::class, 'getMissionReport']);
+Route::get('/missions/systems/{app}/system-report', [MissionController::class, 'getSystemReport']);
+Route::prefix('v1')->controller(MissionController::class)->group(function () {
+    Route::get('/getmissions/user', 'getUserMissions')->middleware('auth:sanctum');
+});
 
 Route::post('/login', [AuthController::class, 'login'])->middleware(CheckPasswordReset::class);
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
@@ -205,45 +231,51 @@ Route::post('/check-email', [AuthController::class, 'checkEmailExists']);
 Route::post('/store-reset-code', [AuthController::class, 'storeResetCode']);
 Route::post('/verify-reset-code', [AuthController::class, 'verifyResetCode']);
 Route::post('/reset-password', [AuthController::class, 'resetPassword']);
-
+//Route::post('/reset-password', [AuthController::class, 'resetPassword']);
 
 Route::post('/notifications/simulate', [NotificationController::class, 'simulate'])->middleware('auth:sanctum');
 Route::get('/notifications', [NotificationController::class, 'index'])->middleware('auth:sanctum');
 Route::post('/notifications/read-all', [NotificationController::class, 'markAllAsRead'])->middleware('auth:sanctum');
 Route::post('/notifications/{id}/read', [NotificationController::class, 'markNotificationAsRead'])->middleware('auth:sanctum');
 
-// Route::post('/insert-executions', [ExecutionController::class, 'createExecutions'])->middleware(ManagerMiddleware::class,'auth:sanctum');
-Route::get('/missions/{mission}/executions', [ExecutionController::class, 'getExecutionsByMission']);
-Route::post('/reset-password', [AuthController::class, 'resetPassword']);
+Route::prefix('v1')->controller(ExecutionController::class)->group(function () {
+    Route::get('/executions/get-options', 'getExecutionStatusOptions');
+});
+
+Route::prefix('v1')->controller(UserController::class)->group(function () {
+    Route::get('/users', 'index'); // hadi khass teg3od 3la berra bech njib users lors de la creation mission members
+});
+Route::prefix('v1')->controller(ProfileController::class)->group(function () {
+    Route::get('/getprofils', 'index');
+});
+
+Route::middleware('auth:sanctum')->prefix('v1')->group(function () {
+    // hadou machi m'integrin cancel & archive
+    Route::controller(MissionController::class)->group(function () {
+        Route::put('/missions/{id}/requestcancelmission', 'RequestCancelMission');
+        Route::put('/missions/{id}/requestArchiveMission', 'RequestArchiveMission');
+    });
+});
+Route::prefix('v1')->group(function () {
+    Route::controller(LayerController::class)->group(function () {
+        Route::get('/getlayers', 'index');
+    });
+});
+Route::prefix('v1')->group(function () {
+    Route::controller(OwnerController::class)->group(function () {
+        Route::get('/getowners', 'index');
+    });
+});
+Route::prefix('v1')->controller(SystemController::class)->group(function () {
+    Route::get('/systems/{systemId}', 'getsystemInfo');
+});
+//**************************************************************************************************** */
 
 
 
 
 
 /*-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
-
-Route::prefix('v1')->controller(UserController::class)->group(function () {
-    Route::get('/users', 'index');
-});
-//recuperer profils
-Route::prefix('v1')->controller(ProfileController::class)->group(function () {
-    Route::get('/getprofils', 'index');
-});
-Route::prefix('v1')->controller(MissionController::class)->group(function () {
-    Route::get('/getmissions/user', 'getUserMissions')->middleware('auth:sanctum');
-});
-
-//gestion membre de la mission
-Route::prefix('v1')->controller(MissionController::class)->group(function () {
-    Route::get('/missions/{missionid}/members', 'getMembersByMission');
-});
-Route::prefix('v1')->controller(ParticipationController::class)->group(function () {
-    Route::post('/missions/{missionid}/createmembers', 'store');
-});
-Route::prefix('v1')->controller(ParticipationController::class)->group(function () {
-    Route::delete('/deletemember/{id}', 'deleteParticipant');
-});
-
 //gestion scope controle
 
 Route::prefix('v1')->group(function () {
@@ -267,133 +299,6 @@ Route::prefix('v1')->group(function () {
 
 
 
-Route::middleware('auth:sanctum')->prefix('v1')->group(function () {
-    Route::controller(MissionController::class)->group(function () {
-        Route::get('/mission/{missionid}/getsystems', 'getSystemsByMissionID');
-    });
-
-    Route::controller(MissionController::class)->group(function () {
-        Route::put('/missions/{id}/requestcancelmission', 'RequestCancelMission');
-    });
-    Route::controller(MissionController::class)->group(function () {
-        Route::put('/missions/{id}/requestCloseMission', 'RequestCloseMission');
-    });
-    Route::controller(MissionController::class)->group(function () {
-        Route::put('/missions/{id}/requestArchiveMission', 'RequestArchiveMission');
-    });
-});
-Route::prefix('v1')->controller(MissionController::class)->group(function () {
-    Route::put('/acceptrequeststatus/{id}', 'AcceptRequestStatus');
-});
-Route::prefix('v1')->controller(MissionController::class)->group(function () {
-    Route::get('/missions/getrequeststatusmission', 'getRequestStatusForMissions');
-});
-Route::prefix('v1')->controller(MissionController::class)->group(function () {
-    Route::put('/refuseRequestStatus/{id}', 'RefuseRequestStatus');
-});
-//gestion layers
-Route::prefix('v1')->group(function () {
-    Route::controller(LayerController::class)->group(function () {
-        Route::get('/getlayers', 'index');
-    });
-});
-//gestion owners
-Route::prefix('v1')->group(function () {
-    Route::controller(OwnerController::class)->group(function () {
-        Route::get('/getowners', 'index');
-    });
-});
-Route::prefix('v1')->group(function () {
-    Route::controller(OwnerController::class)->group(function () {
-        Route::post('/createowner', 'store');
-    });
-});
-//gestion systems
-// Route::prefix('v1')->group(function () {
-//     Route::controller(MissionController::class)->group(function () {
-//         Route::get('/mission/{missionid}/getsystems', 'getSystemsByMissionID');
-//     });
-// });
-Route::prefix('v1')->group(function () {
-    Route::controller(SystemController::class)->group(function () {
-        Route::post('/mission/{missionid}/createsystem', 'storeSystemForMission');
-    });
-});
-Route::prefix('v1')->group(function () {
-    Route::controller(SystemController::class)->group(function () {
-        Route::put('/updatesystemId/{id}', 'updateSystem');
-    });
-});
-Route::prefix('v1')->group(function () {
-    Route::controller(SystemController::class)->group(function () {
-        Route::delete('/deletesystemId/{id}', 'deleteSystem');
-    });
-});
-
-Route::prefix('v1')->controller(SystemController::class)->group(function () {
-    Route::get('/systems/{systemId}', 'getsystemInfo');
-});
-
-// Route::prefix('v1')->group(function () {
-//     Route::controller(SystemController::class)->group(function () {
-//         Route::get('/getsystems', 'index');
-//     });
-// });
-// Route::prefix('v1')->group(function () {
-//     Route::controller(SystemController::class)->group(function () {
-//         Route::post('/createsystem', 'store');
-//     });
-// });
-
-//gestion mission 
-
-Route::prefix('v1')->group(function () {
-    Route::controller(MissionController::class)->group(function () {
-        Route::get('/getmissions', 'index');
-    });
-});
-
-Route::prefix('v1')->controller(MissionController::class)->group(function () {
-    Route::put('/resumemission/{id}', 'resumeMission');
-});
-Route::prefix('v1')->controller(MissionController::class)->group(function () {
-    Route::put('/stopmission/{id}', 'stopMission');
-});
-Route::prefix('v1')->controller(MissionController::class)->group(function () {
-    Route::put('/missions/{id}/cancelmission', 'cancelMission');
-});
-Route::prefix('v1')->controller(MissionController::class)->group(function () {
-    Route::put('/closemission/{id}', 'closeMission');
-});
-Route::prefix('v1')->controller(MissionController::class)->group(function () {
-    Route::put('/archivemission/{id}', 'archiveMission');
-});
-Route::prefix('v1')->controller(MissionController::class)->group(function () {
-    Route::delete('/deletemissionID/{id}', 'deleteMission');
-});
-
-Route::prefix('v1')->controller(MissionController::class)->group(function () {
-    Route::put('/updatemissionID/{id}', 'updateMission');
-});
-
-Route::prefix('v1')->controller(MissionController::class)->group(function () {
-    Route::post('/createmissions', 'store');
-});
-
-//gestion client 
-Route::prefix('v1')->controller(ClientController::class)->group(function () {
-    Route::post('/createclient', 'store');
-});
-Route::prefix('v1')->controller(ClientController::class)->group(function () {
-    Route::get('/getclients', 'index');
-});
-
-Route::prefix('v1')->controller(ClientController::class)->group(function () {
-    Route::delete('/deleteclientID/{id}', 'deleteClient');
-});
-Route::prefix('v1')->controller(ClientController::class)->group(function () {
-    Route::put('/updateclientID/{id}', 'updateClient');
-});
 
 
 //gestion remediation 
@@ -448,9 +353,9 @@ Route::middleware('auth:sanctum')->prefix('v1')->group(function () {
     });
 });
 Route::middleware('auth:sanctum')->prefix('v1')->group(function () {
-Route::controller(ExecutionController::class)->group(function () {
-    Route::get('/revue/{missionId}/getexecutionreviewedforManager', 'getexecutionReviewByManager');
-});
+    Route::controller(ExecutionController::class)->group(function () {
+        Route::get('/revue/{missionId}/getexecutionreviewedforManager', 'getexecutionReviewByManager');
+    });
 });
 Route::middleware('auth:sanctum')->prefix('v1')->group(function () {
     Route::controller(ExecutionController::class)->group(function () {
@@ -478,72 +383,60 @@ Route::prefix('v1')->controller(ExecutionController::class)->group(function () {
 Route::prefix('v1')->controller(ExecutionController::class)->group(function () {
     Route::get('/executions/get-execution/{execution}', 'getExecutionById');
 });
-Route::prefix('v1')->controller(ExecutionController::class)->group(function () {
-    Route::get('/executions/get-options', 'getExecutionStatusOptions');
-});
 
-Route::prefix('v1')->group(function () { 
+
+Route::prefix('v1')->group(function () {
     Route::controller(StatusController::class)->group(function () {
         Route::get('/getstatus', 'index');
     });
 });
 
-Route::prefix('v1')->group(function () { 
+Route::prefix('v1')->group(function () {
     Route::controller(StatusController::class)->group(function () {
         Route::post('/createstatus', 'store');
     });
 });
-Route::prefix('v1')->group(function () { 
+Route::prefix('v1')->group(function () {
     Route::controller(StatusController::class)->group(function () {
         Route::delete('/deletestatus/{id}', 'deleteStatus');
     });
 });
 
-Route::prefix('v1')->group(function () { 
+Route::prefix('v1')->group(function () {
     Route::controller(TypeController::class)->group(function () {
         Route::get('/getctrltypes', 'index');
     });
 });
 
-Route::prefix('v1')->group(function () { 
+Route::prefix('v1')->group(function () {
     Route::controller(TypeController::class)->group(function () {
         Route::post('/createctrltype', 'store');
     });
 });
-Route::prefix('v1')->group(function () { 
+Route::prefix('v1')->group(function () {
     Route::controller(TypeController::class)->group(function () {
         Route::delete('/deletetype/{id}', 'deleteType');
     });
 });
 
-Route::prefix('v1')->group(function () { 
+Route::prefix('v1')->group(function () {
     Route::controller(SourceController::class)->group(function () {
         Route::get('/getsources', 'index');
     });
 });
 
-Route::prefix('v1')->group(function () { 
+Route::prefix('v1')->group(function () {
     Route::controller(SourceController::class)->group(function () {
         Route::post('/createsource', 'store');
     });
 });
-Route::prefix('v1')->group(function () { 
+Route::prefix('v1')->group(function () {
     Route::controller(SourceController::class)->group(function () {
         Route::delete('/deletesource/{id}', 'deleteSource');
     });
 });
 
-// Route::middleware(['auth:sanctum', AdminMiddleware::class])
-//     ->prefix('v1')
-//     ->group(function () {
-//         Route::controller(ClientController::class)->group(function () {
-//             Route::get('/getclients', 'index');
-//             Route::post('/createclient', 'store');
-//             Route::put('/updateclientID/{id}', 'updateClient');
-//             Route::delete('/deleteclientID/{id}', 'deleteClient');
-//             Route::post('/insertclients', 'storeMultiple');
-//         });
-//     });
+
 
 
 
@@ -551,7 +444,7 @@ Route::prefix('v1')->group(function () {
 // Route::put('executions/launch-execution/{execution}', [ExecutionController::class, 'launchExecution']);
 
 
-//manel ani ndakhalhom f midellware----------------------------------------------------------------------------------
+//***************************************manel ani ndakhalhom f midellware----------------------------------------------------------------------------------
 
 // Route::middleware('auth:sanctum')->prefix('v1')->group(function () {
 //     Route::controller(ExecutionController::class)->group(function () {
@@ -562,5 +455,87 @@ Route::prefix('v1')->group(function () {
 // Route::middleware('auth:sanctum')->prefix('v1')->group(function () {
 //     Route::controller(ExecutionController::class)->group(function () {
 //          Route::get('/missions/{missionId}/{appId}/getexecutionsListForTesteur', 'getExecutionsByMissionAndSystemAndTester');
+//     });
+// });
+
+//  Route::controller(ParticipationController::class)->group(function () {
+//     Route::get('/missions/{mission}/testers', 'getTestersByMissionID');
+// });
+//Route::post('/evidences/upload', [ExecutionController::class,'storeFile']);
+
+// Route::prefix('v1')->controller(MissionController::class)->group(function () {
+//     Route::put('/updatemissionID/{id}', 'updateMission');
+// });
+// Route::prefix('v1')->controller(MissionController::class)->group(function () {
+//     Route::put('/closemission/{id}', 'closeMission');
+// });
+// Route::prefix('v1')->controller(MissionController::class)->group(function () {
+//     Route::put('/missions/{id}/cancelmission', 'cancelMission');
+// });
+// Route::prefix('v1')->controller(MissionController::class)->group(function () {
+//     Route::put('/stopmission/{id}', 'stopMission');
+// });
+// Route::prefix('v1')->controller(MissionController::class)->group(function () {
+//     Route::put('/resumemission/{id}', 'resumeMission');
+// });
+// Route::prefix('v1')->controller(MissionController::class)->group(function () {
+//     Route::delete('/deletemissionID/{id}', 'deleteMission');
+// });
+// Route::prefix('v1')->controller(MissionController::class)->group(function () {
+//     Route::post('/createmissions', 'store');
+// });
+// Route::prefix('v1')->group(function () {
+//     Route::controller(MissionController::class)->group(function () {
+//         Route::get('/getmissions', 'index');
+//     });
+// });
+// Route::prefix('v1')->controller(ClientController::class)->group(function () {
+//     Route::get('/getclients', 'index');
+// });
+// Route::prefix('v1')->controller(ClientController::class)->group(function () {
+//     Route::post('/createclient', 'store');
+// });
+
+// Route::prefix('v1')->controller(ClientController::class)->group(function () {
+//     Route::delete('/deleteclientID/{id}', 'deleteClient');
+// });
+// Route::prefix('v1')->controller(ClientController::class)->group(function () {
+//     Route::put('/updateclientID/{id}', 'updateClient');
+// });
+// Route::get('/missions/{mission}/executions', [ExecutionController::class, 'getExecutionsByMission']);
+// Route::controller(MissionController::class)->group(function () {
+//     Route::put('/missions/{id}/requestCloseMission', 'RequestCloseMission');
+// });
+// Route::controller(MissionController::class)->group(function () {
+//     Route::get('/mission/{missionid}/getsystems', 'getSystemsByMissionID');
+// });
+// Route::prefix('v1')->controller(MissionController::class)->group(function () {
+//     Route::put('/acceptrequeststatus/{id}', 'AcceptRequestStatus');
+// });
+// Route::prefix('v1')->controller(MissionController::class)->group(function () {
+//     Route::get('/missions/getrequeststatusmission', 'getRequestStatusForMissions');
+// });
+// Route::prefix('v1')->controller(MissionController::class)->group(function () {
+//     Route::put('/refuseRequestStatus/{id}', 'RefuseRequestStatus');
+// });
+// Route::prefix('v1')->group(function () {
+//     Route::controller(MissionController::class)->group(function () {
+//         Route::get('/mission/{missionid}/getsystems', 'getSystemsByMissionID');
+//     });
+// });
+
+// Route::prefix('v1')->group(function () {
+//     Route::controller(SystemController::class)->group(function () {
+//         Route::post('/mission/{missionid}/createsystem', 'storeSystemForMission');
+//     });
+// });
+// Route::prefix('v1')->group(function () {
+//     Route::controller(SystemController::class)->group(function () {
+//         Route::put('/updatesystemId/{id}', 'updateSystem');
+//     });
+// });
+// Route::prefix('v1')->group(function () {
+//     Route::controller(SystemController::class)->group(function () {
+//         Route::delete('/deletesystemId/{id}', 'deleteSystem');
 //     });
 // });
