@@ -25,47 +25,32 @@ function DashboardManager() {
 
     const controlData = [
         { id: "1", nom: "Commencé", pourcentage: `${missionData.controlCommencé.pourcentageTotale}` },
-        { id: "2", nom: "nom Commencé", pourcentage:`${missionData.controlNonCommencé}` },
+        { id: "2", nom: "nom Commencé", pourcentage: `${missionData.controlNonCommencé}` },
         { id: "3", nom: "effective", pourcentage: `${missionData.controlEffctive}` },
-        { id: "4", nom: "inéffective", pourcentage: `${missionData.controlNonEffective.pourcentageTotale}`}
+        { id: "4", nom: "inéffective", pourcentage: `${missionData.controlNonEffective.pourcentageTotale}` }
     ]
     const statusControlData = [
         { id: "1", nom: "Appliad", pourcentage: `${missionData.controlEffctive}` },
         { id: "2", nom: "Partially appliad", pourcentage: `${missionData.controlNonEffective.partiallyApp}` },
         { id: "3", nom: "Not appliad", pourcentage: `${missionData.controlNonEffective.notApp}` },
-        { id: "4", nom: "Not tested", pourcentage: `${missionData.controlNonEffective. notTested}` },
-        { id: "5", nom: "Not applicable", pourcentage: `${missionData.controlNonEffective.notApplicable}`}
+        { id: "4", nom: "Not tested", pourcentage: `${missionData.controlNonEffective.notTested}` },
+        { id: "5", nom: "Not applicable", pourcentage: `${missionData.controlNonEffective.notApplicable}` }
     ]
     const RemédiationData = [
-        { id: "1", nom: "Action", pourcentage:  `${missionData.nbrAction.action}` },
-        { id: "2", nom: "Terminé", pourcentage:  `${missionData.actionTerminé}` },
-        { id: "3", nom: "En cours", pourcentage:  `${missionData.actionEnCours}` }
+        { id: "1", nom: "Action", pourcentage: `${missionData.nbrAction.action}` },
+        { id: "2", nom: "Terminé", pourcentage: `${missionData.actionTerminé}` },
+        { id: "3", nom: "En cours", pourcentage: `${missionData.actionEnCours}` }
     ]
     const RemédiationActionData = [
-        { id: "1", nom: "CTRL_987", NbrAction:"3", pourcentageTerminé: "20%",pourcentageEncours:"80%" },
-        { id: "2", nom: "CTRL_901", NbrAction:"7", pourcentageTerminé: "70%",pourcentageEncours:"30%" },
-        { id: "3", nom: "CTRL_320", NbrAction:"1", pourcentageTerminé: "0%",pourcentageEncours:"100%" },
-        { id: "4", nom: "CTRL_007", NbrAction:"9", pourcentageTerminé: "13%",pourcentageEncours:"87%" },
-        { id: "5", nom: "CTRL_097", NbrAction:"11", pourcentageTerminé: "20%",pourcentageEncours:"80%" },
-        { id: "6", nom: "CTRL_653", NbrAction:"20", pourcentageTerminé: "20%",pourcentageEncours:"80%" },
+        { id: "1", nom: "CTRL_987", NbrAction: "3", pourcentageTerminé: "20%", pourcentageEncours: "80%" },
+        { id: "2", nom: "CTRL_901", NbrAction: "7", pourcentageTerminé: "70%", pourcentageEncours: "30%" },
+        { id: "3", nom: "CTRL_320", NbrAction: "1", pourcentageTerminé: "0%", pourcentageEncours: "100%" },
+        { id: "4", nom: "CTRL_007", NbrAction: "9", pourcentageTerminé: "13%", pourcentageEncours: "87%" },
+        { id: "5", nom: "CTRL_097", NbrAction: "11", pourcentageTerminé: "20%", pourcentageEncours: "80%" },
+        { id: "6", nom: "CTRL_653", NbrAction: "20", pourcentageTerminé: "20%", pourcentageEncours: "80%" },
     ]
 
-    const columnsConfig2 = [
-
-        { field: "actionCode", headerName: "Action", width: 200, expandable: true },
-        { field: "description", headerName: "Description", width: 300, expandable: true },
-        { field: "ActionOwner", headerName: "Owner", width: 120, expandable: true },
-        { field: "suivi", headerName: "Suivi", width: 270, expandable: true },
-        { field: "statusAction", headerName: "Status", width: 100, expandable: true },
-    ]
-
-    const ControlActionData = [
-        { id: "1", actionCode: "Act_25Nov_CTRL_645", description: "description de l'action 1", ActionOwner: "farid akbi", suivi: "le suivi de l'action", statusAction: "En cours"},
-        { id: "2", actionCode: "Act_25Nov_CTRL_645", description: "description de l'action 2", ActionOwner: "farid akbi", suivi: "le suivi de l'action", statusAction: "En cours"},
-        { id: "3", actionCode: "Act_25Nov_CTRL_645", description: "description de l'action 3", ActionOwner: "farid akbi", suivi: "le suivi de l'action", statusAction: "Terminé"},
-        { id: "4", actionCode: "Act_25Nov_CTRL_645", description: "description de l'action 4", ActionOwner: "farid akbi", suivi: "le suivi de l'action", statusAction: "Terminé"},
-        { id: "5", actionCode: "Act_25Nov_CTRL_645", description: "description de l'action 5", ActionOwner: "farid akbi", suivi: "le suivi de l'action", statusAction: "Terminé"},
-    ]
+    
 
     const [openDropdowns, setOpenDropdowns] = useState({});
     const toggleDropdown = (id) => {
@@ -74,7 +59,7 @@ function DashboardManager() {
             [id]: !prev[id],
         }));
     };
-    
+
     const getColor = (nom) => {
         switch (nom.toLowerCase()) {
             case 'commencé': return 'bg-yellow-100';
@@ -122,7 +107,7 @@ function DashboardManager() {
 
                 {/*Control data*/}
                 <div className=' px-16'>
-                    <Control data={controlData} grid_cols='grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4'/>
+                    <Control data={controlData} grid_cols='grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4' />
                     {/* <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6'>
 
                         {controlData.map((item) => (
@@ -142,7 +127,7 @@ function DashboardManager() {
                 {/*status Control data*/}
                 <div className=' px-16 py-8'>
                     <h3 className="text-xl font-bold mb-4">Status Controles</h3>
-                    <Control  data={statusControlData} grid_cols='grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-2' />
+                    <Control data={statusControlData} grid_cols='grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-2' />
                     {/* <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-2 gap-6'>
                         {statusControlData.map((item) => (
                             <div
@@ -193,56 +178,57 @@ function DashboardManager() {
                 </div>
 
                 {/* Control Remédiation data*/}
-<div className='px-16 pb-4 mb-8 '>
-    <div className='max-h-[250px] overflow-y-auto overflow-x-hidden pr-2'>
-        <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-1 gap-3'>
-            {RemédiationActionData.map((item) => (
-                <div
-                    key={item.id}
-                    className={`flex  flex-col px-4 `}
-                >
-                    <div 
-                    className={`border border-black cursor-pointer border-l-4 border-l-orange-600 flex  justify-between py-1 px-4 items-center gap-4 rounded shadow-sm hover:shadow-md transition duration-200 ${getColor(item.nom)}`}
-                    >
-                    <p className='w-[10%] text-l font-medium'>{item.nom}</p>
-                    <div className='flex flex-row justify-between w-[45%]'>
-                    <div className='flex items-center gap-3'>
-                            <p className='text-center text-[10px] font-medium'>{item.NbrAction} Actions</p>
+                <div className='px-16 pb-4 mb-8 '>
+                    <RemédiationActionData data={RemédiationActionData}/>
+                    {/* <div className='max-h-[250px] overflow-y-auto overflow-x-hidden pr-2'>
+                        <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-1 gap-3'>
+                            {RemédiationActionData.map((item) => (
+                                <div
+                                    key={item.id}
+                                    className={`flex  flex-col px-4 `}
+                                >
+                                    <div
+                                        className={`border border-black cursor-pointer border-l-4 border-l-orange-600 flex  justify-between py-1 px-4 items-center gap-4 rounded shadow-sm hover:shadow-md transition duration-200 ${getColor(item.nom)}`}
+                                    >
+                                        <p className='w-[10%] text-l font-medium'>{item.nom}</p>
+                                        <div className='flex flex-row justify-between w-[45%]'>
+                                            <div className='flex items-center gap-3'>
+                                                <p className='text-center text-[10px] font-medium'>{item.NbrAction} Actions</p>
+                                            </div>
+                                            <div className='flex items-center gap-3'>
+                                                <div className="w-10 h-10">
+                                                    <CircularProgressbarComponent progressPercent={parseInt(item.pourcentageTerminé)} />
+                                                </div>
+                                                <p className='text-center text-[10px] font-medium'>Terminé</p>
+                                            </div>
+                                            <div className='flex items-center gap-3'>
+                                                <div className="w-10 h-10">
+                                                    <CircularProgressbarComponent progressPercent={parseInt(item.pourcentageEncours)} />
+                                                </div>
+                                                <p className='text-center text-[10px] font-medium'>En cours</p>
+                                            </div>
+                                        </div>
+                                        <button className='border-none cursor-pointer' onClick={() => toggleDropdown(item.id)}>
+                                            <KeyboardArrowDownIcon />
+                                        </button>
+                                    </div>
+                                    {openDropdowns[item.id] && (
+                                        <div className="mt-2  flex justify-center">
+                                            <Table
+                                                key={JSON.stringify(ControlActionData)}
+                                                columnsConfig={columnsConfig2}
+                                                rowsData={ControlActionData}
+                                                checkboxSelection={false}
+                                                headerTextBackground="white"
+                                                headerBackground="var(--blue-menu)"
+                                            />
+                                        </div>
+                                    )}
+                                </div>
+                            ))}
                         </div>
-                        <div className='flex items-center gap-3'>
-                            <div className="w-10 h-10">
-                                <CircularProgressbarComponent progressPercent={parseInt(item.pourcentageTerminé)} />
-                            </div>
-                            <p className='text-center text-[10px] font-medium'>Terminé</p>
-                        </div>
-                        <div className='flex items-center gap-3'>
-                            <div className="w-10 h-10">
-                                <CircularProgressbarComponent progressPercent={parseInt(item.pourcentageEncours)} />
-                            </div>
-                            <p className='text-center text-[10px] font-medium'>En cours</p>
-                        </div>
-                    </div>
-                    <button className='border-none cursor-pointer' onClick={() => toggleDropdown(item.id)}>
-                            <KeyboardArrowDownIcon />
-                        </button>
-                        </div>
-                        {openDropdowns[item.id] && (
-                        <div className="mt-2  flex justify-center">
-                            <Table
-                                key={JSON.stringify(ControlActionData)}
-                                columnsConfig={columnsConfig2}
-                                rowsData={ControlActionData}
-                                checkboxSelection={false}
-                                headerTextBackground="white"
-                                headerBackground="var(--blue-menu)"
-                            />
-                        </div>
-                    )}
+                    </div> */}
                 </div>
-            ))}
-        </div>
-    </div>
-</div>
 
 
 
