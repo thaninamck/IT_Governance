@@ -8,21 +8,79 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Setting;
+use App\Services\LogService;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 use App\Services\RecaptchaService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Validator;
 use Log;
 class AuthController extends BaseController
 {
 
     protected $recaptchaService;
+    protected $logService;
 
-    public function __construct(RecaptchaService $recaptchaService)
+    public function __construct(RecaptchaService $recaptchaService,LogService $logService)
     {
+        $this->logService = $logService;
         $this->recaptchaService = $recaptchaService;
     }
+    public function getsettingsValue():JsonResponse
+    {
+        try{
+            $settings= Setting ::all();
+
+            if( $settings->isEmpty()){
+                return $this->sendError("no settings key found",[]);
+            }
+            return $this->sendResponse($settings,"keys retrived successfully");
+
+        }catch(\Exception $e){
+            return $this->sendError("An error occured",["error"=>$e->getMessage()],500);
+        }
+    }
+
+    public function updatesettingsValue(Request $request, $id): JsonResponse
+    {
+        try {
+            $rules = [
+                'value' => 'sometimes|string|max:255',
+            ];
+    
+            $validator = Validator::make($request->all(), $rules);
+    
+            if ($validator->fails()) {
+                return $this->sendError("Validation failed", $validator->errors());
+            }
+    
+            $settingsValue = Setting::find($id);
+            if (!$settingsValue) {
+                return $this->sendError("Paramètre introuvable", [], 404);
+            }
+    
+            // Mise à jour réelle avec les données validées
+            $settingsValue->update([
+                'value' => $request->input('value')
+            ]);
+    
+            $this->logService->logUserAction(
+                auth()->user()->email ?? 'Unknown',
+                'Admin',
+                "Modification du paramètre: {$settingsValue->key} à {$settingsValue->value}",
+                ""
+            );
+    
+            return $this->sendResponse($settingsValue, "Paramètre mis à jour avec succès");
+    
+        } catch (\Exception $e) {
+            return $this->sendError("Une erreur est survenue", $e->getMessage(), 500);
+        }
+    }
+    
+
+
     public function login(Request $request)
     {
         try {
@@ -282,6 +340,7 @@ class AuthController extends BaseController
 
         return $this->sendResponse(['Password reset successfully. Please log in again.'], 'Password reset successfully. Please log in again.');
     }
+
 
 
 }

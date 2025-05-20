@@ -568,6 +568,19 @@ GROUP BY
               'source_name', so.name
             )) AS sources,
 
+            json_agg(DISTINCT jsonb_build_object(
+                'remediation_id', rmd.id,
+                'remediation_description', rmd.description,
+                'remediation_status_name', rs.status_name
+            )) AS remediations,
+    
+            json_agg(DISTINCT jsonb_build_object(
+                'remark_id', rm.id,
+                'remark_text', rm.text,
+                'remark_y', rm.y,
+                'remark_user_id', rm.user_id
+            )) AS remarks,
+
             m.id AS mission_id, 
             mission_name,
 
@@ -612,6 +625,10 @@ GROUP BY
         LEFT JOIN public.major_processes mp ON c.major_id = mp.id
         LEFT JOIN public.sub_processes sp ON c.sub_id = sp.id
         LEFT JOIN public.types t ON c.type_id = t.id
+        LEFT JOIN public.remediations rmd ON rmd.execution_id = e.id
+        LEFT JOIN public.statuses rs ON rmd.status_id = rs.id
+        LEFT JOIN public.remarks rm ON rm.execution_id = e.id
+        
         JOIN public.cntrl_srcs cs ON cs.control_id = c.id
         JOIN public.sources so ON cs.source_id = so.id
         JOIN public.users u ON e.user_id = u.id

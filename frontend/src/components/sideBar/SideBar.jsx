@@ -15,7 +15,7 @@ function SideBar({ user }) {
   const menuItems = {
     admin: [
       { key: "profile", label: "Profile", path: "/myprofile" },
-      { key: "dashboard", label: "Dashboard", path: "/adminHomePage" },
+      { key: "dashboard", label: "Dashboard", path: "/dashboard" },
       { key: "utilisateurs", label: "Utilisateurs", path: "/utilisateurs" },
       { key: "Référentiels", label: "Référentiels", path: "/controlsManager" },
       { key: "missions", label: "Missions", path: "/missions" },

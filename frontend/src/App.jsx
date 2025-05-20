@@ -72,6 +72,8 @@ import UserViewMode from './pages/UserViewMode';
 import GestionRevue from './pages/Superviseur/GestionRevue';
 import RevueListExecution from './pages/Superviseur/RevueListExecution';
 import ReviewExecution from './pages/Superviseur/ReviewExecution';
+import DashboardAdmin from './pages/DashboardAdmin';
+import DashboardManager from './pages/Manager/DashboardManager';
 function App() {
   const getRowLink = (row) => `/tablemission/${row.mission}`;
   
@@ -222,6 +224,8 @@ const rowsData3 = [
           <Route path='/utilisateurs' element={<GestionUtilisateur/>}></Route>
           <Route path='/clients' element={<GestionClient/>}></Route>
           <Route path='/settings' element={<Settings/>}></Route>
+          <Route path='/dashboard' element={<DashboardAdmin/>}></Route>
+          <Route path='/dashboard/:mission' element={<DashboardManager/>}></Route>
          
           
           <Route path="/missions/:mission" element={<MissionDetail />} />

@@ -4,7 +4,7 @@ import { Box } from '@mui/material';
 
 const InfoDisplayComponent = ({ label, BoxContent, icon }) => {
   return (
-    <div className="flex items-start space-x-3">
+    <div className="flex items-start space-x-3 min-w-[200px]">
       <div className="flex-shrink-0 mt-1">
         {icon}
       </div>

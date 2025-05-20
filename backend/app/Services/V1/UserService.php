@@ -24,6 +24,26 @@ class UserService
         return Position::all();
     }
 
+    public function createGrade(string $name):Position
+{
+  
+    $existingPosition = Position::whereRaw('LOWER(name) = ?', [strtolower($name)])->first();
+
+    if ($existingPosition) {
+        throw new \Exception("Un grade avec le même nom existe déjà.");
+    }
+    return $this->userRepository->createGrade($name);
+}
+public function deleteGrade(int $id) :?string
+{
+    $type=$this->userRepository->findGradeById($id);
+    if(!$type){
+        return null;
+    }
+    return $this->userRepository->deleteGrade($id);
+}
+
+
     public function createUser(array $data): User
     {
         $data['password'] = Hash::make($data['password']);

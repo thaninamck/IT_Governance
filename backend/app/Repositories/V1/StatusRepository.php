@@ -34,4 +34,36 @@ class StatusRepository
                      ->first();
     }
     
+    public function getAllStatus()
+    {
+        return Status::all();
+    }
+
+    public function createStatus(string $status_name ,string $entity):Status
+    {
+        return Status::create(['status_name' => $status_name,'entity'=>$entity]);
+    }
+
+    public function findStatusById(int $id)
+    {
+        return Status::find($id);
+    }
+
+    public function deleteStatus(int $id): ?string
+    {
+        $status=Status::find($id);
+        if(!$status){
+            return null;
+        }
+        $name=$status->status_name;
+        $status->delete();
+
+        return $name;
+    }
+
+    public function hasRelatedData(Status $status): bool
+    {
+        return 
+        $status->executions()->exists();
+    }
 }
