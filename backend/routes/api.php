@@ -128,24 +128,25 @@ Route::middleware(['auth:sanctum', AdminMiddleware::class])
             //  Route::post('/insertclients', 'storeMultiple');
         });
         Route::controller(MissionController::class)->group(function () {
-            Route::get('/dashboard', 'getMissionsInprogress');
+            Route::get('/dashboard', 'getMissionsInprogress'); //done
 
         });
         Route::controller(ExecutionController::class)->group(function () {
-            Route::get('/dashboard/missions/{mission}/effective-controls', 'getEffectiveExecutionsByMission');
-            Route::get('/dashboard/missions/{mission}/ineffective-controls', 'getineffectiveExecutionsByMission');
+            Route::get('/dashboard/missions/{mission}/effective-controls', 'getEffectiveExecutionsByMission'); //done
+            Route::get('/dashboard/missions/{mission}/ineffective-controls', 'getineffectiveExecutionsByMission'); //done
 
+        });
+        Route::controller(MissionController::class)->group(function () {
+            Route::get('/dashboard/{mission}', 'getMissionsInprogress'); //same done
+            Route::get('/missions/{mission}/report', 'getManagerMissionReport'); //same done
+        });
+        Route::controller(ExecutionController::class)->group(function () {
+            Route::get('/dashboard/missions/{mission}/ineffective-controls', 'getIneffectiveExecutionsByMission');
+    
         });
     });
 
-    Route::controller(MissionController::class)->group(function () {
-        Route::get('/dashboard/{mission}', 'getMissionsInprogress');
-        Route::get('/missions/{mission}/report', 'getManagerMissionReport');
-    });
-    Route::controller(ExecutionController::class)->group(function () {
-        Route::get('/dashboard/missions/{mission}/ineffective-controls', 'getIneffectiveExecutionsByMission');
-
-    });
+   
 
 //**********************************************************Manager****************************************************************
     
@@ -178,11 +179,11 @@ Route::middleware(['auth:sanctum', ManagerMiddleware::class])
 
             Route::get('/missions/{mission}/dsp-report', 'getMissionReport');
             Route::get('/missions/{mission}/systems/{app}/system-report', 'getSystemReport');
-            Route::get('/missions/{mission}/report', 'getManagerMissionReport');
+            Route::get('/missions/{mission}/report', 'getManagerMissionReport'); //done
 
         });
         Route::controller(RemediationController::class)->group(function () {
-            Route::get('/missions/{mission}/report/executions/{execution}', 'getRemediationsByExecution');
+            Route::get('/missions/{mission}/report/executions/{execution}', 'getRemediationsByExecution'); // done
            
             
         });
