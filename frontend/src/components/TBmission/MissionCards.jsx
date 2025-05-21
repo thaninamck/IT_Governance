@@ -12,11 +12,11 @@ dayjs.extend(duration);
 
 function MissionCards({ data,size = 'medium'}) {
 
-   const  controlData=[
-        {id:"1", nom:"Commencé",pourcentage:`${data.controlCommencé.pourcentageTotale}`},
-        {id:"2", nom:"Nom Commencé",pourcentage:`${data.controlNonCommencé}`},
-        {id:"3", nom:"effective",pourcentage:`${data. controlEffctive}`},
-        {id:"4", nom:"inéffective",pourcentage:`${data.controlNonEffective.pourcentageTotale}`}
+    const  controlData=[
+        {id:"1", nom:"Commencé",pourcentage:`${data?.controlCommencé?.pourcentageTotale}`},
+        {id:"2", nom:"Nom Commencé",pourcentage:`${data?.controlNonCommencé}`},
+        {id:"3", nom:"effective",pourcentage:`${data?.controlEffectif }`},
+        {id:"4", nom:"ineffective",pourcentage:`${data?.controlNonEffective?.pourcentageTotale}`}
     ]
     if (!data) return null;
     const navigate = useNavigate();
@@ -64,9 +64,9 @@ function MissionCards({ data,size = 'medium'}) {
         <div  onClick={handleClick}
         className='border border-blue-500 p-4  shadow-md rounded-md flex flex-col gap-2  sm:w-[300px] md:w-[340px] lg:w-[300px] max-w-full'>
         
-            <h3 className={`text-center font-bold ${styles.text}`}>{data.missionName}</h3>
-            <p className={`${styles.SousText}  text-gray-600 text-center`}>Client : {data.client}</p>
-            <p className={`${styles.SousText} text-gray-600 text-center`}>Nombre de contrôles : {total}</p>
+            <h3 className={`text-center font-bold ${styles.text}`}>{data?.missionName}</h3>
+            <p className={`${styles.SousText}  text-gray-600 text-center`}>Client : {data?.client}</p>
+            <p className={`${styles.SousText} text-gray-600 text-center`}>Nombre de contrôles : {data?.nbrControl}</p>
 
             {/* Avancement des contrôles */}
             <div className='flex justify-center items-center gap-2 mt-4'>
@@ -78,7 +78,11 @@ function MissionCards({ data,size = 'medium'}) {
             {/* Barre temporelle */}
             <BarProgressComponent data={data} size={size}/>
             <div className='mt-2 '>
-                <Control data={controlData} stopPropagation={true} size={size}/>
+                <Control 
+              data={controlData} 
+             // data={data}
+              statusControl={data} 
+                stopPropagation={true} size={size}/>
             </div>
 
 

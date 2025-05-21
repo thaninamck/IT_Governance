@@ -3,7 +3,7 @@ import dayjs from 'dayjs';
 
 function BarProgressComponent({ data, size = 'medium' }) {
     const now = dayjs();
-    const start = dayjs(data.startDate);
+    const start = dayjs(data?.startDate);
     const end = dayjs(data.endDate);
     const totalDuration = end.diff(start, 'day');
     const elapsed = now.diff(start, 'day');

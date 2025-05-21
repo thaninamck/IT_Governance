@@ -5,6 +5,7 @@ import HeaderBis from '../components/Header/HeaderBis'
 import { useAuth } from '../Context/AuthContext';
 import MissionCards from '../components/TBmission/MissionCards';
 import HeaderWithAction from '../components/Header/HeaderWithAction';
+import { api } from '../Api';
 
 
 //const TOTAL_CARDS = 10; // Exemple de 10 missions
@@ -60,92 +61,43 @@ function DashboardAdmin() {
     // On génère 10 fausses cartes avec un index
     // const missions = Array.from({ length: TOTAL_CARDS }, (_, i) => i);
 
+    const [missionData, setMissionData] = useState([]);
+    const [loading, setLoading] = useState(true);
 
+    const fetchMissionsDashboard = async () => {
+        try {
+            const response = await api.get('/dashboard'); 
+            console.log('db admin mission',response.data)
+            setMissionData(response.data);
+        } catch (error) {
+            console.error("Erreur lors de la récupération des missions :", error);
+        } finally {
+            setLoading(false);
+        }
+    };
 
-    const missionData = [
-        {
-            id: "1",
-            missionName: "DSP",
-            client: 'Djezzy',
-            nbrControl: '26',
-            startDate: '2025-05-01',
-            endDate: '2025-06-30',
-            controls: Array(26).fill().map((_, i) => ({ id: i, status: i < 20 ? 'done' : 'pending' })),
-            controlCommencé: { pourcentageTotale: "20", pourcentageFinalisé: "27", pourcentageNonFinalisé: "73" },
-            controlNonCommencé: "80",
-            controlEffctive: "75",
-            controlNonEffective: { pourcentageTotale: "35", partiallyApp: "25", notApp: "63", notTested: "7", notApplicable: '5' },
-            nbrAction:{action:"30",control:'5'},
-            actionTerminé: "13",
-            actionEnCours: "17"
-        },
-        {
-            id: "2",
-            missionName: "ITGC",
-            client: 'ATM',
-            nbrControl: '2',
-            startDate: '2025-05-01',
-            endDate: '2025-06-01',
-            controls: [{ id: 1, status: 'done' }, { id: 2, status: 'pending' }],
-            controlCommencé: { pourcentageTotale: "50", pourcentageFinalisé: "50", pourcentageNonFinalisé: "0" },
-            controlNonCommencé: "50",
-            controlEffctive: "60",
-            controlNonEffective: { pourcentageTotale: "40", partiallyApp: "10", notApp: "20", notTested: "5", notApplicable: '5' },
-            nbrAction: {action:"5",control:'2'},
-            actionTerminé: "2",
-            actionEnCours: "3"
-        },
-        {
-            id: "3",
-            missionName: "ISO 27001",
-            client: 'Mobilis',
-            nbrControl: '36',
-            startDate: '2025-03-01',
-            endDate: '2025-06-02',
-            controls: Array(36).fill().map((_, i) => ({ id: i, status: i < 10 ? 'done' : 'pending' })),
-            controlCommencé: { pourcentageTotale: "28", pourcentageFinalisé: "20", pourcentageNonFinalisé: "80" },
-            controlNonCommencé: "72",
-            controlEffctive: "50",
-            controlNonEffective: { pourcentageTotale: "50", partiallyApp: "15", notApp: "25", notTested: "5", notApplicable: '5' },
-            nbrAction: {action:"18",control:'10'},
-            actionTerminé: "7",
-            actionEnCours: "11"
-        },
-        {
-            id: "4",
-            missionName: "Self Testing",
-            client: 'Mazars',
-            nbrControl: '36',
-            startDate: '2025-05-10',
-            endDate: '2025-06-02',
-            controls: Array(36).fill().map((_, i) => ({ id: i, status: i < 20 ? 'done' : 'pending' })),
-            controlCommencé: { pourcentageTotale: "60", pourcentageFinalisé: "55", pourcentageNonFinalisé: "45" },
-            controlNonCommencé: "40",
-            controlEffctive: "80",
-            controlNonEffective: { pourcentageTotale: "20", partiallyApp: "10", notApp: "5", notTested: "3", notApplicable: '2' },
-            nbrAction: {action:"25",control:'8'},
-            actionTerminé: "15",
-            actionEnCours: "10"
-        },
-        {
-            id: "5",
-            missionName: "RNCI",
-            client: 'KPMG',
-            nbrControl: '36',
-            startDate: '2025-05-01',
-            endDate: '2025-06-12',
-            controls: Array(36).fill().map((_, i) => ({ id: i, status: i < 5 ? 'done' : 'pending' })),
-            controlCommencé: { pourcentageTotale: "14", pourcentageFinalisé: "13.8", pourcentageNonFinalisé: "86.2" },
-            controlNonCommencé: "86",
-            controlEffctive: "40",
-            controlNonEffective: { pourcentageTotale: "60", partiallyApp: "10", notApp: "40", notTested: "5", notApplicable: '5' },
-            nbrAction: {action:"18",control:'1'},
-            actionTerminé: "3",
-            actionEnCours: "9"
-        },
-
-
-    ]
+    useEffect(() => {
+        fetchMissionsDashboard();
+    }, []);
+    // const missionData = [
+    //     {
+    //         id: "1",
+    //         missionName: "DSP",
+    //         client: 'Djezzy',
+    //         nbrControl: '26',
+    //         startDate: '2025-05-01',
+    //         endDate: '2025-06-30',
+    //         controls: Array(26).fill().map((_, i) => ({ id: i, status: i < 20 ? 'done' : 'pending' })),
+    //         controlCommencé: { pourcentageTotale: "20", pourcentageFinalisé: "27", pourcentageNonFinalisé: "73" },
+    //         controlNonCommencé: "80",
+    //         controlEffctive: "75",
+    //         controlNonEffective: { pourcentageTotale: "35", partiallyApp: "25", notApp: "63", notTested: "7", notApplicable: '5' },
+    //         nbrAction:{action:"30",control:'5'},
+    //         actionTerminé: "13",
+    //         actionEnCours: "17"
+    //     },
+       
+    // ]
 
     
     const totalPages = Math.ceil(missionData.length / itemsPerPage);
