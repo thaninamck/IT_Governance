@@ -2,12 +2,15 @@
 
 namespace App\Services\V1;
 
+use App\Repositories\V1\MissionRepository;
 use App\Repositories\V1\SystemRepository;
+use App\Services\Calculations\AdminDashboardCalculator;
 use App\Services\calculations\AppScoreConformityCalculator;
 use App\Services\calculations\CalculationServiceInterface;
 use App\Services\calculations\calculationWeightsStrategies\DefaultStatusWeightStrategy;
 use App\Services\Calculations\DBScoreConformityCalculator;
 use App\Services\Calculations\GeneralAdvancementCalculator;
+use App\Services\Calculations\ManagerReportCalculator;
 use App\Services\Calculations\OSScoreConformityCalculator;
 use App\Services\Calculations\PhysicalLayerGlobalConformityScoreCalculator;
 use App\Services\Calculations\ProceduralLayerGlobalConformityScoreCalculator;
@@ -23,7 +26,7 @@ class StatisticsService
     public function __construct()
     {
         $systemRepository = new SystemRepository();
-
+       $missionRepository=new MissionRepository();
         $this->calculators = [
             'app_conf_score' => new AppScoreConformityCalculator($systemRepository, new DefaultStatusWeightStrategy()),
             'db_conf_score' => new DBScoreConformityCalculator($systemRepository, new DefaultStatusWeightStrategy()),
@@ -32,8 +35,10 @@ class StatisticsService
             'physical_conf_score' => new PhysicalLayerGlobalConformityScoreCalculator($systemRepository, new DefaultStatusWeightStrategy()),
             'global_adv' => new GeneralAdvancementCalculator($systemRepository, new DefaultStatusWeightStrategy()),
             'app_report' => new SystemStatsCalculator($systemRepository, new DefaultStatusWeightStrategy()),
+            'missions_in_progress' => new AdminDashboardCalculator($missionRepository),
+            'manager_mission_report' => new ManagerReportCalculator($missionRepository),
 
-            // Tu peux en rajouter d'autres ici
+           
         ];
     }
 

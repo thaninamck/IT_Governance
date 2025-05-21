@@ -3,6 +3,7 @@
 namespace App\Repositories\V1;
 
 use App\Models\Mission;
+use DB;
 
 class MissionRepository
 {
@@ -356,4 +357,191 @@ public function getUserMissions($userId)
         $missions = Mission::forUser($userId)->get();
         return $missions;
 }
+
+
+
+public function getMissionsInprogress()
+{
+    $results = DB::select('
+        SELECT 
+            m.id,
+            m.mission_name AS mission,
+            m.start_date,
+            m.end_date,
+            c.commercial_name AS client,
+
+            COUNT(e.id) AS total_executions,
+            COUNT(*) FILTER (WHERE e.launched_at IS NOT NULL) AS launched_executions,
+            COUNT(*) FILTER (WHERE e.launched_at IS NULL) AS not_launched_executions,
+
+            COUNT(*) FILTER (
+                WHERE e.is_to_review = true AND e.is_to_validate = true
+            ) AS finalized_executions,
+
+            COUNT(*) FILTER (
+                WHERE e.is_to_review = false AND e.is_to_validate = false 
+            ) AS not_finalized_executions,
+
+            COUNT(*) FILTER (
+                WHERE stt.status_name = \'applied\'
+            ) AS effective_controls,
+
+            COUNT(*) FILTER (
+                WHERE stt.status_name IS DISTINCT FROM \'applied\'
+            ) AS noneffective_controls,
+
+            COUNT(*) FILTER (WHERE stt.status_name = \'not applied\') AS not_applied_controls,
+            COUNT(*) FILTER (WHERE stt.status_name = \'partially applied\') AS partially_applied_controls,
+            COUNT(*) FILTER (WHERE stt.status_name = \'not tested\') AS not_tested_controls,
+            COUNT(*) FILTER (WHERE stt.status_name = \'not applicable\') AS not_applicable_controls
+
+        FROM public.missions m 
+        JOIN public.clients c ON c.id = m.client_id
+        JOIN public.statuses st ON m.status_id = st.id
+        JOIN public.systems s ON s.mission_id = m.id
+        LEFT JOIN public.layers l ON s.id = l.system_id
+        JOIN public.executions e ON e.layer_id = l.id
+        LEFT JOIN public.statuses stt ON stt.id = e.status_id
+
+        WHERE st.status_name = \'en_cours\'
+
+        GROUP BY m.id, m.mission_name, m.start_date, m.end_date, c.commercial_name
+
+        ORDER BY m.id
+    ');
+
+    return $results;
+}
+public function getManagerMissionReport($missionId)
+{
+    return DB::select('
+       WITH execution_stats AS (
+    SELECT 
+        ex.id AS execution_id,
+        COUNT(r.id) AS total_remediations,
+        COUNT(CASE WHEN st.status_name = \'terminé\' THEN 1 END) AS finished_remediations,
+        COUNT(CASE WHEN st.status_name = \'en cours\' THEN 1 END) AS ongoing_remediations
+    FROM executions ex
+    JOIN layers l ON ex.layer_id = l.id
+    JOIN systems s ON l.system_id = s.id
+    LEFT JOIN remediations r ON r.execution_id = ex.id
+    LEFT JOIN statuses st ON r.status_id = st.id
+    WHERE s.mission_id = 4
+    GROUP BY ex.id
+)
+
+SELECT 
+    m.id AS mission_id,
+    m.mission_name AS mission,
+    m.start_date,
+    m.end_date,
+    c.commercial_name AS client,
+
+    -- Contrôles
+    (SELECT COUNT(*) FROM executions ex
+     JOIN layers l ON ex.layer_id = l.id
+     JOIN systems s ON l.system_id = s.id
+     WHERE s.mission_id = m.id) AS nbr_control,
+
+    (SELECT COUNT(*) FROM executions ex
+     JOIN layers l ON ex.layer_id = l.id
+     JOIN systems s ON l.system_id = s.id
+     WHERE s.mission_id = m.id AND ex.launched_at IS NOT NULL) AS control_commence,
+
+    (SELECT COUNT(*) FROM executions ex
+     JOIN layers l ON ex.layer_id = l.id
+     JOIN systems s ON l.system_id = s.id
+     WHERE s.mission_id = m.id AND ex.launched_at IS NULL) AS control_non_commence,
+
+    (SELECT COUNT(*) FROM executions ex
+     JOIN layers l ON ex.layer_id = l.id
+     JOIN systems s ON l.system_id = s.id
+     WHERE s.mission_id = m.id AND ex.launched_at IS NOT NULL 
+           AND ex.is_to_review = true AND ex.is_to_validate = true) AS controls_finalises,
+
+    (SELECT COUNT(*) FROM executions ex
+     JOIN layers l ON ex.layer_id = l.id
+     JOIN systems s ON l.system_id = s.id
+     WHERE s.mission_id = m.id  
+           AND (ex.is_to_review = false OR ex.is_to_validate = false)) AS controls_non_finalises,
+
+    (SELECT COUNT(*) FROM executions ex
+     JOIN layers l ON ex.layer_id = l.id
+     JOIN systems s ON l.system_id = s.id
+     JOIN statuses st ON ex.status_id = st.id
+     WHERE s.mission_id = m.id AND ex.launched_at IS NOT NULL AND st.status_name = \'applied\') AS controls_effectifs,
+
+    (SELECT COUNT(*) FROM executions ex
+     JOIN layers l ON ex.layer_id = l.id
+     JOIN systems s ON l.system_id = s.id
+     JOIN statuses st ON ex.status_id = st.id
+     WHERE s.mission_id = m.id AND st.status_name != \'applied\') AS controls_ineffectifs,
+
+-- Exécutions par statut
+(SELECT COUNT(*) FROM executions ex
+ JOIN layers l ON ex.layer_id = l.id
+ JOIN systems s ON l.system_id = s.id
+ JOIN statuses st ON ex.status_id = st.id
+ WHERE s.mission_id = m.id AND st.status_name = \'not applied\') AS executions_not_applied,
+
+(SELECT COUNT(*) FROM executions ex
+ JOIN layers l ON ex.layer_id = l.id
+ JOIN systems s ON l.system_id = s.id
+ JOIN statuses st ON ex.status_id = st.id
+ WHERE s.mission_id = m.id AND st.status_name = \'partially applied\') AS executions_partially_applied,
+
+(SELECT COUNT(*) FROM executions ex
+ JOIN layers l ON ex.layer_id = l.id
+ JOIN systems s ON l.system_id = s.id
+ JOIN statuses st ON ex.status_id = st.id
+ WHERE s.mission_id = m.id AND st.status_name = \'not tested\') AS executions_not_tested,
+
+(SELECT COUNT(*) FROM executions ex
+ JOIN layers l ON ex.layer_id = l.id
+ JOIN systems s ON l.system_id = s.id
+ JOIN statuses st ON ex.status_id = st.id
+ WHERE s.mission_id = m.id AND st.status_name = \'not applicable\') AS executions_not_applicable,
+
+    -- Remédiations globales
+    (SELECT COUNT(*) FROM executions ex
+     JOIN layers l ON ex.layer_id = l.id
+     JOIN systems s ON l.system_id = s.id
+     JOIN remediations r ON r.execution_id = ex.id
+     WHERE s.mission_id = m.id) AS total_remediations,
+
+    (SELECT COUNT(*) FROM executions ex
+     JOIN layers l ON ex.layer_id = l.id
+     JOIN systems s ON l.system_id = s.id
+     JOIN remediations r ON r.execution_id = ex.id
+     JOIN statuses st ON r.status_id = st.id
+     WHERE s.mission_id = m.id AND st.status_name = \'en cours\') AS total_ongoing_remediations,
+
+    (SELECT COUNT(*) FROM executions ex
+     JOIN layers l ON ex.layer_id = l.id
+     JOIN systems s ON l.system_id = s.id
+     JOIN remediations r ON r.execution_id = ex.id
+     JOIN statuses st ON r.status_id = st.id
+     WHERE s.mission_id = m.id AND st.status_name = \'terminé\') AS total_finished_remediations,
+
+    -- Répartition par exécution en JSON
+    json_agg(json_build_object(
+        \'execution_id\', es.execution_id,
+        \'total_remediations\', es.total_remediations,
+        \'finished_remediations\', es.finished_remediations,
+        \'ongoing_remediations\', es.ongoing_remediations
+    )) AS repartition_par_execution
+
+FROM missions m
+JOIN clients c ON m.client_id = c.id
+LEFT JOIN execution_stats es ON TRUE
+WHERE m.id = ?
+GROUP BY m.id, m.mission_name, m.start_date, m.end_date, c.commercial_name;
+
+    ', [$missionId]);
+}
+
+
+
+
+
 }

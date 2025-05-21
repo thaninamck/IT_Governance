@@ -94,4 +94,9 @@ class RemediationRepository
         return $remediation;
     }
 
+    public function getRemediationsByExecution($executionId)
+{
+    return Remediation::where('execution_id', $executionId)->get();
+}
+
 }

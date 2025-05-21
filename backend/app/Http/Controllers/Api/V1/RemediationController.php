@@ -94,6 +94,15 @@ class RemediationController extends BaseController
             return $this->sendError("Error while retrieving remediation status options", ['error' => $e->getMessage()], 500);
         }
     }
+    public function getRemediationsByExecution($mission,$execution)
+    {
+        try {
+            $data = $this->remediationService->getRemediationsByExecution($execution);
+            return $this->sendResponse($data, "remediations  retrieved successfully", 200);
+        } catch (\Exception $e) {
+            return $this->sendError("Error while retrieving remediation status options", ['error' => $e->getMessage()], 500);
+        }
+    }
     public function getAllRemediationsByExecution($executionId):JsonResponse
     {
         try{

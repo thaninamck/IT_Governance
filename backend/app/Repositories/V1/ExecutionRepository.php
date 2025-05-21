@@ -1017,4 +1017,60 @@ GROUP BY
             ])
             ->get();
     }
+
+
+    public function getEffectiveExecutionsByMission($id)
+{
+    $results = DB::select('
+        SELECT 
+            cnt.code,
+            COALESCE(NULLIF(e.cntrl_modification, \'\'), cnt.description) AS description,
+            e.control_owner AS owner,
+            stt.status_name AS status,
+            e.id AS id,
+            l.name AS layer,
+            CONCAT(u.first_name, \' \', u.last_name) AS testeur
+        FROM public.missions m 
+        JOIN public.systems s ON s.mission_id = m.id
+        LEFT JOIN public.layers l ON s.id = l.system_id
+        JOIN public.executions e ON e.layer_id = l.id
+        LEFT JOIN public.statuses stt ON stt.id = e.status_id
+        JOIN public.step_executions ON step_executions.execution_id = e.id
+        JOIN public.step_test_scripts ON step_test_scripts.id = step_executions.step_id
+        JOIN public.controls cnt ON cnt.id = step_test_scripts.control_id
+        JOIN public.users u ON u.id = e.user_id
+        WHERE stt.status_name = \'applied\' AND m.id = ?
+        ORDER BY m.id
+    ', [$id]);
+
+    return $results;
+}
+public function getIneffectiveExecutionsByMission($id)
+{
+    $results = DB::select('
+        SELECT 
+            cnt.code,
+            COALESCE(NULLIF(e.cntrl_modification, \'\'), cnt.description) AS description,
+            e.control_owner AS owner,
+            stt.status_name AS status,
+            l.name AS layer,
+             e.id AS id,
+            CONCAT(u.first_name, \' \', u.last_name) AS testeur
+        FROM public.missions m 
+        JOIN public.systems s ON s.mission_id = m.id
+        LEFT JOIN public.layers l ON s.id = l.system_id
+        JOIN public.executions e ON e.layer_id = l.id
+        LEFT JOIN public.statuses stt ON stt.id = e.status_id
+        JOIN public.step_executions ON step_executions.execution_id = e.id
+        JOIN public.step_test_scripts ON step_test_scripts.id = step_executions.step_id
+        JOIN public.controls cnt ON cnt.id = step_test_scripts.control_id
+        JOIN public.users u ON u.id = e.user_id
+        WHERE stt.status_name IS DISTINCT FROM \'applied\'  AND stt.status_name IS NOT NULL 
+
+        AND m.id = ?
+        ORDER BY m.id
+    ', [$id]);
+
+    return $results;
+}
 }

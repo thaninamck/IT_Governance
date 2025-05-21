@@ -22,7 +22,9 @@ class RemediationService
     {
         return $this->statusRepository->getRemediationStatusOptions();
     }
-
+ public function getRemediationsByExecution($executionid){
+    return $this->remediationRepository->getRemediationsByExecution($executionid);
+ }
     public function closeRemediation(int $id):Remediation
     {
         return $this->remediationRepository->closeRemediation($id);
