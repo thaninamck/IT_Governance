@@ -1012,7 +1012,7 @@ function Matrix({
     <>
       <div className="flex items-center justify-start mb-6" />
 
-      {user?.role === "manageur"  &&(
+      {((user?.role !== "manager" || user?.role === "admin") && unlockModification) &&(
         <div className="flex flex-wrap items-center justify-between gap-4 bg-white border border-gray-200 shadow-md rounded-xl px-6 py-4 mx-4 mb-6">
           {/* Owner */}
           <div className="flex items-center gap-2">
@@ -1091,7 +1091,7 @@ function Matrix({
 
       {/* Actions (Suppression / Modification) */}
       <div className="flex justify-end mx-4 gap-3">
-        {selectedRows.length > 0 && (
+        {(selectedRows.length > 0 && unlockModification) && (
           <button
             className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 flex items-center gap-2 transition"
             onClick={
