@@ -424,9 +424,9 @@ public function getManagerMissionReport($missionId)
     FROM executions ex
     JOIN layers l ON ex.layer_id = l.id
     JOIN systems s ON l.system_id = s.id
-    LEFT JOIN remediations r ON r.execution_id = ex.id
-    LEFT JOIN statuses st ON r.status_id = st.id
-    WHERE s.mission_id = 4
+     JOIN remediations r ON r.execution_id = ex.id
+     JOIN statuses st ON r.status_id = st.id
+    WHERE s.mission_id = ?
     GROUP BY ex.id
 )
 
@@ -442,6 +442,12 @@ SELECT
      JOIN layers l ON ex.layer_id = l.id
      JOIN systems s ON l.system_id = s.id
      WHERE s.mission_id = m.id) AS nbr_control,
+
+(SELECT COUNT(DISTINCT ex.id) FROM executions ex
+     JOIN layers l ON ex.layer_id = l.id
+     JOIN systems s ON l.system_id = s.id
+	 JOIN remediations re ON ex.id=re.execution_id
+     WHERE s.mission_id = m.id) AS nbr_control_with_actions,
 
     (SELECT COUNT(*) FROM executions ex
      JOIN layers l ON ex.layer_id = l.id

@@ -29,6 +29,7 @@ class ManagerReportCalculator implements CalculationServiceInterface
         'end_date' => $first['end_date'] ?? null,
         'client' => $first['client'] ?? null,
         'nbrControl' => $first['nbr_control'] ?? 0,
+        'nbrControlWithActions' => $first['nbr_control_with_actions'] ?? 0,
         'controlCommencé' => $first['control_commence'] ?? 0,
         'controlNonCommencé' => $first['control_non_commence'] ?? 0,
         'controlEffectif' => $first['controls_effectifs'] ?? 0,

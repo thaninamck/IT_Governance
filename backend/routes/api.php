@@ -97,12 +97,8 @@ Route::middleware(['auth:sanctum', AdminMiddleware::class])
             Route::put('/refuseRequestStatus/{id}', 'RefuseRequestStatus');
             Route::get('/missions/getrequeststatusmission', 'getRequestStatusForMissions');
         });
-    });
 
 
-Route::middleware(['auth:sanctum', AdminMiddleware::class])
-    ->prefix('v1')
-    ->group(function () {
         Route::controller(UserController::class)->group(function () {
             Route::get('/users', 'index');
             Route::get('/grades', 'getGrades');
@@ -118,7 +114,6 @@ Route::middleware(['auth:sanctum', AdminMiddleware::class])
             Route::post('/insert-users', 'storeMultiple');
         });
 
-
         // Clients
         Route::controller(ClientController::class)->group(function () {
             Route::get('/getclients', 'index');
@@ -129,11 +124,13 @@ Route::middleware(['auth:sanctum', AdminMiddleware::class])
         });
         Route::controller(MissionController::class)->group(function () {
             Route::get('/dashboard', 'getMissionsInprogress'); //done
-
+    
         });
         Route::controller(ExecutionController::class)->group(function () {
             Route::get('/dashboard/missions/{mission}/effective-controls', 'getEffectiveExecutionsByMission'); //done
             Route::get('/dashboard/missions/{mission}/ineffective-controls', 'getineffectiveExecutionsByMission'); //done
+            Route::get('/dashboard/missions/{mission}/began-controls', 'getBeganExecutionsByMission'); //done
+            Route::get('/dashboard/missions/{mission}/unbegan-controls', 'getUnbeganExecutionsByMission'); //done
 
         });
         Route::controller(MissionController::class)->group(function () {
@@ -142,15 +139,23 @@ Route::middleware(['auth:sanctum', AdminMiddleware::class])
         });
         Route::controller(ExecutionController::class)->group(function () {
             Route::get('/dashboard/missions/{mission}/ineffective-controls', 'getIneffectiveExecutionsByMission');
-    
+
         });
+
     });
 
-   
+
+
+
+
+
+
+
+
 
 //**********************************************************Manager****************************************************************
-    
-   
+
+
 
 Route::middleware(['auth:sanctum', ManagerMiddleware::class])
     ->prefix('v1')
@@ -173,19 +178,19 @@ Route::middleware(['auth:sanctum', ManagerMiddleware::class])
 
         //MissionController Routes
         Route::controller(MissionController::class)->group(function () {
-           // Route::get('/missions/{mission}/report', 'getMissionReport');
-           // Route::get('/missions/systems/{app}/system-report', 'getSystemReport');
+            // Route::get('/missions/{mission}/report', 'getMissionReport');
+            // Route::get('/missions/systems/{app}/system-report', 'getSystemReport');
             Route::put('/missions/{mission}/requestCloseMission', 'RequestCloseMission');
 
             Route::get('/missions/{mission}/dsp-report', 'getMissionReport');
             Route::get('/missions/{mission}/systems/{app}/system-report', 'getSystemReport');
             Route::get('/missions/{mission}/report', 'getManagerMissionReport'); //done
-
+    
         });
         Route::controller(RemediationController::class)->group(function () {
             Route::get('/missions/{mission}/report/executions/{execution}', 'getRemediationsByExecution'); // done
-           
-            
+    
+
         });
 
         Route::prefix('v1')->group(function () {
@@ -193,19 +198,28 @@ Route::middleware(['auth:sanctum', ManagerMiddleware::class])
                 Route::post('/createowner', 'store');
             });
         });
-            Route::controller(SystemController::class)->group(function () {
-                Route::post('/mission/{mission}/createsystem', 'storeSystemForMission');
-                Route::put('/missions/{mission}/updatesystemId/{id}', 'updateSystem');
-                Route::delete('/missions/{mission}/deletesystemId/{id}', 'deleteSystem');
-            });
-      
-       
+        Route::controller(SystemController::class)->group(function () {
+            Route::post('/mission/{mission}/createsystem', 'storeSystemForMission');
+            Route::put('/missions/{mission}/updatesystemId/{id}', 'updateSystem');
+            Route::delete('/missions/{mission}/deletesystemId/{id}', 'deleteSystem');
+        });
+
+
     });
 // Route::post('/insert-executions', [ExecutionController::class, 'createExecutions'])->middleware(ManagerMiddleware::class,'auth:sanctum');
+Route::controller(MissionController::class)->group(function () {
+    // Route::get('/missions/{mission}/report', 'getMissionReport');
+    // Route::get('/missions/systems/{app}/system-report', 'getSystemReport');
+    Route::put('/missions/{mission}/requestCloseMission', 'RequestCloseMission');
 
+    Route::get('/missions/{mission}/dsp-report', 'getMissionReport');
+    Route::get('/missions/{mission}/systems/{app}/system-report', 'getSystemReport');
+    Route::get('/missions/{mission}/report', 'getManagerMissionReport'); //done
+
+});
 // **************************************************Superviseur****************************************************************
-  
-   
+
+
 Route::middleware(['auth:sanctum', SupervisorMiddleware::class])
     ->prefix('v1')
     ->group(function () {
@@ -232,8 +246,8 @@ Route::middleware(['auth:sanctum', TesterMiddleware::class])
 
             Route::get('/missions/{mission}/{appId}/getexecutionsListForTesteurForCorrection', 'getExecutionsByMissionAndSystemAndTesterFiltered');
             Route::get('/missions/{mission}/{appId}/getexecutionsListForTesteur', 'getExecutionsByMissionAndSystemAndTester');
-            Route::get('/missions/{mission}/executions',  'getExecutionsByMission'); // je pense pas que khdemt biha
-
+            Route::get('/missions/{mission}/executions', 'getExecutionsByMission'); // je pense pas que khdemt biha
+    
 
         });
         Route::controller(EvidenceController::class)->group(function () {
@@ -244,7 +258,7 @@ Route::middleware(['auth:sanctum', TesterMiddleware::class])
             Route::get('/missions/{mission}/members', 'getMembersByMission');
             Route::get('/mission/{mission}/getsystems', 'getSystemsByMissionID');
         });
-      
+
     });
 
 //**************************************Général **************************************************************************** */

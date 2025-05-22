@@ -39,6 +39,14 @@ class ExecutionService
     {
         return $this->executionRepository->getExecutionsByMission($missionId);
     }
+    public function getBeganExecutionsByMission($missionId)
+    {
+        return $this->executionRepository->getBeganExecutionsByMission($missionId);
+    }
+    public function getUnbeganExecutionsByMission($missionId)
+    {
+        return $this->executionRepository->getUnbeganExecutionsByMission($missionId);
+    }
     public function createComment($data){
         return $this->commentRepository->createComment($data);
 

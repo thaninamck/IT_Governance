@@ -69,7 +69,37 @@ class ExecutionController extends BaseController
     }
 
 
+    public function getBeganExecutionsByMission($mission)
+    {
+        try {
 
+            $executions = $this->executionService->getBeganExecutionsByMission($mission);
+           
+
+            return $this->sendResponse(
+                $executions,
+                'Liste des exécutions récupérée avec succès.'
+            );
+        } catch (\Exception $e) {
+            return $this->sendError('Erreur lors de la récupération des exécutions.', ['error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function getUnbeganExecutionsByMission($mission)
+    {
+        try {
+
+            $executions = $this->executionService->getUnbeganExecutionsByMission($mission);
+           
+
+            return $this->sendResponse(
+                $executions,
+                'Liste des exécutions récupérée avec succès.'
+            );
+        } catch (\Exception $e) {
+            return $this->sendError('Erreur lors de la récupération des exécutions.', ['error' => $e->getMessage()], 500);
+        }
+    }
 
 
     /**
