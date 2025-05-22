@@ -33,8 +33,8 @@ class AdminDashboardCalculator implements CalculationServiceInterface
            
             'controlCommencé' => [
                 'pourcentageTotale' => (string) round(($m->launched_executions / $totalExec) * 100),
-                'pourcentageFinalisé' => (string) round(($m->finalized_executions / $totalExec) * 100),
-                'pourcentageNonFinalisé' => (string) round(($m->not_finalized_executions / $totalExec) * 100),
+                'pourcentageFinalisé' => $m->finalized_executions ,
+                'pourcentageNonFinalisé' => $m->not_finalized_executions ,
             ],
             'controlNonCommencé' => (string) round(($m->not_launched_executions / $totalExec) * 100),
             'controlEffectif' => (string) round(($m->effective_controls / max(1, $totalCtrl)) * 100),
