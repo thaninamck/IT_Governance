@@ -433,7 +433,7 @@ public function getManagerMissionReport($missionId)
 	 JOIN step_test_scripts ON step_test_scripts.id = step_executions.step_id
 	 JOIN controls ON controls.id = step_test_scripts.control_id
     WHERE s.mission_id = ?
-    GROUP BY ex.id
+    GROUP BY ex.id, controls.code
 )
 
 SELECT 
@@ -539,6 +539,7 @@ SELECT
     json_agg(json_build_object(
         \'execution_id\', es.execution_id,
         \'control_code\',es.controlCode,
+
         \'total_remediations\', es.total_remediations,
         \'finished_remediations\', es.finished_remediations,
         \'ongoing_remediations\', es.ongoing_remediations
