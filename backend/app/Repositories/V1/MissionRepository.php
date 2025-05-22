@@ -388,7 +388,7 @@ public function getMissionsInprogress()
             ) AS effective_controls,
 
             COUNT(*) FILTER (
-                WHERE stt.status_name IS  DISTINCT FROM \'applied\'  
+                WHERE stt.status_name IS  DISTINCT FROM \'applied\'  )
 
             COUNT(*) FILTER (WHERE stt.status_name = \'not applied\') AS not_applied_controls,
             COUNT(*) FILTER (WHERE stt.status_name = \'partially applied\') AS partially_applied_controls,
