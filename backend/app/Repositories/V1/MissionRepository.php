@@ -375,11 +375,11 @@ public function getMissionsInprogress()
             COUNT(*) FILTER (WHERE e.launched_at IS NULL) AS not_launched_executions,
 
             COUNT(*) FILTER (
-                WHERE e.is_to_review = true AND e.is_to_validate = true
+                WHERE e.is_to_review = true AND e.is_to_validate = true  AND e.launched_at IS NOT NULL
             ) AS finalized_executions,
 
             COUNT(*) FILTER (
-                WHERE e.is_to_review = false AND e.is_to_validate = false 
+                WHERE e.is_to_review = false AND e.is_to_validate = false AND e.launched_at IS NOT NULL
             ) AS not_finalized_executions,
 
             COUNT(*) FILTER (
