@@ -21,6 +21,7 @@ import {
 } from "@mui/material";
 import SearchBar from "../SearchBar";
 import NotificationPopup from "../Notification/NotificationPopup";
+import { useProfile } from "../../Context/ProfileContext";
 
 function Matrix({
   data,
@@ -61,7 +62,7 @@ function Matrix({
   const [owner, setOwner] = useState("");
   const [controlModified, setControlModified] = useState(false);
   const [riskModified, setRiskModified] = useState(false);
-
+const {profile}=useProfile();
   const transformData = (data) => {
     console.warn("dattaaaaa", data);
     const result = [];
@@ -1012,7 +1013,7 @@ function Matrix({
     <>
       <div className="flex items-center justify-start mb-6" />
 
-      {((user?.role !== "manager" || user?.role === "admin") && unlockModification) &&(
+      {((profile === "manager" || user?.role === "admin") && unlockModification) &&(
         <div className="flex flex-wrap items-center justify-between gap-4 bg-white border border-gray-200 shadow-md rounded-xl px-6 py-4 mx-4 mb-6">
           {/* Owner */}
           <div className="flex items-center gap-2">
