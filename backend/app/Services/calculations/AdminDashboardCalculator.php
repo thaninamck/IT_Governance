@@ -32,7 +32,7 @@ class AdminDashboardCalculator implements CalculationServiceInterface
             'endDate' => $m->end_date,
            
             'controlCommencé' => [
-                'pourcentageTotale' => (string) round(($m->launched_executions / $totalExec) * 100),
+                'nbrTotale' => $m->launched_executions ,
                 'nbrFinalisé' => $m->finalized_executions ,
                 'nbrNonFinalisé' => $m->not_finalized_executions ,
             ],

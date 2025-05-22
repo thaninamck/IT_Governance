@@ -12,9 +12,6 @@ const Workplan = () => {
   const location = useLocation();
   const {missionId} = useParams();
   useWorkplan(missionId);
-  useEffect(() => {
-    console.log("misionid",missionId)
-  }, [missionId])
   
   const [appDuplicationDialogOpen, setappDuplicationDialogOpen] =
     useState(false);
@@ -634,6 +631,7 @@ const Workplan = () => {
       <div className="bg-white  min-h-screen p-2 text-center">
         <Matrix
           data={dataStructure}
+          user={user}
           handleSaveexecutions={handleSaveexecutions}
           fromScopeModification={false}
           unlockModification={true}

@@ -219,15 +219,23 @@ function transformExecutionsToAppStructure(executions) {
          {(user?.role === 'admin' || dataFormat.profileName==='manager') && ( 
           <div className="flex justify-end pr-5 gap-4 mb-2">
             
-            {!modifActivated && (
+            {!modifActivated ? (
               <button
               onClick={handleActivateModification}
               className="px-4 py-2 border-none bg-[var(--blue-menu)] text-white text-sm font-medium rounded"
             >
               Modifier
             </button>
-            )
+            ):
+            (
+              <button
+              onClick={() => setModifActivated(false)}
 
+              className="px-4 py-2 border-none bg-[var(--blue-menu)] text-white text-sm font-medium rounded"
+            >
+              Annuler
+            </button>
+            )
             }
             <button
               onClick={handleAddMatrix}
