@@ -539,6 +539,7 @@ SELECT
     json_agg(json_build_object(
         \'execution_id\', es.execution_id,
         \'control_code\',es.controlCode,
+        
         \'total_remediations\', es.total_remediations,
         \'finished_remediations\', es.finished_remediations,
         \'ongoing_remediations\', es.ongoing_remediations
