@@ -43,6 +43,7 @@ class ManagerReportCalculator implements CalculationServiceInterface
         'executions' => collect($executions)->map(function ($item) {
             return [
                 'execution_id' => $item['execution_id'],
+                'control_code' => $item['control_code'],
                 'remediations' => [
                     'en_cours' => $item['ongoing_remediations'],
                     'termine' => $item['finished_remediations'],

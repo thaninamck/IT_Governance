@@ -98,17 +98,8 @@ class RemediationRepository
 {
     return Remediation::with('status')
         ->where('execution_id', $executionId)
-        ->get()
-        ->map(function ($remediation) {
-            return [
-                'id' => $remediation->id,
-                'action_name' => $remediation->action_name,
-                'description' => $remediation->description,
-                'start_date' => $remediation->start_date,
-                'end_date' => $remediation->end_date,
-                'status_name' => $remediation->status?->status_name,
-            ];
-        });
+        ->get();
+        
 }
 
 

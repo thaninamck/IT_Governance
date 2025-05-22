@@ -420,14 +420,18 @@ public function getManagerMissionReport($missionId)
        WITH execution_stats AS (
     SELECT 
         ex.id AS execution_id,
+        controls.code AS controlCode,
         COUNT(r.id) AS total_remediations,
         COUNT(CASE WHEN st.status_name = \'terminé\' THEN 1 END) AS finished_remediations,
         COUNT(CASE WHEN st.status_name = \'en cours\' THEN 1 END) AS ongoing_remediations
     FROM executions ex
-    JOIN layers l ON ex.layer_id = l.id
+   JOIN layers l ON ex.layer_id = l.id
     JOIN systems s ON l.system_id = s.id
      JOIN remediations r ON r.execution_id = ex.id
      JOIN statuses st ON r.status_id = st.id
+	 JOIN step_executions ON step_executions.execution_id = ex.id
+	 JOIN step_test_scripts ON step_test_scripts.id = step_executions.step_id
+	 JOIN controls ON controls.id = step_test_scripts.control_id
     WHERE s.mission_id = ?
     GROUP BY ex.id
 )
@@ -534,6 +538,7 @@ SELECT
     -- Répartition par exécution en JSON
     json_agg(json_build_object(
         \'execution_id\', es.execution_id,
+        \'control_code\',es.controlCode,
         \'total_remediations\', es.total_remediations,
         \'finished_remediations\', es.finished_remediations,
         \'ongoing_remediations\', es.ongoing_remediations
