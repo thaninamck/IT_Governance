@@ -15,7 +15,7 @@ function RemediationActionData({ data, getColor }) {
     { field: "description", headerName: "Description", width: 300, expandable: true },
     { field: "owner_cntct", headerName: "Owner", width: 230, expandable: true },
     { field: "fllow_up", headerName: "Suivi", width: 270, expandable: true },
-    { field: "status_id", headerName: "Status", width: 100, expandable: true },
+    { field: "status_name", headerName: "Status", width: 100, expandable: true },
   ]
 
   // const ControlActionData = [

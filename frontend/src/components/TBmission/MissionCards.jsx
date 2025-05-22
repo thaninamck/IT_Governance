@@ -11,7 +11,7 @@ import BarProgressComponent from './BarProgressComponent';
 dayjs.extend(duration);
 
 function MissionCards({ data,size = 'medium'}) {
-
+ console.log('dta dashbord cards', data)
     const  controlData=[
         {id:"1", nom:"Commencé",pourcentage:`${data?.controlCommencé?.pourcentageTotale}`},
         {id:"2", nom:"Nom Commencé",pourcentage:`${data?.controlNonCommencé}`},
@@ -26,9 +26,12 @@ function MissionCards({ data,size = 'medium'}) {
     };
     
     // Données sur les contrôles
-    const total = data.controls?.length || 0;
-    const done = data.controls?.filter(c => c.status === 'done').length || 0;
+    const total = data.nbrControl || 0;
+    console.log("totla control",total)
+    const done = data.controlCommencé?.pourcentageFinalisé || 0;
+    console.log("done control",done)
     const progressPercent = total > 0 ? Math.round((done / total) * 100) : 0;
+    console.log("progress ",progressPercent)
     const sizeStyles = {
         small: {
             text: 'text-[12px]',
