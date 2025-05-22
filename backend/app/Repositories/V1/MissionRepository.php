@@ -545,7 +545,7 @@ LEFT JOIN execution_stats es ON TRUE
 WHERE m.id = ?
 GROUP BY m.id, m.mission_name, m.start_date, m.end_date, c.commercial_name;
 
-    ', [$missionId]);
+    ', [$missionId,$missionId]);
 }
 
 
