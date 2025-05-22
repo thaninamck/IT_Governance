@@ -14,7 +14,7 @@ function RemediationActionData({ data, getColor }) {
     { field: "action_name", headerName: "Action", width: 200, expandable: true },
     { field: "description", headerName: "Description", width: 300, expandable: true },
     { field: "owner_cntct", headerName: "Owner", width: 230, expandable: true },
-    { field: "fllow_up", headerName: "Suivi", width: 270, expandable: true },
+    { field: "follow_up", headerName: "Suivi", width: 270, expandable: true },
     { field: "status_name", headerName: "Status", width: 100, expandable: true },
   ]
 
@@ -64,7 +64,7 @@ function RemediationActionData({ data, getColor }) {
         {data.executions?.map((item) => (
           <div key={item.execution_id} className='flex flex-col px-4'>
             <div onClick={() => toggleDropdown(item.execution_id)}  className={`border border-black cursor-pointer border-l-4 border-l-orange-600 flex justify-between items-center py-2 lg:px-4 gap-4  sm:pl-0 rounded shadow-sm hover:shadow-md transition duration-200 ${getColor(item.nom)}`}>
-              <p className='   text-sm font-medium truncate'>{item.execution_id}</p>
+              <p className='   text-sm font-medium truncate'>{item.control_code}</p>
               <div className='flex  justify-around gap-14 flex-wrap'>
                 <div className='flex items-center gap-2'>
                   <p className='text-xs sm:text-sm font-medium text-center'>{item.remediations.total} Actions</p>
