@@ -48,13 +48,15 @@ const Workplan = () => {
     const savedApp = JSON.parse(window.localStorage.getItem("application"));
     if (!savedApp || !savedApp.id) return;
   
-    setApplication(savedApp); // remettre dans le state
+    setApplication(savedApp);
   
     const reconstructedNodes = [];
     const reconstructedEdges = [];
   
     const appX = 335;
     const appY = 166;
+    const GAP_X = 500;
+    const GAP_Y = 220;
   
     // Node application
     reconstructedNodes.push({
@@ -65,8 +67,8 @@ const Workplan = () => {
     });
   
     savedApp.layers?.forEach((layer, layerIndex) => {
-      const layerX = appX + 500;
-      const layerY = appY + layerIndex * 100;
+      const layerX = appX + GAP_X;
+      const layerY = appY + layerIndex * GAP_Y;
   
       // Node layer
       reconstructedNodes.push({
@@ -75,7 +77,7 @@ const Workplan = () => {
         position: { x: layerX, y: layerY },
         data: {
           label: layer.name,
-          onRiskDrop: (event) => onRiskDrop(event, layer.id), // garde l'interaction
+          onRiskDrop: (event) => onRiskDrop(event, layer.id),
         },
       });
   
@@ -89,8 +91,8 @@ const Workplan = () => {
   
       layer.risks?.forEach((risk, riskIndex) => {
         const riskNodeId = `${layer.id}_${risk.id}`;
-        const riskX = appX + 100;
-        const riskY = appY + 200 + riskIndex * 100;
+        const riskX = layerX + 400;
+        const riskY = layerY + riskIndex * 100;
   
         // Node risk
         reconstructedNodes.push({
@@ -99,8 +101,7 @@ const Workplan = () => {
           position: { x: riskX, y: riskY },
           data: {
             riskData: risk,
-            onControlDrop: (event) =>
-              onControlDrop(event, risk.id, layer.id),
+            onControlDrop: (event) => onControlDrop(event, risk.id, layer.id),
           },
         });
   
@@ -114,7 +115,7 @@ const Workplan = () => {
   
         risk.controls?.forEach((control, ctrlIndex) => {
           const controlNodeId = `${layer.id}_${risk.id}_${control.id}_${ctrlIndex}`;
-          const controlX = riskX + 500;
+          const controlX = riskX + 400;
           const controlY = riskY + ctrlIndex * 100;
   
           // Node control
@@ -136,10 +137,10 @@ const Workplan = () => {
       });
     });
   
-    // Appliquer les résultats
     setAppNodes(reconstructedNodes);
     setEdges(reconstructedEdges);
   }, []);
+  
   
   // Sauvegarder l'état à chaque modification
   useEffect(() => {
@@ -333,26 +334,25 @@ const Workplan = () => {
 
   const onRiskDrop = (event, layerId) => {
     event.preventDefault();
-    const risksData = JSON.parse(
-      event.dataTransfer.getData("application/json")
-    );
-
+    const risksData = JSON.parse(event.dataTransfer.getData("application/json"));
+  
     if (!Array.isArray(risksData)) {
       console.warn("Dropped data is not an array of risks");
       return;
     }
+  
     risksData.forEach((riskData, index) => {
       const isRisk = riskData && "idRisk" in riskData;
       if (!isRisk) {
         setstartWithriskDialogOpen(true);
-        return; // Bloque l'ajout
+        return;
       }
-
+  
       if (!layerId || !riskData) {
         console.warn("Layer ID or Risk Data not found");
         return;
       }
-
+  
       addRiskToLayer(
         layerId,
         riskData.idRisk,
@@ -360,12 +360,12 @@ const Workplan = () => {
         riskData.description,
         riskData.code
       );
-      const x = event.clientX;
-      const y = event.clientY + index * 50; // Adjust position for each risk
-
-      // Créer le nœud du risque
+  
+      const x = event.clientX + 900; // Décalé à droite de la couche
+      const y = event.clientY + index * 100; // Empilement vertical
+  
       const newRiskNode = {
-        id: layerId + "_" + riskData.idRisk,
+        id: `${layerId}_${riskData.idRisk}`,
         type: "risk",
         position: { x, y },
         data: {
@@ -374,20 +374,20 @@ const Workplan = () => {
             onControlDrop(event, riskData.idRisk, layerId),
         },
       };
-
-      // Créer l'edge entre la couche et le risque
+  
       const newEdge = {
-        id: `e-${layerId}-${layerId + "_" + riskData.idRisk}`,
+        id: `e-${layerId}-${layerId}_${riskData.idRisk}`,
         source: layerId,
-        target: layerId + "_" + riskData.idRisk,
+        target: `${layerId}_${riskData.idRisk}`,
         label: "",
       };
-
-      // Mettre à jour les states
+  
       setAppNodes((prevNodes) => [...prevNodes, newRiskNode]);
       setEdges((prevEdges) => [...prevEdges, newEdge]);
     });
   };
+  
+  
 
   const onControlDragStart = (event, item) => {
     event.dataTransfer.setData("application/json", JSON.stringify(item));
@@ -399,49 +399,45 @@ const Workplan = () => {
     let controlsData = JSON.parse(
       event.dataTransfer.getData("application/json")
     );
-
+  
     console.log("Dropped data:", controlsData);
-
-    // Ensure controlsData is an array
+  
     if (!Array.isArray(controlsData)) {
       controlsData = [controlsData];
     }
-
+  
     controlsData.forEach((controlData, index) => {
       const isCntrl = controlData && "idCntrl" in controlData;
       if (!isCntrl) {
         setstartWithCntrlDialogOpen(true);
-        return; // Bloque l'ajout
+        return;
       }
-
+  
       if (!riskId || !controlData) {
         console.warn("Risk ID or Control Data not found");
         return;
       }
-
-      const x = event.clientX;
-      const y = event.clientY + index * 50; // Adjust position for each control
-
-      // Créer le nœud du contrôle
+  
+      const x = event.clientX + 1200; // à droite du risque
+      const y = event.clientY + index * 100; // empilé verticalement
+  
       const newControlNode = {
-        id: `${layerId}_${riskId}_${controlData.idCntrl}_${index}`, // Ensure unique ID
+        id: `${layerId}_${riskId}_${controlData.idCntrl}_${index}`,
         type: "cntrl",
-        position: { x: x + 500, y: y + 5 * 100 },
+        position: { x, y },
         data: { controlData },
       };
-
-      // Créer l'edge entre le risque et le contrôle
+  
       const newEdge = {
-        id: `e-${riskId}-${layerId}_${riskId}_${controlData.idCntrl}_${index}`, // Ensure unique ID
+        id: `e-${riskId}-${layerId}_${riskId}_${controlData.idCntrl}_${index}`,
         source: `${layerId}_${riskId}`,
         target: `${layerId}_${riskId}_${controlData.idCntrl}_${index}`,
         label: "",
       };
-
-      // Mettre à jour les states
+  
       setAppNodes((prevNodes) => [...prevNodes, newControlNode]);
       setEdges((prevEdges) => [...prevEdges, newEdge]);
-      console.log(appNodes);
+  
       addControlToRisk(
         layerId,
         riskId,
@@ -455,32 +451,32 @@ const Workplan = () => {
       );
     });
   };
+  
 
   const onDrop = (event) => {
     event.preventDefault();
     const data = JSON.parse(event.dataTransfer.getData("application/json"));
-
+  
     // Vérifier si une application existe déjà
     const isApp = data && "layers" in data && Array.isArray(data.layers);
     const hasApplication = appNodes.some((node) => node.type === "app");
     if (hasApplication && !appEmpty && isApp) {
-      //alert("Une application est déjà présente dans le Flow !");
-
       setappDuplicationDialogOpen(true);
-      //setExistedAppVerified(true);
-      return; // Bloque l'ajout
+      return;
     }
-
-    //console.log("Ajout de l'application :", data);
+  
     addApplicationWithLayers(
       data.id,
       data.description,
       data.layers,
       data.owner
     );
+  
     const x = event.clientX;
     const y = event.clientY;
-
+    const GAP_X = 500; // distance horizontale entre app et couches
+    const GAP_Y = 220; // distance verticale entre les couches
+  
     // Créer le node principal (l'application)
     const newAppNode = {
       id: data.id,
@@ -488,18 +484,18 @@ const Workplan = () => {
       position: { x, y },
       data: { label: data.description },
     };
-
+  
     // Créer les nodes pour chaque couche
     const layerNodes = data.layers.map((layer, index) => ({
       id: layer.id,
       type: "layer",
-      position: { x: x + 500, y: y + index * 100 },
+      position: { x: x + GAP_X, y: y + index * GAP_Y },
       data: {
         label: layer.name,
         onRiskDrop: (event) => onRiskDrop(event, layer.id),
       },
     }));
-
+  
     // Créer les edges entre l'application et ses couches
     const newEdges = data.layers.map((layer) => ({
       id: `e-${data.id}-${layer.id}`,
@@ -507,11 +503,12 @@ const Workplan = () => {
       target: layer.id,
       label: "",
     }));
-
+  
     // Mettre à jour les states
-    setAppNodes([newAppNode, ...layerNodes]); // Remplace plutôt qu'ajouter
+    setAppNodes([newAppNode, ...layerNodes]);
     setEdges(newEdges);
   };
+  
 
   const appSysNodes = [
     {
