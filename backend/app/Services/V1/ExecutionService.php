@@ -387,9 +387,13 @@ public function getexecutionReviewBySuperviseur($missionId)
 {
     return $this->executionRepository->getexecutionReviewBySuperviseur($missionId);
 }
-public function getAllExecutionReview($missionId,$appId)
+public function getAllExecutionReview($missionId)
 {
-    return $this->executionRepository->getAllExecutionReview($missionId,$appId);
+    return $this->executionRepository->getAllExecutionReview($missionId);
+}
+public function getAllExecutionReview1($missionId,$appId)
+{
+    return $this->executionRepository->getAllExecutionReview1($missionId,$appId);
 }
 public function getmissionReviewBySuperviseur($userId)
 {

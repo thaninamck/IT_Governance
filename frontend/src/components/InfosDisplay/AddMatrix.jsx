@@ -216,9 +216,15 @@ function transformExecutionsToAppStructure(executions) {
     ) : controleListe && controleListe.length > 0 ? (
       <>
         {/* Boutons Modifier + Ajouter */}
-         {(user?.role === 'admin' || dataFormat.profileName==='manager') && ( 
+         {(user?.role === 'admin' || (dataFormat?.userRole=== 'user' && dataFormat?.profileName ==='manager')) && ( 
           <div className="flex justify-end pr-5 gap-4 mb-2">
-            
+            <button
+              onClick={handleAddMatrix}
+              className="px-4 py-2 border-none bg-[var(--blue-menu)] text-white text-sm font-medium rounded"
+            >
+              Ajouter
+            </button>
+
             {!modifActivated ? (
               <button
               onClick={handleActivateModification}
@@ -237,12 +243,7 @@ function transformExecutionsToAppStructure(executions) {
             </button>
             )
             }
-            <button
-              onClick={handleAddMatrix}
-              className="px-4 py-2 border-none bg-[var(--blue-menu)] text-white text-sm font-medium rounded"
-            >
-              Ajouter
-            </button>
+            
           </div>
        )} 
 
@@ -265,7 +266,7 @@ function transformExecutionsToAppStructure(executions) {
           <p className="text-[var(--status-gray)] text-s">
             Aucune matrice ajoutée pour le moment
           </p>
-          {user?.role === 'admin' && (
+          {(user?.role === 'admin'|| (dataFormat?.userRole=== 'user' && dataFormat?.profileName ==='manager')) &&  (
             <button
               onClick={handleAddMatrix}
               className="px-4 py-2 border-none bg-[var(--blue-menu)] text-white text-sm font-medium rounded"

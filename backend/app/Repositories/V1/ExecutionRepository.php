@@ -809,7 +809,30 @@ GROUP BY
             ->get();
     }
     //admin
-    public function getAllExecutionReview($missionId, $appId)
+    public function getAllExecutionReview($missionId)
+    {
+        return Execution::with([
+            'user',
+            'user.participations.profile',
+            'status',
+            'layer',
+            'layer.system',
+            'layer.system.mission',
+            'coverage',
+            'steps.control'
+        ])
+            ->where(function ($query) {
+                $query->where('is_to_review', true)
+                    ->orWhere('is_to_validate', true);
+            })
+            ->whereHas('layer.system.mission', function ($query) use ($missionId) {
+                $query->where('id', $missionId);
+            })
+           
+            ->get();
+    }
+
+    public function getAllExecutionReview1($missionId, $appId)
     {
         return Execution::with([
             'user',

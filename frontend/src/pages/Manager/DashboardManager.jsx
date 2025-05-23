@@ -61,7 +61,7 @@ function DashboardManager() {
             { id: "2", nom: "Terminées", pourcentage: `${missionReportData?.actionTerminé}` },
             { id: "3", nom: "En cours", pourcentage: `${missionReportData?.actionEnCours}` }
         ];
-
+console.log("RemediationData",RemédiationData)
         return { progressPercent, controlData, statusControlData, RemédiationData };
     }, [missionData, missionReportData]);
 
@@ -90,6 +90,7 @@ function DashboardManager() {
             default: return 'bg-white';
         }
     };
+    console.log("mission report data ",missionReportData)
     return (
         <div className="flex">
             {user?.role === "admin" && viewMode === "admin" ? (

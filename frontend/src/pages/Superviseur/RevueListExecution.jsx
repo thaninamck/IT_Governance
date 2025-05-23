@@ -147,6 +147,7 @@ function RevueListExecution( {dataFormat}) {
         loadData();
     }, [dataFormat]);
     
+    console.log('revue mission data',revueMissionData)
 
     { loading && <p className="text-center mt-10">Chargement...</p> }
     { error && <p className="text-red-500 text-center mt-4">{error}</p> }

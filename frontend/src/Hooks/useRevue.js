@@ -59,12 +59,14 @@ const useRevue = (activeView,user) => {
     };
 
     const fetchRevueExecutionsForApp = async (appRevueData) => {
+        console.log('appRevueData',appRevueData)
         setLoading(true);
         try {
             let response;
 
         console.log('apprevue',appRevueData)
-                response = await api.get(`/revue/${appRevueData.missionId}/${appRevueData.id}/getAllExecutionReview`);
+                // response = await api.get(`/revue/${appRevueData.missionId}/${appRevueData.id}/getAllExecutionReview`);
+                response = await api.get(`/revue/${appRevueData.id}/getAllExecutionReview`);
                 console.log("admin",response.data)
           
 
