@@ -62,9 +62,9 @@ function DashboardAdmin() {
     // On génère 10 fausses cartes avec un index
     // const missions = Array.from({ length: TOTAL_CARDS }, (_, i) => i);
     
-    const totalPages = Math.ceil(missionData.length / itemsPerPage);
+    const totalPages = Math.ceil(missionData?.length / itemsPerPage);
     const startIndex = currentPage * itemsPerPage;
-    const currentMissions = missionData.slice(startIndex, startIndex + itemsPerPage);
+    const currentMissions = missionData?.slice(startIndex, startIndex + itemsPerPage);
 
     const startAutoScroll = (direction) => {
         if (intervalRef.current) return; // ne pas dupliquer les intervals
@@ -126,7 +126,7 @@ function DashboardAdmin() {
                    
                     <div className="mt-12 flex flex-wrap mb-8 justify-center gap-6 px-2 sm:px-4 md:px-4 lg:px-6 transition-all duration-500">
 
-                        {currentMissions.map((mission, index) => (
+                        {currentMissions?.map((mission, index) => (
                             <MissionCards data={mission} key={mission.id || index} size={cardsSize}  />
                         ))}
                     </div>

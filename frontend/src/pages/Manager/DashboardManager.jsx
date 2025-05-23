@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import SideBar from '../../components/sideBar/SideBar'
 import SideBarStdr from '../../components/sideBar/SideBarStdr'
 import HeaderBis from '../../components/Header/HeaderBis'
@@ -11,64 +11,69 @@ import Control from '../../components/TBmission/Control'
 import RemediationActionData from '../../components/TBmission/RemediationActionData'
 import MissionReport from './MissionReport'
 import { api } from '../../Api'
+import { useDashboard } from '../../Hooks/useDashboard'
 
 function DashboardManager() {
-
+   // const [missionIdData, setMissionIdData] = useState([]);
     const { user, viewMode } = useAuth();
     const location = useLocation();
+    const {
+        missionReportData,
+        loading,
+        fetchMissionReport,
+        executionData,
+        fetchExecutionData,
+        setSelectedExecution
+    } = useDashboard();
     const missionData = location.state?.missionData;
-    console.log('mm', missionData)
-    const pourcentageControlCommencé =  Math.round((missionData?.controlCommencé?.nbrTotale/missionData?.nbrControl)*100)
-    const total = missionData.nbrControl || 0;
-    const done = missionData.controlCommencé?.nbrFinalisé || 0;
-    const progressPercent = total > 0 ? Math.round((done / total) * 100) : 0;
+    const [activeView, setActiveView] = useState("DB_Standard");
 
-    const controlData = [
-        { id: "1", nom: "Commencé", pourcentage: `${pourcentageControlCommencé }` },
-        { id: "2", nom: "non Commencé", pourcentage: `${missionData.controlNonCommencé}` },
-        { id: "3", nom: "effective", pourcentage: `${missionData.controlEffectif}` },
-        { id: "4", nom: "ineffective", pourcentage: `${missionData.controlNonEffective.pourcentageTotale}` }
-    ]
-    const statusControlData = [
-        { id: "1", nom: "Appliad", pourcentage: `${missionData.controlEffectif}` },
-        { id: "2", nom: "Partially appliad", pourcentage: `${missionData.controlNonEffective.partiallyApp}` },
-        { id: "3", nom: "Not applied", pourcentage: `${missionData.controlNonEffective.notApp}` },
-        { id: "4", nom: "Not tested", pourcentage: `${missionData.controlNonEffective.notTested}` },
-        { id: "5", nom: "Not applicable", pourcentage: `${missionData.controlNonEffective.notApplicable}` }
-    ]
-
-    const [missionIdData, setMissionIdData] = useState([]);
-    const [loading, setLoading] = useState(true);
-
-    const fetchMissionIdDashboard = async () => {
-        try {
-            const response = await api.get(`/missions/${missionData.id}/report`); 
-            console.log('db manager mission',response.data)
-            setMissionIdData(response.data);
-        } catch (error) {
-            console.error("Erreur lors de la récupération des missions :", error);
-        } finally {
-            setLoading(false);
-        }
-    };
-
+    
     useEffect(() => {
-        fetchMissionIdDashboard();
-    }, []);
+        if (missionData?.id) {
+            fetchMissionReport(missionData.id);
+        }
+    }, [missionData?.id, fetchMissionReport]);
 
-    const RemédiationData = [
-        { id: "1", nom: "Action", pourcentage: `${missionIdData?.nbrAction}` },
-         { id: "2", nom: "Terminé", pourcentage: `${missionIdData?.actionTerminé}` },
-         { id: "3", nom: "En cours", pourcentage: `${missionIdData?.actionEnCours}` }
-    ]
-    // const remediationActionData = [
-    //     { id: "1", nom: "CTRL_987", NbrAction: "3", pourcentageTerminé: "20%", pourcentageEncours: "80%" },
-    //     { id: "2", nom: "CTRL_901", NbrAction: "7", pourcentageTerminé: "70%", pourcentageEncours: "30%" },
-    //     { id: "3", nom: "CTRL_320", NbrAction: "1", pourcentageTerminé: "0%", pourcentageEncours: "100%" },
-    //     { id: "4", nom: "CTRL_007", NbrAction: "9", pourcentageTerminé: "13%", pourcentageEncours: "87%" },
-    //     { id: "5", nom: "CTRL_097", NbrAction: "11", pourcentageTerminé: "20%", pourcentageEncours: "80%" },
-    //     { id: "6", nom: "CTRL_653", NbrAction: "20", pourcentageTerminé: "20%", pourcentageEncours: "80%" },
-    // ]
+    const { progressPercent, controlData, statusControlData, RemédiationData } = useMemo(() => {
+        if (!missionData || !missionReportData) return {};
+
+        const pourcentageControlCommencé = Math.round((missionData.controlCommencé?.nbrTotale / missionData?.nbrControl) * 100);
+        const total = missionData.nbrControl || 0;
+        const done = missionData.controlCommencé?.nbrFinalisé || 0;
+        const progressPercent = total > 0 ? Math.round((done / total) * 100) : 0;
+
+        const controlData = [
+            { id: "1", nom: "Commencé", pourcentage: `${pourcentageControlCommencé}` },
+            { id: "2", nom: "non Commencé", pourcentage: `${missionData.controlNonCommencé}` },
+            { id: "3", nom: "effective", pourcentage: `${missionData.controlEffectif}` },
+            { id: "4", nom: "ineffective", pourcentage: `${missionData.controlNonEffective.pourcentageTotale}` }
+        ];
+
+        const statusControlData = [
+            { id: "1", nom: "Appliad", pourcentage: `${missionData.controlEffectif}` },
+            { id: "2", nom: "Partially appliad", pourcentage: `${missionData.controlNonEffective.partiallyApp}` },
+            { id: "3", nom: "Not applied", pourcentage: `${missionData.controlNonEffective.notApp}` },
+            { id: "4", nom: "Not tested", pourcentage: `${missionData.controlNonEffective.notTested}` },
+            { id: "5", nom: "Not applicable", pourcentage: `${missionData.controlNonEffective.notApplicable}` }
+        ];
+
+        const RemédiationData = [
+            { id: "1", nom: "Action", pourcentage: `${missionReportData?.nbrAction}` },
+            { id: "2", nom: "Terminé", pourcentage: `${missionReportData?.actionTerminé}` },
+            { id: "3", nom: "En cours", pourcentage: `${missionReportData?.actionEnCours}` }
+        ];
+
+        return { progressPercent, controlData, statusControlData, RemédiationData };
+    }, [missionData, missionReportData]);
+
+    if (!missionData) {
+        return <div>Loading mission data...</div>;
+    }
+
+    if (loading || !missionReportData) {
+        return <div>Loading dashboard data...</div>;
+    }
     const getColor = (nom) => {
         switch (nom?.toLowerCase()) {
             case 'commencé': return 'bg-yellow-100';
@@ -87,7 +92,6 @@ function DashboardManager() {
             default: return 'bg-white';
         }
     };
-    const [activeView, setActiveView] = useState("DB_Standard");
     return (
         <div className="flex">
             {user?.role === "admin" && viewMode === "admin" ? (
@@ -141,14 +145,14 @@ function DashboardManager() {
                 </div>
 
                 {/*Control data*/}
-                <div className=' px-16'>
+                 <div className=' px-16'>
                     <Control data={controlData} statusControl={missionData} grid_cols='grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4' />
                 </div>
                 {/*status Control data*/}
-                <div className=' px-16 py-8'>
+                 <div className=' px-16 py-8'>
                     <h3 className="text-xl font-bold mb-4">Status Controles</h3>
-                    <Control data={statusControlData} statusControl={missionIdData} grid_cols='grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-2' />
-                </div>
+                    <Control data={statusControlData} statusControl={missionReportData} grid_cols='grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-2' />
+                </div> 
                 {/*Remeddiation data*/}
                 <div className='px-16 py-8'>
                     <h3 className="text-xl font-bold mb-4">Remédiation</h3>
@@ -167,7 +171,7 @@ function DashboardManager() {
                                             {item.pourcentage}
                                         </span>
                                     </div>
-                                    <span className='text-[12px]'>Répartie sur <strong>{missionIdData.nbrAction}</strong> controles</span>
+                                    <span className='text-[12px]'>Répartie sur <strong>{missionReportData.nbrControlWithActions}</strong> controles</span>
                                 </div>
                             ) : (
                                 <div
@@ -187,7 +191,7 @@ function DashboardManager() {
                 <div className='px-16 pb-4 mb-8 '>
                     <RemediationActionData 
                    // data={remediationActionData}
-                   data={missionIdData}
+                   data={missionReportData}
                      getColor={getColor} />
                 </div>
                 </>

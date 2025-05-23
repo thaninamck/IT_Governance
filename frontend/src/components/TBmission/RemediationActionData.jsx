@@ -4,9 +4,14 @@ import Table from '../Table'
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import CircularProgressbarComponent from './CircularProgressbarComponent';
 import { api } from '../../Api';
+import { useDashboard } from '../../Hooks/useDashboard';
 
 function RemediationActionData({ data, getColor }) {
-  console.log("lalal data", data)
+  const {
+    fetchControlActionData,
+    controlActionData,
+    controlActionLoading
+  } = useDashboard();
   const [openDropdowns, setOpenDropdowns] = useState({});
 
   const columnsConfig2 = [
@@ -18,40 +23,13 @@ function RemediationActionData({ data, getColor }) {
     { field: "status_name", headerName: "Status", width: 100, expandable: true },
   ]
 
-  // const ControlActionData = [
-  //     { id: "1", actionCode: "Act_25Nov_CTRL_645", description: "description de l'action 1", ActionOwner: "farid akbi", suivi: "le suivi de l'action", statusAction: "En cours" },
-  //     { id: "2", actionCode: "Act_25Nov_CTRL_645", description: "description de l'action 2", ActionOwner: "farid akbi", suivi: "le suivi de l'action", statusAction: "En cours" },
-  //     { id: "3", actionCode: "Act_25Nov_CTRL_645", description: "description de l'action 3", ActionOwner: "farid akbi", suivi: "le suivi de l'action", statusAction: "Terminé" },
-  //     { id: "4", actionCode: "Act_25Nov_CTRL_645", description: "description de l'action 4", ActionOwner: "farid akbi", suivi: "le suivi de l'action", statusAction: "Terminé" },
-  //     { id: "5", actionCode: "Act_25Nov_CTRL_645", description: "description de l'action 5", ActionOwner: "farid akbi", suivi: "le suivi de l'action", statusAction: "Terminé" },
-  // ]
-
-  const [ControlActionData, setControlActionData] = useState({});
-  const [loading, setLoading] = useState({});
-
-  const fetchControlActionData = async (executionId) => {
-    try {
-      setLoading((prev) => ({ ...prev, [executionId]: true }));
-      const response = await api.get(`/missions/${data.mission_id}/report/executions/${executionId}`);
-      console.log('db manager control action data', response.data)
-      setControlActionData((prev) => ({
-        ...prev,
-        [executionId]: response.data,
-      }));
-    } catch (error) {
-      console.error("Erreur lors de la récupération des setControlActionData :", error);
-    } finally {
-      setLoading((prev) => ({ ...prev, [executionId]: false }));
-    }
-  };
-
-
   const toggleDropdown = (executionId) => {
     setOpenDropdowns((prev) => {
       const isOpen = !prev[executionId];
-      if (isOpen && !ControlActionData[executionId]) {
-        fetchControlActionData(executionId);
+      if (isOpen && !controlActionData[executionId]) {
+        fetchControlActionData(data.mission_id, executionId);
       }
+      
       return {
         ...prev,
         [executionId]: isOpen,
@@ -90,17 +68,18 @@ function RemediationActionData({ data, getColor }) {
             </div>
             {openDropdowns[item.execution_id] && (
               <div className="mt-2 w-full overflow-x-auto">
-                {loading[item.execution_id] ? (
+              {controlActionLoading[item.execution_id] ? (
+
                   <p>Chargement...</p>
-                ) : ControlActionData[item.execution_id]?.length === 0 ? (
+                ) : controlActionData[item.execution_id]?.length === 0 ? (
                   <div className="flex border justify-center items-center h-10">
                     <p>Aucune action</p>
                   </div>
                 ) : (
                   <Table
-                    key={JSON.stringify(ControlActionData[item.execution_id])}
-                    columnsConfig={columnsConfig2}
-                    rowsData={ControlActionData[item.execution_id] || []}
+                  key={JSON.stringify(controlActionData[item.execution_id])}
+                  columnsConfig={columnsConfig2}
+                  rowsData={controlActionData[item.execution_id] || []}
                     checkboxSelection={false}
                     headerTextBackground="white"
                     headerBackground="var(--blue-menu)"
