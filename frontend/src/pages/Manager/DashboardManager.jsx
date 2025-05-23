@@ -50,7 +50,7 @@ function DashboardManager() {
 
         const statusControlData = [
             { id: "1", nom: "Appliad", pourcentage: `${missionData.controlEffectif}` },
-            { id: "2", nom: "Partially appliad", pourcentage: `${missionData.controlNonEffective.partiallyApp}` },
+            { id: "2", nom: "Partially applied", pourcentage: `${missionData.controlNonEffective.partiallyApp}` },
             { id: "3", nom: "Not applied", pourcentage: `${missionData.controlNonEffective.notApp}` },
             { id: "4", nom: "Not tested", pourcentage: `${missionData.controlNonEffective.notTested}` },
             { id: "5", nom: "Not applicable", pourcentage: `${missionData.controlNonEffective.notApplicable}` }
@@ -61,7 +61,7 @@ function DashboardManager() {
             { id: "2", nom: "Terminé", pourcentage: `${missionReportData?.actionTerminé}` },
             { id: "3", nom: "En cours", pourcentage: `${missionReportData?.actionEnCours}` }
         ];
-
+console.log("RemediationData",RemédiationData)
         return { progressPercent, controlData, statusControlData, RemédiationData };
     }, [missionData, missionReportData]);
 
@@ -90,6 +90,7 @@ function DashboardManager() {
             default: return 'bg-white';
         }
     };
+    console.log("mission report data ",missionReportData)
     return (
         <div className="flex">
             {user?.role === "admin" && viewMode === "admin" ? (

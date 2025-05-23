@@ -10,7 +10,7 @@ import CollectionsBookmarkRoundedIcon from '@mui/icons-material/CollectionsBookm
 import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined';
 import RecentActorsRoundedIcon from '@mui/icons-material/RecentActorsRounded';
 import LanguageRoundedIcon from '@mui/icons-material/LanguageRounded';
-
+import KeyboardReturnIcon from '@mui/icons-material/KeyboardReturn';
 
 // Icônes ajoutées pour le Header
 import HomeRoundedIcon from '@mui/icons-material/HomeRounded';
@@ -24,6 +24,7 @@ import AddCircleOutlineRoundedIcon from '@mui/icons-material/AddCircleOutlineRou
 
 // Objet contenant toutes les icônes
 const icons = {
+  Return:KeyboardReturnIcon,
   profile: PersonOutlineRoundedIcon,
   dashboard: DashboardRoundedIcon,
   utilisateurs: PeopleAltRoundedIcon,

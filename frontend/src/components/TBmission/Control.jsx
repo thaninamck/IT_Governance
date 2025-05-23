@@ -91,7 +91,7 @@ function Control({ statusControl, data, grid_cols = 'grid-cols-1', size }) {
                             await fetchExecutionData('ineffective', missionId);
                         }
                     }
-                    else if (['partially appliad', 'not applied', 'not tested', 'not applicable'].includes(nom)) {
+                    else if (['partially applied', 'not applied', 'not tested', 'not applicable'].includes(nom)) {
                         if (executionData.allIneffective.length > 0) {
                             const filtered = executionData.allIneffective.filter(item => 
                                 item.status?.toLowerCase() === nom
