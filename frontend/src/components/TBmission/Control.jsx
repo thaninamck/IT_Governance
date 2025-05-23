@@ -15,11 +15,12 @@ function Control({ statusControl, data, grid_cols = 'grid-cols-1', size }) {
         setExecutionData,
     } = useDashboard();
     const [hasFetchedIneffective, setHasFetchedIneffective] = useState(false);
-    // Vérification que statusControl a bien un ID
-    // if (!statusControl?.id && !statusControl?.mission_id) {
-    //     console.error("statusControl doit avoir soit 'id' soit 'mission_id'");
-    //     return <div>Erreur de configuration: ID de mission manquant</div>;
-    // }
+    
+    //Vérification que statusControl a bien un ID
+    if (!statusControl?.id && !statusControl?.mission_id) {
+        console.error("statusControl doit avoir soit 'id' soit 'mission_id'");
+        return <div>Erreur de configuration: ID de mission manquant</div>;
+    }
 
     const getColor = (nom) => {
         switch (nom.toLowerCase()) {
@@ -129,7 +130,7 @@ function Control({ statusControl, data, grid_cols = 'grid-cols-1', size }) {
             fetchExecutionData,
             setExecutionData,
             executionData.allIneffective
-        ]);// Seulement selected comme dépendance
+        ]);
 
     return (
         <>
@@ -139,7 +140,7 @@ function Control({ statusControl, data, grid_cols = 'grid-cols-1', size }) {
                         key={item.id}
                         className={`cursor-pointer flex justify-between p-2 items-center  rounded shadow-sm hover:shadow-md transition duration-200 ${getColor(item.nom)}`}
                         onClick={(e) => {
-                            e.stopPropagation(); // 👈 Empêche la redirection
+                            e.stopPropagation(); 
                             setSelectedExecution(item);
                         }}
                     >

@@ -11,7 +11,7 @@ import BarProgressComponent from './BarProgressComponent';
 dayjs.extend(duration);
 
 function MissionCards({ data,size = 'medium'}) {
- console.log('dta dashbord cards', data)
+ 
  const pourcentageControlCommencé =  Math.round((data?.controlCommencé?.nbrTotale/data?.nbrControl)*100)
     const  controlData=[
         {id:"1", nom:"Commencé",pourcentage:`${pourcentageControlCommencé}`},

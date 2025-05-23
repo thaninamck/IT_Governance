@@ -14,7 +14,6 @@ import { api } from '../../Api'
 import { useDashboard } from '../../Hooks/useDashboard'
 
 function DashboardManager() {
-   // const [missionIdData, setMissionIdData] = useState([]);
     const { user, viewMode } = useAuth();
     const location = useLocation();
     const {
@@ -27,8 +26,6 @@ function DashboardManager() {
     } = useDashboard();
     const missionData = location.state?.missionData;
     const [activeView, setActiveView] = useState("DB_Standard");
-
-    
     useEffect(() => {
         if (missionData?.id) {
             fetchMissionReport(missionData.id);
@@ -130,73 +127,72 @@ function DashboardManager() {
                     </div>
                 </div>
 
-{(activeView ==='DB_Standard') && (
-<>
-                <div className="mt-4 flex flex-col md:flex-row  pb-6 px-10 gap-6">
-                    <div className='w-full md:w-[40%] flex flex-col justify-center items-center gap-2'>
-                        <div className='w-32 h-32'>
-                            <CircularProgressbarComponent progressPercent={progressPercent} />
+                {(activeView === 'DB_Standard') && (
+                    <>
+                        <div className="mt-4 flex flex-col md:flex-row  pb-6 px-10 gap-6">
+                            <div className='w-full md:w-[40%] flex flex-col justify-center items-center gap-2'>
+                                <div className='w-32 h-32'>
+                                    <CircularProgressbarComponent progressPercent={progressPercent} />
+                                </div>
+                                <p className='text-l text-center font-semibold'>Avancement de la mission</p>
+                            </div>
+                            <div className='w-full md:w-[55%] flex flex-col justify-center items-center gap-2'>
+                                <BarProgressComponent data={missionData} size="large" />
+                            </div>
                         </div>
-                        <p className='text-l text-center font-semibold'>Avancement de la mission</p>
-                    </div>
-                    <div className='w-full md:w-[55%] flex flex-col justify-center items-center gap-2'>
-                        <BarProgressComponent data={missionData} size="large" />
-                    </div>
-                </div>
 
-                {/*Control data*/}
-                 <div className=' px-16'>
-                    <Control data={controlData} statusControl={missionData} grid_cols='grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4' />
-                </div>
-                {/*status Control data*/}
-                 <div className=' px-16 py-8'>
-                    <h3 className="text-xl font-bold mb-4">Status Controles</h3>
-                    <Control data={statusControlData} statusControl={missionReportData} grid_cols='grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-2' />
-                </div> 
-                {/*Remeddiation data*/}
-                <div className='px-16 py-8'>
-                    <h3 className="text-xl font-bold mb-4">Remédiation</h3>
-                    <div className='flex flex-wrap gap-6 justify-between'>
-                        {RemédiationData.map((item) =>
-                            item.nom.toLowerCase() === 'action' ? (
-                                <div
-                                    key={item.id}
-                                    className={`w-[250px] cursor-pointer flex flex-col justify-center items-center py-4  rounded shadow-sm hover:shadow-md transition duration-200 ${getColor(item.nom)}`}
-                                >
-                                    <div
-                                        className={`flex  justify-center items-center gap-4`}
-                                    >
-                                        <p className='text-lg font-semibold'>{item.nom}</p>
-                                        <span className='text-right font-semibold px-1 text-black text-l'>
-                                            {item.pourcentage}
-                                        </span>
-                                    </div>
-                                    <span className='text-[12px]'>Répartie sur <strong>{missionReportData.nbrControlWithActions}</strong> controles</span>
-                                </div>
-                            ) : (
-                                <div
-                                    key={item.id}
-                                    className='w-[250px] flex  items-center justify-center gap-3 '
-                                >
-                                    <div className="w-16 h-16">
-                                        <CircularProgressbarComponent progressPercent={parseInt(item.pourcentage)} />
-                                    </div>
-                                    <p className='text-center font-medium'>{item.nom}</p>
-                                </div>
-                            )
-                        )}
-                    </div>
-                </div>
-                {/* Control Remédiation data*/}
-                <div className='px-16 pb-4 mb-8 '>
-                    <RemediationActionData 
-                   // data={remediationActionData}
-                   data={missionReportData}
-                     getColor={getColor} />
-                </div>
-                </>
-)}
-{activeView==="DB_DSP" && (<MissionReport/>)}
+                        {/*Control data*/}
+                        <div className=' px-16'>
+                            <Control data={controlData} statusControl={missionData} grid_cols='grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4' />
+                        </div>
+                        {/*status Control data*/}
+                        <div className=' px-16 py-8'>
+                            <h3 className="text-xl font-bold mb-4">Status Controles</h3>
+                            <Control data={statusControlData} statusControl={missionReportData} grid_cols='grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-2' />
+                        </div>
+                        {/*Remeddiation data*/}
+                        <div className='px-16 py-8'>
+                            <h3 className="text-xl font-bold mb-4">Remédiation</h3>
+                            <div className='flex flex-wrap gap-6 justify-between'>
+                                {RemédiationData.map((item) =>
+                                    item.nom.toLowerCase() === 'action' ? (
+                                        <div
+                                            key={item.id}
+                                            className={`w-[250px] cursor-pointer flex flex-col justify-center items-center py-4  rounded shadow-sm hover:shadow-md transition duration-200 ${getColor(item.nom)}`}
+                                        >
+                                            <div
+                                                className={`flex  justify-center items-center gap-4`}
+                                            >
+                                                <p className='text-lg font-semibold'>{item.nom}</p>
+                                                <span className='text-right font-semibold px-1 text-black text-l'>
+                                                    {item.pourcentage}
+                                                </span>
+                                            </div>
+                                            <span className='text-[12px]'>Répartie sur <strong>{missionReportData.nbrControlWithActions}</strong> controles</span>
+                                        </div>
+                                    ) : (
+                                        <div
+                                            key={item.id}
+                                            className='w-[250px] flex  items-center justify-center gap-3 '
+                                        >
+                                            <div className="w-16 h-16">
+                                                <CircularProgressbarComponent progressPercent={parseInt(item.pourcentage)} />
+                                            </div>
+                                            <p className='text-center font-medium'>{item.nom}</p>
+                                        </div>
+                                    )
+                                )}
+                            </div>
+                        </div>
+                        {/* Control Remédiation data*/}
+                        <div className='px-16 pb-4 mb-8 '>
+                            <RemediationActionData
+                                data={missionReportData}
+                                getColor={getColor} />
+                        </div>
+                    </>
+                )}
+                {activeView === "DB_DSP" && (<MissionReport />)}
             </div>
         </div>
     )
