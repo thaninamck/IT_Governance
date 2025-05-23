@@ -6,17 +6,18 @@ import { useAuth } from '../Context/AuthContext';
 import MissionCards from '../components/TBmission/MissionCards';
 import HeaderWithAction from '../components/Header/HeaderWithAction';
 import { api } from '../Api';
-
+import { useDashboard } from '../Hooks/useDashboard';
 
 //const TOTAL_CARDS = 10; // Exemple de 10 missions
 //const ITEMS_PER_PAGE = 3;
 
 function DashboardAdmin() {
 
-
     const { user, viewMode } = useAuth();
     const [currentPage, setCurrentPage] = useState(0);
     const intervalRef = useRef(null);
+    const { missionData, loading } = useDashboard();
+ 
 
     const [itemsPerPage, setItemsPerPage] = useState(getItemsPerPage());
     const [cardsSize, setCardsSize] = useState(getcardsSize());
@@ -60,45 +61,6 @@ function DashboardAdmin() {
 
     // On génère 10 fausses cartes avec un index
     // const missions = Array.from({ length: TOTAL_CARDS }, (_, i) => i);
-
-    const [missionData, setMissionData] = useState([]);
-    const [loading, setLoading] = useState(true);
-
-    const fetchMissionsDashboard = async () => {
-        try {
-            const response = await api.get('/dashboard'); 
-            console.log('db admin mission',response.data)
-            setMissionData(response.data);
-        } catch (error) {
-            console.error("Erreur lors de la récupération des missions :", error);
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    useEffect(() => {
-        fetchMissionsDashboard();
-    }, []);
-    // const missionData = [
-    //     {
-    //         id: "1",
-    //         missionName: "DSP",
-    //         client: 'Djezzy',
-    //         nbrControl: '26',
-    //         startDate: '2025-05-01',
-    //         endDate: '2025-06-30',
-    //         controls: Array(26).fill().map((_, i) => ({ id: i, status: i < 20 ? 'done' : 'pending' })),
-    //         controlCommencé: { pourcentageTotale: "20", pourcentageFinalisé: "27", pourcentageNonFinalisé: "73" },
-    //         controlNonCommencé: "80",
-    //         controlEffctive: "75",
-    //         controlNonEffective: { pourcentageTotale: "35", partiallyApp: "25", notApp: "63", notTested: "7", notApplicable: '5' },
-    //         nbrAction:{action:"30",control:'5'},
-    //         actionTerminé: "13",
-    //         actionEnCours: "17"
-    //     },
-       
-    // ]
-
     
     const totalPages = Math.ceil(missionData.length / itemsPerPage);
     const startIndex = currentPage * itemsPerPage;
