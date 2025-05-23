@@ -11,13 +11,13 @@ function Control({ statusControl, data, grid_cols = 'grid-cols-1', size }) {
         console.error("statusControl doit avoir soit 'id' soit 'mission_id'");
         return <div>Erreur de configuration: ID de mission manquant</div>;
     }
-    console.log('data ', data)
+    console.log('data control ', data)
     console.log('statusControldata ', statusControl)
 
     const getColor = (nom) => {
         switch (nom.toLowerCase()) {
             case 'commencé': return ' border border-yellow-300';
-            case 'nom commencé': return ' border border-gray-500';
+            case 'non commencé': return ' border border-gray-500';
             case 'effective': return 'border border-green-500';
             case 'ineffective': return 'border border-red-500';
             case 'appliad': return 'border-l-4 border-l-green-600';
@@ -65,6 +65,8 @@ function Control({ statusControl, data, grid_cols = 'grid-cols-1', size }) {
     const [displayedExecutionData, setDisplayedExecutionData] = useState([]);
     const [selected, setSelected] = useState(null);
 
+    const pourcentageControlFinalisé =  Math.round((statusControl?.controlCommencé?.nbrFinalisé/statusControl?.controlCommencé?.nbrTotale)*100)
+    const pourcentageControlNonFinalisé =  Math.round((statusControl?.controlCommencé?.nbrNonFinalisé/statusControl?.controlCommencé?.nbrTotale)*100)
 
     const fetchIneffectiveExecutionData = async () => {
         try {
@@ -103,6 +105,46 @@ function Control({ statusControl, data, grid_cols = 'grid-cols-1', size }) {
         }
     };
 
+    const fetchBeganExecutionData = async () => {
+        try {
+            setLoading(true);
+            // Utilisez mission_id si disponible, sinon id
+            const missionId = statusControl.mission_id || statusControl.id;
+            if (!missionId) {
+                console.error("ID de mission non disponible");
+                return;
+            }
+
+            const response = await api.get(`/dashboard/missions/${missionId}/began-controls`);
+            console.log('bagan',response.data)
+            setDisplayedExecutionData(response.data);
+        } catch (error) {
+            console.error("Erreur lors de la récupération des began-controls :", error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const fetchUnBeganExecutionData = async () => {
+        try {
+            setLoading(true);
+            // Utilisez mission_id si disponible, sinon id
+            const missionId = statusControl.mission_id || statusControl.id;
+            if (!missionId) {
+                console.error("ID de mission non disponible");
+                return;
+            }
+
+            const response = await api.get(`/dashboard/missions/${missionId}/unbegan-controls`);
+            console.log('unbagan',response.data)
+            setDisplayedExecutionData(response.data);
+        } catch (error) {
+            console.error("Erreur lors de la récupération des began-controls :", error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
 
     useEffect(() => {
         const nom = selected?.nom?.toLowerCase();
@@ -116,7 +158,7 @@ function Control({ statusControl, data, grid_cols = 'grid-cols-1', size }) {
                 await fetchEffectiveExecutionData();
             } else if (nom === 'ineffective') {
                 await fetchIneffectiveExecutionData();
-            } else if (nom === 'partially appliad' || nom === 'not applied' || nom === 'not tested' || nom === 'not applicable' ||nom === 'commencé' ||nom === 'non commencé')  {
+            } else if (nom === 'partially appliad' || nom === 'not applied' || nom === 'not tested' || nom === 'not applicable'  )  {
                 if (allIneffectiveData.length > 0) {
                     const filtered = allIneffectiveData.filter((item) =>
                         item.status?.toLowerCase() === nom
@@ -131,6 +173,11 @@ function Control({ statusControl, data, grid_cols = 'grid-cols-1', size }) {
                     );
                     setDisplayedExecutionData(filtered);
                 }
+            }else if (nom === 'commencé' ){
+                await fetchBeganExecutionData();
+            }
+            else if (nom === 'non commencé' ){
+                await fetchUnBeganExecutionData();
             }
         };
 
@@ -260,13 +307,13 @@ function Control({ statusControl, data, grid_cols = 'grid-cols-1', size }) {
                                     <div className="flex items-center gap-4  border-l-4 border-l-green-600  px-4 py-2 rounded shadow-sm">
                                         <CheckCircleIcon className="text-green-600" />
                                         <p className="text-sm font-medium">
-                                            Contrôle finalisé : <strong>{statusControl?.controlCommencé?.pourcentageFinalisé}%</strong>
+                                            Contrôle finalisé : <strong>{pourcentageControlFinalisé}%</strong>
                                         </p>
                                     </div>
                                     <div className="flex items-center gap-2  border-l-4 border-l-red-600  px-4 py-2 rounded shadow-sm">
                                         <CancelIcon className="text-red-600" />
                                         <p className="text-sm font-medium">
-                                            Contrôle non finalisé : <strong>{statusControl?.controlCommencé?.pourcentageNonFinalisé}%</strong>
+                                            Contrôle non finalisé : <strong>{pourcentageControlNonFinalisé}%</strong>
                                         </p>
                                     </div>
                                 </>
