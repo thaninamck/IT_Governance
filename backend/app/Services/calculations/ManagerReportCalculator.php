@@ -37,8 +37,8 @@ class ManagerReportCalculator implements CalculationServiceInterface
 
         // actions = remediations
         'nbrAction' => $first['total_remediations'] ?? 0,
-        'actionTerminé' => $first['total_finished_remediations'] ?? 0,
-        'actionEnCours' => $first['total_ongoing_remediations'] ?? 0,
+        'actionTerminé' => round($first['total_finished_remediations'] / max(1, $first['total_remediations']) * 100) ,
+        'actionEnCours' => round($first['total_ongoing_remediations'] / max(1, $first['total_remediations']) * 100) ,
 
         'executions' => collect($executions)->map(function ($item) {
             return [
@@ -46,8 +46,9 @@ class ManagerReportCalculator implements CalculationServiceInterface
                 'control_code' => $item['control_code'],
                 
                 'remediations' => [
-                    'en_cours' => $item['ongoing_remediations'],
-                    'termine' => $item['finished_remediations'],
+                    'en_cours' => round(($item['ongoing_remediations'] / max(1,$item['total_remediations'])) * 100),
+                    'termine' => round(($item['finished_remediations'] / max (1,$item['total_remediations'])) * 100),
+                   
                     'total' => $item['total_remediations'],
                 ],
             ];
