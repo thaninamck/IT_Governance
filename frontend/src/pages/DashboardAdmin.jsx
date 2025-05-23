@@ -7,6 +7,7 @@ import MissionCards from '../components/TBmission/MissionCards';
 import HeaderWithAction from '../components/Header/HeaderWithAction';
 import { api } from '../Api';
 import { useDashboard } from '../Hooks/useDashboard';
+import Spinner from '../components/Spinner';
 
 //const TOTAL_CARDS = 10; // Exemple de 10 missions
 //const ITEMS_PER_PAGE = 3;
@@ -17,7 +18,7 @@ function DashboardAdmin() {
     const [currentPage, setCurrentPage] = useState(0);
     const intervalRef = useRef(null);
     const { missionData, loading } = useDashboard();
- 
+
 
     const [itemsPerPage, setItemsPerPage] = useState(getItemsPerPage());
     const [cardsSize, setCardsSize] = useState(getcardsSize());
@@ -37,7 +38,7 @@ function DashboardAdmin() {
         return 'medium'; // mobiles
     }
 
-    console.log('cardssize',cardsSize)
+    console.log('cardssize', cardsSize)
 
     useEffect(() => {
         const handleResize = () => {
@@ -48,11 +49,11 @@ function DashboardAdmin() {
         window.addEventListener('resize', handleResize);
         return () => window.removeEventListener('resize', handleResize);
     }, []);
-    
+
     useEffect(() => {
         const handleResize = () => {
             setCardsSize(getcardsSize());
-            
+
         };
 
         window.addEventListener('resize', handleResize);
@@ -61,7 +62,7 @@ function DashboardAdmin() {
 
     // On génère 10 fausses cartes avec un index
     // const missions = Array.from({ length: TOTAL_CARDS }, (_, i) => i);
-    
+
     const totalPages = Math.ceil(missionData?.length / itemsPerPage);
     const startIndex = currentPage * itemsPerPage;
     const currentMissions = missionData?.slice(startIndex, startIndex + itemsPerPage);
@@ -111,38 +112,39 @@ function DashboardAdmin() {
                     bg_transparent={'bg-transparent'}
                 />
 
-                <div className="relative flex flex-row items-center justify-center ">
+                <div className="relative flex flex-row justify-center">
 
-                    {/* Zones de scroll gauche/droite */}
+                    {/* Flèche gauche */}
                     <div
-                       className={`w-8 z-10 cursor-pointer ${currentPage === 0 ? 'opacity-50 cursor-not-allowed' : ''}`}
-                        // onMouseEnter={() => startAutoScroll('left')}
-                        // onMouseLeave={stopAutoScroll}
+                        className={`absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center z-20 text-2xl font-bold rounded-full bg-white shadow-md transition cursor-pointer 
+              ${currentPage === 0 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-100'}`}
                         onClick={handlePrev}
-                        disabled={currentPage === 0}
-                >
-                    ◀
-                    </div>
-                   
-                    <div className="mt-12 flex flex-wrap mb-8 justify-center gap-6 px-2 sm:px-4 md:px-4 lg:px-6 transition-all duration-500">
-
-                        {currentMissions?.map((mission, index) => (
-                            <MissionCards data={mission} key={mission.id || index} size={cardsSize}  />
-                        ))}
-                    </div>
-
-                    <div
-                       className={` z-10 cursor-pointer ${currentPage === totalPages - 1 ? 'opacity-50 cursor-not-allowed' : ''}`}
-                        onClick={handleNext}
-                        disabled={currentPage === totalPages - 1}
-                        // onMouseEnter={() => startAutoScroll('right')}
-                        // onMouseLeave={stopAutoScroll}
                     >
-                       ▶ 
+                        ◀
                     </div>
-                
+
+                    {/* Cartes */}
+                    <div className="mt-12 flex flex-wrap mb-8 justify-center gap-6 px-2 sm:px-4 md:px-4 lg:px-6 transition-all duration-500">
+                        {(!missionData || loading) ? (
+                            <div><Spinner /></div>
+                        ) : (
+                            currentMissions?.map((mission, index) => (
+                                <MissionCards data={mission} key={mission.id || index} size={cardsSize} />
+                            ))
+                        )}
+                    </div>
+
+                    {/* Flèche droite */}
+                    <div
+                        className={`absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center z-20 text-2xl font-bold rounded-full bg-white shadow-md transition cursor-pointer 
+              ${currentPage === totalPages - 1 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-100'}`}
+                        onClick={handleNext}
+                    >
+                        ▶
+                    </div>
 
                 </div>
+
             </div>
         </div>
     )

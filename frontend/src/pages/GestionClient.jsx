@@ -13,6 +13,7 @@ import ExportButton from '../components/ExportButton';
 import { PermissionRoleContext } from '../Context/permissionRoleContext';
 import useClient from '../Hooks/useClient';
 import { useAuth } from '../Context/AuthContext';
+import Spinner from '../components/Spinner';
 
 
 function GestionClient() {
@@ -36,6 +37,7 @@ function GestionClient() {
 
     // Utiliser le hook useClients pour gérer la logique des clients
     const {
+        loading,
         filtereRows,
         setFiltereRows,
         isModalOpen,
@@ -87,9 +89,20 @@ function GestionClient() {
                 </div>
 
                 {/* Tableau des clients */}
+                {loading ? (
+                    <div className="flex items-center justify-center mt-9 w-full h-full">
+                      <Spinner color="var(--blue-menu)" />
+                    </div>
+                  ) :
+                  filtereRows.length === 0 ? (
+            <p className="text-center text-subfont-gray mt-20">
+              Aucun client pour le moment.
+            </p>
+          ) : (
                 <div className={`flex-1 overflow-x-auto overflow-y-auto h-[400px] transition-all ${isDeletePopupOpen ? 'blur-sm' : ''}`}>
                     <Table key={JSON.stringify(filtereRows)} columnsConfig={columnsConfig} rowsData={filtereRows} checkboxSelection={false} headerBackground="var(--blue-nav)" rowActions={rowActions} />
                 </div>
+          )}
             </div>
 
             {/* Modals */}

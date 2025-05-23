@@ -12,6 +12,7 @@ import RemediationActionData from '../../components/TBmission/RemediationActionD
 import MissionReport from './MissionReport'
 import { api } from '../../Api'
 import { useDashboard } from '../../Hooks/useDashboard'
+import Spinner from '../../components/Spinner'
 
 function DashboardManager() {
     const { user, viewMode } = useAuth();
@@ -65,12 +66,12 @@ function DashboardManager() {
     }, [missionData, missionReportData]);
 
     if (!missionData) {
-        return <div>Loading mission data...</div>;
+        return <div><Spinner/></div>;
     }
 
-    if (loading || !missionReportData) {
-        return <div>Loading dashboard data...</div>;
-    }
+    // if (loading || !missionReportData) {
+    //     return <div><Spinner/></div>;
+    // }
     const getColor = (nom) => {
         switch (nom?.toLowerCase()) {
             case 'commencé': return 'bg-yellow-100';
@@ -127,7 +128,12 @@ function DashboardManager() {
                     </div>
                 </div>
 
-                {(activeView === 'DB_Standard') && (
+                {activeView === 'DB_Standard' && (
+                 (loading || !missionReportData) ? (
+                     <div>
+                     <Spinner/>
+                     </div>
+                 ):(
                     <>
                         <div className="mt-4 flex flex-col md:flex-row  pb-6 px-10 gap-6">
                             <div className='w-full md:w-[40%] flex flex-col justify-center items-center gap-2'>
@@ -191,6 +197,7 @@ function DashboardManager() {
                                 getColor={getColor} />
                         </div>
                     </>
+                 )
                 )}
                 {activeView === "DB_DSP" && (<MissionReport />)}
             </div>

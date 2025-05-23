@@ -25,6 +25,7 @@ import useGestionMission from "../Hooks/useGestionMission";
 import { useAuth } from "../Context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import SideBarStdr from "../components/sideBar/SideBarStdr";
+import Spinner from "../components/Spinner";
 
 
 
@@ -34,6 +35,7 @@ function UserViewMode() {
  
 
   const {
+    loading,
     rowsData2,
     filteredRows,
     isModalOpen,
@@ -143,10 +145,15 @@ function UserViewMode() {
           className={`flex-1 overflow-x-auto overflow-y-auto h-[400px] transition-all ${isDeletePopupOpen ? "blur-sm" : ""
             }`}
         >
-          {missionsToDisplay.length === 0 ? (
+          
+        { loading ? (
+                    <div className="flex items-center justify-center mt-9 w-full h-full">
+                      <Spinner color="var(--blue-menu)" />
+                    </div>
+                  ) :
+        missionsToDisplay.length === 0 ? (
             <p className="text-center text-subfont-gray mt-20">
-              Aucune mission pour le moment. Vous pouvez charger un
-              fichier Excel ?
+              Aucune mission pour le moment. 
             </p>
           ) : (
             <Table

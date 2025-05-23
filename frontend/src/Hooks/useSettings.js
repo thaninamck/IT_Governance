@@ -8,24 +8,30 @@ const useSettings = ({ fetchEndpoint, createEndpoint, deleteEndpoint, labelKey =
   const [showForm, setShowForm] = useState(false);
   const [error, setError] = useState('');
   const [items, setItems] = useState([]);
+  const [loading, setLoading] = useState(false);
   const [deleteConfirmationOpen, setDeleteConfirmationOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState(null);
 
-  // Fonction pour récupérer les logs
+  // Logs
   const [logs, setLogs] = useState([]);
   const [filteredLogs, setFilteredLogs] = useState([]);
 
   const fetchLogs = async () => {
+    setLoading(true);
     try {
-      const response = await api.get('/logs'); // Appel API
-      setLogs(response.data); // Stockage des logs
-      setFilteredLogs(response.data); // Remplissage des données affichées
+      const response = await api.get('/logs');
+      setLogs(response.data);
+      setFilteredLogs(response.data);
     } catch (error) {
       console.error('Erreur lors de la récupération des logs:', error);
+      toast.error("Erreur lors de la récupération des logs");
+    } finally {
+      setLoading(false);
     }
   };
 
   const fetchLayers = async () => {
+    setLoading(true);
     try {
       const response = await api.get(fetchEndpoint);
       setItems(response.data.map(item => ({
@@ -35,6 +41,8 @@ const useSettings = ({ fetchEndpoint, createEndpoint, deleteEndpoint, labelKey =
     } catch (error) {
       console.error('Erreur lors de la récupération des données:', error);
       toast.error("Erreur lors du chargement des données");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -52,6 +60,8 @@ const useSettings = ({ fetchEndpoint, createEndpoint, deleteEndpoint, labelKey =
       return;
     }
 
+    setLoading(true);
+    setError('');
     try {
       const response = await api.post(createEndpoint, { name: inputValue });
       const newItem = {
@@ -59,9 +69,8 @@ const useSettings = ({ fetchEndpoint, createEndpoint, deleteEndpoint, labelKey =
         value: response.data[itemKey].id.toString()
       };
 
-      setItems([...items, newItem]);
+      setItems(prevItems => [...prevItems, newItem]);
       setInputValue('');
-      setError('');
       setShowForm(false);
       toast.success("Élément ajouté avec succès");
       if (onAdd) onAdd(newItem);
@@ -69,6 +78,8 @@ const useSettings = ({ fetchEndpoint, createEndpoint, deleteEndpoint, labelKey =
       console.error('Erreur lors de l’ajout :', error);
       setError("Une erreur est survenue lors de l'ajout.");
       toast.error("Erreur lors de l'ajout");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -78,9 +89,10 @@ const useSettings = ({ fetchEndpoint, createEndpoint, deleteEndpoint, labelKey =
   };
 
   const confirmDelete = async () => {
+    setLoading(true);
     try {
       await api.delete(`${deleteEndpoint}/${itemToDelete}`);
-      setItems(items.filter(item => item.value !== itemToDelete));
+      setItems(prevItems => prevItems.filter(item => item.value !== itemToDelete));
       toast.success("Élément supprimé avec succès");
     } catch (error) {
       console.error('Erreur lors de la suppression :', error);
@@ -89,6 +101,7 @@ const useSettings = ({ fetchEndpoint, createEndpoint, deleteEndpoint, labelKey =
     } finally {
       setDeleteConfirmationOpen(false);
       setItemToDelete(null);
+      setLoading(false);
     }
   };
 
@@ -105,6 +118,7 @@ const useSettings = ({ fetchEndpoint, createEndpoint, deleteEndpoint, labelKey =
     showForm,
     setShowForm,
     error,
+    loading,
     items,
     deleteConfirmationOpen,
     handleSubmit,
@@ -114,7 +128,6 @@ const useSettings = ({ fetchEndpoint, createEndpoint, deleteEndpoint, labelKey =
     logs,
     filteredLogs,
     fetchLogs,
-    
   };
 };
 
