@@ -24,13 +24,13 @@ function Control({ statusControl, data, grid_cols = 'grid-cols-1', size }) {
 
     const getColor = (nom) => {
         switch (nom.toLowerCase()) {
-            case 'commencé': return ' border border-yellow-300';
-            case 'non commencé': return ' border border-gray-500';
-            case 'effective': return 'border border-green-500';
-            case 'ineffective': return 'border border-red-500';
-            case 'appliad': return 'border-l-4 border-l-green-600';
-            case 'partially appliad': return 'border-l-4 border-l-orange-600';
-            case 'not appliad': return 'border-l-4 border-l-red-600';
+            case 'commencés': return ' border border-yellow-300';
+            case 'non commencés': return ' border border-gray-500';
+            case 'effectifs': return 'border border-green-500';
+            case 'ineffectifs': return 'border border-red-500';
+            case 'applied': return 'border-l-4 border-l-green-600';
+            case 'partially applied': return 'border-l-4 border-l-orange-600';
+            case 'not applied': return 'border-l-4 border-l-red-600';
             case 'not tested': return 'border-l-4 border-l-gray-600';
             case 'not applicable': return 'border-l-4 border-l-blue-600';
             default: return 'bg-white';
@@ -67,11 +67,11 @@ function Control({ statusControl, data, grid_cols = 'grid-cols-1', size }) {
         { field: "testeur", headerName: "Tester", width: 150, expandable: true }]
 
         const pourcentageControlFinalisé = statusControl?.controlCommencé?.nbrFinalisé && statusControl?.controlCommencé?.nbrTotale
-        ? Math.round((statusControl.controlCommencé.nbrFinalisé / statusControl.controlCommencé.nbrTotale) * 100)
+        ? Math.round((statusControl.controlCommencé.nbrFinalisé  * 100) / statusControl.controlCommencé.nbrTotale)
         : 0;
 
     const pourcentageControlNonFinalisé = statusControl?.controlCommencé?.nbrNonFinalisé && statusControl?.controlCommencé?.nbrTotale
-        ? Math.round((statusControl.controlCommencé.nbrNonFinalisé / statusControl.controlCommencé.nbrTotale) * 100)
+        ? Math.round((statusControl.controlCommencé.nbrNonFinalisé  * 100) / statusControl.controlCommencé.nbrTotale)
         : 0;
 
 
@@ -83,15 +83,15 @@ function Control({ statusControl, data, grid_cols = 'grid-cols-1', size }) {
         
             const handleFilter = async () => {
                 try {
-                    if (nom === 'effective' || nom === 'appliad') {
+                    if (nom === 'effectifs' || nom === 'applied') {
                         await fetchExecutionData('effective', missionId);
                     } 
-                    else if (nom === 'ineffective') {
+                    else if (nom === 'ineffectifs') {
                         if (executionData.allIneffective.length === 0) {
                             await fetchExecutionData('ineffective', missionId);
                         }
                     }
-                    else if (['partially appliad', 'not applied', 'not tested', 'not applicable'].includes(nom)) {
+                    else if (['partially applied', 'not applied', 'not tested', 'not applicable'].includes(nom)) {
                         if (executionData.allIneffective.length > 0) {
                             const filtered = executionData.allIneffective.filter(item => 
                                 item.status?.toLowerCase() === nom
@@ -101,7 +101,7 @@ function Control({ statusControl, data, grid_cols = 'grid-cols-1', size }) {
                                 displayed: filtered
                             }));
                         } else {
-                            await fetchExecutionData('ineffective', missionId);
+                            await fetchExecutionData('ineffectifs', missionId);
                             const filtered = executionData.allIneffective.filter(item => 
                                 item.status?.toLowerCase() === nom
                             );
@@ -111,10 +111,10 @@ function Control({ statusControl, data, grid_cols = 'grid-cols-1', size }) {
                             }));
                         }
                     }
-                    else if (nom === 'commencé') {
+                    else if (nom === 'commencés') {
                         await fetchExecutionData('began', missionId);
                     } 
-                    else if (nom === 'non commencé') {
+                    else if (nom === 'non commencés') {
                         await fetchExecutionData('unbegan', missionId);
                     }
                 } catch (error) {
@@ -134,7 +134,9 @@ function Control({ statusControl, data, grid_cols = 'grid-cols-1', size }) {
 
     return (
         <>
+        
             <div className={`grid  ${grid_cols} gap-4`}>
+                
                 {data?.map((item) => (
                     <div
                         key={item.id}
@@ -176,27 +178,27 @@ function Control({ statusControl, data, grid_cols = 'grid-cols-1', size }) {
                         <h2 className="text-lg font-bold mb-4">Détail des contrôle {executionData.selected.nom}</h2>
                         <div className="flex flex-row gap-8 my-8 justify-center">
 
-                            {executionData.selected.nom === 'Commencé' &&
+                            {executionData.selected.nom === 'Commencés' &&
                                 <>
                                     <div className="flex items-center gap-4  border-l-4 border-l-green-600  px-4 py-2 rounded shadow-sm">
                                         <CheckCircleIcon className="text-green-600" />
                                         <p className="text-sm font-medium">
-                                            Contrôle finalisé : <strong>{pourcentageControlFinalisé}%</strong>
+                                            Contrôles finalisés : <strong>{pourcentageControlFinalisé}%</strong>
                                         </p>
                                     </div>
                                     <div className="flex items-center gap-2  border-l-4 border-l-red-600  px-4 py-2 rounded shadow-sm">
                                         <CancelIcon className="text-red-600" />
                                         <p className="text-sm font-medium">
-                                            Contrôle non finalisé : <strong>{pourcentageControlNonFinalisé}%</strong>
+                                            Contrôles non finalisés : <strong>{pourcentageControlNonFinalisé}%</strong>
                                         </p>
                                     </div>
                                 </>
                             }
-                            {executionData.selected.nom === 'ineffective' &&
+                            {executionData.selected.nom === 'ineffectifs' &&
                                 <>
                                     <div className="flex items-center gap-2 border-l-4 border-l-orange-600 px-4 py-2 rounded shadow-sm">
                                         <p className="text-sm font-medium">
-                                            Partially appliad : <strong>{statusControl?.controlNonEffective?.partiallyApp}%</strong>
+                                            Partially applied : <strong>{statusControl?.controlNonEffective?.partiallyApp}%</strong>
                                         </p>
                                     </div>
                                     <div className="flex items-center gap-2 border-l-4 border-l-red-600 px-4 py-2 rounded shadow-sm">

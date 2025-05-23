@@ -42,23 +42,23 @@ function DashboardManager() {
         const progressPercent = total > 0 ? Math.round((done / total) * 100) : 0;
 
         const controlData = [
-            { id: "1", nom: "Commencé", pourcentage: `${pourcentageControlCommencé}` },
-            { id: "2", nom: "non Commencé", pourcentage: `${missionData.controlNonCommencé}` },
-            { id: "3", nom: "effective", pourcentage: `${missionData.controlEffectif}` },
-            { id: "4", nom: "ineffective", pourcentage: `${missionData.controlNonEffective.pourcentageTotale}` }
+            { id: "1", nom: "Commencés", pourcentage: `${pourcentageControlCommencé}` },
+            { id: "2", nom: "non Commencés", pourcentage: `${missionData.controlNonCommencé}` },
+            { id: "3", nom: "effectifs", pourcentage: `${missionData.controlEffectif}` },
+            { id: "4", nom: "ineffectifs", pourcentage: `${missionData.controlNonEffective.pourcentageTotale}` }
         ];
 
         const statusControlData = [
-            { id: "1", nom: "Appliad", pourcentage: `${missionData.controlEffectif}` },
-            { id: "2", nom: "Partially appliad", pourcentage: `${missionData.controlNonEffective.partiallyApp}` },
+            { id: "1", nom: "Applied", pourcentage: `${missionData.controlEffectif}` },
+            { id: "2", nom: "Partially applied", pourcentage: `${missionData.controlNonEffective.partiallyApp}` },
             { id: "3", nom: "Not applied", pourcentage: `${missionData.controlNonEffective.notApp}` },
             { id: "4", nom: "Not tested", pourcentage: `${missionData.controlNonEffective.notTested}` },
             { id: "5", nom: "Not applicable", pourcentage: `${missionData.controlNonEffective.notApplicable}` }
         ];
 
         const RemédiationData = [
-            { id: "1", nom: "Action", pourcentage: `${missionReportData?.nbrAction}` },
-            { id: "2", nom: "Terminé", pourcentage: `${missionReportData?.actionTerminé}` },
+            { id: "1", nom: "Actions", pourcentage: `${missionReportData?.nbrAction}` },
+            { id: "2", nom: "Terminées", pourcentage: `${missionReportData?.actionTerminé}` },
             { id: "3", nom: "En cours", pourcentage: `${missionReportData?.actionEnCours}` }
         ];
 
@@ -74,16 +74,16 @@ function DashboardManager() {
     // }
     const getColor = (nom) => {
         switch (nom?.toLowerCase()) {
-            case 'commencé': return 'bg-yellow-100';
-            case 'nom commencé': return 'bg-gray-300';
-            case 'effective': return 'bg-green-100';
-            case 'ineffective': return 'bg-red-200';
-            case 'action': return 'bg-yellow-200';
-            case 'terminé': return 'bg-blue-200';
+            case 'commencés': return 'bg-yellow-100';
+            case 'nom commencés': return 'bg-gray-300';
+            case 'effectifs': return 'bg-green-100';
+            case 'ineffectifs': return 'bg-red-200';
+            case 'actions': return 'bg-yellow-200';
+            case 'terminées': return 'bg-blue-200';
             case 'en cours': return 'bg-orange-200';
-            case 'appliad': return 'border-l-4 border-l-green-600';
-            case 'partially appliad': return 'border-l-4 border-l-orange-600';
-            case 'not appliad': return 'border-l-4 border-l-red-600';
+            case 'applied': return 'border-l-4 border-l-green-600';
+            case 'partially applied': return 'border-l-4 border-l-orange-600';
+            case 'not applied': return 'border-l-4 border-l-red-600';
             case 'not tested': return 'border-l-4 border-l-gray-600';
             case 'not applicable': return 'border-l-4 border-l-blue-600';
 
@@ -114,7 +114,7 @@ function DashboardManager() {
                                 } `}
                             onClick={() => setActiveView("DB_Standard")}
                         >
-                            Standar
+                            Standard
                         </button>
                         <button
                             className={`px-4 py-2 ${activeView === "DB_DSP"
@@ -161,7 +161,7 @@ function DashboardManager() {
                             <h3 className="text-xl font-bold mb-4">Remédiation</h3>
                             <div className='flex flex-wrap gap-6 justify-between'>
                                 {RemédiationData.map((item) =>
-                                    item.nom.toLowerCase() === 'action' ? (
+                                    item.nom.toLowerCase() === 'actions' ? (
                                         <div
                                             key={item.id}
                                             className={`w-[250px] cursor-pointer flex flex-col justify-center items-center py-4  rounded shadow-sm hover:shadow-md transition duration-200 ${getColor(item.nom)}`}
@@ -174,7 +174,7 @@ function DashboardManager() {
                                                     {item.pourcentage}
                                                 </span>
                                             </div>
-                                            <span className='text-[12px]'>Répartie sur <strong>{missionReportData.nbrControlWithActions}</strong> controles</span>
+                                            <span className='text-[12px]'>Réparties sur <strong>{missionReportData.nbrControlWithActions}</strong> controles</span>
                                         </div>
                                     ) : (
                                         <div
@@ -191,7 +191,7 @@ function DashboardManager() {
                             </div>
                         </div>
                         {/* Control Remédiation data*/}
-                        <div className='px-16 pb-4 mb-8 '>
+                        <div className='px-1 pb-4 mb-8 '>
                             <RemediationActionData
                                 data={missionReportData}
                                 getColor={getColor} />

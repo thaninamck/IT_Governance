@@ -370,7 +370,8 @@ public function getMissionsInprogress()
             m.end_date,
             c.commercial_name AS client,
 
-            COUNT(e.id) AS total_executions,
+           COUNT(DISTINCT e.id) AS total_executions
+,
             COUNT(*) FILTER (WHERE e.launched_at IS NOT NULL) AS launched_executions,
             COUNT(*) FILTER (WHERE e.launched_at IS NULL) AS not_launched_executions,
 
@@ -379,16 +380,16 @@ public function getMissionsInprogress()
             ) AS finalized_executions,
 
             COUNT(*) FILTER (
-                WHERE e.is_to_review = false OR e.is_to_validate = false AND e.launched_at IS NOT NULL AND stt.status_name IS  NULL 
+                WHERE (e.is_to_review = false OR e.is_to_validate = false) AND e.launched_at IS NOT NULL AND stt.status_name IS  NULL 
             ) AS not_finalized_executions,
 
 
             COUNT(*) FILTER (
-                WHERE stt.status_name = \'applied\'
+                WHERE stt.status_name = \'applied\' AND stt.status_name IS  NOT NULL
             ) AS effective_controls,
 
            COUNT(*) FILTER (
-                WHERE stt.status_name IS DISTINCT FROM \'applied\' 
+                WHERE stt.status_name IS DISTINCT FROM \'applied\' AND stt.status_name IS NOT NULL
             ) AS noneffective_controls,
 
 

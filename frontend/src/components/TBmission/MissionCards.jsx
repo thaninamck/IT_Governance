@@ -14,10 +14,10 @@ function MissionCards({ data,size = 'medium'}) {
  
  const pourcentageControlCommencé =  Math.round((data?.controlCommencé?.nbrTotale/data?.nbrControl)*100)
     const  controlData=[
-        {id:"1", nom:"Commencé",pourcentage:`${pourcentageControlCommencé}`},
-        {id:"2", nom:"non Commencé",pourcentage:`${data?.controlNonCommencé}`},
-        {id:"3", nom:"effective",pourcentage:`${data?.controlEffectif }`},
-        {id:"4", nom:"ineffective",pourcentage:`${data?.controlNonEffective?.pourcentageTotale}`}
+        {id:"1", nom:"Commencés",pourcentage:`${pourcentageControlCommencé}`},
+        {id:"2", nom:"non Commencés",pourcentage:`${data?.controlNonCommencé}`},
+        {id:"3", nom:"effectifs",pourcentage:`${data?.controlEffectif }`},
+        {id:"4", nom:"ineffectifs",pourcentage:`${data?.controlNonEffective?.pourcentageTotale}`}
     ]
     if (!data) return null;
     const navigate = useNavigate();
@@ -29,6 +29,7 @@ function MissionCards({ data,size = 'medium'}) {
     // Données sur les contrôles
     const total = data.nbrControl || 0;
     const done = data.controlCommencé?.nbrFinalisé || 0;
+    
     const progressPercent = total > 0 ? Math.round((done / total) * 100) : 0;
 
     const sizeStyles = {

@@ -27,7 +27,7 @@ class AdminDashboardCalculator implements CalculationServiceInterface
             'id' => (string) $m->id,
             'missionName' => $m->mission,
             'client' => $m->client,
-            'nbrControl' => (string) $m->total_executions,
+            'nbrControl' =>  $m->total_executions,
             'startDate' => $m->start_date,
             'endDate' => $m->end_date,
            
@@ -36,14 +36,15 @@ class AdminDashboardCalculator implements CalculationServiceInterface
                 'nbrFinalisé' => $m->finalized_executions ,
                 'nbrNonFinalisé' => $m->not_finalized_executions ,
             ],
-            'controlNonCommencé' => (string) round(($m->not_launched_executions / $totalExec) * 100),
-            'controlEffectif' => (string) round(($m->effective_controls / max(1, $totalCtrl)) * 100),
+            'controlNonCommencé' =>  round(($m->not_launched_executions * 100)/ $totalExec),
+            'controlEffectif' =>  round(($m->effective_controls * 100) /  $totalExec),
             'controlNonEffective' => [
-                'pourcentageTotale' => (string) round(($m->noneffective_controls / max(1, $totalCtrl)) * 100),
-                'partiallyApp' => (string) round(($m->partially_applied_controls / max(1, $totalCtrl)) * 100),
-                'notApp' => (string) round(($m->not_applied_controls / max(1, $totalCtrl)) * 100),
-                'notTested' => (string) round(($m->not_tested_controls / max(1, $totalCtrl)) * 100),
-                'notApplicable' => (string) round(($m->not_applicable_controls / max(1, $totalCtrl)) * 100),
+                'pourcentageTotale' =>  round(($m->noneffective_controls / max(1, $totalExec)) * 100),
+                'nbrPartially' => $m->partially_applied_controls,
+                'partiallyApp' =>  round(($m->partially_applied_controls / max(1, $totalExec)) * 100),
+                'notApp' =>  round(($m->not_applied_controls / max(1, $totalExec)) * 100),
+                'notTested' =>  round(($m->not_tested_controls / max(1, $totalExec)) * 100),
+                'notApplicable' =>  round(($m->not_applicable_controls / max(1,$totalExec) ) * 100),
             ],
         ];
     });

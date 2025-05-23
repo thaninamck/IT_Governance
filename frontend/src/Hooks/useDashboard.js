@@ -17,6 +17,7 @@ export const useDashboard = () => {
         setLoading(true);
         try {
             const response = await api.get('/dashboard');
+            console.log("missions recuperees",response.data)
             setMissionData(response.data);
         } catch (error) {
             console.error("Erreur lors de la récupération des missions :", error);
