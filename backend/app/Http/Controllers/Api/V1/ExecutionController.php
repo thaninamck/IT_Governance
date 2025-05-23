@@ -571,7 +571,22 @@ class ExecutionController extends BaseController
         }
     }
 
-    public function getAllExecutionReview($missionId ,$appId): JsonResponse
+    public function getAllExecutionReview($missionId): JsonResponse
+    {
+        try {
+            
+            $executionReviewed = $this->executionService->getAllExecutionReview($missionId);
+            if (!isset($executionReviewed)) {
+                return $this->sendError('Aucune execution Reviewed trouvé pour cette execution.', [], 404);
+            }
+
+            // return $this->sendResponse($remediations, 'Liste des remediations récupérée avec succès.');
+            return $this->sendResponse( ExecutionResource::structuredResponse($executionReviewed), 'Liste des remediations récupérée avec succès.');
+        } catch (\Exception $e) {
+            return $this->sendError('Erreur lors de la récupération des execution Reviewed.', ['error' => $e->getMessage()], 500);
+        }
+    }
+    public function getAllExecutionReview1($missionId ,$appId): JsonResponse
     {
         try {
             
