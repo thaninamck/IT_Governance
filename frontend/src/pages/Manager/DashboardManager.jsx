@@ -143,7 +143,7 @@ function DashboardManager() {
                                 <p className='text-l text-center font-semibold'>Avancement de la mission</p>
                             </div>
                             <div className='w-full md:w-[55%] flex flex-col justify-center items-center gap-2'>
-                                <BarProgressComponent data={missionData} size="large" />
+                                <BarProgressComponent  data={missionData} size="large" />
                             </div>
                         </div>
 
