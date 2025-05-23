@@ -18,14 +18,14 @@ function DashboardManager() {
     const location = useLocation();
     const missionData = location.state?.missionData;
     console.log('mm', missionData)
-
-    const total = missionData.controls?.length || 0;
-    const done = missionData.controls?.filter(c => c.status === 'done').length || 0;
+    const pourcentageControlCommencé =  Math.round((missionData?.controlCommencé?.nbrTotale/missionData?.nbrControl)*100)
+    const total = missionData.nbrControl || 0;
+    const done = missionData.controlCommencé?.nbrFinalisé || 0;
     const progressPercent = total > 0 ? Math.round((done / total) * 100) : 0;
 
     const controlData = [
-        { id: "1", nom: "Commencé", pourcentage: `${missionData.controlCommencé?.pourcentageTotale}` },
-        { id: "2", nom: "nom Commencé", pourcentage: `${missionData.controlNonCommencé}` },
+        { id: "1", nom: "Commencé", pourcentage: `${pourcentageControlCommencé }` },
+        { id: "2", nom: "non Commencé", pourcentage: `${missionData.controlNonCommencé}` },
         { id: "3", nom: "effective", pourcentage: `${missionData.controlEffectif}` },
         { id: "4", nom: "ineffective", pourcentage: `${missionData.controlNonEffective.pourcentageTotale}` }
     ]
