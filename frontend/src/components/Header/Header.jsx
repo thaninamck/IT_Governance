@@ -12,9 +12,17 @@ function Header({user}) {
  // const [unreadCount, setUnreadCount] = useState(3); // Example: Initial unread notifications count
 const { logout } = useAuth();
 const { unreadCount } = useNotification();
-const handleLogout = () => {
-  logout();
-  navigate("/login");
+// const handleLogout = () => {
+//   logout();
+//   navigate("/login");
+// };
+const handleLogout = async () => {
+  try {
+      await logout(); // Appeler la fonction de déconnexion du contexte
+      navigate('/login'); // Rediriger vers la page de connexion
+  } catch (error) {
+      console.error("Erreur lors de la déconnexion :", error);
+  }
 };
   return (
     <div className='header_container'>
@@ -48,7 +56,7 @@ const handleLogout = () => {
   sx={{ color: 'var(--blue-icons)', cursor: 'pointer' }} 
   onClick={() => {
     setShowNotifications(!showNotifications);
-    setUnreadCount(0); // reset une fois ouvert
+   // setUnreadCount(0); // reset une fois ouvert
   }} 
 />
             {unreadCount > 0 && (
@@ -62,7 +70,9 @@ const handleLogout = () => {
           </div>
 
           {showNotifications && (
-            <NotificationPopup setUnreadCount={setUnreadCount} />
+            <NotificationPopup
+           //  setUnreadCount={setUnreadCount} 
+             />
           )}
         </div>
 
