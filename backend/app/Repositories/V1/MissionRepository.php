@@ -422,9 +422,10 @@ public function getManagerMissionReport($missionId)
     SELECT 
         ex.id AS execution_id,
         controls.code AS controlCode,
-        COUNT(r.id) AS total_remediations,
-        COUNT(CASE WHEN st.status_name = \'terminé\' THEN 1 END) AS finished_remediations,
-        COUNT(CASE WHEN st.status_name = \'en cours\' THEN 1 END) AS ongoing_remediations
+        COUNT(DISTINCT r.id) AS total_remediations,
+COUNT(DISTINCT CASE WHEN st.status_name = \'terminé\' THEN r.id END) AS finished_remediations,
+COUNT(DISTINCT CASE WHEN st.status_name = \'en cours\' THEN r.id END) AS ongoing_remediations
+
     FROM executions ex
    JOIN layers l ON ex.layer_id = l.id
     JOIN systems s ON l.system_id = s.id

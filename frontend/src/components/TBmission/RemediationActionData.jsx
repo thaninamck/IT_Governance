@@ -49,13 +49,13 @@ function RemediationActionData({ data, getColor }) {
                 </div>
                 <div className='flex items-center gap-2'>
                   <div className="w-8 h-8 sm:w-10 sm:h-10">
-                    <CircularProgressbarComponent progressPercent={parseInt(item.remediations.termine)} />
+                    <CircularProgressbarComponent pathColor='#10b981' progressPercent={parseInt(item.remediations.termine)} />
                   </div>
                   <p className='text-xs sm:text-sm font-medium'>Terminé</p>
                 </div>
                 <div className='flex items-center gap-2'>
                   <div className="w-8 h-8 sm:w-10 sm:h-10">
-                    <CircularProgressbarComponent progressPercent={parseInt(item.remediations.en_cours)} />
+                    <CircularProgressbarComponent pathColor='#f97316' progressPercent={parseInt(item.remediations.en_cours)} />
                   </div>
                   <p className='text-xs sm:text-sm font-medium'>En cours</p>
                 </div>

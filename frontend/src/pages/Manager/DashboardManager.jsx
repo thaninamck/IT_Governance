@@ -183,7 +183,7 @@ console.log("RemediationData",RemédiationData)
                                             className='w-[250px] flex  items-center justify-center gap-3 '
                                         >
                                             <div className="w-16 h-16">
-                                                <CircularProgressbarComponent progressPercent={parseInt(item.pourcentage)} />
+                                                <CircularProgressbarComponent  progressPercent={parseInt(item.pourcentage)} />
                                             </div>
                                             <p className='text-center font-medium'>{item.nom}</p>
                                         </div>
