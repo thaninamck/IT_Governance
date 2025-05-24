@@ -304,7 +304,9 @@ const handlePauseRow = async (selectedRow) => {
     //   return;
     // }
 
-    const link = `/rapportmissions/${selectedRow.mission}`;
+    // const link = `/rapportmissions/${selectedRow.mission}`; kan haka 
+    //const link = `/rapportmissions/${selectedRow.missionName}`;
+    const link = `/dashboard/${selectedRow.missionName}`;
     setBreadcrumbs([
       { label: "rapportmission", path: "/missions" },
       { label: selectedRow.mission, path: `/missions/${selectedRow.mission}` },

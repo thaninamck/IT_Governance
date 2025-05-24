@@ -26,6 +26,9 @@ function DashboardManager() {
         setSelectedExecution
     } = useDashboard();
     const missionData = location.state?.missionData;
+
+    console.log('mission Report data',missionReportData)
+    console.log('mission  data',missionData)
     const [activeView, setActiveView] = useState("DB_Standard");
     useEffect(() => {
         if (missionData?.id) {
@@ -35,25 +38,28 @@ function DashboardManager() {
 
     const { progressPercent, controlData, statusControlData, RemédiationData } = useMemo(() => {
         if (!missionData || !missionReportData) return {};
-
-        const pourcentageControlCommencé = Math.round((missionData.controlCommencé?.nbrTotale / missionData?.nbrControl) * 100);
-        const total = missionData.nbrControl || 0;
-        const done = missionData.controlCommencé?.nbrFinalisé || 0;
+ 
+        const pourcentageControlCommencé = Math.round((missionReportData?.controlCommencé / missionReportData?.nbrControl) * 100);
+        const pourcentageControlEffective = Math.round((missionReportData?.controlEffectif / missionReportData?.nbrControl) * 100);
+        const pourcentageControlNonEffective = Math.round((missionReportData?.controlNonEffectif / missionReportData?.nbrControl) * 100);
+        const pourcentageControlNonCommencé = Math.round((missionReportData?.controlNonCommencé / missionReportData?.nbrControl) * 100);
+        const total = missionReportData?.nbrControl || 0;
+        const done = missionData?.controlCommencé?.nbrFinalisé || 0;
         const progressPercent = total > 0 ? Math.round((done / total) * 100) : 0;
 
         const controlData = [
             { id: "1", nom: "Commencés", pourcentage: `${pourcentageControlCommencé}` },
-            { id: "2", nom: "non Commencés", pourcentage: `${missionData.controlNonCommencé}` },
-            { id: "3", nom: "effectifs", pourcentage: `${missionData.controlEffectif}` },
-            { id: "4", nom: "ineffectifs", pourcentage: `${missionData.controlNonEffective.pourcentageTotale}` }
+            { id: "2", nom: "non Commencés", pourcentage: `${pourcentageControlNonCommencé}` },
+            { id: "3", nom: "effectifs", pourcentage: `${pourcentageControlEffective}` },
+            { id: "4", nom: "ineffectifs", pourcentage: `${pourcentageControlNonEffective}` }
         ];
 
         const statusControlData = [
-            { id: "1", nom: "Applied", pourcentage: `${missionData.controlEffectif}` },
-            { id: "2", nom: "Partially applied", pourcentage: `${missionData.controlNonEffective.partiallyApp}` },
-            { id: "3", nom: "Not applied", pourcentage: `${missionData.controlNonEffective.notApp}` },
-            { id: "4", nom: "Not tested", pourcentage: `${missionData.controlNonEffective.notTested}` },
-            { id: "5", nom: "Not applicable", pourcentage: `${missionData.controlNonEffective.notApplicable}` }
+            { id: "1", nom: "Applied", pourcentage: `${missionData?.controlEffectif}` },
+            { id: "2", nom: "Partially applied", pourcentage: `${missionData?.controlNonEffective?.partiallyApp}` },
+            { id: "3", nom: "Not applied", pourcentage: `${missionData?.controlNonEffective?.notApp}` },
+            { id: "4", nom: "Not tested", pourcentage: `${missionData?.controlNonEffective?.notTested}` },
+            { id: "5", nom: "Not applicable", pourcentage: `${missionData?.controlNonEffective?.notApplicable}` }
         ];
 
         const RemédiationData = [
@@ -103,7 +109,7 @@ console.log("RemediationData",RemédiationData)
                 <HeaderBis />
                 <div className='flex flex-row items-end pr-14 justify-between '>
                     <HeaderWithAction
-                        title={`La mission ${missionData.missionName}`}
+                        title={`La mission ${missionReportData?.mission_name}`}
                         user={user}
                         bg_transparent={'bg-transparent'}
                     />
