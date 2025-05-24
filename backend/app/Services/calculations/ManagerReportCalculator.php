@@ -38,8 +38,8 @@ class ManagerReportCalculator implements CalculationServiceInterface
 
 
         'controlNonCommencé' => round($first['control_non_commence'] ?? 0) / max(1, $first['nbr_control']) * 100, // pourcentage des controles non commencés
-        'controlFinalisé' => round((($first['controls_finalises'] ?? 0) / max(1, $first['control_commence'])) * 100), // % controles finalisés
-'controlNonFinalisé' => round((($first['controls_non_finalises'] ?? 0) / max(1, $first['control_commence'])) * 100), // % controles non finalisés
+        'controlFinalisé' => $first['controls_finalises'] ?? 0,
+        'controlNonFinalisé' => $first['controls_non_finalises'] ?? 0, 
 
 // Statuts d'exécution avec pourcentages
 'executionsNotAppliedPct' => round((($first['executions_not_applied'] ?? 0) / max(1, $first['nbr_control'])) * 100),

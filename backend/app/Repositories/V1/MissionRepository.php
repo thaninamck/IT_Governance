@@ -467,7 +467,7 @@ SELECT
      JOIN systems s ON l.system_id = s.id
      WHERE s.mission_id = m.id AND ex.launched_at IS NULL) AS control_non_commence,
 
-    (SELECT COUNT(*) FROM executions ex
+   (SELECT COUNT(*) FROM executions ex
      JOIN layers l ON ex.layer_id = l.id
      JOIN systems s ON l.system_id = s.id
      WHERE s.mission_id = m.id AND ex.launched_at IS NOT NULL 
@@ -476,8 +476,11 @@ SELECT
     (SELECT COUNT(*) FROM executions ex
      JOIN layers l ON ex.layer_id = l.id
      JOIN systems s ON l.system_id = s.id
+	 LEFT JOIN statuses st ON ex.status_id = st.id
+
      WHERE s.mission_id = m.id  
-           AND (ex.is_to_review = false OR ex.is_to_validate = false)) AS controls_non_finalises,
+           AND (ex.is_to_review = false OR ex.is_to_validate = false)  AND ex.launched_at IS NOT NULL AND st.status_name IS  NULL
+		   ) AS controls_non_finalises,
 
     (SELECT COUNT(*) FROM executions ex
      JOIN layers l ON ex.layer_id = l.id
