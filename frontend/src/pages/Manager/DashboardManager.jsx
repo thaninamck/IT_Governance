@@ -55,11 +55,11 @@ function DashboardManager() {
         ];
 
         const statusControlData = [
-            { id: "1", nom: "Applied", pourcentage: `${missionData.controlEffectif}` },
-            { id: "2", nom: "Partially applied", pourcentage: `${missionData.controlNonEffective.partiallyApp}` },
-            { id: "3", nom: "Not applied", pourcentage: `${missionData.controlNonEffective.notApp}` },
-            { id: "4", nom: "Not tested", pourcentage: `${missionData.controlNonEffective.notTested}` },
-            { id: "5", nom: "Not applicable", pourcentage: `${missionData.controlNonEffective.notApplicable}` }
+            { id: "1", nom: "Applied", pourcentage: `${missionData?.controlEffectif}` },
+            { id: "2", nom: "Partially applied", pourcentage: `${missionData?.controlNonEffective?.partiallyApp}` },
+            { id: "3", nom: "Not applied", pourcentage: `${missionData?.controlNonEffective?.notApp}` },
+            { id: "4", nom: "Not tested", pourcentage: `${missionData?.controlNonEffective?.notTested}` },
+            { id: "5", nom: "Not applicable", pourcentage: `${missionData?.controlNonEffective?.notApplicable}` }
         ];
 
         const RemédiationData = [
