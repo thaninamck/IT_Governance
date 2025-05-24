@@ -139,62 +139,71 @@ class ExecutionRepository
     }
 
     public function getExecutionById($executionId)
-    {
-        return DB::select("
-      SELECT 
-    e.id AS execution_id,
-    sts.control_id,
-    e.is_to_review AS execution_is_to_review,
-    e.is_to_validate AS execution_is_to_validate,
-e.ipe,
-e.design,
-e.effectiveness,
-e.comment,
-e.cntrl_modification AS execution_description,
-c.description AS control_description,
-st.id AS status_id,
-    json_agg(DISTINCT jsonb_build_object(
-        'step_execution_id', se.id,
-        'step_text', sts.text,
-        'step_comment', se.comment,
-        'step_checked', se.checked
-    )) AS steps,
+{
+    return DB::select("
+        SELECT 
+            e.id AS execution_id,
+            sts.control_id,
+            e.is_to_review AS execution_is_to_review,
+            e.is_to_validate AS execution_is_to_validate,
+            e.ipe,
+            e.design,
+            e.effectiveness,
+            e.comment,
+            e.cntrl_modification AS execution_description,
+            c.description AS control_description,
+            st.id AS status_id,
 
-    json_agg(DISTINCT jsonb_build_object(
-        'id', r.id,
-        'text', r.text,
-        'y', r.y,
-        'initials', UPPER(LEFT(u.first_name, 1) || '' || LEFT(u.last_name, 1)),
-        'user_id',u.id,
-        'name', u.first_name || ' ' || u.last_name
-    )) AS remarks,
+            -- Steps ordonnés
+            (
+                SELECT json_agg(jsonb_build_object(
+                    'step_execution_id', se_inner.id,
+                    'step_text', sts_inner.text,
+                    'step_comment', se_inner.comment,
+                    'step_checked', se_inner.checked
+                ) ORDER BY se_inner.id)
+                FROM public.step_executions se_inner
+                JOIN public.step_test_scripts sts_inner ON se_inner.step_id = sts_inner.id
+                WHERE se_inner.execution_id = e.id
+            ) AS steps,
 
-    json_agg(DISTINCT jsonb_build_object(
-        'evidence_id', ev.id,
-        'file_name', ev.file_name,
-        'stored_name', ev.stored_name,
-        'is_f_test', ev.is_f_test
-    )) AS evidences
+            -- Remarks
+            json_agg(DISTINCT jsonb_build_object(
+                'id', r.id,
+                'text', r.text,
+                'y', r.y,
+                'initials', UPPER(LEFT(u.first_name, 1) || '' || LEFT(u.last_name, 1)),
+                'user_id', u.id,
+                'name', u.first_name || ' ' || u.last_name
+            )) AS remarks,
 
-FROM public.executions e
-JOIN public.step_executions se ON e.id = se.execution_id
-JOIN public.step_test_scripts sts ON se.step_id = sts.id
-JOIN public.controls c ON c.id = sts.control_id
-LEFT JOIN public.executions_evidences ev ON ev.execution_id = e.id
-LEFT JOIN public.remarks r ON r.execution_id = e.id
-LEFT JOIN public.users u ON r.user_id = u.id
-LEFT JOIN public.statuses st ON st.id = e.status_id
-WHERE e.id = ?
+            -- Evidences
+            json_agg(DISTINCT jsonb_build_object(
+                'evidence_id', ev.id,
+                'file_name', ev.file_name,
+                'stored_name', ev.stored_name,
+                'is_f_test', ev.is_f_test
+            )) AS evidences
 
-GROUP BY 
-    e.id,
-    sts.control_id,
-	c.description,
-    st.id;
-	
+        FROM public.executions e
+        JOIN public.step_executions se ON e.id = se.execution_id
+        JOIN public.step_test_scripts sts ON se.step_id = sts.id
+        JOIN public.controls c ON c.id = sts.control_id
+        LEFT JOIN public.executions_evidences ev ON ev.execution_id = e.id
+        LEFT JOIN public.remarks r ON r.execution_id = e.id
+        LEFT JOIN public.users u ON r.user_id = u.id
+        LEFT JOIN public.statuses st ON st.id = e.status_id
 
+        WHERE e.id = ?
+
+        GROUP BY 
+            e.id,
+            sts.control_id,
+            c.description,
+            st.id
     ", [$executionId]);
-    }
+}
+
 
     public function getExecutionsByApp($appId)
     {
@@ -1104,6 +1113,7 @@ public function getBeganExecutionsByMission($id)
     return DB::select(
         "SELECT DISTINCT e.id AS id,
             cnt.code,
+            s.name AS system_name,
             COALESCE(NULLIF(e.cntrl_modification, ' '), cnt.description) AS description,
             e.control_owner AS owner,
             stt.status_name AS status,
@@ -1128,6 +1138,7 @@ public function getUnbeganExecutionsByMission($id)
     return DB::select(
         "SELECT DISTINCT e.id AS id,
             cnt.code,
+            s.name AS system_name,
             COALESCE(NULLIF(e.cntrl_modification, ' '), cnt.description) AS description,
             e.control_owner AS owner,
             stt.status_name AS status,

@@ -38,7 +38,7 @@ function DashboardAdmin() {
         return 'medium'; // mobiles
     }
 
-    console.log('cardssize', cardsSize)
+    
 
     useEffect(() => {
         const handleResize = () => {

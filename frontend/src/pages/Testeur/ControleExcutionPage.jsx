@@ -474,7 +474,7 @@ function ControleExcutionPage() {
     }
 
     try {
-      const response = await uploadEvidences(formDataToSend);
+      const response = await uploadEvidences(controleData.missionId,formDataToSend);
       console.log("response data", response.data);
       if (response.status === 200) {
         if (activePanel === "evidence") {
