@@ -130,10 +130,10 @@ const useExecution = () => {
         }
       };
       
-      const submitExecutionForValidation = async (executionId) => {
+      const submitExecutionForValidation = async (missionId,executionId) => {
         setLoading(true);
         try {
-          const response = await api.patch(`/executions/submit-execution-for-validation/${executionId}`);
+          const response = await api.patch(`missions/${missionId}/executions/submit-execution-for-validation/${executionId}`);
           toast.success("Soumis pour validation !");
           return response.data;
         } catch (error) {
