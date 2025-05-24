@@ -103,7 +103,7 @@ public function submitExecutionForValidation($missionId, $executionId)
 
     $supervisorsIds = Participation::where('mission_id', $missionId)
         ->whereHas('profile', function ($query) {
-            $query->where('profile_name', 'superviseur');
+            $query->where('profile_name', 'manager');
         })
         ->pluck('user_id');
 
@@ -111,7 +111,7 @@ public function submitExecutionForValidation($missionId, $executionId)
         $this->notificationService->sendNotification(
             $userId,
             "Vous avez des contrôles à revoir pour une mission",
-            ['type' => 'review_cntrl', 'id' => $executionId],
+            ['type' => 'validation_cntrl', 'id' => $executionId],
             "review_cntrl"
         );
     }

@@ -20,8 +20,13 @@ const useUser = () => {
       case "mission":
         return `/missions/${notification.url.id}`;
       case "affectation_cntrl":
+        return `/wshkaaeyn before/${notification.url.id}`;//complete ici
       case "cloture_mission":
         return `/missions`;
+      case "review_cntrl":
+          return `/revue/revueExecution/CTRL-234`;  //complete ici
+      case "validation_cntrl":
+        return `/revue/revueExecution/CTRL-234`;   //complete ici   
       case "security":
         return "#";
       default:
