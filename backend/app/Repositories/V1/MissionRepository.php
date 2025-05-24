@@ -483,13 +483,13 @@ SELECT
      JOIN layers l ON ex.layer_id = l.id
      JOIN systems s ON l.system_id = s.id
      JOIN statuses st ON ex.status_id = st.id
-     WHERE s.mission_id = m.id AND ex.launched_at IS NOT NULL AND st.status_name = \'applied\') AS controls_effectifs,
+     WHERE s.mission_id = m.id AND ex.launched_at IS NOT NULL AND st.status_name = \'applied\'  AND st.status_name IS  NOT NULL) AS controls_effectifs,
 
     (SELECT COUNT(*) FROM executions ex
      JOIN layers l ON ex.layer_id = l.id
      JOIN systems s ON l.system_id = s.id
      JOIN statuses st ON ex.status_id = st.id
-     WHERE s.mission_id = m.id AND st.status_name != \'applied\') AS controls_ineffectifs,
+     WHERE s.mission_id = m.id AND st.status_name IS DISTINCT FROM \'applied\' AND st.status_name IS NOT NULL) AS controls_ineffectifs,
 
 -- Exécutions par statut
 (SELECT COUNT(*) FROM executions ex

@@ -4,11 +4,11 @@ import { useAuth } from "../Context/AuthContext"; // Contexte d'authentification
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 
-const useStatistics = () => {
+const useStatistics = (missionId) => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const missionId=7;
+  
   const [data,setData]=useState([])
   const [missionStatistics, setMissionStatistics] = useState({
     app: [],
@@ -24,7 +24,7 @@ const useStatistics = () => {
   const getMissionreport = async () => {
     setLoading(true);
     try {
-      const response = await api.get(`/missions/${missionId}/report`);
+      const response = await api.get(`/missions/${missionId}/dsp-report`);
       const data = response.data;
       
 
@@ -45,6 +45,7 @@ const useStatistics = () => {
     } catch (err) {
       console.error("Erreur lors de la récupération du rapport :", err);
       setError(err);
+      setLoading(false);
       toast.error("Échec du chargement du rapport.");
     } finally {
       setLoading(false);
@@ -52,10 +53,10 @@ const useStatistics = () => {
   };
 
 
-  const getAppReport = async (id) => {
+  const getAppReport = async (missionId,id) => {
     setLoading(true);
     try {
-      const response = await api.get(`missions/systems/${id}/system-report`);
+      const response = await api.get(`/missions/${missionId}/systems/${id}/system-report`);
       const data = response.data;
       console.log("izan",data)       
       setData(data)
@@ -63,6 +64,7 @@ const useStatistics = () => {
     } catch (err) {
       console.error("Erreur lors de la récupération du rapport :", err);
       setError(err);
+      setLoading(false);
       toast.error("Échec du chargement du rapport.");
     } finally {
       setLoading(false);
