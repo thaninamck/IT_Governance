@@ -14,8 +14,8 @@ import GestionRevue from "../Superviseur/GestionRevue";
 import RevueListExecution from "../Superviseur/RevueListExecution";
 
 function MissionDetail() {
-   const { user} = useAuth();
-   const { profile, updateProfile } = useProfile();
+  const { user } = useAuth();
+  const { profile, updateProfile } = useProfile();
   const { mission } = useParams(); // Récupérer les paramètres de l'URL
   const location = useLocation(); // Obtenir l'URL actuelle
   const [showForm, setShowForm] = useState(false);
@@ -32,11 +32,11 @@ function MissionDetail() {
   console.log("Missiondata sélectionnée :", missionData);
 
   // Mettre à jour le profil au moment où la mission est sélectionnée
-useEffect(() => {
-  if (missionData?.profileName) {
-    updateProfile(missionData.profileName); // Mettre à jour le profil dans le context
-  }
-}, [missionData, updateProfile]);
+  useEffect(() => {
+    if (missionData?.profileName) {
+      updateProfile(missionData.profileName); // Mettre à jour le profil dans le context
+    }
+  }, [missionData, updateProfile]);
 
 
 
@@ -54,42 +54,44 @@ useEffect(() => {
   ];
 
 
-
+  console.log('mission datail missiondata', missionData)
   return (
     <div className=" ">
-      
-      <Header user={user}  />
+
+      <Header user={user} />
       <div className=" ml-5 mr-6 pb-9">
         {/* Afficher Breadcrumbs uniquement si le chemin correspond */}
         {breadcrumbRoutes.some((route) =>
           location.pathname.startsWith(route)
         ) && <Breadcrumbs />}
         <MissionInfo
-         dataFormat={missionData} 
-         user={user} 
-         missionId={missionData.id}
-         />
-        
+          dataFormat={missionData}
+          user={user}
+          missionId={missionData.id}
+        />
+
         <AddScope
           title={"Scope Application"}
           text={"Aucune application ajoutée pour le moment"}
           text1={"Ajouter d'autre application "}
           onToggleForm={handleToggleForm} // Passe la fonction en prop
           showForm={showForm}
-         user={user}
-         dataFormat={missionData} 
+          user={user}
+          dataFormat={missionData}
           missionId={missionData.id}
           missionName={missionData.missionName}
         />
-        <AddMatrix 
-        user={user}
-        dataFormat={missionData}
-        missionId={missionData.id} 
+        <AddMatrix
+          user={user}
+          dataFormat={missionData}
+          missionId={missionData.id}
         />
-           
-        
-<RevueListExecution dataFormat={missionData}  />
 
+        {
+          (missionData?.profileName === 'manager' || missionData?.profileName === 'superviseur' || user?.role === 'admine') &&
+
+          <RevueListExecution dataFormat={missionData} />
+        }
       </div>
     </div>
   );
