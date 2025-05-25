@@ -14,11 +14,12 @@ const useUser = () => {
   const unreadCount = notifications.filter(n => !n.isRead).length;
   // Fonction pour récupérer l'URL selon le type de notification
   const getNotificationUrl = (notification) => {
-    
+    console.log('not',notification)
     switch (notification?.type) {
       
       case "mission":
-        return `/missions/${notification.url.id}`;
+        const notifUrl = JSON.parse(notification.url); // Convertir en objet
+      return `/missions/${notifUrl.id}`;
       case "affectation_cntrl":
         return `/wshkaaeyn before/${notification.url.id}`;//complete ici
       case "cloture_mission":
