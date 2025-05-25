@@ -255,6 +255,7 @@ class ExecutionController extends BaseController
                 [],
                 200
             );
+            
         } catch (\Exception $e) {
             return $this->sendError("Error while updating execution", ['error' => $e->getMessage()], 500);
         }
@@ -367,12 +368,16 @@ class ExecutionController extends BaseController
 
         try {
             // Appel au service pour mettre à jour l'exécution
-            $this->executionService->updateExecution($executionId, $data);
-            return $this->sendResponse(
-                "Execution updated successfully",
-                [],
-                200
-            );
+        
+            $returnedExecution = $this->executionService->updateExecution($executionId, $data);
+            // return $this->sendResponse(
+            //     "Execution updated successfully",
+            //     [],
+            //     200
+            // );
+
+            return response()->json($returnedExecution, 200);
+            
         } catch (\Exception $e) {
             return $this->sendError("Erreur lors de la mise à jour", ['error' => $e->getMessage()], 500);
         }

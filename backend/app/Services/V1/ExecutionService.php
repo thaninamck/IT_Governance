@@ -438,7 +438,9 @@ public function updateExecution($executionId, $data)
     });
 
     // Mise à jour de l'exécution
-    return $execution = $this->executionRepository->updateExecution($executionId, $filteredData);
+     $this->executionRepository->updateExecution($executionId, $filteredData);
+     $execution = execution::with('status')->find($executionId);
+     return  $execution;
 
    
 }

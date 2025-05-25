@@ -807,8 +807,6 @@ class ExecutionRepository
     public function updateExecution($executionId, $executionData)
     {
         $execution = Execution::where('id', $executionId)->update($executionData);
-
-
         return $execution;
     }
 
