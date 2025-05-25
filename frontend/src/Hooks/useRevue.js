@@ -36,15 +36,17 @@ const useRevue = (activeView,user) => {
 
 
     const fetchRevueExecutions = async (missionRevueData) => {
+        
         setLoading(true);
         try {
             let response;
-
+            
             if (missionRevueData.profileName === 'superviseur') {
                 response = await api.get(`/revue/${missionRevueData.id}/getexecutionreviewedforSuperviseur`);
                 console.log("sup",response.data)
             } else if (missionRevueData.profileName === 'manager') {
                 response = await api.get(`/revue/${missionRevueData.id}/getexecutionreviewedforManager`);
+                console.log("manager",response.data)
             }else {
                 throw new Error("Profil non pris en charge pour la revue.");
             }
@@ -65,8 +67,8 @@ const useRevue = (activeView,user) => {
             let response;
 
         console.log('apprevue',appRevueData)
-                // response = await api.get(`/revue/${appRevueData.missionId}/${appRevueData.id}/getAllExecutionReview`);
-                response = await api.get(`/revue/${appRevueData.id}/getAllExecutionReview`);
+             response = await api.get(`/revue/${appRevueData.missionId}/${appRevueData.id}/getAllExecutionReviewAdmin`);
+               // response = await api.get(`/revue/${appRevueData.id}/getAllExecutionReview`);
                 console.log("admin",response.data)
           
 
