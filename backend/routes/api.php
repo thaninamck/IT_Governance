@@ -257,6 +257,7 @@ Route::middleware(['auth:sanctum', TesterMiddleware::class])
         Route::controller(MissionController::class)->group(function () {
             Route::get('/missions/{mission}/members', 'getMembersByMission');
             Route::get('/mission/{mission}/getsystems', 'getSystemsByMissionID');
+            Route::get('/mission/{mission}', 'getMissionById');
         });
 
     });

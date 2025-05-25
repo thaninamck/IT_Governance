@@ -323,6 +323,42 @@ public function getRequestStatusForMissions()
     return $this->missionRepository->getRequestStatusForMissions();
 }
 
+public function getMissionById($id, $user)
+{
+    $mission = $this->missionRepository->getMissionById($id, $user->id);
+
+    if (!$mission) {
+        return null;
+    }
+
+    // Extraire la participation du user authentifié
+    $participation = $mission->participations->first();
+
+    // Crée la structure personnalisée
+    return [
+        'id' => $mission->id,
+        'mission_name' => $mission->mission_name,
+        'start_date' => $mission->start_date,
+        'end_date' => $mission->end_date,
+        'audit_start_date' => $mission->audit_start_date,
+        'audit_end_date' => $mission->audit_end_date,
+        'client_id' => $mission->client_id,
+        'status_id' => $mission->status_id,
+        'previous_status_id' => $mission->previous_status_id,
+        
+        // Infos du user et son profil (si existe)
+        'idProfile' => $participation?->profile_id,
+        'profileName' => $participation?->profile?->profile_name,
+        'iduser' => $participation?->user_id,
+        'first_name' => $participation?->user?->first_name,
+        'last_name' => $participation?->user?->last_name,
+        'email' => $participation?->user?->email,
+       'role' => $participation?->user?->role == 0 ? 'user' : 'admin',
+
+        'grade' => $participation?->user?->grade
+    ];
+}
+
     public function updateMission($id, array $data): ?Mission
     {
         return $this->missionRepository->updateMission($id, $data);

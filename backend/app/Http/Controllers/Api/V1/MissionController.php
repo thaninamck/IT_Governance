@@ -113,15 +113,15 @@ class MissionController extends BaseController
         }
     }
 
-    public function getMissionsInprogress(){
-       return  $data = $this->statisticsService->calculate('missions_in_progress', []);
-
+    public function getMissionsInprogress()
+    {
+        return  $data = $this->statisticsService->calculate('missions_in_progress', []);
     }
-    public function getManagerMissionReport($mission){
+    public function getManagerMissionReport($mission)
+    {
         $data = ['mission_id' => $mission];
         return  $data = $this->statisticsService->calculate('manager_mission_report', $data);
- 
-     }
+    }
 
     public function getSystemReport($id): JsonResponse
     {
@@ -186,8 +186,13 @@ class MissionController extends BaseController
 
             // Création de la participation du manager
             $this->participationService->createParticipation($participantData);
+
+            $missionID = $mission->id;
+            $managerId = $this->participationService->getmanagerMission($missionID);
+
             $this->notificationService->sendNotification(
-                $missionData['manager_id'],
+                // $missionData['manager_id'],
+                $managerId,
                 "Vous avez été affecté à la mission '{$mission->mission_name}' comme manager.",
                 json_encode(['type' => 'mission', 'id' => $mission->id]), // Convertir en JSON
                 'mission'
@@ -288,7 +293,29 @@ class MissionController extends BaseController
         } catch (\Exception $e) {
             return $this->sendError("Une erreur est survenue", ['error' => $e->getMessage()], 500);
         }
+    }public function getMissionById($id)
+    {
+        try {
+            $user = auth()->user();
+    
+            if (!$user) {
+                return $this->sendError("Utilisateur non authentifié", [], 401);
+            }
+    
+            // Appelle le service
+            $mission = $this->missionService->getMissionById($id, $user);
+    
+            if (!$mission) {
+                return $this->sendError('Aucune mission trouvée.', [], 404);
+            }
+    
+            // Tu n’as plus besoin de faire "participations->firstWhere", car c’est déjà structuré.
+            return $this->sendResponse($mission, 'Mission récupérée avec succès.');
+        } catch (\Exception $e) {
+            return $this->sendError('Erreur lors de la récupération mission.', ['error' => $e->getMessage()], 500);
+        }
     }
+    
 
     // public function storeMultiple(Request $request): JsonResponse
     // {
@@ -500,11 +527,11 @@ class MissionController extends BaseController
         }
     }
 
-    
+
     public function getRequestStatusForMissions(): JsonResponse
     {
         try {
-           
+
             $missions = $this->missionService->getRequestStatusForMissions();
 
             if ($missions->isEmpty()) {
@@ -522,9 +549,9 @@ class MissionController extends BaseController
         try {
             $user = auth()->user();
 
-        if (!$user) {
-            return $this->sendError("Utilisateur non authentifié", [], 401);
-        }
+            if (!$user) {
+                return $this->sendError("Utilisateur non authentifié", [], 401);
+            }
             // Fermer la mission
             $mission = $this->missionService->requestCancelMission($id);
 
@@ -532,18 +559,18 @@ class MissionController extends BaseController
                 return $this->sendError("Mission not found", [], 404);
             }
 
-              
-          //Récupérer tous les admins
-        $admins = User::where('role', 1)->get();
 
-        foreach ($admins as $admin) {
-            $this->notificationService->sendNotification(
-                $admin->id,
-                "L'utilisateur " . $user->first_name . ' ' . $user->last_name . " a demandé l'annulation de la mission '{$mission->mission_name}'.",
-                json_encode(['type' => 'mission', 'id' => $mission->id]),
-                'mission'
-            );
-        }
+            //Récupérer tous les admins
+            $admins = User::where('role', 1)->get();
+
+            foreach ($admins as $admin) {
+                $this->notificationService->sendNotification(
+                    $admin->id,
+                    "L'utilisateur " . $user->first_name . ' ' . $user->last_name . " a demandé l'annulation de la mission '{$mission->mission_name}'.",
+                    json_encode(['type' => 'mission', 'id' => $mission->id]),
+                    'mission'
+                );
+            }
             // Log de l'action
             $this->logService->logUserAction(
                 auth()->user()->email ?? 'Unknown',
@@ -572,17 +599,17 @@ class MissionController extends BaseController
             if (!$mission) {
                 return $this->sendError("Mission not found", [], 404);
             }
-             //Récupérer tous les admins
-        $admins = User::where('role', 1)->get();
+            //Récupérer tous les admins
+            $admins = User::where('role', 1)->get();
 
-        foreach ($admins as $admin) {
-            $this->notificationService->sendNotification(
-                $admin->id,
-                "L'utilisateur " . $user->first_name . ' ' . $user->last_name . " a demandé de cloturé la mission '{$mission->mission_name}'.",
-                json_encode(['type' => 'cloture_mission', 'id' => $mission->id]),
-                'cloture_mission'
-            );
-        }
+            foreach ($admins as $admin) {
+                $this->notificationService->sendNotification(
+                    $admin->id,
+                    "L'utilisateur " . $user->first_name . ' ' . $user->last_name . " a demandé de cloturé la mission '{$mission->mission_name}'.",
+                    json_encode(['type' => 'cloture_mission', 'id' => $mission->id]),
+                    'cloture_mission'
+                );
+            }
 
             // Log de l'action
             $this->logService->logUserAction(
@@ -637,7 +664,7 @@ class MissionController extends BaseController
             return $this->sendError("An error occurred", ["error" => $e->getMessage()], 500);
         }
     }
-   
+
 
     public function AcceptRequestStatus($id): JsonResponse
     {

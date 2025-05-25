@@ -61,6 +61,9 @@ class ParticipationService
     {
         return $this->participationRepository->updateParticipation($id, $data);
     }
+    public function getmanagerMission($missionID){
+        return  $this->participationRepository->getmanagerMission($missionID);
+    }
 
      
      //Trouver une participation par mission et profil

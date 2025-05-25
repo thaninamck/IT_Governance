@@ -13,63 +13,94 @@ class MissionRepository
     //  }
 
     public function getMissionSystemsById($id)
-     {
-         return Mission::with(['systems.layers', 'systems.owner', 'participations.profile'])
-         ->find($id);
-     
-     }
+    {
+        return Mission::with(['systems.layers', 'systems.owner', 'participations.profile'])
+            ->find($id);
+    }
 
     public function getAllMissions()
     {
         return Mission::with(['client', 'status', 'participations.user'])->get();
     }
-     
+
 
 
     public function getMembersByMission($missionId)
-{
-    $mission = Mission::with(['participations.user', 'participations.profile'])->find($missionId);
-
-   
-    
-
-    return $mission;
-}
+    {
+        $mission = Mission::with(['participations.user', 'participations.profile'])->find($missionId);
 
 
-    public function createMission(array $data):Mission
+
+
+        return $mission;
+    }
+
+
+    public function createMission(array $data): Mission
     {
         return Mission::create($data);
     }
 
-    public function updateMission($id,array $data): ?Mission
+    public function updateMission($id, array $data): ?Mission
     {
-         // Récupérer la mission avec les relations
-         $mission = Mission::with(['client', 'status', 'participations.user'])->find($id);
+        // Récupérer la mission avec les relations
+        $mission = Mission::with(['client', 'status', 'participations.user'])->find($id);
 
-         if (!$mission) {
-             return null;
-         }
- 
-         // Mettre à jour les champs de la mission
-         $mission->update($data);
- 
-         // Si vous avez besoin de mettre à jour des relations, vous pouvez le faire ici
-         // Par exemple, si vous avez des données pour 'client' ou 'status' dans $data
-         if (isset($data['client'])) {
-             $mission->client()->update($data['client']);
-         }
- 
-         if (isset($data['status'])) {
-             $mission->status()->update($data['status']);
-         }
- 
-         // Recharger la mission avec les relations mises à jour pour retourner l'objet complet
-         $mission->load(['client', 'status', 'participations.user']);
- 
-         return $mission;
+        if (!$mission) {
+            return null;
+        }
+
+        // Mettre à jour les champs de la mission
+        $mission->update($data);
+
+        // Si vous avez besoin de mettre à jour des relations, vous pouvez le faire ici
+        // Par exemple, si vous avez des données pour 'client' ou 'status' dans $data
+        if (isset($data['client'])) {
+            $mission->client()->update($data['client']);
+        }
+
+        if (isset($data['status'])) {
+            $mission->status()->update($data['status']);
+        }
+
+        // Recharger la mission avec les relations mises à jour pour retourner l'objet complet
+        $mission->load(['client', 'status', 'participations.user']);
+
+        return $mission;
     }
+    // public function getMissionById($id, $userId)
+    // {
+    //     return Mission::with([
+    //             'participations',
+    //             'participations.profile',
+    //             'participations.user',
+    //             'client',
+    //             'status'
+    //         ])
+    //         ->where('id', $id)
+    //         ->whereHas('participations.user', function ($query) use ($userId) {
+    //             $query->where('id', $userId)->with(['profile', 'user']);
+    //         })
+    //         ->first(); // Récupère un seul objet Mission (ou null si pas trouvé)
+    // }
 
+    public function getMissionById($id, $userId)
+{
+    $mission = Mission::with([
+        'client',
+        'status',
+        'participations' => function ($query) use ($userId) {
+            $query->where('user_id', $userId)
+                ->with(['profile', 'user']); 
+        }
+    ])
+    ->where('id', $id)
+    ->first();
+
+    return $mission;
+}
+
+    
     public function findMissionById(int $id)
     {
         return Mission::find($id);
@@ -77,18 +108,17 @@ class MissionRepository
 
     public function hasRelatedData(Mission $mission): bool
     {
-        return 
-      //  $mission->executions()->exists()||
-        $mission->remediations()->exists();
-
+        return
+            //  $mission->executions()->exists()||
+            $mission->remediations()->exists();
     }
     public function deleteMission(int $id): ?string
     {
-        $mission=Mission::find($id);
-        if(!$mission){
+        $mission = Mission::find($id);
+        if (!$mission) {
             return null;
         }
-        $mission_name=$mission->mission_name;
+        $mission_name = $mission->mission_name;
         $mission->delete();
 
         return $mission_name;
@@ -96,152 +126,150 @@ class MissionRepository
 
     public function createMultipleMissions(array $missionsData)
     {
-        $createdMissions=[];
+        $createdMissions = [];
 
-        foreach($missionsData as $missionData){
-            $createdMissions[]=Mission::create($missionData);
+        foreach ($missionsData as $missionData) {
+            $createdMissions[] = Mission::create($missionData);
         }
         return collect($createdMissions);
     }
 
-    public function closeMission(int $id , int $status_id):?Mission
+    public function closeMission(int $id, int $status_id): ?Mission
     {
-        $mission=Mission::find($id);
+        $mission = Mission::find($id);
 
-        if(!$mission){
+        if (!$mission) {
             return null;
         }
-        
-         // Mettre à jour le statut de la mission
-         $mission->status_id = $status_id; //CLOSE
-         $mission->save();
+
+        // Mettre à jour le statut de la mission
+        $mission->status_id = $status_id; //CLOSE
+        $mission->save();
 
         return $mission;
     }
 
-    public function archiveMission(int $id , int $status_id):?Mission
+    public function archiveMission(int $id, int $status_id): ?Mission
     {
-        $mission=Mission::find($id);
+        $mission = Mission::find($id);
 
-        if(!$mission){
+        if (!$mission) {
             return null;
         }
-        
-         // Mettre à jour le statut de la mission
-         $mission->status_id = $status_id; // archivé
-         $mission->save();
+
+        // Mettre à jour le statut de la mission
+        $mission->status_id = $status_id; // archivé
+        $mission->save();
 
         return $mission;
     }
 
     public function getArchivedMissions()
     {
-        return Mission::where('status_name','archivée')->get();
+        return Mission::where('status_name', 'archivée')->get();
     }
 
-    public function cancelMission(int $id,int $status_id):?Mission
+    public function cancelMission(int $id, int $status_id): ?Mission
     {
-        $mission=Mission::find($id);
+        $mission = Mission::find($id);
 
-        if(!$mission){
+        if (!$mission) {
             return null;
         }
-        
-         // Mettre à jour le statut de la mission
-         $mission->status_id = $status_id; //annulé
-         logger()->info('Status ID  : ' . $mission->status_id);
-         $mission->save();
+
+        // Mettre à jour le statut de la mission
+        $mission->status_id = $status_id; //annulé
+        logger()->info('Status ID  : ' . $mission->status_id);
+        $mission->save();
 
         return $mission;
     }
 
-    public function requestCancelMission(int $id , int $status_id):?Mission
+    public function requestCancelMission(int $id, int $status_id): ?Mission
     {
-        $mission=Mission::find($id);
+        $mission = Mission::find($id);
 
-        if(!$mission){
+        if (!$mission) {
             return null;
         }
         // Stocker l'état précédent
-    $mission->previous_status_id = $mission->status_id;
-        
-         // Mettre à jour le statut de la mission
-         $mission->status_id = $status_id; //en attente annulation
-         $mission->save();
+        $mission->previous_status_id = $mission->status_id;
+
+        // Mettre à jour le statut de la mission
+        $mission->status_id = $status_id; //en attente annulation
+        $mission->save();
 
         return $mission;
     }
-    public function requestCloseMission(int $id, int $status_id):?Mission
+    public function requestCloseMission(int $id, int $status_id): ?Mission
     {
-        $mission=Mission::find($id);
+        $mission = Mission::find($id);
 
-        if(!$mission){
+        if (!$mission) {
             return null;
         }
         // Stocker l'état précédent
-    $mission->previous_status_id = $mission->status_id;
-        
-         // Mettre à jour le statut de la mission
-         $mission->status_id = $status_id; //en attente annulation
-         $mission->save();
+        $mission->previous_status_id = $mission->status_id;
+
+        // Mettre à jour le statut de la mission
+        $mission->status_id = $status_id; //en attente annulation
+        $mission->save();
 
         return $mission;
     }
 
-    public function requestArchiveMission(int $id,int $status_id):?Mission
+    public function requestArchiveMission(int $id, int $status_id): ?Mission
     {
-        $mission=Mission::find($id);
+        $mission = Mission::find($id);
 
-        if(!$mission){
+        if (!$mission) {
             return null;
         }
         // Stocker l'état précédent
-    $mission->previous_status_id = $mission->status_id;
-        
-         // Mettre à jour le statut de la mission
-         $mission->status_id = $status_id; //en attente annulation
-         $mission->save();
+        $mission->previous_status_id = $mission->status_id;
+
+        // Mettre à jour le statut de la mission
+        $mission->status_id = $status_id; //en attente annulation
+        $mission->save();
 
         return $mission;
     }
     public function refuseRequestStatus(int $id): ?Mission
     {
         $mission = Mission::find($id);
-    
+
         if (!$mission) {
             return null;
         }
-    
+
         $mission->status_id = $mission->previous_status_id;
         $mission->previous_status_id = null;
         $mission->save();
-    
-            return $mission;
-    
-       
-    }  
-    public function acceptrequestStatus(int $id,int $status_id): ?Mission
+
+        return $mission;
+    }
+    public function acceptrequestStatus(int $id, int $status_id): ?Mission
     {
         $mission = Mission::find($id);
-        
-        if(!$mission) {
+
+        if (!$mission) {
             return null;
         }
-        
-    //    if($mission->status_id == 14){
-    //     $mission->status_id = 10;
-    //     $mission->previous_status_id = null; 
-    //    } elseif($mission->status_id == 15){
-    //     $mission->status_id = 11;
-    //     $mission->previous_status_id = null; 
-    //    }elseif($mission->status_id == 16){
-    //     $mission->status_id = 13;
-    //     $mission->previous_status_id = null; 
-    //    }
-    $mission->status_id = $status_id;
+
+        //    if($mission->status_id == 14){
+        //     $mission->status_id = 10;
+        //     $mission->previous_status_id = null; 
+        //    } elseif($mission->status_id == 15){
+        //     $mission->status_id = 11;
+        //     $mission->previous_status_id = null; 
+        //    }elseif($mission->status_id == 16){
+        //     $mission->status_id = 13;
+        //     $mission->previous_status_id = null; 
+        //    }
+        $mission->status_id = $status_id;
         $mission->save();
-        
-        
+
+
         return $mission;
     }
     public function getRequestStatusForMissions()
@@ -249,120 +277,120 @@ class MissionRepository
         return Mission::whereIn('status_name', ['en_attente_archivage', 'en_attente_annulation', 'en_attente_de_clôture'])->get();
     }
 
-    public function stopMission(int $id ,int $status_id):?Mission
-    {
-        $mission=Mission::find($id);
-    
-        if(!$mission){
-            return null;
-        }
-        // Stocker l'état précédent
-    $mission->previous_status_id = $mission->status_id;
-
-        
-         // Mettre à jour le statut de la mission
-         $mission->status_id = $status_id; //stope
-         $mission->save();
-    
-        return $mission;
-    }
-    
-    public function resumeMission(int $id): ?Mission
+    public function stopMission(int $id, int $status_id): ?Mission
     {
         $mission = Mission::find($id);
-    
+
         if (!$mission) {
             return null;
         }
-    
+        // Stocker l'état précédent
+        $mission->previous_status_id = $mission->status_id;
+
+
+        // Mettre à jour le statut de la mission
+        $mission->status_id = $status_id; //stope
+        $mission->save();
+
+        return $mission;
+    }
+
+    public function resumeMission(int $id): ?Mission
+    {
+        $mission = Mission::find($id);
+
+        if (!$mission) {
+            return null;
+        }
+
         // Vérifier si la mission est en pause
         // if ($mission->status_id !== 12) {
         //     throw new \Exception("La mission n'est pas en pause.");
         // }
-    
+
         $now = \Carbon\Carbon::now();
         $endDate = \Carbon\Carbon::parse($mission->end_date);
-    
+
         // Vérifier si la date actuelle est supérieure à la date de fin
         if ($now->gt($endDate->endOfDay())) {
             throw new \Exception("La mission ne peut pas être reprise car la date actuelle dépasse la date de fin.");
         }
-    
+
         // Restaurer le statut précédent
         $mission->status_id = $mission->previous_status_id;
         $mission->previous_status_id = null;
-    
+
         // Mettre la date de début à aujourd’hui
         $mission->start_date = $now->toDateString();
-    
+
         $mission->save();
-    
+
         return $mission;
     }
-    
-public function updateMissionStatuses()
-{
-    $missions = Mission::all();
 
-    foreach ($missions as $mission) {
-        $newStatus = $this->getAutomaticStatus($mission->start_date, $mission->end_date);
-        if ($mission->status_id !== $newStatus) {
-            $mission->status_id = $newStatus;
-            $mission->save();
+    public function updateMissionStatuses()
+    {
+        $missions = Mission::all();
+
+        foreach ($missions as $mission) {
+            $newStatus = $this->getAutomaticStatus($mission->start_date, $mission->end_date);
+            if ($mission->status_id !== $newStatus) {
+                $mission->status_id = $newStatus;
+                $mission->save();
+            }
         }
     }
-}
 
-private function getAutomaticStatus($startDate, $endDate)
-{
-    $currentDate = now();
-    $start = \Carbon\Carbon::parse($startDate);
-    $end = \Carbon\Carbon::parse($endDate);
+    private function getAutomaticStatus($startDate, $endDate)
+    {
+        $currentDate = now();
+        $start = \Carbon\Carbon::parse($startDate);
+        $end = \Carbon\Carbon::parse($endDate);
 
-    if ($currentDate->lt($start)) {
-        return 7; // Statut "non commencée"
-    } elseif ($currentDate->between($start, $end)) {
-        return 8; // Statut "en cours"
-    } else {
-        return 9; // Statut "en retard"
+        if ($currentDate->lt($start)) {
+            return 7; // Statut "non commencée"
+        } elseif ($currentDate->between($start, $end)) {
+            return 8; // Statut "en cours"
+        } else {
+            return 9; // Statut "en retard"
+        }
     }
-}
 
-public function getSystemsByMissionID(int $missionId )
-{
-    // Trouver la mission avec ses systèmes
-    $mission = Mission::with('systems.owner')->find($missionId);
+    public function getSystemsByMissionID(int $missionId)
+    {
+        // Trouver la mission avec ses systèmes
+        $mission = Mission::with('systems.owner')->find($missionId);
 
-    return $mission;
-}
-public function attachSystem(int $missionId, int $systemId): void
-{
-    $mission = Mission::findOrFail($missionId);
-    $mission->systems()->attach($systemId);
-}
+        return $mission;
+    }
+    public function attachSystem(int $missionId, int $systemId): void
+    {
+        $mission = Mission::findOrFail($missionId);
+        $mission->systems()->attach($systemId);
+    }
 
 
-public function getUserMissions($userId)
-{
-    // return Mission::with([
-    //         'client:id,commercial_name',
-    //         'status:id,status_name',
-    //         'participations.user:id,first_name,last_name,email,role',
-    //         'participations.profile:id,profile_name'
-    //     ])
-    //     ->whereHas('participations', function($query) use ($userId) {
-    //         $query->where('user_id', $userId);
-    //     })
-    //     ->get();
+    public function getUserMissions($userId)
+    {
+        // return Mission::with([
+        //         'client:id,commercial_name',
+        //         'status:id,status_name',
+        //         'participations.user:id,first_name,last_name,email,role',
+        //         'participations.profile:id,profile_name'
+        //     ])
+        //     ->whereHas('participations', function($query) use ($userId) {
+        //         $query->where('user_id', $userId);
+        //     })
+        //     ->get();
         $missions = Mission::forUser($userId)->get();
         return $missions;
-}
+    }
 
 
 
-public function getMissionsInprogress()
-{
-    $results = DB::select('
+    public function getMissionsInprogress()
+    {
+        $results = DB::select('
         SELECT 
             m.id,
             m.mission_name AS mission,
@@ -413,11 +441,11 @@ public function getMissionsInprogress()
         ORDER BY m.id
     ');
 
-    return $results;
-}
-public function getManagerMissionReport($missionId)
-{
-    return DB::select('
+        return $results;
+    }
+    public function getManagerMissionReport($missionId)
+    {
+        return DB::select('
        WITH execution_stats AS (
     SELECT 
         ex.id AS execution_id,
@@ -556,11 +584,6 @@ LEFT JOIN execution_stats es ON TRUE
 WHERE m.id = ?
 GROUP BY m.id, m.mission_name, m.start_date, m.end_date, c.commercial_name;
 
-    ', [$missionId,$missionId]);
-}
-
-
-
-
-
+    ', [$missionId, $missionId]);
+    }
 }
