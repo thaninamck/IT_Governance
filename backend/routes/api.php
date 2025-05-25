@@ -241,8 +241,8 @@ Route::middleware(['auth:sanctum', TesterMiddleware::class])
             Route::put('missions/{mission}/executions/launch-execution/{execution}', 'launchExecution');
 
             Route::get('missions/{mission}/executions/get-execution/{execution}', 'getExecutionById'); //correct one
-            Route::patch('/executions/submit-execution-for-review/{executionID}', 'submitExecutionForReview');
-            Route::patch('/executions/submit-execution-for-validation/{executionID}', 'submitExecutionForValidation');
+            Route::patch('missions/{mission}/executions/submit-execution-for-review/{executionID}', 'submitExecutionForReview');
+            Route::patch('missions/{mission}/executions/submit-execution-for-validation/{executionID}', 'submitExecutionForValidation');
 
             Route::get('/missions/{mission}/{appId}/getexecutionsListForTesteurForCorrection', 'getExecutionsByMissionAndSystemAndTesterFiltered');
             Route::get('/missions/{mission}/{appId}/getexecutionsListForTesteur', 'getExecutionsByMissionAndSystemAndTester');

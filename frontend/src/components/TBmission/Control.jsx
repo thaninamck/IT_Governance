@@ -62,6 +62,7 @@ function Control({ statusControl, data, grid_cols = 'grid-cols-1', size }) {
         { field: "code", headerName: "Control Code", width: 100, expandable: true },
         { field: "description", headerName: "Description", width: 300, expandable: true },
         { field: "owner", headerName: "Owner", width: 120, expandable: true },
+        { field: "system_name", headerName: "Système", width: 120, expandable: true },
         { field: "layer", headerName: "Layer", width: 100, expandable: true },
         { field: "status", headerName: "Status", width: 150, expandable: true },
         { field: "testeur", headerName: "Tester", width: 150, expandable: true }]

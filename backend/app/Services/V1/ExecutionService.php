@@ -2,6 +2,7 @@
 namespace App\Services\V1;
 
 use App\Models\execution;
+use App\Models\Participation;
 use App\Repositories\V1\CommentRepository;
 use App\Repositories\V1\ExecutionRepository;
 use App\Repositories\V1\CntrlRiskCovRepository;
@@ -73,14 +74,51 @@ public function getIneffectiveExecutionsByMission($missionId)
 {
     return $this->executionRepository->getIneffectiveExecutionsByMission($missionId);
 }
-public function submitExecutionForReview($executionId)
+public function submitExecutionForReview($missionId,$executionId)
 {
-    return $this->executionRepository->updateExecutionStatus($executionId,true,false);
+    $result=$this->executionRepository->updateExecutionStatus($executionId,true,false);
+    if($result){
+        
+        $supervisorsIds = Participation::where('mission_id', $missionId)
+        ->whereHas('profile', function ($query) {
+            $query->where('profile_name', 'superviseur');
+        })
+        ->pluck('user_id');
+    
+    foreach ($supervisorsIds as $userId) {
+        $this->notificationService->sendNotification(
+            $userId, 
+            "Vous avez des contrôles à revoir pour une mission",
+            ['type' => 'review_cntrl', 'id' => $executionId],
+            "review_cntrl"
+        );
+    }
+    
+    }
+    return $result;
 }
-public function submitExecutionForValidation($executionId)
+public function submitExecutionForValidation($missionId, $executionId)
 {
-    return $this->executionRepository->updateExecutionStatus($executionId,false,true);
+    $result=$this->executionRepository->updateExecutionStatus($executionId, false, true);
+
+    $supervisorsIds = Participation::where('mission_id', $missionId)
+        ->whereHas('profile', function ($query) {
+            $query->where('profile_name', 'manager');
+        })
+        ->pluck('user_id');
+
+    foreach ($supervisorsIds as $userId) {
+        $this->notificationService->sendNotification(
+            $userId,
+            "Vous avez des contrôles à revoir pour une mission",
+            ['type' => 'validation_cntrl', 'id' => $executionId],
+            "review_cntrl"
+        );
+    }
+
+    return $result; 
 }
+
 public function submitExecutionForCorrection($executionId)
 {
     return $this->executionRepository->updateExecutionStatus($executionId,false,false);

@@ -30,10 +30,23 @@ class ManagerReportCalculator implements CalculationServiceInterface
         'client' => $first['client'] ?? null,
         'nbrControl' => $first['nbr_control'] ?? 0,
         'nbrControlWithActions' => $first['nbr_control_with_actions'] ?? 0,
-        'controlCommencé' => $first['control_commence'] ?? 0,
-        'controlNonCommencé' => $first['control_non_commence'] ?? 0,
-        'controlEffectif' => $first['controls_effectifs'] ?? 0,
-        'controlNonEffectif' => $first['controls_ineffectifs'] ?? 0,
+        
+        'controlEffectif' => round( (($first['controls_effectifs'] ?? 0) / max(1, $first['nbr_control'])) * 100 ), // pourcentage des controles effectifs
+'controlNonEffectif' => round( (($first['controls_ineffectifs'] ?? 0) / max(1, $first['nbr_control'])) * 100 ), // pourcentage des controles ineffectifs
+
+'controlCommencé' => round( (($first['control_commence'] ?? 0) / max(1, $first['nbr_control'])) * 100 ),
+
+
+        'controlNonCommencé' => round($first['control_non_commence'] ?? 0) / max(1, $first['nbr_control']) * 100, // pourcentage des controles non commencés
+        'controlFinalisé' => $first['controls_finalises'] ?? 0,
+        'controlNonFinalisé' => $first['controls_non_finalises'] ?? 0, 
+
+// Statuts d'exécution avec pourcentages
+'executionsNotAppliedPct' => round((($first['executions_not_applied'] ?? 0) / max(1, $first['nbr_control'])) * 100),
+'executionsPartiallyAppliedPct' => round((($first['executions_partially_applied'] ?? 0) / max(1, $first['nbr_control'])) * 100),
+'executionsNotTestedPct' => round((($first['executions_not_tested'] ?? 0) / max(1, $first['nbr_control'])) * 100),
+'executionsNotApplicablePct' => round((($first['executions_not_applicable'] ?? 0) / max(1, $first['nbr_control'])) * 100),
+
 
         // actions = remediations
         'nbrAction' => $first['total_remediations'] ?? 0,

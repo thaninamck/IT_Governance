@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from "react";
 import Header from "../../components/Header/Header";
 import html2pdf from "html2pdf.js";
+import { useLocation } from 'react-router-dom';
+import { Download } from "lucide-react";
+
 import useStatistics from "../../Hooks/useStatistics";
 import {
   PieChart,
@@ -15,12 +18,22 @@ import {
 } from "recharts";
 import { useAuth } from "../../Context/AuthContext";
 
-const exportToPDF = () => {
+const exportToPDF = (appName) => {
   const element = document.getElementById("report-content");
-  html2pdf().set({ filename: "AppReport.pdf" }).from(element).save();
+  const dateStr = new Date().toISOString().slice(0, 10); // format YYYY-MM-DD
+
+  appName || "Application";
+  html2pdf().set({ filename: `AppReport_${appName}_${dateStr}.pdf` }).from(element).save();
 };
 
+
 const AppReport = () => {
+  const { state } = useLocation();
+
+  const missionId = state?.missionId;
+  const appData = state?.appData;
+
+
   const { loading, getAppReport } = useStatistics();
   const [data, setData] = useState(null);
   const [couches, setCouches] = useState([]);
@@ -36,7 +49,8 @@ const AppReport = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await getAppReport(1);
+        
+        const response = await getAppReport(missionId,appData.application_id);
         setData(response);
 
         // Mettre à jour les couches si elles existent dans la réponse
@@ -73,118 +87,103 @@ const AppReport = () => {
   }
 
   return (
-    <div>
-      <Header user={user} />
-
-      <div className="flex justify-center sm:justify-end mx-4 sm:mx-8">
-        <button
-          onClick={exportToPDF}
-          className="bg-blue-menu text-white px-4 py-2 rounded-lg mb-8 sm:mb-0"
-        >
-          Exporter en PDF
-        </button>
-      </div>
-
-      <div
-        id="report-content"
-        className="p-4 sm:p-6 max-w-5xl mx-auto bg-white shadow-md rounded-lg overflow-auto"
-      >
-        <header className="flex justify-between items-center border-b pb-4 mb-4">
-          <img
-            src="/mazars_logo.png"
-            alt="Mazars Logo"
-            className="h-8 sm:h-11"
-          />
-        </header>
-
-        <section className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
-          <div>
-            <p>
-              <strong>Mission:</strong> {missionData.mission}
-            </p>
-            <p>
-              <strong>Client:</strong> {missionData.client}
-            </p>
-            <p>
-              <strong>Owner:</strong>
-            </p>
-            <ul className="pl-4 list-disc">
-              {missionData.owners.map((owner, index) => (
-                <li key={index}>{owner}</li>
-              ))}
-            </ul>
-          </div>
-          <div>
-            {missionData.manager && (
-              <p>
-                <strong>Manager:</strong> {missionData.manager}
-              </p>
-            )}
-            <p>
-              <strong>Application:</strong>{" "}
-              {missionData.applications.length > 0
-                ? missionData.applications.join(", ")
-                : "Non spécifié"}
-            </p>
-          </div>
-        </section>
-
-        {couches.length > 0 ? (
-          couches.map((couche, index) => (
-            <section key={index} className="mt-8">
-              <h2 className="border-b pb-2 text-lg font-semibold">
-                Couche {couche.nom}
-              </h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
-                <div className="w-full sm:w-auto">
-                  <PieChart width={300} height={200}>
-                    <Pie
-                      data={couche.dataPie}
-                      cx="50%"
-                      cy="50%"
-                      innerRadius={40}
-                      outerRadius={50}
-                      startAngle={90}
-                      endAngle={-270}
-                      fill="#8884d8"
-                      dataKey="value"
-                    >
-                      {couche.dataPie.map((entry, i) => (
-                        <Cell key={`cell-${i}`} fill={entry.color} />
-                      ))}
-                    </Pie>
-                    {/* 👉 Ajoute le Tooltip ici */}
-                    <Tooltip />
-                    <Legend
-                      layout="vertical"
-                      align="left"
-                      verticalAlign="middle"
-                    />
-                  </PieChart>
-                </div>
-
-                <div className="w-full sm:w-auto">
-                  <BarChart width={300} height={200} data={couche.dataBar}>
-                    <XAxis dataKey="name" />
-                    <YAxis />
-                    <Tooltip />
-                    <Bar dataKey="value" fill="#3b82f6" />
-                  </BarChart>
-                  <p className="text-center mt-2 text-sm">
-                    Nombre de contrôles non positionnés par owner
-                  </p>
-                </div>
-              </div>
-            </section>
-          ))
-        ) : (
-          <p className="text-center mt-8 text-sm">
-            Aucune donnée de couche disponible
+    <div className="min-h-screen ">
+    <Header user={user} />
+  
+    <div className="flex justify-center sm:justify-end mx-4 sm:mx-8 mt-6">
+  <button
+    onClick={() => exportToPDF(appData.name)}
+    className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-medium px-4 py-2 rounded-lg shadow-sm transition"
+  >
+    <Download size={18} />
+    PDF
+  </button>
+</div>
+  
+    <div
+      id="report-content"
+      className="p-6 sm:p-8 max-w-6xl mx-auto bg-white shadow-lg rounded-2xl mt-6"
+    >
+      <header className="flex justify-between items-center border-b pb-4 mb-6">
+        <img src="/mazars_logo.png" alt="Mazars Logo" className="h-10" />
+      </header>
+  
+      <section className="grid grid-cols-1 sm:grid-cols-2 gap-6 text-sm text-gray-800">
+        <div>
+          <p><strong>Mission:</strong> {missionData.mission}</p>
+          <p><strong>Client:</strong> {missionData.client}</p>
+          <p><strong>Owner:</strong></p>
+          <ul className="list-disc list-inside ml-2">
+            {missionData.owners.map((owner, i) => (
+              <li key={i}>{owner}</li>
+            ))}
+          </ul>
+        </div>
+  
+        <div>
+          {missionData.manager && (
+            <p><strong>Manager:</strong> {missionData.manager}</p>
+          )}
+          <p>
+            <strong>Application:</strong>{" "}
+            {missionData.applications.length > 0
+              ? missionData.applications.join(", ")
+              : "Non spécifié"}
           </p>
-        )}
-      </div>
+        </div>
+      </section>
+  
+      {couches.length > 0 ? (
+        couches.map((couche, i) => (
+          <section key={i} className="mt-10">
+            <h2 className="text-lg font-semibold text-gray-700 border-b pb-2">
+              Couche {couche.nom}
+            </h2>
+  
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-4">
+              <div className="flex justify-center">
+                <PieChart width={280} height={200}>
+                  <Pie
+                    data={couche.dataPie}
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={40}
+                    outerRadius={50}
+                    startAngle={90}
+                    endAngle={-270}
+                    dataKey="value"
+                  >
+                    {couche.dataPie.map((entry, j) => (
+                      <Cell key={`cell-${j}`} fill={entry.color} />
+                    ))}
+                  </Pie>
+                  <Tooltip />
+                  <Legend layout="vertical" align="right" verticalAlign="middle" />
+                </PieChart>
+              </div>
+  
+              <div className="flex flex-col items-center">
+                <BarChart width={280} height={200} data={couche.dataBar}>
+                  <XAxis dataKey="name" />
+                  <YAxis />
+                  <Tooltip />
+                  <Bar dataKey="value" fill="#3b82f6" />
+                </BarChart>
+                <p className="text-sm mt-2 text-gray-600 text-center">
+                  Nombre de contrôles non positionnés par owner
+                </p>
+              </div>
+            </div>
+          </section>
+        ))
+      ) : (
+        <p className="text-center mt-10 text-gray-500">
+          Aucune donnée de couche disponible.
+        </p>
+      )}
     </div>
-  );
+  </div>
+  );  
 };
 
 export default AppReport;

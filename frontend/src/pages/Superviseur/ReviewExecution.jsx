@@ -185,7 +185,7 @@ function ReviewExecution() {
       if (!controleData?.executionId) return alert("Aucun executionId trouvé.");
       try {
         if(controleData.connectedUserProfile === "superviseur"){
-        await submitExecutionForValidation(controleData.executionId);
+        await submitExecutionForValidation(controleData?.missionId,controleData.executionId);
         }else if (controleData.connectedUserProfile === "manager"){
           await submitExecutionForFinalValidation(controleData.executionId);
         }

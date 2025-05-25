@@ -7,6 +7,7 @@ import MissionInfo from "../../components/InfosDisplay/MissionInfo";
 import { Progress } from "@material-tailwind/react";
 import Breadcrumbs from "../../components/Breadcrumbs";
 import useStatistics from "../../Hooks/useStatistics";
+import { Download } from "lucide-react";
 import {
   BarChart,
   Bar,
@@ -21,18 +22,21 @@ import {
 } from "recharts";
 import { useAuth } from "../../Context/AuthContext";
 
-const exportToPDF = () => {
-  const element = document.getElementById("report-content"); // L'élément HTML à exporter
+const exportToPDF = (missionName = "Mission") => {
+  const element = document.getElementById("report-content");
+  const safeMission = missionName.replace(/\s+/g, "_");
+  const dateStr = new Date().toISOString().slice(0, 10); // format YYYY-MM-DD
 
   html2pdf()
     .set({
-      filename: "MissionReport.pdf",
+      filename: `MissionReport_${safeMission}_${dateStr}.pdf`,
     })
     .from(element)
     .save();
 };
 
-const MissionReport = ({ missionName = "DSP" }) => {
+
+const MissionReport = ({ missionId,missionName = "DSP" }) => {
   const dataApplication1 = [
     { name: "SNOC_APP", score: 87.8 },
     { name: "USSD_APP", score: 90.2 },
@@ -74,7 +78,7 @@ const MissionReport = ({ missionName = "DSP" }) => {
     { name: "DB", score: 85.5 },
     { name: "APP", score: 87 },
   ];
-  const { loading, error, missionStatistics } = useStatistics();
+  const { loading, error, missionStatistics } = useStatistics(missionId);
   const missionProgress = missionStatistics.mission_adv;
 
   const missionProgressValue = parseFloat(missionProgress); // au cas où c'est une string
@@ -131,48 +135,36 @@ const data =
       return;
     }
 
-    // Met à jour les breadcrumbs
-    // setBreadcrumbs([
-    //   { label: "Missions", path: "/missions" },
-    //   {
-    //     label: missionParam || missionName,
-    //     path: `/missions/${missionParam || missionName}`,
-    //   },
-    //   {
-    //     label: app.name,
-    //     path: `/missions/${missionParam || missionName}/${app.application_id}`,
-    //   },
-    // ]);
 
-    console.log("Application sélectionnée :", app);
 
     // Navigation vers l'URL de type /missions/DSP/app
-    navigate(`/missions/${7}/appReport/${app.application_id}`, {
-      state: { appData: app },
+    navigate(`/missions/${missionId}/appReport/${app.application_id}`, {
+      state: { missionId:missionId , appData: app },
     });
   };
 
   const { user } = useAuth();
   return (
-    <div>
+    <div className="">
       {/* <Header user={user} />
 
       <div className="my-3 mx-4">
         <Breadcrumbs routes={breadcrumbs} />
       </div> */}
 
-      <div className="flex justify-end mr-4">
-        <button
-          onClick={exportToPDF}
-          className="bg-blue-menu text-white px-4 py-2 rounded-lg mt-4"
-        >
-          Exporter en PDF
-        </button>
-      </div>
-      <div id="report-content">
+<div className="flex justify-end mr-14">
+  <button
+    onClick={() => exportToPDF(missionName)}
+    className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-medium px-4 py-2 rounded-lg shadow-sm transition"
+  >
+    <Download size={18} />
+    PDF
+  </button>
+</div>
+      <div id="report-content ">
         {loading ? (
           <div className="flex items-center justify-center h-screen">
-          <Spinner color="#000000" size={50}/>
+        <Spinner  size={50}/>
         </div>
         
         ) : (
@@ -181,13 +173,11 @@ const data =
               Rapport de mission
             </h1>
 
-            <div className="h-auto p-1 mx-3">
-              <MissionInfo dataFormat={location.state?.missionData} />
-            </div>
+            
             {/* Mission Progress */}
-            <div className="flex mt-16 flex-col lg:flex-row lg:justify-between lg:items-center lg:items-start gap-6 w-full px-4">
+            <div className="flex mt-16 flex-col lg:flex-row lg:justify-between lg:items-center gap-6 w-full px-4">
               {/* Bloc PieChart */}
-              <div className="flex flex-col items-center justify-center bg-white shadow-sm rounded-lg p-6 w-full max-w-lg">
+              <div className="flex relative flex-col items-center justify-center bg-white shadow-sm rounded-lg p-6 w-full max-w-lg">
                 <PieChart width={120} height={120}>
                   <Pie
                     data={data}

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Models\Participation;
 use App\Services\V1\ControlService;
 use App\Services\V1\EvidenceService;
 use App\Services\V1\MissionService;
@@ -221,12 +222,7 @@ class ExecutionController extends BaseController
      */
     public function updateExecution1(Request $request, $executionId)
     {
-        Log::info('executionId:', [$executionId]);
-
-        Log::info('Request all:', $request->all());
-        Log::info('Request raw content:', [$request->getContent()]);
-        Log::info('All inputs:', $request->input());
-        Log::info('All files:', $request->file('files'));
+        
         $rules = [
             'description' => 'required|string',
             'files' => 'sometimes|array',
@@ -639,7 +635,7 @@ class ExecutionController extends BaseController
     {
         try {
             $userId = auth()->user()->id;
-
+            
             $executionReviewed = $this->executionService->getmissionReviewManager($userId);
             if (!isset($executionReviewed)) {
                 return $this->sendError('Aucune mission execution Reviewed trouvé pour cette execution.', [], 404);
@@ -655,19 +651,20 @@ class ExecutionController extends BaseController
     }
 
 
-    public function submitExecutionForReview($executionId)
+    public function submitExecutionForReview($mission,$executionID)
     {
         try {
-            return $this->executionService->submitExecutionForReview($executionId) ? $this->sendResponse("Execution submitted successfully", [], 200) : $this->sendError("submitting execution failed", [], 404);
+
+            return $this->executionService->submitExecutionForReview($mission,$executionID) ? $this->sendResponse("Execution submitted successfully", [], 200) : $this->sendError("submitting execution failed", [], 404);
         } catch (\Exception $e) {
             return $this->sendError("Error while submitting execution", ['error' => $e->getMessage()], 500);
         }
     }
 
-    public function submitExecutionForValidation($executionId)
+    public function submitExecutionForValidation($mission,$executionID)
     {
         try {
-            return $this->executionService->submitExecutionForValidation($executionId) ? $this->sendResponse("Execution submitted successfully", [], 200) : $this->sendError("submitting execution failed", [], 404);
+            return $this->executionService->submitExecutionForValidation($mission,$executionID) ? $this->sendResponse("Execution submitted successfully", [], 200) : $this->sendError("submitting execution failed", [], 404);
         } catch (\Exception $e) {
             return $this->sendError("Error while submitting execution", ['error' => $e->getMessage()], 500);
         }

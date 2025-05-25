@@ -422,9 +422,10 @@ public function getManagerMissionReport($missionId)
     SELECT 
         ex.id AS execution_id,
         controls.code AS controlCode,
-        COUNT(r.id) AS total_remediations,
-        COUNT(CASE WHEN st.status_name = \'terminé\' THEN 1 END) AS finished_remediations,
-        COUNT(CASE WHEN st.status_name = \'en cours\' THEN 1 END) AS ongoing_remediations
+        COUNT(DISTINCT r.id) AS total_remediations,
+COUNT(DISTINCT CASE WHEN st.status_name = \'terminé\' THEN r.id END) AS finished_remediations,
+COUNT(DISTINCT CASE WHEN st.status_name = \'en cours\' THEN r.id END) AS ongoing_remediations
+
     FROM executions ex
    JOIN layers l ON ex.layer_id = l.id
     JOIN systems s ON l.system_id = s.id
@@ -466,7 +467,7 @@ SELECT
      JOIN systems s ON l.system_id = s.id
      WHERE s.mission_id = m.id AND ex.launched_at IS NULL) AS control_non_commence,
 
-    (SELECT COUNT(*) FROM executions ex
+   (SELECT COUNT(*) FROM executions ex
      JOIN layers l ON ex.layer_id = l.id
      JOIN systems s ON l.system_id = s.id
      WHERE s.mission_id = m.id AND ex.launched_at IS NOT NULL 
@@ -475,20 +476,23 @@ SELECT
     (SELECT COUNT(*) FROM executions ex
      JOIN layers l ON ex.layer_id = l.id
      JOIN systems s ON l.system_id = s.id
+	 LEFT JOIN statuses st ON ex.status_id = st.id
+
      WHERE s.mission_id = m.id  
-           AND (ex.is_to_review = false OR ex.is_to_validate = false)) AS controls_non_finalises,
+           AND (ex.is_to_review = false OR ex.is_to_validate = false)  AND ex.launched_at IS NOT NULL AND st.status_name IS  NULL
+		   ) AS controls_non_finalises,
 
     (SELECT COUNT(*) FROM executions ex
      JOIN layers l ON ex.layer_id = l.id
      JOIN systems s ON l.system_id = s.id
      JOIN statuses st ON ex.status_id = st.id
-     WHERE s.mission_id = m.id AND ex.launched_at IS NOT NULL AND st.status_name = \'applied\') AS controls_effectifs,
+     WHERE s.mission_id = m.id AND ex.launched_at IS NOT NULL AND st.status_name = \'applied\'  AND st.status_name IS  NOT NULL) AS controls_effectifs,
 
     (SELECT COUNT(*) FROM executions ex
      JOIN layers l ON ex.layer_id = l.id
      JOIN systems s ON l.system_id = s.id
      JOIN statuses st ON ex.status_id = st.id
-     WHERE s.mission_id = m.id AND st.status_name != \'applied\') AS controls_ineffectifs,
+     WHERE s.mission_id = m.id AND st.status_name IS DISTINCT FROM \'applied\' AND st.status_name IS NOT NULL) AS controls_ineffectifs,
 
 -- Exécutions par statut
 (SELECT COUNT(*) FROM executions ex

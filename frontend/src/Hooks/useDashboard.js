@@ -33,7 +33,7 @@ export const useDashboard = () => {
         try {
             const response = await api.get(`/missions/${missionId}/report`);
             setMissionReportData(response.data);
-            console.log("Mission report data:", response.data);
+            console.log("Mission report dataaaaaaa:", response.data);
             return response.data;
         } catch (error) {
             console.error("Error fetching mission report:", error);
