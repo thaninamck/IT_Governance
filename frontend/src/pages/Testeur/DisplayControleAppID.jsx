@@ -107,21 +107,35 @@ function DisplayControleAppID() {
       headerName: "Action",
       width: 120,
       customRenderCell: (params) => {
-        console.log('paeamq',params)
+       // console.log('paeamq',params)
         const isToReview = params.row.isToReview;
         const isToValidate = params.row.isToValidate;
         const status = params.row.statusName;
+        const remarks = params.row.remarks;
+        const launchedAt = params.row.executionLaunchedAt;
+        // Vérifie si au moins une remarque a des colonnes non nulles
+  const hasValidRemarks = remarks.some(
+    (remark) =>
+      remark.remark_id !== null ||
+      remark.remark_text !== null ||
+      remark.remark_y !== null ||
+      remark.remark_user_id !== null
+  );
     
         let buttonLabel = "Exécuter";
         let buttonColor = "bg-blue-500 hover:bg-blue-600";
     
-        if (!isToReview && !isToValidate && status) {
+        if (!isToReview && !isToValidate && hasValidRemarks && launchedAt) {
           buttonLabel = "À corriger";
           buttonColor = "bg-orange-500 hover:bg-orange-600";
-        } else if (isToReview && isToValidate && status) {
+        } else if (isToReview && isToValidate && status && launchedAt) {
           buttonLabel = "Valider";
           buttonColor = "bg-green-500 hover:bg-green-600";
         }
+       else if (launchedAt) {
+        buttonLabel = "Consulter";
+        buttonColor = "bg-gray-500 hover:bg-gray-600";
+      }
     
         const handleLaunchExecution = async () => {
           try {
@@ -158,7 +172,8 @@ function DisplayControleAppID() {
           onClick={handleClick}
             className={`flex items-center justify-center ${buttonColor} text-white font-semibold border-none h-[40px] w-[100px] rounded shadow`}
           >
-           {params.row.executionLaunchedAt != null ? <span>consulter</span> : buttonLabel}
+           { //params.row.executionLaunchedAt != null ? <span>consulter</span> : 
+           buttonLabel}
 
            
           </button>
@@ -325,11 +340,11 @@ function DisplayControleAppID() {
     </div>
   )
 }
-{
+{/* {
    user?.role === 'admin' &&
-   <RevueListExecution  dataFormat={AppData} />
+    <RevueListExecution  dataFormat={AppData} />
 
-}
+} */}
 
        
       </div >
