@@ -8,6 +8,8 @@ const useExecution = () => {
   const navigate = useNavigate(); 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [executionStatus, setExecutionStatus] = useState(null);
+
  
   const [options, setOptions] = useState([]);
  
@@ -74,7 +76,11 @@ const useExecution = () => {
         try {
             const response = await api.put(`missions/${missionId}/executions/update-execution/${executionId}`, data);
             toast.success("Mis à jour avec succées");
+            setExecutionStatus(response.data.status.status_name)
+            console.log('update execution',response.data)
+         //  window.location.reload();
             return response;
+           
         } catch (error) {
             setError(error);
             toast.error("Erreur lors de sauvegarde des modifications veuillez réssayer");
@@ -83,6 +89,8 @@ const useExecution = () => {
         }
     }
 
+    
+    
     const fetchExecutionsListForApp = async (appData) => {
  
       setLoading(true);
@@ -224,6 +232,8 @@ const editComment = async (commentId, newText,missionId) => {
 
 
   return { 
+    executionStatus,
+    setExecutionStatus,
     loading,
     error,
    options,

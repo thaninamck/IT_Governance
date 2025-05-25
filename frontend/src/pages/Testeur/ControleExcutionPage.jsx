@@ -39,6 +39,8 @@ function ControleExcutionPage() {
   const controleData = location.state?.controleData || {};
   console.log("controoooole data", controleData);
   const {
+    executionStatus,
+    setExecutionStatus,
     loading,
     getExecutionById,
     getFileURL,
@@ -474,7 +476,7 @@ function ControleExcutionPage() {
     }
 
     try {
-      const response = await uploadEvidences(controleData.missionId,formDataToSend);
+      const response = await uploadEvidences(formDataToSend);
       console.log("response data", response.data);
       if (response.status === 200) {
         if (activePanel === "evidence") {
@@ -538,18 +540,10 @@ function ControleExcutionPage() {
     // console.log('evd',newSelection)
   };
 
-  // const shouldShowRemediation =
-  //   selectedMulti === 6 || selectedMulti === 3;
-  //   console.log('selectedmulti',selectedMulti)
-
-  //   console.log('showRemediation',shouldShowRemediation)
 
   const shouldShowRemediation =
-    selectedStatusLabel === "not applied" ||
-    selectedStatusLabel === "partially applied";
-  console.log("selectedmulti", selectedStatusLabel);
-
-  console.log("showRemediation", shouldShowRemediation);
+  executionStatus === "partially applied" ||
+                executionStatus=== "not applied";
 
   const handleValidate = () => {
     // Lorsque vous cliquez sur "Valider", affichez le popup
@@ -571,7 +565,7 @@ function ControleExcutionPage() {
 
     try {
       const response = await api.patch(
-        `missions/${controleData?.missionId}/executions/submit-execution-for-review/${controleData.executionId}`
+        `/executions/submit-execution-for-review/${controleData.executionId}`
       );
       if (response) {
         toast.success("Contrôle envoyé pour revue avec succès !");
@@ -782,9 +776,12 @@ function ControleExcutionPage() {
     await updateExecution(
       controleData.executionId,
       payload,
-      controleData.missionId
+      controleData.missionId,
     );
+
+
   };
+  console.log('execution data after update', executionData)
 
   // const handleRowClick = (rowData) => {
   //   // Naviguer vers la page de détails avec l'ID du contrôle dans l'URL
@@ -838,19 +835,11 @@ function ControleExcutionPage() {
       />
     );
 
-  //*****************************can you check this please i commented it cause i donno if it causes an error ******************
-  // const isValidateDisabled = (hadi khass nwelilha )
-  // !selectedMulti || !shouldShowRemediation || !isAllRemediationDone// || !commentaire ;
-
   const isValidateDisabled =
     !selectedMulti || 
     !isAllRemediationDone
    // (!shouldShowRemediation && !isAllRemediationDone);
      // || !commentaire ;
-
-  console.log("isValidated", isValidateDisabled);
-  console.log("shouldSHowRemediation", shouldShowRemediation);
-  console.log("isAllRemediationdone", isAllRemediationDone);
 
   const [comments, setComments] = useState([]);
   // const currentUserRole = JSON.parse(localStorage.getItem("User"))?.role;
@@ -944,8 +933,8 @@ function ControleExcutionPage() {
               selectedMulti={selectedMulti}
               setSelectedMulti={setSelectedMulti}
               shouldShowRemediation={
-                selectedStatusLabel === "not applied" ||
-                selectedStatusLabel === "partially applied"
+                executionStatus === "partially applied" ||
+                executionStatus=== "not applied"
               }
               commentaire={commentaire}
               setCommentaire={setCommentaire}
