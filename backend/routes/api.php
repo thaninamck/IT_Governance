@@ -386,7 +386,7 @@ Route::middleware('auth:sanctum')->prefix('v1')->group(function () {
 });
 Route::middleware('auth:sanctum')->prefix('v1')->group(function () {
     Route::controller(ExecutionController::class)->group(function () {
-       // Route::get('/revue/{missionId}/{appId}/getAllExecutionReview', 'getAllExecutionReview');
+        Route::get('/revue/{missionId}/{appId}/getAllExecutionReviewAdmin', 'getAllExecutionReviewAdmin');
        Route::get('/revue/{missionId}/getAllExecutionReview', 'getAllExecutionReview');
     });
 });

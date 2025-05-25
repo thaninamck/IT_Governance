@@ -628,6 +628,8 @@ GROUP BY
         LEFT JOIN public.remediations rmd ON rmd.execution_id = e.id
         LEFT JOIN public.statuses rs ON rmd.status_id = rs.id
         LEFT JOIN public.remarks rm ON rm.execution_id = e.id
+
+       
         
         JOIN public.cntrl_srcs cs ON cs.control_id = c.id
         JOIN public.sources so ON cs.source_id = so.id
@@ -635,12 +637,21 @@ GROUP BY
         JOIN public.owners o ON s.owner_id = o.id
        
         WHERE 
-                m.id = ?
-                AND u.id = ?
-                AND s.id = ?
-                AND e.is_to_review = false
-                AND e.is_to_validate = false
-                AND e.status_id IS  NULL
+    m.id = ?
+    AND u.id = ?
+    AND s.id = ?
+    AND (
+        (
+            (e.is_to_review = false AND e.is_to_validate = false)
+            AND NOT EXISTS (
+                SELECT 1 FROM public.remarks rm WHERE rm.execution_id = e.id
+            )
+        )
+        OR (e.is_to_review = true AND e.is_to_validate = false)
+        OR (e.is_to_review = true AND e.is_to_validate = true)
+        OR (e.is_to_review = false AND e.is_to_validate = true)
+    )
+     
 
         GROUP BY 
             e.id, e.cntrl_modification, e.comment, e.control_owner, e.launched_at, e.ipe, e.effectiveness, e.design,
@@ -686,6 +697,19 @@ GROUP BY
                 json_agg( json_build_object(
                   'source_name', so.name
                 )) AS sources,
+
+                json_agg(DISTINCT jsonb_build_object(
+                'remediation_id', rmd.id,
+                'remediation_description', rmd.description,
+                'remediation_status_name', rs.status_name
+            )) AS remediations,
+    
+            json_agg(DISTINCT jsonb_build_object(
+                'remark_id', rm.id,
+                'remark_text', rm.text,
+                'remark_y', rm.y,
+                'remark_user_id', rm.user_id
+            )) AS remarks,
     
                 m.id AS mission_id, 
                 mission_name,
@@ -731,6 +755,10 @@ GROUP BY
             LEFT JOIN public.major_processes mp ON c.major_id = mp.id
             LEFT JOIN public.sub_processes sp ON c.sub_id = sp.id
             LEFT JOIN public.types t ON c.type_id = t.id
+            LEFT JOIN public.remediations rmd ON rmd.execution_id = e.id
+        LEFT JOIN public.statuses rs ON rmd.status_id = rs.id
+        LEFT JOIN public.remarks rm ON rm.execution_id = e.id
+        
             JOIN public.cntrl_srcs cs ON cs.control_id = c.id
             JOIN public.sources so ON cs.source_id = so.id
             JOIN public.users u ON e.user_id = u.id
@@ -742,8 +770,10 @@ GROUP BY
                 AND s.id = ?
                  AND (
         (e.is_to_review = false AND e.is_to_validate = false)
-        OR
-        (e.is_to_review = true AND e.is_to_validate = true)
+        AND
+       EXISTS (
+        SELECT 1 FROM public.remarks rm WHERE rm.execution_id = e.id
+    )
     )
                 AND e.status_id IS NOT NULL
     
@@ -832,7 +862,7 @@ GROUP BY
             ->get();
     }
 
-    public function getAllExecutionReview1($missionId, $appId)
+    public function getAllExecutionReviewAdmin($missionId, $appId)
     {
         return Execution::with([
             'user',

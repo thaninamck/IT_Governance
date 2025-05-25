@@ -586,11 +586,11 @@ class ExecutionController extends BaseController
             return $this->sendError('Erreur lors de la récupération des execution Reviewed.', ['error' => $e->getMessage()], 500);
         }
     }
-    public function getAllExecutionReview1($missionId ,$appId): JsonResponse
+    public function getAllExecutionReviewAdmin($missionId ,$appId): JsonResponse
     {
         try {
             
-            $executionReviewed = $this->executionService->getAllExecutionReview($missionId,$appId);
+            $executionReviewed = $this->executionService->getAllExecutionReviewAdmin($missionId,$appId);
             if (!isset($executionReviewed)) {
                 return $this->sendError('Aucune execution Reviewed trouvé pour cette execution.', [], 404);
             }
