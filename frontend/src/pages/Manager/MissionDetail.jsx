@@ -12,6 +12,7 @@ import Workplan from "../Manager/Workplan";
 import { useProfile } from "../../Context/ProfileContext";
 import GestionRevue from "../Superviseur/GestionRevue";
 import RevueListExecution from "../Superviseur/RevueListExecution";
+import { api } from "../../Api";
 
 function MissionDetail() {
   const { user } = useAuth();
@@ -28,13 +29,30 @@ function MissionDetail() {
     setShowForm((prev) => !prev); // Change l'état pour afficher ou masquer le formulaire
   };
 
-  const missionData = location.state?.missionData; // Récupérer les données envoyées
+  //const missionData = location.state?.missionData; // Récupérer les données envoyées
+  const [missionData, setMissionData] = useState(location.state?.missionData || null);
   console.log("Missiondata sélectionnée :", missionData);
+
+  useEffect(() => {
+    if (!missionData && mission) {
+      const fetchMissionData = async () => {
+        try {
+          const res = await api.get(`/mission/${mission}`);  
+          console.log("Missiondata sfetch :", res.data);
+          setMissionData(res?.data);
+        } catch (err) {
+          console.error("Erreur lors de la récupération de la mission :", err);
+        }
+      };
+
+      fetchMissionData();
+    }
+  }, [mission, missionData]);
 
   // Mettre à jour le profil au moment où la mission est sélectionnée
   useEffect(() => {
     if (missionData?.profileName) {
-      updateProfile(missionData.profileName); // Mettre à jour le profil dans le context
+      updateProfile(missionData?.profileName); // Mettre à jour le profil dans le context
     }
   }, [missionData, updateProfile]);
 
@@ -61,13 +79,15 @@ function MissionDetail() {
       <Header user={user} />
       <div className=" ml-5 mr-6 pb-9">
         {/* Afficher Breadcrumbs uniquement si le chemin correspond */}
-        {breadcrumbRoutes.some((route) =>
-          location.pathname.startsWith(route)
+        {breadcrumbRoutes?.some((route) =>
+          location?.pathname?.startsWith(route)
         ) && <Breadcrumbs />}
+        {missionData && (
+          <>
         <MissionInfo
           dataFormat={missionData}
           user={user}
-          missionId={missionData.id}
+          missionId={missionData?.id}
         />
 
         <AddScope
@@ -78,13 +98,13 @@ function MissionDetail() {
           showForm={showForm}
           user={user}
           dataFormat={missionData}
-          missionId={missionData.id}
-          missionName={missionData.missionName}
+          missionId={missionData?.id}
+          missionName={missionData?.missionName}
         />
         <AddMatrix
           user={user}
           dataFormat={missionData}
-          missionId={missionData.id}
+          missionId={missionData?.id}
         />
 
         {
@@ -92,6 +112,8 @@ function MissionDetail() {
 
           <RevueListExecution dataFormat={missionData} />
         }
+        </>
+        )}
       </div>
     </div>
   );

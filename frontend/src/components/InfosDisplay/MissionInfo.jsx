@@ -14,6 +14,7 @@ import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 
 const MissionInfo = ({ dataFormat, user, missionId }) => {
+  console.log('mission INFO',dataFormat)
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [missionData, setMissionData] = useState();
