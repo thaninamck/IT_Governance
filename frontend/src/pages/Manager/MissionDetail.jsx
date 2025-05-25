@@ -88,7 +88,7 @@ function MissionDetail() {
         />
 
         {
-          (missionData?.profileName === 'manager' || missionData?.profileName === 'superviseur' || user?.role === 'admine') &&
+          (missionData?.profileName === 'manager' || missionData?.profileName === 'superviseur' || user?.role === 'admin') &&
 
           <RevueListExecution dataFormat={missionData} />
         }

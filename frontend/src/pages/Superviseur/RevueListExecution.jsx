@@ -26,11 +26,9 @@ function RevueListExecution( {dataFormat}) {
     console.log("Mission revue sélectionnée :", missionRevue);
     //const missionRevueData = location.state?.missionRevueData; // Récupérer les données envoyées
 
-    console.log('données récupérer', dataFormat)
+    console.log('données récupérer DataFormat', dataFormat)
 
-    const [revueMissionData, setRevueMissionData] = useState([
-        // { "id": "1", "controlCode": "CTRL_349", "description": "description du control", "majorProcess": "Technical", "subProcess": 'Access Control', "owner": "farid Akbi", "status": "partially applied", "remediation": "Remediation_URL", "testeur": "azyadi Zouaghi" }
-    ]);
+    const [revueMissionData, setRevueMissionData] = useState([]);
     console.log('now', revueMissionData)
     const breadcrumbRoutes = [
         "/missions",
@@ -125,27 +123,22 @@ function RevueListExecution( {dataFormat}) {
 
     useEffect(() => {
         const loadData = async () => {
-            if (dataFormat?.profileName) {
-                const data = await fetchRevueExecutions(dataFormat);
-                setRevueMissionData(data);
-                setFilteredRows(data);
-            }
+          let data;
+          if (dataFormat?.profileName) {
+            // Cas normal
+            data = await fetchRevueExecutions(dataFormat);
+          } else {
+            // Cas admin
+            data = await fetchRevueExecutionsForApp(dataFormat);
+          }
+      
+          setRevueMissionData(data);
+          setFilteredRows(data);
         };
+      
         loadData();
-    }, [dataFormat]);
-
- 
-    useEffect(() => {
-        const loadData = async () => {
-          
-                const data = await fetchRevueExecutionsForApp(dataFormat);
-                console.log('admin review',data)
-                setRevueMissionData(data);
-                setFilteredRows(data);
-            
-        };
-        loadData();
-    }, [dataFormat]);
+      }, [dataFormat]);
+      
     
     console.log('revue mission data',revueMissionData)
 
@@ -210,7 +203,7 @@ function RevueListExecution( {dataFormat}) {
                 </div> */}
                 
                
-                    {revueMissionData.length === 0 ? (
+                    {revueMissionData?.length === 0 ? (
                        <></>
                     ) : (
                         <>
