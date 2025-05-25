@@ -843,9 +843,14 @@ function ControleExcutionPage() {
   // !selectedMulti || !shouldShowRemediation || !isAllRemediationDone// || !commentaire ;
 
   const isValidateDisabled =
-    !selectedMulti || (!shouldShowRemediation && !isAllRemediationDone); // || !commentaire ;
+    !selectedMulti || 
+    !isAllRemediationDone
+   // (!shouldShowRemediation && !isAllRemediationDone);
+     // || !commentaire ;
 
   console.log("isValidated", isValidateDisabled);
+  console.log("shouldSHowRemediation", shouldShowRemediation);
+  console.log("isAllRemediationdone", isAllRemediationDone);
 
   const [comments, setComments] = useState([]);
   // const currentUserRole = JSON.parse(localStorage.getItem("User"))?.role;
