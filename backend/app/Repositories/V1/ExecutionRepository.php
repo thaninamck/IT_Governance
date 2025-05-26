@@ -280,7 +280,7 @@ public function getExecutionById($executionId)
         LEFT JOIN public.statuses st ON st.id = e.status_id
         LEFT JOIN public.major_processes mp ON c.major_id = mp.id
         LEFT JOIN public.sub_processes sp ON c.sub_id = sp.id
-        LEFT JOIN public.types t ON c.type_id = t.id
+        LEFT JOIN public.types t ON c.type_id = t.id 
         LEFT JOIN public.remediations rmd ON rmd.execution_id = e.id
         LEFT JOIN public.statuses rs ON rmd.status_id = rs.id
         LEFT JOIN public.cntrl_srcs cs ON cs.control_id = c.id
