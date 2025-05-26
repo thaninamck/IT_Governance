@@ -89,7 +89,7 @@ public function submitExecutionForReview($missionId,$executionId)
         $this->notificationService->sendNotification(
             $userId, 
             "Vous avez des contrôles à revoir pour une mission",
-            ['type' => 'review_cntrl', 'id' => $executionId],
+            ['type' => 'review_cntrl', 'id' => $executionId,'missionId'=>$missionId],
             "review_cntrl"
         );
     }
@@ -111,7 +111,7 @@ public function submitExecutionForValidation($missionId, $executionId)
         $this->notificationService->sendNotification(
             $userId,
             "Vous avez des contrôles à revoir pour une mission",
-            ['type' => 'validation_cntrl', 'id' => $executionId],
+            ['type' => 'validation_cntrl', 'id' => $executionId,'missionId'=>$missionId],
             "review_cntrl"
         );
     }
@@ -122,6 +122,7 @@ public function submitExecutionForValidation($missionId, $executionId)
 public function submitExecutionForCorrection($executionId)
 {
     return $this->executionRepository->updateExecutionStatus($executionId,false,false);
+    
 }
 public function submitExecutionForFinalValidation($executionId)
 {
