@@ -3,7 +3,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 
 import UploadIcon from "@mui/icons-material/CloudDownload";
 
-const EvidenceList = ({ files, onDelete, getFile , readOnly=false }) => {
+const EvidenceList = ({ files, onDelete, getFile , readOnly=false ,deletingId}) => {
   /* Fonction de suppression déjà définie dans la page parente commme ca 
   const [files, setFiles] = useState([
   { name: 'file1.txt', size: 2048 },
@@ -23,8 +23,9 @@ const handleDelete = (index) => {
       {files.map((file, index) => (
         <div
           key={index}
-          className="flex  relative w-[95%] flex-col mt-2 justify-center  bg-white border border-gray-300 rounded-lg p-2"
-        >
+          className={`flex relative w-[95%] flex-col mt-2 justify-center border border-gray-300 rounded-lg p-2 ${
+            file.evidence_id === deletingId ? "bg-gray-200 opacity-60 pointer-events-none" : "bg-white"
+          }`}        >
           {/* Détails du fichier */}
           <div className="flex justify-between mx-4 ">
             <a

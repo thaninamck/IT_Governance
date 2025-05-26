@@ -21,7 +21,9 @@ function EvidencesSection({
   handleTabChange,
   selections,
   onStatesChange,
-  getFile
+  getFile,
+  deletingId,
+  deletingTestId
 }) {
   return (
     <div className="min-h-screen flex flex-col gap-14">
@@ -73,10 +75,11 @@ function EvidencesSection({
                     onSave={(formData) =>
                       handleSaveFiles(formData, activePanel)
                     }
+                    
                   />
                 </div>
                 <div className="flex flex-col items-center  w-full my-6">
-                  <EvidenceList files={evidenceFiles} onDelete={handleDelete} getFile={getFile} />
+                  <EvidenceList files={evidenceFiles} onDelete={handleDelete} getFile={getFile} deletingId={deletingId} />
                 </div>
                 {evidenceFiles.length === 0 && (
                   <p className="text-center text-gray-500 mt-4">
@@ -96,7 +99,7 @@ function EvidencesSection({
                   />
                 </div>
                 <div className="flex flex-col items-center w-full my-6">
-                  <EvidenceList files={testFiles} onDelete={handleDelete} getFile={getFile}/>
+                  <EvidenceList files={testFiles} onDelete={handleDelete} getFile={getFile} deletingId={deletingTestId}/>
                 </div>
                 {testFiles.length === 0 && (
                   <p className="text-center text-gray-500 mt-4">
