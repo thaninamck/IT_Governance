@@ -56,19 +56,20 @@ const useExecution = () => {
     };
 
     const uploadEvidences = async (missionId,data) => {
-        setLoading(true);
-        try {
-            const response = await fileApi.post(`missions/${missionId}/evidences/upload`, data);
-           
-            // toast.success("Evidences ajoutés avec succees");
-            return response;
-        } catch (error) {
-            setError(error);
-            toast.error("Failed to upload evidence");
-        } finally {
-            setLoading(false);
-        }
-    };
+      setLoading(true);
+      try {
+          const response = await fileApi.post(`missions/${missionId}/evidences/upload`, data);
+         
+          // toast.success("Evidences ajoutés avec succees");
+          return response;
+      } catch (error) {
+          setError(error);
+          toast.error("Failed to upload evidence");
+      } finally {
+          setLoading(false);
+      }
+  };
+
 
     const updateExecution = async (executionId,data,missionId) => {
       console.log('payload data',data)
