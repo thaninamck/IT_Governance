@@ -220,6 +220,7 @@ public function getExecutionById($executionId)
             e.cntrl_modification AS execution_description,
             e.control_owner AS execution_control_owner,
             c.description AS control_description,
+             c.code AS control_code,
             st.id AS status_id,
             st.status_name AS status_name,
             mp.description AS major_process,
@@ -279,7 +280,7 @@ public function getExecutionById($executionId)
         LEFT JOIN public.statuses st ON st.id = e.status_id
         LEFT JOIN public.major_processes mp ON c.major_id = mp.id
         LEFT JOIN public.sub_processes sp ON c.sub_id = sp.id
-        LEFT JOIN public.types t ON c.type_id = t.id
+        LEFT JOIN public.types t ON c.type_id = t.id 
         LEFT JOIN public.remediations rmd ON rmd.execution_id = e.id
         LEFT JOIN public.statuses rs ON rmd.status_id = rs.id
         LEFT JOIN public.cntrl_srcs cs ON cs.control_id = c.id
@@ -291,6 +292,7 @@ public function getExecutionById($executionId)
             e.id,
             sts.control_id,
             c.description,
+            c.code,
             st.id, st.status_name,
             mp.description,
             sp.name,

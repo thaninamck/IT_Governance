@@ -17,6 +17,7 @@ export default function useRemediation(executionId, controlCode) {
 
 
   const fetchRemediations = async () => {
+    if (!executionId) return;
     try {
       const response = await api.get(`/execution/${executionId}/getremediations`);
       setAction(response.data);
@@ -24,6 +25,12 @@ export default function useRemediation(executionId, controlCode) {
       setError(err.message);
     }
   };
+
+  useEffect(() => {
+    if (executionId) {
+      fetchRemediations();
+    }
+  }, [executionId]);
 
   const handleAdd = async (remediation) => {
     try {
@@ -33,6 +40,9 @@ export default function useRemediation(executionId, controlCode) {
         setSelectedActionId(null);
         setShowRemediation(false);
       } else {
+        if (!executionId || !controlCode) {
+          throw new Error("executionId ou controlCode manquant");
+        }
         const response = await api.post(`/execution/${executionId}/${controlCode}/createremediation`, remediation);
         setAction(prev => [...prev, response.data]);
         setShowDecisionPopup(true);

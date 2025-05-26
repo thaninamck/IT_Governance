@@ -107,7 +107,7 @@ function RevueListExecution( {dataFormat}) {
             width: 160,
             customRenderCell: (params) => (
                 <button
-                    onClick={() => navigate(`/revue/revueExecution/${params.row.controlCode}`, { state: { controleData: params.row } })}
+                    onClick={() => navigate(`/revue/${params.row.missionName}/${params.row.controlCode}`, { state: { controleData: params.row } })}
                     className="text-white bg-blue-500 hover:bg-blue-600 px-6 h-[40px] flex items-center rounded border-none"
                 >
                     Consulter

@@ -209,7 +209,8 @@ const rowsData3 = [
           {/*----------------------------Pages-------------------*/}
           <Route path='/revue' element={<GestionRevue/>}/>
           <Route path='/revue/:missionRevue' element={<RevueListExecution/>}/>
-          <Route path='/revue/revueExecution/:controlCode' element={<ReviewExecution/>}/>
+          {/* <Route path='/revue/revueExecution/:controlCode' element={<ReviewExecution/>}/> */}
+          <Route path='/revue/:missionRevue/:controlCode' element={<ReviewExecution/>}/>
           
           <Route path='/changePw' element={<ChangePassword/>}/>
           <Route path='/login' element={<Login  />}></Route>
