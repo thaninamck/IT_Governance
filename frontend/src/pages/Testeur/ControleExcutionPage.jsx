@@ -476,8 +476,8 @@ function ControleExcutionPage() {
     }
 
     try {
-      const response = await uploadEvidences(formDataToSend);
-      console.log("response data", response.data);
+      const response = await uploadEvidences(controleData.missionId,formDataToSend);
+      //console.log("response data", response.data);
       if (response.status === 200) {
         if (activePanel === "evidence") {
           setEvidences((prevFiles) => [...prevFiles, ...response.data]);
@@ -492,7 +492,6 @@ function ControleExcutionPage() {
       toast.error("Une erreur est survenue lors de l'envoi des fichiers.");
     }
   };
-
   const handleDeleteConfirm = async () => {
     setOpenDeletePopup(false); // Fermer la popup de confirmation
     if (activePanel === "evidence") {
