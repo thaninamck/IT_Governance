@@ -25,7 +25,7 @@ const useUser = () => {
       case "cloture_mission":
         return `/missions`;
       case "review_cntrl":
-          return `/revue/revueExecution/CTRL-234`;  //complete ici
+          return `/revue/revueExecution/${notification.url.id}`;  //complete ici
       case "validation_cntrl":
         return `/revue/revueExecution/CTRL-234`;   //complete ici   
       case "security":
