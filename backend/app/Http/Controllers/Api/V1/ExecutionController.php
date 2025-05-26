@@ -13,6 +13,7 @@ use Illuminate\Http\Request;
 use App\Services\V1\ExecutionService;
 use App\Http\Resources\Api\V1\ExecutionResource;
 use App\Http\Resources\Api\V1\MissionResource;
+use App\Services\NotificationService;
 use Illuminate\Http\JsonResponse;
 use Log;
 
@@ -24,13 +25,16 @@ class ExecutionController extends BaseController
     protected $riskService;
     protected $controlService;
     protected $evidenceService;
-    public function __construct(ExecutionService $executionService, MissionService $missionService, RiskService $riskService, ControlService $controlService, EvidenceService $evidenceService)
+    protected $notificationService;
+    public function __construct(ExecutionService $executionService, MissionService $missionService, RiskService $riskService, ControlService $controlService, EvidenceService $evidenceService,NotificationService $notificationService)
     {
         $this->evidenceService = $evidenceService;
         $this->executionService = $executionService;
         $this->missionService = $missionService;
         $this->riskService = $riskService;
         $this->controlService = $controlService;
+        
+        $this->notificationService = $notificationService;
     }
 
     /**
@@ -661,10 +665,13 @@ class ExecutionController extends BaseController
         try {
 
             return $this->executionService->submitExecutionForReview($mission,$executionID) ? $this->sendResponse("Execution submitted successfully", [], 200) : $this->sendError("submitting execution failed", [], 404);
+            
         } catch (\Exception $e) {
             return $this->sendError("Error while submitting execution", ['error' => $e->getMessage()], 500);
         }
     }
+
+  
 
     public function submitExecutionForValidation($mission,$executionID)
     {

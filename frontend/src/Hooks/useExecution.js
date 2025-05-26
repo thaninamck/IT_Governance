@@ -125,10 +125,10 @@ const useExecution = () => {
     };
     
 
-    const submitExecutionForReview = async (executionId) => {
+    const submitExecutionForReview = async (missionId,executionId) => {
         setLoading(true);
         try {
-          const response = await api.patch(`/executions/submit-execution-for-review/${executionId}`);
+          const response = await api.patch(`missions/${missionId}/executions/submit-execution-for-review/${executionId}`);
           toast.success("Soumis pour revue !");
           return response.data;
         } catch (error) {
