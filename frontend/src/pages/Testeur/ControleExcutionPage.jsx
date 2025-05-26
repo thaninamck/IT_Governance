@@ -108,6 +108,7 @@ function ControleExcutionPage() {
   const sourceNames = controleData.sources.map((s) => s.source_name).join(", ");
   const [isEditing, setIsEditing] = useState(true);
   const [selectedMulti, setSelectedMulti] = useState();
+  const [deletingFileIndex, setDeletingFileIndex] = useState(null);
 
   const statuses = options.map((status) => ({
     label: status.status_name,
@@ -476,7 +477,10 @@ function ControleExcutionPage() {
     }
 
     try {
-      const response = await uploadEvidences(controleData.missionId,formDataToSend);
+      const response = await uploadEvidences(
+        controleData.missionId,
+        formDataToSend
+      );
       //console.log("response data", response.data);
       if (response.status === 200) {
         if (activePanel === "evidence") {
@@ -505,11 +509,14 @@ function ControleExcutionPage() {
             (file) => file.evidence_id !== deletedEvidence.evidence_id
           )
         );
-        toast.success("Evidences ajoutés avec succees");
+        setDeletedEvidence(null); // Réinitialiser l'élément supprimé
+        toast.success("Evidences supprimés avec succees");
       }
     } else if (activePanel === "test") {
-      console.log("ID du test file supprimé :", deletedTestFile.evidence_id);
-      const response = await deleteEvidence(deletedTestFile.evidence_id);
+      const response = await deleteEvidence(
+        controleData.missionId,
+        deletedTestFile.evidence_id
+      );
       if (response === 200) {
         setTestFiles((prevFiles) =>
           prevFiles.filter(
@@ -517,6 +524,8 @@ function ControleExcutionPage() {
           )
         );
       }
+      setDeletedTestFile(null); // Réinitialiser l'élément supprimé
+      toast.success("Fichier de test supprimé avec succès !");
     }
   };
   const handleDelete = (index) => {
@@ -527,7 +536,6 @@ function ControleExcutionPage() {
       // setEvidences((prevFiles) => prevFiles.filter((_, i) => i !== index));
     } else if (activePanel === "test") {
       setDeletedTestFile(testFiles[index]);
-      console.log("ID du test file supprimé :", deletedTestFile.evidence_id);
       setOpenDeletePopup(true);
       // setTestFiles((prevFiles) => prevFiles.filter((_, i) => i !== index));
     }
@@ -539,10 +547,9 @@ function ControleExcutionPage() {
     // console.log('evd',newSelection)
   };
 
-
   const shouldShowRemediation =
-  executionStatus === "partially applied" ||
-                executionStatus=== "not applied";
+    executionStatus === "partially applied" ||
+    executionStatus === "not applied";
 
   const handleValidate = () => {
     // Lorsque vous cliquez sur "Valider", affichez le popup
@@ -775,12 +782,9 @@ function ControleExcutionPage() {
     await updateExecution(
       controleData.executionId,
       payload,
-      controleData.missionId,
+      controleData.missionId
     );
-
-
   };
-  console.log('execution data after update', executionData)
 
   // const handleRowClick = (rowData) => {
   //   // Naviguer vers la page de détails avec l'ID du contrôle dans l'URL
@@ -834,11 +838,9 @@ function ControleExcutionPage() {
       />
     );
 
-  const isValidateDisabled =
-    !selectedMulti || 
-    !isAllRemediationDone
-   // (!shouldShowRemediation && !isAllRemediationDone);
-     // || !commentaire ;
+  const isValidateDisabled = !selectedMulti || !isAllRemediationDone;
+  // (!shouldShowRemediation && !isAllRemediationDone);
+  // || !commentaire ;
 
   const [comments, setComments] = useState([]);
   // const currentUserRole = JSON.parse(localStorage.getItem("User"))?.role;
@@ -862,7 +864,11 @@ function ControleExcutionPage() {
                     color="primary"
                   />
                 }
-                label={overlayEnabled ? "Activer la modification" : "Désactiver la modification"}
+                label={
+                  overlayEnabled
+                    ? "Activer la modification"
+                    : "Désactiver la modification"
+                }
               />
             </div>
           )}
@@ -904,13 +910,18 @@ function ControleExcutionPage() {
               onTestScriptChange={handleTestScriptChange} // Transmettre la fonction de rappel
             />
             {openDeletePopup && (
-              <DecisionPopUp
-                //loading={loading}
-                handleDeny={() => setOpenDeletePopup(false)}
-                handleConfirm={handleDeleteConfirm}
-                text="Confirmation de suppression"
-                name="Êtes-vous sûr de vouloir supprimer ce fichier ?"
-              />
+              <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+                <DecisionPopUp
+                  handleDeny={() => {
+                    setOpenDeletePopup(false);
+                    setDeletedEvidence(null);
+                    setDeletedTestFile(null);
+                  }}
+                  handleConfirm={handleDeleteConfirm}
+                  text="Confirmation de suppression"
+                  name="Êtes-vous sûr de vouloir supprimer ce fichier ?"
+                />
+              </div>
             )}
 
             <EvidencesSection
@@ -926,6 +937,12 @@ function ControleExcutionPage() {
               selections={selections}
               onStatesChange={handleStatesChange}
               getFile={getFileURL}
+              deletingId={
+                deletedEvidence?.evidence_id 
+              }
+              deletingTestId={
+                deletedTestFile?.evidence_id 
+              }
             />
 
             <ConclusionRemediationSection
@@ -933,7 +950,7 @@ function ControleExcutionPage() {
               setSelectedMulti={setSelectedMulti}
               shouldShowRemediation={
                 executionStatus === "partially applied" ||
-                executionStatus=== "not applied"
+                executionStatus === "not applied"
               }
               commentaire={commentaire}
               setCommentaire={setCommentaire}

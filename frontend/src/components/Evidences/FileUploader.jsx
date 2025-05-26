@@ -122,9 +122,14 @@ const FileUploader = ({onSave}) => {
 
       {/* Liste des fichiers uploadés */}
       {selectedFiles.map((file, index) => (
-        <div key={index} className="w-[90%]  ">
-          <div className="flex flex-col justify-center gap-1 bg-white border border-gray-300 rounded-lg p-2 ">
-            {/* Détails du fichier */}
+        <div key={index} className="w-[90%]">
+       <div
+  className="flex flex-col justify-center gap-1 border border-gray-300 rounded-lg p-2 "
+    
+  
+>
+
+        {/* Détails du fichier */}
             <div className="flex justify-between mx-4">
               <p className="font-medium text-xs">{file.name}</p>
               <DeleteIcon
