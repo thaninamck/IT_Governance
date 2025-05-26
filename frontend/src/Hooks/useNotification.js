@@ -14,26 +14,28 @@ const useUser = () => {
   const unreadCount = notifications.filter(n => !n.isRead).length;
   // Fonction pour récupérer l'URL selon le type de notification
   const getNotificationUrl = (notification) => {
-    console.log('not',notification)
+    console.log('not', notification)
     switch (notification?.type) {
-      
+
       case "mission":
         const notifUrl = JSON.parse(notification.url); // Convertir en objet
-      return `/missions/${notifUrl.id}`;
+        return `/missions/${notifUrl.id}`;
       case "affectation_cntrl":
         return `/wshkaaeyn before/${notification.url.id}`;//complete ici
       case "cloture_mission":
         return `/missions`;
       case "review_cntrl":
-          return `/missions/${notification.url.missionId}`;  //complete ici
+        return `/missions/${notification.url.missionId}`;  //complete ici
       case "validation_cntrl":
-        return `/revue/revueExecution/CTRL-234`;   //complete ici   
+        return `/revue/revueExecution/CTRL-234`;   //complete ici  
+      case "correction_cntrl":
+        return `/missions/${notification.url.missionId}/${notification.url.systemId}`;
       case "security":
         return "#";
       default:
         return "/";
     }
-    
+
   };
 
   // Fonction pour formater les notifications

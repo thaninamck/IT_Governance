@@ -248,7 +248,7 @@ const {
       if (!controleData?.executionId) return alert("Aucun executionId trouvé.");
       try {
         if(controleData.connectedUserProfile === "superviseur"){
-        await submitExecutionForCorrection(controleData.executionId);
+        await submitExecutionForCorrection(controleData.missionId,controleData.systemId,controleData.executionId);
         }
       else if (controleData.connectedUserProfile === "manager"){
         await submitExecutionForReview(controleData.missionId,controleData.executionId);

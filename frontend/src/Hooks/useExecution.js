@@ -166,10 +166,10 @@ const useExecution = () => {
         }
       };
 
-      const submitExecutionForCorrection = async (executionId) => {
+      const submitExecutionForCorrection = async (missionId,systemId,executionId) => {
         setLoading(true);
         try {
-          const response = await api.patch(`/executions/submit-execution-for-correction/${executionId}`);
+          const response = await api.patch(`missions/${missionId}/system/${systemId}/executions/submit-execution-for-correction/${executionId}`);
           toast.success("Soumis pour ajustement !");
           return response;
         } catch (error) {

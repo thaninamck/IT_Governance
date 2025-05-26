@@ -167,6 +167,7 @@ Route::middleware(['auth:sanctum', ManagerMiddleware::class])
             Route::get('/missions/{mission}/workplanOptions', 'getWorkplanOptionsByMission');
             Route::post('/executions/deleteExecutions', 'deleteExecutions');
             Route::post('/executions/update-executions', 'updateMultipleExecutions');
+            Route::patch('/executions/submit-execution-for-final-validation/{executionID}', 'submitExecutionForFinalValidation');
         });
 
         //ParticipationController Routes 
@@ -228,6 +229,7 @@ Route::middleware(['auth:sanctum', SupervisorMiddleware::class])
             Route::post('missions/{mission}/executions/create-comment', 'createComment');
             Route::put('missions/{mission}/executions/update-comment/{id}', 'updateComment');
             Route::delete('missions/{mission}/executions/delete-comment/{id}', 'deleteComment');
+            // Route::patch('missions/{mission}/system/{system}/executions/submit-execution-for-correction/{executionID}', 'submitExecutionForCorrection');
         });
     });
 
@@ -408,28 +410,21 @@ Route::middleware('auth:sanctum')->prefix('v1')->group(function () {
 Route::middleware('auth:sanctum')->prefix('v1')->group(function () {
     Route::controller(ExecutionController::class)->group(function () {
         Route::get('/revue/getmissionexecutionreviewedforManager', 'getmissionReviewManager');
+        Route::patch('missions/{mission}/system/{system}/executions/submit-execution-for-correction/{executionID}', 'submitExecutionForCorrection');
     });
 });
+
 // Route::prefix('v1')->controller(ExecutionController::class)->group(function () {
 //     Route::get('/revue/getmissionexecutionreviewedforManager', 'getmissionReviewManager');
 // });
 
-Route::prefix('v1')->controller(ExecutionController::class)->group(function () {
-    Route::patch('/executions/submit-execution-for-review/{executionID}', 'submitExecutionForReview');
-});
-Route::prefix('v1')->controller(ExecutionController::class)->group(function () {
-    Route::patch('/executions/submit-execution-for-validation/{executionID}', 'submitExecutionForValidation');
-});
-Route::prefix('v1')->controller(ExecutionController::class)->group(function () {
-    Route::patch('/executions/submit-execution-for-correction/{executionID}', 'submitExecutionForCorrection');
-});
 
-Route::prefix('v1')->controller(ExecutionController::class)->group(function () {
-    Route::patch('/executions/submit-execution-for-final-validation/{executionID}', 'submitExecutionForFinalValidation');
-});
+
+
 
 Route::prefix('v1')->controller(ExecutionController::class)->group(function () {
     Route::get('/executions/get-execution/{execution}', 'getExecutionById');
+   
 });
 
 

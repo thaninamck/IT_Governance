@@ -161,7 +161,7 @@ function ControleExcutionPage() {
           ...item,
           steps: JSON.parse(item.steps),
           evidences: JSON.parse(item.evidences),
-          remarks: JSON.parse(item.remarks),
+         
           remediations: JSON.parse(item.remediations),
         }));
 
@@ -219,8 +219,10 @@ function ControleExcutionPage() {
     });
     //setExistingComments(executionData?.[0]?.remarks)
     if (executionData?.[0]?.remarks) {
+     
       try {
         const parsedRemarks = JSON.parse(executionData[0].remarks);
+      
         const formattedRemarks = parsedRemarks.map((remark) => {
           const [firstName, lastName] = remark.name?.split(" ") ?? ["", ""];
           return {
