@@ -182,7 +182,25 @@ class SystemController extends BaseController
     public function getsystemInfo($appId)
     {
         try {
+            
             $system = $this->systemService->getsystemInfo($appId);
+
+            if (!isset($system)) {
+                return $this->sendError('Aucun system trouvé pour cette mission.', [], 404);
+            }
+
+            return $this->sendResponse($system, 'system récupérée avec succès.');
+
+        } catch (\Exception $e) {
+            return $this->sendError('Erreur lors de la récupération de system.', ['error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function getsystemById($missionId,$appId)
+    {
+        try {
+            $userId = auth()->user()->id;
+            $system = $this->systemService->getsystemById($userId,$appId);
 
             if (!isset($system)) {
                 return $this->sendError('Aucun system trouvé pour cette mission.', [], 404);

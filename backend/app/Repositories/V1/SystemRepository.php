@@ -54,12 +54,21 @@ class SystemRepository
     public function getsystemInfo($systemId)
     {
         $system = System::with(['owner','layers'])->find($systemId);
-    
-       
-        
-    
         return $system;
     }
+    public function getsystemById($userId, $systemId)
+{
+    return System::with([
+        'owner',
+        'layers',
+        'mission',
+        'mission.participations' => function ($query) use ($userId) {
+            $query->where('user_id', $userId)->with('profile');
+        },
+        'mission.participations.user'
+    ])->find($systemId);
+}
+
 
     public function getSystemExecutionsWithTheirStatusesByMission($missionId, $layerName = 'Applicative')
 {

@@ -261,6 +261,9 @@ Route::middleware(['auth:sanctum', TesterMiddleware::class])
             Route::get('/mission/{mission}/getsystems', 'getSystemsByMissionID');
             Route::get('/mission/{mission}', 'getMissionById');
         });
+        Route::controller(SystemController::class)->group(function () {
+            Route::get('missions/{mission}/systems/{systemId}', 'getsystemById');
+        });
 
     });
 
@@ -304,6 +307,8 @@ Route::middleware('auth:sanctum')->prefix('v1')->group(function () {
         Route::put('/missions/{id}/requestcancelmission', 'RequestCancelMission');
         Route::put('/missions/{id}/requestArchiveMission', 'RequestArchiveMission');
     });
+
+  
 });
 Route::prefix('v1')->group(function () {
     Route::controller(LayerController::class)->group(function () {

@@ -242,4 +242,37 @@ public function getsystemInfo($systemId)
     ];
 }
 
+public function getsystemById($userId,$systemId)
+{
+    $system=$this->systemRepository->getsystemById($userId,$systemId);
+   
+    if (!$system) {
+        return null; // ou lancer une exception
+    }
+    $participation = $system->mission->participations->first();
+
+     return 
+     //$system;
+    [
+        'id' => $system->id,
+        'systemName' => $system->name,
+        'description' => $system->description,
+        'missionId' => $system->mission_id,
+       'missionName' => $system->mission?->mission_name,
+        'ownerId' => $system->owner_id,
+        'ownerName'=>$system->owner?->full_name,
+        'ownerEmail' => $system->owner->email, 
+        'role' => $participation?->user?->role,
+        'userName'=> $participation?->user?->first_name .' '. $participation?->user?->last_name,
+        'profile' => $participation?->profile?->profile_name,
+        'layers' => $system->layers->map(function ($layer) {
+                    return [
+                        'id' => $layer->id,
+                        'name' => $layer->name
+                    ];
+                })->toArray()
+            
+    ];
+}
+
 }
