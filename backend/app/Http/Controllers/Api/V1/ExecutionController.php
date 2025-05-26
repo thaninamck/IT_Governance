@@ -682,10 +682,10 @@ class ExecutionController extends BaseController
         }
     }
 
-    public function submitExecutionForCorrection($executionId)
+    public function submitExecutionForCorrection($mission,$system,$executionId)
     {
         try {
-            return $this->executionService->submitExecutionForCorrection($executionId) ? $this->sendResponse("Execution submitted successfully", [], 200) : $this->sendError("submitting execution failed", [], 404);
+            return $this->executionService->submitExecutionForCorrection($mission,$system,$executionId) ? $this->sendResponse("Execution submitted successfully", [], 200) : $this->sendError("submitting execution failed", [], 404);
         } catch (\Exception $e) {
             return $this->sendError("Error while submitting execution", ['error' => $e->getMessage()], 500);
         }

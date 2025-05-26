@@ -119,10 +119,20 @@ public function submitExecutionForValidation($missionId, $executionId)
     return $result; 
 }
 
-public function submitExecutionForCorrection($executionId)
+public function submitExecutionForCorrection($missionId,$systemId,$executionId)
 {
-    return $this->executionRepository->updateExecutionStatus($executionId,false,false);
+    $result= $this->executionRepository->updateExecutionStatus($executionId,false,false);
     
+    $testeurId = Execution::where('id', $executionId)->value('user_id');
+   
+        $this->notificationService->sendNotification(
+            $testeurId,
+            "Vous avez des contrôles à corifer pour une mission",
+            ['type' => 'correction_cntrl', 'id' => $executionId,'missionId'=>$missionId,'systemId'=>$systemId],
+            "correction_cntrl"
+        );
+    
+        return $result; 
 }
 public function submitExecutionForFinalValidation($executionId)
 {
