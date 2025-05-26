@@ -47,7 +47,7 @@ function DashboardManager() {
       const pourcentageControlEffective =missionReportData?.controlEffectif 
       const pourcentageControlNonEffective =missionReportData?.controlNonEffectif 
          
-      const pourcentageControlNonCommencé = missionReportData?.controlNonCommencé 
+      const pourcentageControlNonCommencé = Math.round(missionReportData?.controlNonCommencé )
       const total = missionReportData?.nbrControl || 0;
       const done = missionReportData?.controlFinalisé      || 0;
       const progressPercent = total > 0 ? Math.round((done / total) * 100) : 0;

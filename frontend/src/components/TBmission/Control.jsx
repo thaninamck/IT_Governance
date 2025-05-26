@@ -7,6 +7,7 @@ import { api } from '../../Api';
 import { useDashboard } from '../../Hooks/useDashboard';
 
 function Control({ statusControl, data, grid_cols = 'grid-cols-1', size }) {
+    console.log("status control from ",statusControl)
     const {
         executionData,
         loading,
@@ -70,6 +71,9 @@ function Control({ statusControl, data, grid_cols = 'grid-cols-1', size }) {
         const pourcentageControlFinalisé = statusControl?.controlCommencé?.nbrFinalisé && statusControl?.controlCommencé?.nbrTotale
         ? Math.round((statusControl.controlCommencé.nbrFinalisé  * 100) / statusControl.controlCommencé.nbrTotale)
         : 0;
+        const pourcentageControlPartiallyApp = 
+        Math.round((statusControl.controlNonEffective?.nbrPartially * 100) / Math.round((statusControl?.controlNonEffective?.pourcentageTotale * statusControl?.nbrControl)/100))
+        || 0;
 
     const pourcentageControlNonFinalisé = statusControl?.controlCommencé?.nbrNonFinalisé && statusControl?.controlCommencé?.nbrTotale
         ? Math.round((statusControl.controlCommencé.nbrNonFinalisé  * 100) / statusControl.controlCommencé.nbrTotale)
@@ -199,7 +203,7 @@ function Control({ statusControl, data, grid_cols = 'grid-cols-1', size }) {
                                 <>
                                     <div className="flex items-center gap-2 border-l-4 border-l-orange-600 px-4 py-2 rounded shadow-sm">
                                         <p className="text-sm font-medium">
-                                            Partially applied : <strong>{statusControl?.controlNonEffective?.partiallyApp}%</strong>
+                                            Partially applied : <strong>{pourcentageControlPartiallyApp}%</strong>
                                         </p>
                                     </div>
                                     <div className="flex items-center gap-2 border-l-4 border-l-red-600 px-4 py-2 rounded shadow-sm">
