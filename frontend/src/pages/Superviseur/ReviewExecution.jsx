@@ -203,7 +203,7 @@ function ReviewExecution() {
         await submitExecutionForCorrection(controleData.executionId);
         }
       else if (controleData.connectedUserProfile === "manager"){
-        await submitExecutionForReview(controleData.executionId);
+        await submitExecutionForReview(controleData.missionId,controleData.executionId);
       }
       } catch (err) {
         console.error(err);

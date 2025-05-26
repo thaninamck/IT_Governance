@@ -160,6 +160,8 @@ function ControleExcutionPage() {
           ...item,
           steps: JSON.parse(item.steps),
           evidences: JSON.parse(item.evidences),
+          remarks: JSON.parse(item.remarks),
+          remediations: JSON.parse(item.remediations),
         }));
 
         setExecutionData(parsedData);
@@ -565,7 +567,7 @@ function ControleExcutionPage() {
 
     try {
       const response = await api.patch(
-        `/executions/submit-execution-for-review/${controleData.executionId}`
+        `missions/${controleData?.missionId}/executions/submit-execution-for-review/${controleData?.executionId}`
       );
       if (response) {
         toast.success("Contrôle envoyé pour revue avec succès !");
