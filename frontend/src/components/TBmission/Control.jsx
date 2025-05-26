@@ -89,11 +89,11 @@ function Control({ statusControl, data, grid_cols = 'grid-cols-1', size }) {
             const handleFilter = async () => {
                 try {
                     if (nom === 'effectifs' || nom === 'applied') {
-                        await fetchExecutionData('effective', missionId);
+                        await fetchExecutionData('effectifs', missionId);
                     } 
                     else if (nom === 'ineffectifs') {
                         if (executionData.allIneffective.length === 0) {
-                            await fetchExecutionData('ineffective', missionId);
+                            await fetchExecutionData('ineffectifs', missionId);
                         }
                     }
                     else if (['partially applied', 'not applied', 'not tested', 'not applicable'].includes(nom)) {

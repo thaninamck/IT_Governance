@@ -48,8 +48,8 @@ export const useDashboard = () => {
         try {
             let endpoint = '';
             switch (type) {
-                case 'effective': endpoint = `effective-controls`; break;
-                case 'ineffective': endpoint = `ineffective-controls`; break;
+                case 'effectifs': endpoint = `effective-controls`; break;
+                case 'ineffectifs': endpoint = `ineffective-controls`; break;
                 case 'began': endpoint = `began-controls`; break;
                 case 'unbegan': endpoint = `unbegan-controls`; break;
                 default: throw new Error('Unsupported data type');
@@ -63,7 +63,7 @@ export const useDashboard = () => {
             setExecutionData(prev => ({
                 ...prev,
                 displayed: dataToSet,
-                ...(type === 'ineffective' ? { allIneffective: response.data } : {})
+                ...(type === 'ineffectifs' ? { allIneffective: response.data } : {})
             }));
 
             return dataToSet;
