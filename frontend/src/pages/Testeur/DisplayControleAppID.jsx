@@ -16,6 +16,7 @@ import TabPanel from "@mui/joy/TabPanel";
 import useExecution from '../../Hooks/useExecution';
 import RevueListExecution from '../Superviseur/RevueListExecution';
 import useRevue from '../../Hooks/useRevue';
+import { useSystem } from '../../Hooks/useSystem';
 
 function DisplayControleAppID() {
  
@@ -27,15 +28,38 @@ function DisplayControleAppID() {
     fetchExecutionsListForCorrection
   } = useExecution();
 
+  const {
+  applicationId,setApplicationId,fetchSystemById
+  } = useSystem();
+
  
 
   const { profile } = useProfile();
   const navigate = useNavigate();
   const { user } = useAuth();
   const location = useLocation();
-  const AppData = location.state?.AppData;
-  console.log("APPDATA", AppData)
   const { mission, name } = useParams();
+  // const AppData = location.state?.AppData;
+  const [AppData, setApplicationData] = useState(location.state?.AppData || null);
+
+  useEffect(() => {
+    if (!AppData && (mission && name)) {
+      const fetchSystemById = async () => {
+        try {
+          const res = await api.get(`/missions/${mission}/systems/${name}`);
+         
+          console.log("Appdata sfetch :", res.data);
+          setApplicationData(res?.data);
+        } catch (err) {
+          console.error("Erreur lors de la récupération de l'application :", err);
+        }
+      };
+
+      fetchSystemById();
+    }
+  }, [mission, AppData]);
+  console.log("APPDATA applicationid", AppData)
+ 
   const { fetchRevueExecutionsForApp } = useRevue();
   const breadcrumbRoutes = [
     "/missions",
@@ -232,7 +256,7 @@ function DisplayControleAppID() {
       <Header user={user} />
       <div className="ml-5 mr-6 pb-9">
         {breadcrumbRoutes.some((route) => location.pathname.startsWith(route)) && <Breadcrumbs />}
-        <AppInfo appId={AppData.id} />
+        <AppInfo appId={AppData?.id} />
         <Separator text="List des Contrôles" />
         {
           (AppData?.profile === 'manager' || AppData?.profile === 'superviseur' || user?.role === 'admin') ? (

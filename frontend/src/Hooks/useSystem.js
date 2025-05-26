@@ -3,9 +3,10 @@ import { api } from '../Api';
 import { useBreadcrumb } from '../Context/BreadcrumbContext';
 
 
-export const useSystem = (missionId, user, showForm, onToggleForm,missionName) => {
+export const useSystem = (missionId, user, showForm, onToggleForm,missionName,systemId) => {
  
   const [applications, setApplications] = useState([]);
+  const [applicationId, setApplicationId] = useState([]);
   const [isDeletePopupOpen, setIsDeletePopupOpen] = useState(false);
   const [selectedAppId, setSelectedAppId] = useState(null);
   const [selectedApp, setSelectedApp] = useState(null);
@@ -27,6 +28,22 @@ export const useSystem = (missionId, user, showForm, onToggleForm,missionName) =
       fetchMissionSystems();
     }
   }, [missionId]);
+
+  const fetchSystemById = async (missionId,systemId) => {
+    try {
+      const response = await api.get(`/missions/${missionId}/systems/${systemId}`);
+      setApplicationId(response.data);
+      console.log("application id",applicationId)
+    } catch (error) {
+      console.error("Erreur lors de la récupération des systems:", error);
+    } 
+  };
+  
+  useEffect(() => {
+    if (missionId,systemId) {
+      fetchSystemById();
+    }
+  }, [missionId,systemId]);
   
 
   const handleAddApp = async (app) => {
@@ -122,6 +139,9 @@ export const useSystem = (missionId, user, showForm, onToggleForm,missionName) =
   };
 
   return {
+    fetchSystemById,
+    applicationId,
+    setApplicationId,
     applications,
     setApplications,
     isDeletePopupOpen,
