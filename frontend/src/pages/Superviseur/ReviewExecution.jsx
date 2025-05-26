@@ -19,6 +19,8 @@ import ExistingComment from '../../components/ExecutionPage/ExistingComment';
 import CommentButton from '../../components/ExecutionPage/CommentButton';
 
 function ReviewExecution() {
+  
+  const [executionData, setExecutionData] = useState(null);
   const location = useLocation();
   const controleData = location.state?.controleData || {};
   console.log('controle data',controleData)
@@ -35,27 +37,98 @@ function ReviewExecution() {
   editComment,
   } = useExecution();
 
-  const {
-    action,
-    error,
-    fetchRemediations,
-  } = useRemediation(controleData.executionId, controleData.controlCode);
+  
+  const params = useParams();
+const missionRevue = params.missionRevue;
+const controlCode = params.controlCode;
+const navigate = useNavigate();
+const { user } = useAuth();
+
+useEffect(() => {
+  let executionId = controleData?.executionId;
+  let missionId = controleData?.missionId;
+
+  async function fetchData() {
+    if ((!executionId || !missionId) && missionRevue && controlCode) {
+      console.log('Remplacement par missionRevue et controlCode');
+      executionId = controlCode;
+      missionId = missionRevue;
+    }
+
+    if (!executionId || !missionId) {
+      console.log('ExecutionId ou MissionId manquant');
+      return;
+    }
+
+    const data = await getExecutionById(missionId, executionId);
+    console.log('Data execution from revue', data);
+
+    if (data && Array.isArray(data)) {
+      const item = data[0]; 
+      const parsedData = {
+        ...item,
+        steps: JSON.parse(item.steps),
+        evidences: JSON.parse(item.evidences),
+        remarks: JSON.parse(item.remarks),
+        remediations: JSON.parse(item.remediations),
+        sources: JSON.parse(item.sources),
+      };
+      setExecutionData(parsedData);
+      console.log('parsedData execution',executionData)
+    }
+  };
+
+  if (executionId || (missionRevue && controlCode)) {
+    fetchData();
+  }
+}, [missionRevue, controlCode]);
+console.log("Execution Data:", executionData);
+
+const {
+  action,
+  error,
+  fetchRemediations,
+} = useRemediation(executionData?.execution_id);
   const [existingComments, setExistingComments] = useState([])
-  const [executionData, setExecutionData] = useState(null);
   const [evidences, setEvidences] = useState([]);
   const [testFiles, setTestFiles] = useState([]);
   const [steps, setSteps] = useState([]);
   const [isToReview, setIsToReview] = useState(false);
   const [isToValidate, setIsToValidate] = useState(false);
-  const [selectedMulti, setSelectedMulti] = useState(controleData.executionStatus);
-  const sourceNames = controleData.sources
-  const [commentaire, setCommentaire] = useState(controleData.commentaire || "");
+  const [selectedMulti, setSelectedMulti] = useState();
+  const sourceNames = executionData?.sources?.map((source) => source.source_name).join(", ") || "";
+
+  const [commentaire, setCommentaire] = useState("");
   const [activePanel, setActivePanel] = useState(0);
   const [selections, setSelections] = useState({
-        IPE: controleData.executionIpe,
-        Design: controleData.executionDesign,
-        Effectiveness: controleData.executionEffectiveness,
+    IPE: false,
+    Design: false,
+    Effectiveness: false,
+  });
+
+  useEffect(() => {
+    if (executionData) {
+      console.log('executionData in useEffect:', executionData);
+      console.log('Mise à jour selections:', {
+        IPE: executionData.ipe,
+        Design: executionData.design,
+        Effectiveness: executionData.effectiveness,
       });
+      setSelections({
+        IPE: executionData.ipe,
+        Design: executionData.design,
+        Effectiveness: executionData.effectiveness,
+      });
+      setCommentaire(executionData?.comment || "");
+      setSelectedMulti(executionData.status_name|| "");
+    }
+  }, [executionData]);
+  
+  
+  useEffect(() => {
+    console.log('selections updated:', selections);
+  }, [selections]);
+  
       const columnsConfig = [
             { field: "actionName", headerName: "Nom", width: 250, editable: true },
             {
@@ -78,29 +151,7 @@ function ReviewExecution() {
           ];
         
 
-  const navigate = useNavigate();
-  const { user } = useAuth();
-
-
-  // Fetch execution data
-  useEffect(() => {
-    const fetchData = async () => {
-      const data = await getExecutionById(controleData.missionId,controleData.executionId);
-      if (data && Array.isArray(data)) {
-        const parsedData = data.map((item) => ({
-          ...item,
-          steps: JSON.parse(item.steps),
-          evidences: JSON.parse(item.evidences),
-          
-        }));
-        setExecutionData(parsedData);
-      }
-    };
-    if (controleData.executionId) {
-      fetchData();
-    }
-  }, [controleData.executionId]);
-
+ 
   // Process evidences and steps once execution data is available
   useEffect(() => {
     // if (executionData?.[0]) {
@@ -114,25 +165,23 @@ function ReviewExecution() {
     // }
     console.log("Execution Data:", executionData);
 
-    console.log("ipeee gizan:", executionData?.[0]?.ipe);
-
-    const allEvidences = executionData?.[0]?.evidences || [];
+    const allEvidences = executionData?.evidences || [];
     const filteredEvidences = allEvidences.filter(
       (file) => file.is_f_test === false
     );
     const filteredTestFiles = allEvidences.filter(
       (file) => file.is_f_test === true
     );
-    setCommentaire(executionData?.[0]?.comment);
     setSelections({
-      IPE: executionData?.[0]?.ipe,
-      Design: executionData?.[0]?.design,
-      Effectiveness: executionData?.[0]?.effectiveness,
+      IPE: executionData?.ipe,
+      Design: executionData?.design,
+      Effectiveness: executionData?.effectiveness,
     });
+    setCommentaire(executionData?.comment || "");
     //setExistingComments(executionData?.[0]?.remarks)
-    if (executionData?.[0]?.remarks) {
+    if (executionData?.remarks) {
       try {
-        const parsedRemarks = JSON.parse(executionData[0].remarks);
+        const parsedRemarks = (executionData?.remarks);
         const formattedRemarks = parsedRemarks.map((remark) => {
           const [firstName, lastName] = remark.name?.split(" ") ?? ["", ""];
           return {
@@ -157,12 +206,12 @@ function ReviewExecution() {
 
     setEvidences(filteredEvidences);
     setTestFiles(filteredTestFiles);
-    setSteps(executionData?.[0]?.steps || []);
-    setIsToReview(executionData?.[0]?.execution_is_to_review);
-    setIsToValidate(executionData?.[0]?.execution_is_to_validate);
+    setSteps(executionData?.steps || []);
+    setIsToReview(executionData?.execution_is_to_review);
+    setIsToValidate(executionData?.execution_is_to_validate);
  
   }, [executionData]);
-  console.log("Execution Data:", executionData);
+ 
   useEffect(() => {
     console.log("remarksss gizan",existingComments);
 }, [existingComments]);
@@ -172,7 +221,6 @@ function ReviewExecution() {
 
      const { mission } = useParams([]); // Récupérer les paramètres de l'URL
      const { name } = useParams([]);
-     const { controlCode } = useParams([]);
      const handleRowClick = (rowData) => {
       
       navigate(`/revue/revueExecution/${controlCode}/remediation/${rowData.actionName}`, {
@@ -250,7 +298,7 @@ function ReviewExecution() {
     const commentData = {
       y: newExistingComment.y,
       user_id: user.id,
-      execution_id: executionData?.[0]?.execution_id,
+      execution_id: executionData?.execution_id,
       text: newExistingComment.text,
     };
 console.log('comment data',commentData)
@@ -361,14 +409,14 @@ const currentUserRole = JSON.parse(localStorage.getItem("User"))?.role;
         {location.pathname.includes("") && <Breadcrumbs />}
         
         <DescriptionTestScriptSection
-          description={controleData.executionModification || ""}
+          description={executionData?.execution_description || ""}
           testScript={steps}
           sources={sourceNames}
           setTestScript={() => {}}
-          type={controleData.typeName || ""}
-          majorProcess={controleData.majorProcess || ""}
-          subProcess={controleData.subProcess || ""}
-          controlOwner={controleData.executionControlOwner || ""}
+          type={executionData?.type_name || ""}
+          majorProcess={executionData?.major_process || ""}
+          subProcess={executionData?.sub_process|| ""}
+          controlOwner={executionData?.execution_control_owner || ""}
           readOnly={true}
         />
 
