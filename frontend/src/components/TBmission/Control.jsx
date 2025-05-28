@@ -6,17 +6,19 @@ import CancelIcon from '@mui/icons-material/Cancel';
 import { api } from '../../Api';
 import { useDashboard } from '../../Hooks/useDashboard';
 
-function Control({ statusControl, data, grid_cols = 'grid-cols-1', size }) {
-    console.log("status control from ",statusControl)
+function Control({ statusControl, data, grid_cols = 'grid-cols-1', size, statusControlDataPerIneff, statusControlDataPerCommencé }) {
+    console.log("status control from ", statusControl)
     const {
         executionData,
         loading,
         fetchExecutionData,
         setSelectedExecution,
         setExecutionData,
+        fetchMissionReport,
     } = useDashboard();
+    console.log("status control from execution data", executionData)
     const [hasFetchedIneffective, setHasFetchedIneffective] = useState(false);
-    
+
     //Vérification que statusControl a bien un ID
     if (!statusControl?.id && !statusControl?.mission_id) {
         console.error("statusControl doit avoir soit 'id' soit 'mission_id'");
@@ -68,86 +70,83 @@ function Control({ statusControl, data, grid_cols = 'grid-cols-1', size }) {
         { field: "status", headerName: "Status", width: 150, expandable: true },
         { field: "testeur", headerName: "Tester", width: 150, expandable: true }]
 
-        const pourcentageControlFinalisé = statusControl?.controlCommencé?.nbrFinalisé && statusControl?.controlCommencé?.nbrTotale
-        ? Math.round((statusControl.controlCommencé.nbrFinalisé  * 100) / statusControl.controlCommencé.nbrTotale)
+    const pourcentageControlFinalisé = statusControl?.controlCommencé?.nbrFinalisé && statusControl?.controlCommencé?.nbrTotale
+        ? Math.round((statusControl.controlCommencé.nbrFinalisé * 100) / statusControl.controlCommencé.nbrTotale)
         : 0;
-        const pourcentageControlPartiallyApp = 
-        Math.round((statusControl.controlNonEffective?.nbrPartially * 100) / Math.round((statusControl?.controlNonEffective?.pourcentageTotale * statusControl?.nbrControl)/100))
-        || 0;
 
     const pourcentageControlNonFinalisé = statusControl?.controlCommencé?.nbrNonFinalisé && statusControl?.controlCommencé?.nbrTotale
-        ? Math.round((statusControl.controlCommencé.nbrNonFinalisé  * 100) / statusControl.controlCommencé.nbrTotale)
+        ? Math.round((statusControl.controlCommencé.nbrNonFinalisé * 100) / statusControl.controlCommencé.nbrTotale)
         : 0;
 
 
-        useEffect(() => {
-            const nom = executionData.selected?.nom?.toLowerCase();
-            const missionId = statusControl.mission_id || statusControl.id;
-            
-            if (!executionData.selected || !missionId) return;
-        
-            const handleFilter = async () => {
-                try {
-                    if (nom === 'effectifs' || nom === 'applied') {
-                        await fetchExecutionData('effectifs', missionId);
-                    } 
-                    else if (nom === 'ineffectifs') {
-                        if (executionData.allIneffective.length === 0) {
-                            await fetchExecutionData('ineffectifs', missionId);
-                        }
-                    }
-                    else if (['partially applied', 'not applied', 'not tested', 'not applicable'].includes(nom)) {
-                        if (executionData.allIneffective.length > 0) {
-                            const filtered = executionData.allIneffective.filter(item => 
-                                item.status?.toLowerCase() === nom
-                            );
-                            setExecutionData(prev => ({
-                                ...prev,
-                                displayed: filtered
-                            }));
-                        } else {
-                            await fetchExecutionData('ineffectifs', missionId);
-                            const filtered = executionData.allIneffective.filter(item => 
-                                item.status?.toLowerCase() === nom
-                            );
-                            setExecutionData(prev => ({
-                                ...prev,
-                                displayed: filtered
-                            }));
-                        }
-                    }
-                    else if (nom === 'commencés') {
-                        await fetchExecutionData('began', missionId);
-                    } 
-                    else if (nom === 'non commencés') {
-                        await fetchExecutionData('unbegan', missionId);
-                    }
-                } catch (error) {
-                    console.error("Error filtering data:", error);
+    useEffect(() => {
+        const nom = executionData.selected?.nom?.toLowerCase();
+        const missionId = statusControl.mission_id || statusControl.id;
+
+        if (!executionData.selected || !missionId) return;
+
+        const handleFilter = async () => {
+            try {
+                if (nom === 'effectifs' || nom === 'applied') {
+                    await fetchExecutionData('effectifs', missionId);
                 }
-            };
-        
-            handleFilter();
-        }, [
-            executionData.selected,
-            statusControl.mission_id,
-            statusControl.id,
-            fetchExecutionData,
-            setExecutionData,
-            executionData.allIneffective
-        ]);
+                else if (nom === 'ineffectifs') {
+                    if (executionData.allIneffective.length === 0) {
+                        await fetchExecutionData('ineffectifs', missionId);
+                    }
+                }
+                else if (['partially applied', 'not applied', 'not tested', 'not applicable'].includes(nom)) {
+                    if (executionData.allIneffective.length > 0) {
+                        const filtered = executionData.allIneffective.filter(item =>
+                            item.status?.toLowerCase() === nom
+                        );
+                        setExecutionData(prev => ({
+                            ...prev,
+                            displayed: filtered
+                        }));
+                    } else {
+                        await fetchExecutionData('ineffectifs', missionId);
+                        const filtered = executionData.allIneffective.filter(item =>
+                            item.status?.toLowerCase() === nom
+                        );
+                        setExecutionData(prev => ({
+                            ...prev,
+                            displayed: filtered
+                        }));
+                    }
+                }
+                else if (nom === 'commencés') {
+                    await fetchExecutionData('began', missionId);
+                }
+                else if (nom === 'non commencés') {
+                    await fetchExecutionData('unbegan', missionId);
+                }
+            } catch (error) {
+                console.error("Error filtering data:", error);
+            }
+        };
+
+        handleFilter();
+    }, [
+        executionData.selected,
+        statusControl.mission_id,
+        statusControl.id,
+        fetchExecutionData,
+        setExecutionData,
+        executionData.allIneffective
+    ]);
 
     return (
         <>
-        
+
             <div className={`grid  ${grid_cols} gap-4`}>
-                
+
                 {data?.map((item) => (
                     <div
                         key={item.id}
                         className={`cursor-pointer flex justify-between p-2 items-center  rounded shadow-sm hover:shadow-md transition duration-200 ${getColor(item.nom)}`}
                         onClick={(e) => {
-                            e.stopPropagation(); 
+                            e.stopPropagation();
                             setSelectedExecution(item);
                         }}
                     >
@@ -184,44 +183,51 @@ function Control({ statusControl, data, grid_cols = 'grid-cols-1', size }) {
                         <div className="flex flex-row gap-8 my-8 justify-center">
 
                             {executionData.selected.nom === 'Commencés' &&
-                                <>
-                                    <div className="flex items-center gap-4  border-l-4 border-l-green-600  px-4 py-2 rounded shadow-sm">
-                                        <CheckCircleIcon className="text-green-600" />
+                                statusControlDataPerCommencé?.map((item) => (
+                                    <div
+                                        key={item.id}
+                                        className={`relative group flex items-center gap-4 border-l-4 ${item.nom === 'Contrôles finalisés' ? 'border-l-green-600' : 'border-l-red-600'
+                                            } px-4 py-2 rounded shadow-sm`}
+                                    >
+                                        {item.nom === 'Contrôles finalisés' ? (
+                                            <CheckCircleIcon className="text-green-600" />
+                                        ) : (
+                                            <CancelIcon className="text-red-600" />
+                                        )}
                                         <p className="text-sm font-medium">
-                                            Contrôles finalisés : <strong>{pourcentageControlFinalisé}%</strong>
+                                            {item.nom} : <strong>{item.pourcentage}%</strong>
                                         </p>
+                                        <div className="absolute bottom-full mb-2 hidden group-hover:block bg-black text-white text-xs rounded px-2 py-1">
+                                            {item.nom === 'Contrôles finalisés'
+                                                ? `${statusControl?.controlCommencé?.nbrFinalisé} contrôles finalisés`
+                                                : `${statusControl?.controlCommencé?.nbrNonFinalisé} contrôles non finalisés`}
+                                        </div>
                                     </div>
-                                    <div className="flex items-center gap-2  border-l-4 border-l-red-600  px-4 py-2 rounded shadow-sm">
-                                        <CancelIcon className="text-red-600" />
-                                        <p className="text-sm font-medium">
-                                            Contrôles non finalisés : <strong>{pourcentageControlNonFinalisé}%</strong>
-                                        </p>
-                                    </div>
-                                </>
-                            }
+                                ))}
+
                             {executionData.selected.nom === 'ineffectifs' &&
-                                <>
-                                    <div className="flex items-center gap-2 border-l-4 border-l-orange-600 px-4 py-2 rounded shadow-sm">
-                                        <p className="text-sm font-medium">
-                                            Partially applied : <strong>{pourcentageControlPartiallyApp}%</strong>
-                                        </p>
-                                    </div>
-                                    <div className="flex items-center gap-2 border-l-4 border-l-red-600 px-4 py-2 rounded shadow-sm">
-                                        <p className="text-sm font-medium">
-                                            Not applied : <strong>{statusControl?.controlNonEffective?.notApp}%</strong>
-                                        </p>
-                                    </div>
-                                    <div className="flex items-center gap-2 border-l-4 border-l-blue-600   px-4 py-2 rounded shadow-sm">
-                                        <p className="text-sm font-medium">
-                                            Not tested : <strong>{statusControl?.controlNonEffective?.notTested}%</strong>
-                                        </p>
-                                    </div>
-                                    <div className="flex items-center gap-2 border-l-4 border-l-black-600   px-4 py-2 rounded shadow-sm">
-                                        <p className="text-sm font-medium">
-                                            Not applicable : <strong>{statusControl?.controlNonEffective?.notApplicable}%</strong>
-                                        </p>
-                                    </div>
-                                </>
+                                <div className="flex  gap-6">
+                                    {statusControlDataPerIneff?.map((item) => (
+                                        <div
+                                            key={item.id}
+                                            className={`
+                                       flex items-center gap-2 
+                                       border-l-4
+                                       ${item.nom.toLowerCase() === "partially applied" ? "border-l-orange-600"
+                                                    : item.nom.toLowerCase() === "not applied" ? "border-l-red-600"
+                                                        : item.nom.toLowerCase() === "not tested" ? "border-l-blue-600"
+                                                            : item.nom.toLowerCase() === "not applicable" ? "border-l-black" // corrige la classe si tu veux une autre couleur
+                                                                : "border-l-gray-600"}
+                                       px-4 py-2 rounded shadow-sm
+                                     `}
+                                        >
+                                            <p className="text-sm font-medium">
+                                                {item.nom} : <strong>{item.pourcentage}%</strong>
+                                            </p>
+                                        </div>
+                                    ))}
+                                </div>
+
                             }
                         </div>
                         <div className="overflow-auto max-h-[300px] w-full my-4">
@@ -229,7 +235,7 @@ function Control({ statusControl, data, grid_cols = 'grid-cols-1', size }) {
                                 <div className="flex justify-center items-center h-32">
                                     <p>Chargement en cours...</p>
                                 </div>
-                                : executionData.displayed?.length  == 0 ? (
+                                : executionData.displayed?.length == 0 ? (
                                     <div className="flex justify-center items-center h-32">
                                         <p>Aucune execution </p>
                                     </div>

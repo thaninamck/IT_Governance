@@ -39,7 +39,7 @@ function DashboardManager() {
     }
   }, [missionData?.id, fetchMissionReport]);
 
-  const { progressPercent, controlData, statusControlData, RemédiationData } =
+  const { progressPercent, controlData, statusControlData, RemédiationData ,statusControlDataPerIneff,statusControlDataPerCommencé} =
     useMemo(() => {
       if (!missionData || !missionReportData) return {};
 
@@ -51,6 +51,9 @@ function DashboardManager() {
       const total = missionReportData?.nbrControl || 0;
       const done = missionReportData?.controlFinalisé      || 0;
       const progressPercent = total > 0 ? Math.round((done / total) * 100) : 0;
+
+      const pourcentageControlFinalisé = Math.round((missionReportData?.controlFinalisé/ ((missionReportData?.controlCommencé * missionReportData?.nbrControl) / 100)) *100) || 0 ;
+      const pourcentageControlNonFinalisé = Math.round((missionReportData?.controlNonFinalisé/ ((missionReportData?.controlCommencé * missionReportData?.nbrControl) / 100)) *100) || 0 ;
 
       const controlData = [
         {
@@ -79,27 +82,64 @@ function DashboardManager() {
         {
           id: "1",
           nom: "Applied",
-          pourcentage: `${missionData?.controlEffectif}`,
+          pourcentage: `${missionReportData?.controlEffectif}`,
         },
         {
           id: "2",
           nom: "Partially applied",
-          pourcentage: `${missionData?.controlNonEffective?.partiallyApp}`,
+          pourcentage: `${missionReportData?.executionsPartiallyAppliedPct}`,
         },
         {
           id: "3",
           nom: "Not applied",
-          pourcentage: `${missionData?.controlNonEffective?.notApp}`,
+          pourcentage: `${missionReportData?.executionsNotAppliedPct}`,
         },
         {
           id: "4",
           nom: "Not tested",
-          pourcentage: `${missionData?.controlNonEffective?.notTested}`,
+          pourcentage: `${missionReportData?.executionsNotTestedPct}`,
         },
         {
           id: "5",
           nom: "Not applicable",
-          pourcentage: `${missionData?.controlNonEffective?.notApplicable}`,
+          pourcentage: `${missionReportData?.executionsNotApplicablePct}`,
+        },
+      ];
+
+      const statusControlDataPerIneff = [
+        
+        {
+          id: "1",
+          nom: "Partially applied",
+          pourcentage: `${missionReportData?.executionsPartiallyAppliedPctPerIneff}`,
+        },
+        {
+          id: "2",
+          nom: "Not applied",
+          pourcentage: `${missionReportData?.executionsNotAppliedPctPerIneff}`,
+        },
+        {
+          id: "3",
+          nom: "Not tested",
+          pourcentage: `${missionReportData?.executionsNotTestedPctPerIneff}`,
+        },
+        {
+          id: "4",
+          nom: "Not applicable",
+          pourcentage: `${missionReportData?.executionsNotTestedPctPerIneff}`,
+        },
+      ];
+      const statusControlDataPerCommencé = [
+        
+        {
+          id: "1",
+          nom: "Contrôles finalisés",
+          pourcentage: `${pourcentageControlFinalisé}`,
+        },
+        {
+          id: "2",
+          nom: " Contrôles non finalisés",
+          pourcentage: `${pourcentageControlNonFinalisé}`,
         },
       ];
 
@@ -120,12 +160,15 @@ function DashboardManager() {
           pourcentage: `${missionReportData?.actionEnCours}`,
         },
       ];
+
       console.log("RemediationData", RemédiationData);
       return {
         progressPercent,
         controlData,
         statusControlData,
         RemédiationData,
+        statusControlDataPerIneff,
+        statusControlDataPerCommencé,
       };
     }, [missionData, missionReportData]);
 
@@ -320,6 +363,8 @@ const exportToPDF = async (missionName = "Mission") => {
                 <Control
                   data={controlData}
                   statusControl={missionData}
+                  statusControlDataPerIneff={statusControlDataPerIneff}
+                  statusControlDataPerCommencé={statusControlDataPerCommencé}
                   grid_cols="grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
                 />
               </div>
@@ -329,6 +374,8 @@ const exportToPDF = async (missionName = "Mission") => {
                 <Control
                   data={statusControlData}
                   statusControl={missionReportData}
+                  statusControlDataPerIneff={statusControlDataPerIneff}
+                  statusControlDataPerCommencé={statusControlDataPerCommencé}
                   grid_cols="grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-2"
                 />
               </div>

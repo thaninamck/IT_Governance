@@ -42,6 +42,7 @@ export const useDashboard = () => {
             setLoading(false);
         }
     }, []);
+    
     // Fetch execution data
     const fetchExecutionData = useCallback(async (type, missionId, filter = null) => {
         setLoading(true);
