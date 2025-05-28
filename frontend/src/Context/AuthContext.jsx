@@ -96,7 +96,7 @@ export const AuthProvider = ({ children }) => {
         localStorage.setItem("token", response.data.token);
         localStorage.setItem("token_expiry", expirationTime);
        
-
+console.log("user",response.data.user)
        // setUser(response.data.user || null);
 
        const userData = {
@@ -104,7 +104,7 @@ export const AuthProvider = ({ children }) => {
         id:response.data.user.id,
         role: response.data.user.role,
         fullName: response.data.user.fullName,
-        position: response.data.user.grade ,
+        position: response.data.user.position ,
         phoneNumber:response.data.user.phoneNumber,
         email:response.data.user.email
       };

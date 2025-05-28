@@ -408,7 +408,7 @@ class MissionRepository
             ) AS finalized_executions,
 
             COUNT(*) FILTER (
-                WHERE (e.is_to_review = false OR e.is_to_validate = false) AND e.launched_at IS NOT NULL AND stt.status_name IS  NULL 
+                WHERE (e.is_to_review = false OR e.is_to_validate = false) AND e.launched_at IS NOT NULL  
             ) AS not_finalized_executions,
 
 
@@ -507,7 +507,7 @@ SELECT
 	 LEFT JOIN statuses st ON ex.status_id = st.id
 
      WHERE s.mission_id = m.id  
-           AND (ex.is_to_review = false OR ex.is_to_validate = false)  AND ex.launched_at IS NOT NULL AND st.status_name IS  NULL
+           AND (ex.is_to_review = false OR ex.is_to_validate = false)  AND ex.launched_at IS NOT NULL 
 		   ) AS controls_non_finalises,
 
     (SELECT COUNT(*) FROM executions ex

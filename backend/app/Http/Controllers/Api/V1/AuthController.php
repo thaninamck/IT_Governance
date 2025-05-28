@@ -124,6 +124,7 @@ class AuthController extends BaseController
             }elseif ($user && $user->is_active==false) {
                 return $this->sendError("User Blocked", ["Blocked" => ["this user is blocked temporarelly please wait until the admin unblocks you"]], 403);
             }
+            $user->load('position');
 
             $user->update(["last_activity" => now()]);
 
