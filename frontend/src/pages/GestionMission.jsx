@@ -100,18 +100,18 @@ function GestionMission() {
   console.log(user)
   // Colonnes de la table
   const columnsConfig2 = [
-    { field: "clientName", headerName: "Client", width: 170 },
-    { field: "missionName", headerName: "Mission", width: 170 },
+    { field: "clientName", headerName: "Client", width: 170 ,expandable: true,},
+    { field: "missionName", headerName: "Mission", width: 200, expandable: true},
     ...(user?.role === "admin"
-      ? [{ field: "manager", headerName: "Manager", width: 200 }]
-      : [{ field: "profileName", headerName: "Profile", width: 150 }]
+      ? [{ field: "manager", headerName: "Manager", width: 200 ,expandable: true,}]
+      : [{ field: "profileName", headerName: "Profile", width: 150,expandable: true, }]
     ),
-    { field: "startDate", headerName: "Date de début", width: 150 },
-    { field: "endDate", headerName: "Date fin", width: 150 },
+    { field: "startDate", headerName: "Date de début", width: 150 ,expandable: true,},
+    { field: "endDate", headerName: "Date fin", width: 150,expandable: true, },
     {
       field: "auditPeriod",
       headerName: "Période auditée",
-      width: 250,
+      width: 250,expandable: true,
       customRenderCell: (params) => {
         const startDate = new Date(params.row.auditStartDate).toLocaleDateString("fr-FR");
         const endDate = new Date(params.row.auditEndDate).toLocaleDateString("fr-FR");
@@ -121,7 +121,7 @@ function GestionMission() {
     {
       field: "status",
       headerName: "Status",
-      width: 220,
+      width: 220,expandable: true,
       customRenderCell: (params) => {
         return <StatusMission status={params.row.status} />;
       },
