@@ -51,7 +51,7 @@ class Execution extends Model
 
     public function evidences()
     {
-        return $this->hasManyTo(Evidence::class);
+        return $this->hasMany(Evidence::class);
     }
 
     // public function evidences(){    

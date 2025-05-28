@@ -33,6 +33,7 @@ function Matrix({
   stopModification,
   viewOnly,
   missionId,
+  cancelDelete 
 }) {
   const {
     createExecutions,
@@ -579,7 +580,12 @@ const {profile}=useProfile();
     }
   }, [testers]);
   // Charger les données depuis localStorage au montage du composant
-
+  useEffect(() => {
+    if (cancelDelete) {
+      setSelectedRows([]); // Réinitialiser les lignes sélectionnées
+      setSelectedControls([]); // Réinitialiser les contrôles sélectionnés
+    }
+  }, [cancelDelete]);
   const navigationType = useNavigationType();
 
   useEffect(() => {

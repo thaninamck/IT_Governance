@@ -22,10 +22,10 @@ class UserResource extends JsonResource
             'email' => $this->email,
             'phoneNumber' => $this->phone_number,
             'position' => $this->whenLoaded('position', function () {
-                return [
-                    'id' => $this->position->id,
-                    'name' => $this->position->name,
-                ];
+                return 
+                   
+                   $this->position->name;
+                
             }),
 
             'role' => $this->role == 0 ? 'user' : 'admin',

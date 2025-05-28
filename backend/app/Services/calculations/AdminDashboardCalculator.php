@@ -41,10 +41,20 @@ class AdminDashboardCalculator implements CalculationServiceInterface
             'controlNonEffective' => [
                 'pourcentageTotale' =>  round(($m->noneffective_controls / max(1, $totalExec)) * 100),
                 'nbrPartially' => $m->partially_applied_controls,
+                'nbrPartiallyPerIneff' =>  round(($m->partially_applied_controls / max(1, $m->noneffective_controls)) * 100),
+
                 'partiallyApp' =>  round(($m->partially_applied_controls / max(1, $totalExec)) * 100),
+                'partiallyAppPerIneff' =>  round(($m->partially_applied_controls / max(1, $m->noneffective_controls)) * 100),
+
                 'notApp' =>  round(($m->not_applied_controls / max(1, $totalExec)) * 100),
+                'notAppPerIneff' =>  round(($m->not_applied_controls / max(1, $m->noneffective_controls)) * 100),
+
                 'notTested' =>  round(($m->not_tested_controls / max(1, $totalExec)) * 100),
+                'notTestedPerIneff' =>  round(($m->not_tested_controls / max(1, $m->noneffective_controls)) * 100),
+
                 'notApplicable' =>  round(($m->not_applicable_controls / max(1,$totalExec) ) * 100),
+                'notApplicablePerIneff' =>  round(($m->not_applicable_controls / max(1,$m->noneffective_controls) ) * 100),
+
             ],
         ];
     });
