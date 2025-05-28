@@ -204,13 +204,13 @@ const confirmDeleteApp = () => {
 
         {/* Bouton d'exportation */}
         <div className="flex justify-end items-center pr-10 mb-2">
-          <ExportButton
-            rowsData={filteredRows}
-            headers={columnsConfig2.map((col) => col.headerName)}
-            fileName={`List_Utilisateurs_${
-              new Date().getMonth() + 1
-            }_${new Date().getFullYear()}`}
-          />
+        <ExportButton
+  rowsData={filteredRows}
+  columns={columnsConfig2}
+  fileName={`List_Utilisateurs_${
+    new Date().getMonth() + 1
+  }_${new Date().getFullYear()}`}
+/>
         </div>
         <Snackbar
           open={snackbarOpen}

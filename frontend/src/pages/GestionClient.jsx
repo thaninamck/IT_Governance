@@ -85,7 +85,11 @@ function GestionClient() {
 
                 {/* Bouton d'exportation */}
                 <div className="flex justify-end items-center pr-10 mb-6">
-                    <ExportButton rowsData={filtereRows} headers={columnsConfig.map(col => col.headerName)} fileName={fileName} />
+                <ExportButton
+  rowsData={filtereRows}
+  columns={columnsConfig}
+  fileName={fileName}
+/>
                 </div>
 
                 {/* Tableau des clients */}

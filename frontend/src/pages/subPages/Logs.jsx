@@ -35,7 +35,14 @@ function Logs() {
     <div className='p-2'>
       <h2 className="text-xl font-bold mb-4">Historique des journaux</h2>
       <div className="flex justify-end items-center pr-10 mb-6">
-        <ExportButton rowsData={filteredLogs} headers={columnslogs.map(col => col.headerName)} fileName={`Logs_${new Date().getMonth() + 1}_${new Date().getFullYear()}`} />
+      <ExportButton
+  rowsData={filteredLogs}
+  columns={columnslogs}
+  fileName={`Logs_${
+    new Date().getMonth() + 1
+  }_${new Date().getFullYear()}`}
+/>
+       
       </div>
       {loading ? (
                     <div className="flex items-center justify-center mt-9 w-full h-full">
