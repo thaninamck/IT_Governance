@@ -9,6 +9,7 @@ function AddMatrix({ user,missionId ,dataFormat}) {
   const [controleListe, setControleListe] = useState([]);
 const [modifActivated, setModifActivated] = useState(false);
 const [viewOnly, setViewOnly] = useState(true);
+const [cancelDelete, setCancelDelete] = useState(false);
 
 console.log('mission data ',dataFormat)
   const [loading, setLoading] = useState(true);
@@ -235,7 +236,9 @@ function transformExecutionsToAppStructure(executions) {
             ):
             (
               <button
-              onClick={() => setModifActivated(false)}
+              onClick={() =>{ setModifActivated(false);
+                setCancelDelete(true);
+              }}
 
               className="px-4 py-2 border-none bg-[var(--blue-menu)] text-white text-sm font-medium rounded"
             >
@@ -257,6 +260,7 @@ function transformExecutionsToAppStructure(executions) {
           stopModification={() => setModifActivated(false)}
           viewOnly={viewOnly}
           missionId={missionId}
+          cancelDelete={cancelDelete}
                   />
       </>
     ) : (
