@@ -1180,6 +1180,8 @@ public function getExecutionById($executionId)
 {
     $results = DB::select('
         SELECT 
+            DISTINCT cnt.id,
+            m.id,
             cnt.code,
             COALESCE(NULLIF(e.cntrl_modification, \'\'), cnt.description) AS description,
             e.control_owner AS owner,
@@ -1206,7 +1208,9 @@ public function getIneffectiveExecutionsByMission($id)
 {
     $results = DB::select('
         SELECT 
-           DISTINCT cnt.code,
+        DISTINCT cnt.id,
+            m.id,
+            cnt.code,
             COALESCE(NULLIF(e.cntrl_modification, \'\'), cnt.description) AS description,
             e.control_owner AS owner,
             stt.status_name AS status,
