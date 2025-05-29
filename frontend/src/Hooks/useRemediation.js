@@ -4,7 +4,7 @@ import { api } from "../Api";
 import emailjs from "emailjs-com";
 emailjs.init("oAXuwpg74dQwm0C_s");
 
-export default function useRemediation(executionId, controlCode) {
+export default function useRemediation(missionId,systemId,executionId, controlCode) {
   
 
   const [action, setAction] = useState([]);
@@ -19,7 +19,7 @@ export default function useRemediation(executionId, controlCode) {
   const fetchRemediations = async () => {
     if (!executionId) return;
     try {
-      const response = await api.get(`/execution/${executionId}/getremediations`);
+      const response = await api.get(`mission/${missionId}/app/${systemId}/execution/${executionId}/getremediations`);
       setAction(response.data);
     } catch (err) {
       setError(err.message);
@@ -35,7 +35,7 @@ export default function useRemediation(executionId, controlCode) {
   const handleAdd = async (remediation) => {
     try {
       if (remediation.id) {
-        const response = await api.put(`/execution/updateRemediation/${remediation.id}`, remediation);
+        const response = await api.put(`mission/${missionId}/app/${systemId}/execution/updateRemediation/${remediation.id}`, remediation);
         setAction(prev => prev.map(row => row.id === remediation.id ? response.data : row));
         setSelectedActionId(null);
         setShowRemediation(false);
@@ -43,7 +43,7 @@ export default function useRemediation(executionId, controlCode) {
         if (!executionId || !controlCode) {
           throw new Error("executionId ou controlCode manquant");
         }
-        const response = await api.post(`/execution/${executionId}/${controlCode}/createremediation`, remediation);
+        const response = await api.post(`mission/${missionId}/app/${systemId}/execution/${executionId}/${controlCode}/createremediation`, remediation);
         setAction(prev => [...prev, response.data]);
         setShowDecisionPopup(true);
       }
@@ -63,7 +63,7 @@ export default function useRemediation(executionId, controlCode) {
   const confirmDeleteRemediation = async () => {
     try {
       if (selectedActionId !== null) {
-        await api.delete(`/execution/deleteRemediation/${selectedActionId}`);
+        await api.delete(`mission/${missionId}/app/${systemId}/execution/deleteRemediation/${selectedActionId}`);
         setAction(prev => prev.filter(row => row.id !== selectedActionId));
       }
     } catch (error) {

@@ -75,7 +75,7 @@ export default function useAction(initialRemediationData) {
                 formData.append(key, value);
             });
 
-            const response = await api.put(`/execution/updateRemediation/${actionData.id}`, formData);
+            const response = await api.put(`mission/${initialRemediationData.missionId}/app/${initialRemediationData.systemId}/execution/updateRemediation/${actionData.id}`, formData);
             return response.data;
         } catch (err) {
             console.error('Erreur lors de la sauvegarde:', err);
@@ -90,7 +90,7 @@ export default function useAction(initialRemediationData) {
 
         setIsSavingSuivi(true);
         try {
-            await api.put(`/execution/updateRemediation/${actionData.id}`, {
+            await api.put(`mission/${initialRemediationData.missionId}/app/${initialRemediationData.systemId}/execution/updateRemediation/${actionData.id}`, {
                 follow_up: suiviValue
             });
         } catch (err) {
@@ -123,7 +123,7 @@ export default function useAction(initialRemediationData) {
         }
 
         try {
-            const response = await fileApi.post('/remediationevidences/upload', formDataToSend);
+            const response = await fileApi.post(`/remediationevidences/upload`, formDataToSend);
             if (response.status === 200 && Array.isArray(response.data)) {
                 setActionData(prev => ({
                     ...prev,
