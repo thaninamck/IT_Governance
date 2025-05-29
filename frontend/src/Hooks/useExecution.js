@@ -99,7 +99,7 @@ const useExecution = () => {
         console.log ('app data', appData)
         const endpoint =
           (appData.role === "admin" || appData.profile === "manager"|| appData.profile === "superviseur")
-            ? `/missions/${appData.id}/getAllexecutionsList`
+            ? `/missions/${appData.missionId}/${appData.id}/getAllexecutionsList`
             : `/missions/${appData.missionId}/${appData.id}/getexecutionsListForTesteur`;
         const response = await api.get(endpoint);
         return response.data;

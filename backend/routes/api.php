@@ -172,7 +172,7 @@ Route::middleware(['auth:sanctum', ManagerMiddleware::class])
 
         //ParticipationController Routes 
         Route::controller(ParticipationController::class)->group(function () {
-            Route::get('/missions/{mission}/testers', 'getTestersByMissionID');
+            // Route::get('/missions/{mission}/testers', 'getTestersByMissionID');
             Route::post('/missions/{mission}/createmembers', 'store');
             Route::delete('/missions/{mission}/deletemember/{id}', 'deleteParticipant');
         });
@@ -229,14 +229,20 @@ Route::middleware(['auth:sanctum', SupervisorMiddleware::class])
             Route::post('missions/{mission}/executions/create-comment', 'createComment');
             Route::put('missions/{mission}/executions/update-comment/{id}', 'updateComment');
             Route::delete('missions/{mission}/executions/delete-comment/{id}', 'deleteComment');
-            // Route::patch('missions/{mission}/system/{system}/executions/submit-execution-for-correction/{executionID}', 'submitExecutionForCorrection');
+            Route::patch('missions/{mission}/system/{system}/executions/submit-execution-for-correction/{executionID}', 'submitExecutionForCorrection');
+            Route::get('/missions/{mission}/{appId}/getAllexecutionsList', 'getAllExecutionsByApp');
         });
+       
     });
 
 //***************************************************************Testeur************************************************** */
 Route::middleware(['auth:sanctum', TesterMiddleware::class])
     ->prefix('v1')
     ->group(function () {
+        Route::controller(ParticipationController::class)->group(function () {
+            Route::get('/missions/{mission}/testers', 'getTestersByMissionID');
+           
+        });
         Route::controller(ExecutionController::class)->group(function () {
             Route::get('/missions/{mission}/executions-for-tester', 'getExecutionsByMissionAndTester');
             Route::put('missions/{mission}/executions/update-execution/{execution}', 'updateExecution');
@@ -250,8 +256,9 @@ Route::middleware(['auth:sanctum', TesterMiddleware::class])
             Route::get('/missions/{mission}/{appId}/getexecutionsListForTesteur', 'getExecutionsByMissionAndSystemAndTester');
             Route::get('/missions/{mission}/executions', 'getExecutionsByMission'); // je pense pas que khdemt biha
     
-
+            Route::get('/missions/{missionId}/getmatrix', 'getExecutionsByMission');
         });
+        
         Route::controller(EvidenceController::class)->group(function () {
             Route::delete('missions/{mission}/evidences/delete-evidence/{evidenceId}', 'destroy');
             Route::post('missions/{mission}/evidences/upload', 'storeMultiple');
@@ -307,7 +314,12 @@ Route::middleware('auth:sanctum')->prefix('v1')->group(function () {
         Route::put('/missions/{id}/requestcancelmission', 'RequestCancelMission');
         Route::put('/missions/{id}/requestArchiveMission', 'RequestArchiveMission');
     });
-
+    //hadi tan wa9ila makhdemtch bihha 
+    Route::prefix('v1')->group(function () {
+        Route::controller(ExecutionController::class)->group(function () {
+            Route::get('/missions/{appId}/getexecutionsList', 'getExecutionsByApp');
+        });
+    });
   
 });
 Route::prefix('v1')->group(function () {
@@ -323,6 +335,33 @@ Route::prefix('v1')->group(function () {
 Route::prefix('v1')->controller(SystemController::class)->group(function () {
     Route::get('/systems/{systemId}', 'getsystemInfo');
 });
+
+
+Route::prefix('v1')->group(function () {
+    Route::controller(StatusController::class)->group(function () {
+        Route::get('/getstatus', 'index');
+        Route::post('/createstatus', 'store');
+        Route::delete('/deletestatus/{id}', 'deleteStatus');
+    });
+});
+
+Route::prefix('v1')->group(function () {
+    Route::controller(TypeController::class)->group(function () {
+        Route::get('/getctrltypes', 'index');
+        Route::post('/createctrltype', 'store');
+        Route::delete('/deletetype/{id}', 'deleteType');
+    });
+});
+
+Route::prefix('v1')->group(function () {
+    Route::controller(SourceController::class)->group(function () {
+        Route::get('/getsources', 'index');
+        Route::delete('/deletesource/{id}', 'deleteSource');
+        Route::post('/createsource', 'store');
+    });
+});
+
+
 //**************************************************************************************************** */
 
 
@@ -330,30 +369,6 @@ Route::prefix('v1')->controller(SystemController::class)->group(function () {
 
 
 /*-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
-//gestion scope controle
-
-Route::prefix('v1')->group(function () {
-    Route::controller(ExecutionController::class)->group(function () {
-        Route::get('/missions/{missionId}/getmatrix', 'getExecutionsByMission');
-    });
-});
-Route::prefix('v1')->group(function () {
-    Route::controller(ExecutionController::class)->group(function () {
-        Route::get('/missions/{appId}/getexecutionsList', 'getExecutionsByApp');
-    });
-});
-
-Route::prefix('v1')->group(function () {
-    Route::controller(ExecutionController::class)->group(function () {
-        Route::get('/missions/{appId}/getAllexecutionsList', 'getAllExecutionsByApp');
-    });
-});
-
-
-
-
-
-
 
 //gestion remediation 
 Route::prefix('v1')->controller(RemediationController::class)->group(function () {
@@ -398,95 +413,21 @@ Route::middleware('auth:sanctum')->prefix('v1')->group(function () {
        Route::get('/revue/{missionId}/getAllExecutionReview', 'getAllExecutionReview');
     });
 });
-// Route::prefix('v1')->controller(ExecutionController::class)->group(function () {
-//     Route::get('/revue/getmissionexecutionreviewedforSuperviseur', 'getmissionReviewBySuperviseur');
-// });
 
-Route::middleware('auth:sanctum')->prefix('v1')->group(function () {
-    Route::controller(ExecutionController::class)->group(function () {
-        Route::get('/revue/getmissionexecutionreviewedforSuperviseur', 'getmissionReviewBySuperviseur');
-    });
-});
-Route::middleware('auth:sanctum')->prefix('v1')->group(function () {
-    Route::controller(ExecutionController::class)->group(function () {
-        Route::get('/revue/{missionId}/getexecutionreviewedforManager', 'getexecutionReviewByManager');
-    });
-});
-Route::middleware('auth:sanctum')->prefix('v1')->group(function () {
-    Route::controller(ExecutionController::class)->group(function () {
-        Route::get('/revue/getmissionexecutionreviewedforManager', 'getmissionReviewManager');
-        Route::patch('missions/{mission}/system/{system}/executions/submit-execution-for-correction/{executionID}', 'submitExecutionForCorrection');
-    });
-});
 
-// Route::prefix('v1')->controller(ExecutionController::class)->group(function () {
-//     Route::get('/revue/getmissionexecutionreviewedforManager', 'getmissionReviewManager');
+
+// Route::middleware('auth:sanctum')->prefix('v1')->group(function () {
+//     Route::controller(ExecutionController::class)->group(function () {
+//         Route::get('/revue/{missionId}/getexecutionreviewedforManager', 'getexecutionReviewByManager'); // hadi normalment makhdemnech biha 
+//     });
 // });
 
 
 
-
-
-Route::prefix('v1')->controller(ExecutionController::class)->group(function () {
-    Route::get('/executions/get-execution/{execution}', 'getExecutionById');
+// Route::prefix('v1')->controller(ExecutionController::class)->group(function () {
+//     Route::get('/executions/get-execution/{execution}', 'getExecutionById');  hadi normalment c bnkayna wahda fiha missionid foug
    
-});
-
-
-Route::prefix('v1')->group(function () {
-    Route::controller(StatusController::class)->group(function () {
-        Route::get('/getstatus', 'index');
-    });
-});
-
-Route::prefix('v1')->group(function () {
-    Route::controller(StatusController::class)->group(function () {
-        Route::post('/createstatus', 'store');
-    });
-});
-Route::prefix('v1')->group(function () {
-    Route::controller(StatusController::class)->group(function () {
-        Route::delete('/deletestatus/{id}', 'deleteStatus');
-    });
-});
-
-Route::prefix('v1')->group(function () {
-    Route::controller(TypeController::class)->group(function () {
-        Route::get('/getctrltypes', 'index');
-    });
-});
-
-Route::prefix('v1')->group(function () {
-    Route::controller(TypeController::class)->group(function () {
-        Route::post('/createctrltype', 'store');
-    });
-});
-Route::prefix('v1')->group(function () {
-    Route::controller(TypeController::class)->group(function () {
-        Route::delete('/deletetype/{id}', 'deleteType');
-    });
-});
-
-Route::prefix('v1')->group(function () {
-    Route::controller(SourceController::class)->group(function () {
-        Route::get('/getsources', 'index');
-    });
-});
-
-Route::prefix('v1')->group(function () {
-    Route::controller(SourceController::class)->group(function () {
-        Route::post('/createsource', 'store');
-    });
-});
-Route::prefix('v1')->group(function () {
-    Route::controller(SourceController::class)->group(function () {
-        Route::delete('/deletesource/{id}', 'deleteSource');
-    });
-});
-
-
-
-
+// });
 
 // Route::put('executions/update-execution/{execution}', [ExecutionController::class, 'updateExecution']);
 // Route::put('executions/launch-execution/{execution}', [ExecutionController::class, 'launchExecution']);
@@ -494,17 +435,16 @@ Route::prefix('v1')->group(function () {
 
 //***************************************manel ani ndakhalhom f midellware----------------------------------------------------------------------------------
 
-// Route::middleware('auth:sanctum')->prefix('v1')->group(function () {
-//     Route::controller(ExecutionController::class)->group(function () {
-//          Route::get('/missions/{missionId}/{appId}/getexecutionsListForTesteurForCorrection', 'getExecutionsByMissionAndSystemAndTesterFiltered');
-//     });
-// });
+//Route::middleware('auth:sanctum')->prefix('v1')->group(function () {
+  //  Route::controller(ExecutionController::class)->group(function () {
+    //Route::get('/revue/getmissionexecutionreviewedforSuperviseur', 'getmissionReviewBySuperviseur');
+      //  Route::get('/revue/getmissionexecutionreviewedforManager', 'getmissionReviewManager'); HAdi manech nakhadmou biha 
+       // Route::patch('missions/{mission}/system/{system}/executions/submit-execution-for-correction/{executionID}', 'submitExecutionForCorrection');
+      // Route::get('/missions/{missionId}/{appId}/getexecutionsListForTesteurForCorrection', 'getExecutionsByMissionAndSystemAndTesterFiltered');
+     // Route::get('/missions/{missionId}/{appId}/getexecutionsListForTesteur', 'getExecutionsByMissionAndSystemAndTester');
+    //});
+//});
 
-// Route::middleware('auth:sanctum')->prefix('v1')->group(function () {
-//     Route::controller(ExecutionController::class)->group(function () {
-//          Route::get('/missions/{missionId}/{appId}/getexecutionsListForTesteur', 'getExecutionsByMissionAndSystemAndTester');
-//     });
-// });
 
 //  Route::controller(ParticipationController::class)->group(function () {
 //     Route::get('/missions/{mission}/testers', 'getTestersByMissionID');
@@ -587,3 +527,10 @@ Route::prefix('v1')->group(function () {
 //         Route::delete('/deletesystemId/{id}', 'deleteSystem');
 //     });
 // });
+
+//--
+Route::prefix('v1')->group(function () {
+    Route::controller(ExecutionController::class)->group(function () {
+        Route::get('/missions/{missionId}/getmatrix', 'getExecutionsByMission');
+    });
+});

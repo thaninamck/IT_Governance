@@ -282,7 +282,7 @@ class ExecutionController extends BaseController
             return $this->sendError('Erreur lors de la récupération des exécutions.', ['error' => $e->getMessage()], 500);
         }
     }
-    public function getAllExecutionsByApp($appId)
+    public function getAllExecutionsByApp($mission,$appId)
     {
         try {
 
