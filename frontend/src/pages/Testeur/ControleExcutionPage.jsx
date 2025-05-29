@@ -74,7 +74,7 @@ function ControleExcutionPage() {
     setSelectedActionId,
     isAddingAnother,
     handleCloseForm,
-  } = useRemediation(controleData.executionId, controleData.controlCode);
+  } = useRemediation(controleData.missionId,controleData.systemId,controleData.executionId, controleData.controlCode);
 
   useEffect(() => {
     fetchRemediations();
