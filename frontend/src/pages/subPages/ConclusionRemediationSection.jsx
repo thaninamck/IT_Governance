@@ -226,7 +226,7 @@ function ConclusionRemediationSection({
                   ? "opacity-50 cursor-not-allowed"
                   : ""
                   }`}
-                disabled={isValidateDisabled || loading}
+                disabled={isValidateDisabled }
                 onClick={handleSubmit}
               >
                 Envoyer pour revue{" "}

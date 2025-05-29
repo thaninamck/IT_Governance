@@ -842,10 +842,13 @@ function ControleExcutionPage() {
       />
     );
 
-  const isValidateDisabled = !selectedMulti || !isAllRemediationDone;
+  const isValidateDisabled =  !executionStatus || !isAllRemediationDone ||!selectedMulti;
+  // !selectedMulti || !isAllRemediationDone;
   // (!shouldShowRemediation && !isAllRemediationDone);
   // || !commentaire ;
 
+  console.log('executionstatus',executionStatus)
+  console.log('isvalidatedisable',isValidateDisabled)
   const [comments, setComments] = useState([]);
   // const currentUserRole = JSON.parse(localStorage.getItem("User"))?.role;
 
