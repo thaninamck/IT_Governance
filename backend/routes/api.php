@@ -131,6 +131,8 @@ Route::middleware(['auth:sanctum', AdminMiddleware::class])
             Route::get('/dashboard/missions/{mission}/ineffective-controls', 'getineffectiveExecutionsByMission'); //done
             Route::get('/dashboard/missions/{mission}/began-controls', 'getBeganExecutionsByMission'); //done
             Route::get('/dashboard/missions/{mission}/unbegan-controls', 'getUnbeganExecutionsByMission'); //done
+            Route::get('/revue/{missionId}/{appId}/getAllExecutionReviewAdmin', 'getAllExecutionReviewAdmin');
+            Route::get('/revue/{missionId}/getAllExecutionReview', 'getAllExecutionReview');
 
         });
         Route::controller(MissionController::class)->group(function () {
@@ -225,7 +227,7 @@ Route::middleware(['auth:sanctum', SupervisorMiddleware::class])
     ->prefix('v1')
     ->group(function () {
         Route::controller(ExecutionController::class)->group(function () {
-
+            Route::get('/revue/{mission}/getexecutionreviewedforSuperviseur', 'getexecutionReviewBySuperviseur');
             Route::post('missions/{mission}/executions/create-comment', 'createComment');
             Route::put('missions/{mission}/executions/update-comment/{id}', 'updateComment');
             Route::delete('missions/{mission}/executions/delete-comment/{id}', 'deleteComment');
@@ -271,6 +273,16 @@ Route::middleware(['auth:sanctum', TesterMiddleware::class])
         Route::controller(SystemController::class)->group(function () {
             Route::get('missions/{mission}/systems/{systemId}', 'getsystemById');
         });
+        Route::controller(RemediationController::class)->group(function () {
+            Route::get('mission/{mission}/app/{app}/execution/{executionid}/getremediations', 'getAllRemediationsByExecution');
+            Route::post('mission/{mission}/app/{app}/execution/{executionid}/{controlCode}/createremediation', 'storeRemediationForExecution');
+            Route::put('mission/{mission}/app/{app}/execution/updateRemediation/{remediationId}', 'updateRemediation');
+            Route::delete('mission/{mission}/app/{app}/execution/deleteRemediation/{remediationId}', 'deleteRemediation');
+           
+        });
+        // Route::prefix('v1')->controller(EvidenceController::class)->group(function () {
+        //     Route::delete('mission/{mission}/app/{app}/remediationevidences/delete-evidence/{evidenceId}', 'destroyRemediation');
+        //   });
 
     });
 
@@ -371,19 +383,14 @@ Route::prefix('v1')->group(function () {
 /*-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
 //gestion remediation 
-Route::prefix('v1')->controller(RemediationController::class)->group(function () {
-    Route::post('/execution/{executionid}/{controlCode}/createremediation', 'storeRemediationForExecution');
-});
+//Route::prefix('v1')->controller(RemediationController::class)->group(function () {
+    // Route::post('mission/{mission}/app/{app}/execution/{executionid}/{controlCode}/createremediation', 'storeRemediationForExecution');
+  //  Route::get('mission/{mission}/app/{app}/execution/{executionid}/getremediations', 'getAllRemediationsByExecution');
+  // Route::put('mission/{mission}/app/{app}/execution/updateRemediation/{remediationId}', 'updateRemediation');
+   // Route::delete('mission/{mission}/app/{app}/execution/deleteRemediation/{remediationId}', 'deleteRemediation');
+//});
 
-Route::prefix('v1')->controller(RemediationController::class)->group(function () {
-    Route::get('/execution/{executionid}/getremediations', 'getAllRemediationsByExecution');
-});
-Route::prefix('v1')->controller(RemediationController::class)->group(function () {
-    Route::put('/execution/updateRemediation/{remediationId}', 'updateRemediation');
-});
-Route::prefix('v1')->controller(RemediationController::class)->group(function () {
-    Route::delete('/execution/deleteRemediation/{remediationId}', 'deleteRemediation');
-});
+
 Route::prefix('v1')->controller(RemediationController::class)->group(function () {
     Route::get('/execution/getRemediation/{remediationId}', 'getRemediationInfo');
 });
@@ -397,22 +404,26 @@ Route::prefix('v1')->controller(RemediationController::class)->group(function ()
     Route::put('/updatestatusremediation/{id}', 'UpdateStatusRemediation');
 });
 Route::prefix('v1')->controller(EvidenceController::class)->group(function () {
-    Route::delete('/remediationevidences/delete-evidence/{evidenceId}', 'destroyRemediation');
+   Route::delete('/remediationevidences/delete-evidence/{evidenceId}', 'destroyRemediation');
 });
 Route::prefix('v1')->controller(EvidenceController::class)->group(function () {
     Route::post('/remediationevidences/upload', 'storeRemediationMultiple');
 });
-Route::middleware('auth:sanctum')->prefix('v1')->group(function () {
-    Route::controller(ExecutionController::class)->group(function () {
-        Route::get('/revue/{missionId}/getexecutionreviewedforSuperviseur', 'getexecutionReviewBySuperviseur');
-    });
-});
-Route::middleware('auth:sanctum')->prefix('v1')->group(function () {
-    Route::controller(ExecutionController::class)->group(function () {
-        Route::get('/revue/{missionId}/{appId}/getAllExecutionReviewAdmin', 'getAllExecutionReviewAdmin');
-       Route::get('/revue/{missionId}/getAllExecutionReview', 'getAllExecutionReview');
-    });
-});
+
+// Route::middleware('auth:sanctum')->prefix('v1')->group(function () {
+//     Route::controller(ExecutionController::class)->group(function () {
+//         // Route::get('/revue/{missionId}/getexecutionreviewedforSuperviseur', 'getexecutionReviewBySuperviseur');
+//     });
+// });
+
+
+//  hadi kayna bsh normalment f front maneich m'affichyetha
+// Route::middleware('auth:sanctum')->prefix('v1')->group(function () {
+//     Route::controller(ExecutionController::class)->group(function () {
+//         Route::get('/revue/{missionId}/{appId}/getAllExecutionReviewAdmin', 'getAllExecutionReviewAdmin');
+//        Route::get('/revue/{missionId}/getAllExecutionReview', 'getAllExecutionReview');
+//     });
+// });
 
 
 
