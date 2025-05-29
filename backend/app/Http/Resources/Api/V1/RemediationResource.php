@@ -50,12 +50,15 @@ class RemediationResource extends JsonResource
 
             //info du systeme
             'SystemName' => $this->execution->layer->system->name,
+            'SystemId' => $this->execution->layer->system->id,
             'ownerSystem' => optional($this->execution->layer->system->owner)->full_name,
             'ownerSystem_email' => optional($this->execution->layer->system->owner)->email,
             'layerName' => $this->execution->layer->name ?? null,
 
             //info de la mission
             'missionName' => $this->execution->layer->system->mission->mission_name ?? null,
+            'missionId' => $this->execution->layer->system->mission->id ?? null,
+
             'missionClient' => $this->execution->layer->system->mission->client->commercial_name ?? null,
 
 

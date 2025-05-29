@@ -94,7 +94,7 @@ class RemediationController extends BaseController
             return $this->sendError("Error while retrieving remediation status options", ['error' => $e->getMessage()], 500);
         }
     }
-    public function getRemediationsByExecution($mission,$execution)
+    public function getRemediationsByExecution($execution)
     {
         try {
             $data = $this->remediationService->getRemediationsByExecution($execution);
@@ -103,7 +103,7 @@ class RemediationController extends BaseController
             return $this->sendError("Error while retrieving remediation status options", ['error' => $e->getMessage()], 500);
         }
     }
-    public function getAllRemediationsByExecution($executionId):JsonResponse
+    public function getAllRemediationsByExecution($missionId,$systemId,$executionId):JsonResponse
     {
         try{
             $remediations=$this->remediationService->getAllRemediationsByExecution($executionId);
@@ -120,7 +120,7 @@ class RemediationController extends BaseController
     }
 
 
-    public function storeRemediationForExecution(Request $request,$executionId,$controlId):JsonResponse
+    public function storeRemediationForExecution(Request $request, $missionId, $systemId, $executionId, $controlId):JsonResponse
     {
         try{
             $rules=[
@@ -166,7 +166,7 @@ class RemediationController extends BaseController
         }
     }
 
-    public function updateRemediation(Request $request,$id):JsonResponse
+    public function updateRemediation(Request $request,$missionId,$systemId, $id):JsonResponse
     {
         try{
             $rules=[
@@ -211,7 +211,7 @@ class RemediationController extends BaseController
         }
     }
 
- public function deleteRemediation($id):JsonResponse
+ public function deleteRemediation($missionId,$systemId,$id):JsonResponse
  {
     try{
         $description=$this->remediationService->deleteRemediation($id);
