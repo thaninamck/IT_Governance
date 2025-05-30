@@ -6,6 +6,7 @@ use App\Models\Participation;
 use App\Repositories\V1\CommentRepository;
 use App\Repositories\V1\ExecutionRepository;
 use App\Repositories\V1\CntrlRiskCovRepository;
+use App\Repositories\V1\MissionRepository;
 use App\Repositories\V1\StatusRepository;
 use App\Repositories\V1\StepTestScriptRepository;
 use App\Services\NotificationService;
@@ -17,13 +18,14 @@ class ExecutionService
     protected CntrlRiskCovRepository $covRepository;
     protected EvidenceService $evidenceService;
     protected NotificationService $notificationService;
+    protected MissionRepository $missionRepository;
     protected $statusRepository;
     protected $stepRepository;
     protected $commentRepository;
 
 
     public function __construct( CommentRepository $commentRepository, EvidenceService $evidenceService, NotificationService $notificationService ,ExecutionRepository $executionRepository, 
-    CntrlRiskCovRepository $covRepository , StatusRepository $statusRepository,StepTestScriptRepository $stepRepository)
+    CntrlRiskCovRepository $covRepository , StatusRepository $statusRepository,StepTestScriptRepository $stepRepository,MissionRepository $missionRepository)
     {
     
         $this->statusRepository = $statusRepository;
@@ -33,6 +35,7 @@ class ExecutionService
         $this->commentRepository =$commentRepository;
         $this->covRepository =$covRepository;
         $this->evidenceService = $evidenceService;
+        $this->missionRepository =$missionRepository;
         
     }
 
@@ -76,6 +79,7 @@ public function getIneffectiveExecutionsByMission($missionId)
 }
 public function submitExecutionForReview($missionId,$executionId)
 {
+    $missionName =$this->missionRepository->findMissionById($missionId);
     $result=$this->executionRepository->updateExecutionStatus($executionId,true,false);
     if($result){
         
@@ -88,7 +92,7 @@ public function submitExecutionForReview($missionId,$executionId)
     foreach ($supervisorsIds as $userId) {
         $this->notificationService->sendNotification(
             $userId, 
-            "Vous avez des contrôles à revoir pour une mission",
+            "Vous avez des contrôles à revoir pour une mission $missionName->mission_name ",
             ['type' => 'review_cntrl', 'id' => $executionId,'missionId'=>$missionId],
             "review_cntrl"
         );
@@ -99,6 +103,7 @@ public function submitExecutionForReview($missionId,$executionId)
 }
 public function submitExecutionForValidation($missionId, $executionId)
 {
+    $missionName =$this->missionRepository->findMissionById($missionId);
     $result=$this->executionRepository->updateExecutionStatus($executionId, false, true);
 
     $supervisorsIds = Participation::where('mission_id', $missionId)
@@ -110,7 +115,7 @@ public function submitExecutionForValidation($missionId, $executionId)
     foreach ($supervisorsIds as $userId) {
         $this->notificationService->sendNotification(
             $userId,
-            "Vous avez des contrôles à revoir pour une mission",
+            "Vous avez des contrôles à revoir pour une mission $missionName->mission_name",
             ['type' => 'validation_cntrl', 'id' => $executionId,'missionId'=>$missionId],
             "review_cntrl"
         );
@@ -121,13 +126,14 @@ public function submitExecutionForValidation($missionId, $executionId)
 
 public function submitExecutionForCorrection($missionId,$systemId,$executionId)
 {
+    $missionName =$this->missionRepository->findMissionById($missionId);
     $result= $this->executionRepository->updateExecutionStatus($executionId,false,false);
     
     $testeurId = Execution::where('id', $executionId)->value('user_id');
    
         $this->notificationService->sendNotification(
             $testeurId,
-            "Vous avez des contrôles à corifer pour une mission",
+            "Vous avez des contrôles à corifer pour une mission $missionName->mission_name",
             ['type' => 'correction_cntrl', 'id' => $executionId,'missionId'=>$missionId,'systemId'=>$systemId],
             "correction_cntrl"
         );
@@ -336,13 +342,67 @@ public function submitExecutionForFinalValidation($executionId)
     }
 
 
+    // public function createExecutions(array $data): Execution
+    // {
+    //     DB::beginTransaction(); // Démarrer la transaction
+
+    //     try {
+    //         $lastExecution = null; // Pour retourner la dernière exécution insérée
+
+    //         foreach ($data['executions'] as $execution) {
+    //             $executionToInsert = [];
+    //             $coverageToInsert = [];
+
+    //             $executionToInsert['controlDescription'] = $execution['controlModified'] ? $execution['controlDescription'] : null;
+
+    //             $executionToInsert['controlId'] = $execution['controlId'];
+    //             $executionToInsert['controlTester'] = $execution['controlTester'];
+    //             $executionToInsert['controlOwner'] = $execution['controlOwner'];
+    //             $executionToInsert['layerId'] = $execution['layerId'];
+
+    //             $lastExecution = $this->executionRepository->createExecution($executionToInsert);
+
+                
+    //             if (!$lastExecution) {
+    //                 throw new \Exception("Failed to create execution");
+    //             };
+    //             if ($executionToInsert['controlTester']) {
+
+    //                 $this->notificationService->sendNotification(
+    //                     $executionToInsert['controlTester'],
+    //                     "Vous avez été assigné(e) à des contrôles pour la mission {$execution['missionName']}.",
+    //                     ['type' => 'affectation_cntrl', 'id' => '#'],
+    //                     "affectation_cntrl"
+    //                 );
+    //              };
+    //             $coverageToInsert['riskDescription'] = $execution['riskModified'] ? $execution['riskDescription'] : null;
+
+
+    //             $coverageToInsert['riskId'] = $execution['riskId'];
+    //             $coverageToInsert['execution_id'] = $lastExecution->id;
+    //             $coverageToInsert['riskOwner'] = $execution['riskOwner'];
+
+    //             Log::info('Coverage Data:', $coverageToInsert);
+
+    //             $this->covRepository->createCoverage($coverageToInsert);
+    //         }
+
+    //         DB::commit(); 
+    //         return $lastExecution; 
+
+    //     } catch (\Exception $e) {
+    //         DB::rollBack(); 
+    //         Log::error("Error creating executions", ['error' => $e->getMessage()]);
+    //         throw new \Exception("Error while creating executions");
+    //     }
+    // }
+
     public function createExecutions(array $data): Execution
     {
         DB::beginTransaction(); // Démarrer la transaction
 
         try {
             $lastExecution = null; // Pour retourner la dernière exécution insérée
-
             foreach ($data['executions'] as $execution) {
                 $executionToInsert = [];
                 $coverageToInsert = [];
@@ -361,11 +421,29 @@ public function submitExecutionForFinalValidation($executionId)
                     throw new \Exception("Failed to create execution");
                 };
                 if ($executionToInsert['controlTester']) {
-
+                    Log::info("Appel getSystemIdByExecutionIdAndMissionIdAndLayerId", [
+                        'layerId' => $execution['layerId'],
+                        'executionId' => $lastExecution->id
+                    ]);
+                    $system =$this->executionRepository->getsystemIdByExecutionIdAndMissionIdAndLayerId( $execution['layerId'], $lastExecution->id);
+                    Log::info("Résultat system_id et mission_id", [
+                        'system' => $system
+                    ]);
+                    
+                    if ($system) {
+                        $systemId = $system->system_id;
+                        $missionId = $system->mission_id;
+                    } else {
+                        $systemId = null;
+                        $missionId = null;
+                    }
+                    
+                    
+                    
                     $this->notificationService->sendNotification(
                         $executionToInsert['controlTester'],
                         "Vous avez été assigné(e) à des contrôles pour la mission {$execution['missionName']}.",
-                        ['type' => 'affectation_cntrl', 'id' => '#'],
+                        ['type' => 'affectation_cntrl', 'id' => $missionId,'systemId'=>$systemId],
                         "affectation_cntrl"
                     );
                  };
@@ -390,6 +468,8 @@ public function submitExecutionForFinalValidation($executionId)
             throw new \Exception("Error while creating executions");
         }
     }
+
+  
 
     public function deleteExecutions($executionsIds){
         return $this->executionRepository->deleteExecutions($executionsIds);
