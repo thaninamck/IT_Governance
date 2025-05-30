@@ -85,8 +85,8 @@ function ConclusionRemediationSection({
           )}
         </div>
 
-        <div className="flex gap-20 mt-4 items-center font-medium justify-start">
-          <p className="  ml-16    ">Commentaire: </p>
+        <div className="flex gap-20 ml-9  mt-4 items-center font-medium justify-start">
+          <p className="   ml-8  ">Commentaire: </p>
           <p>{commentaire}</p>
         </div>
 
