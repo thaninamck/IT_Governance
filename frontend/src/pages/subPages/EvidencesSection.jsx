@@ -26,18 +26,18 @@ function EvidencesSection({
   deletingTestId
 }) {
   return (
-    <div className="min-h-screen flex flex-col gap-14">
+    <div className="min-h-screen flex flex-col gap-4">
       <div className="mr-6  ml-6 ">
         <Separator text={"Evidences"} />
       </div>
-      <div className="flex items-center justify-center mt-4 ">
+      <div className="flex items-center justify-center  ">
         <ToggleButton selections={selections}
         onSelectionChange={handleSelectionChange}
         onStatesChange={onStatesChange} />
       </div>
 
       {/* Contenu des onglets */}
-      <div className="w-full flex-1  p-5 relative  mt-3 mb-3 ml-5 pr-14 ">
+      <div className="w-full flex-1  p-5 relative   mb-3 ml-5 pr-14 ">
         <Tabs
           color="success"
           aria-label="Basic tabs"

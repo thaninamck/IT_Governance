@@ -73,13 +73,17 @@ export default function MultiSelectButtons({ readOnly, onSelectionChange = () =>
   
 
   return (
-    <div className="flex justify-between space-x-4 px-4 w-[45%]">
+    <div className=" flex flex-col md:flex-row 
+    justify-between
+    space-y-4 md:space-y-0 md:space-x-4
+    px-4
+    w-full md:w-[55%]">
       {options.map((option) => (
         <button
           key={option}
           onClick={() => toggleSelection(option)}
           disabled={option === "Effectiveness" && selected["Design"] === "Non Conforme"}
-          className={`flex flex-col items-center px-4 py-2 rounded-md font-medium transition w-[200px]
+          className={`flex flex-col items-center px-4 py-2 rounded-md font-medium transition w-full
             ${
               selected[option] === "Conforme"
                 ? "bg-green-500 text-white border border-green-600"
