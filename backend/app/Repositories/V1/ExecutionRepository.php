@@ -644,6 +644,52 @@ public function getExecutionById($executionId)
         return $nonDeletable;
     }
 
+    public function getsystemIdByExecutionIdAndMissionIdAndLayerId($layerId, $executionId)
+    {
+        $results = DB::select(
+            "
+            SELECT 
+                e.id AS execution_id, 
+                e.cntrl_modification AS execution_modification,
+                e.comment AS execution_comment,
+                e.control_owner AS execution_control_owner,
+                m.id AS mission_id, 
+                mission_name,
+                l.id AS layer_id,
+                l.name AS layer_name,
+                st.id AS status_id,
+                st.status_name,
+                s.id AS system_id,
+                s.name AS system_name,
+                o.full_name AS system_owner_full_name,
+                o.email AS system_owner_email,
+                u.id AS user_id,
+                CONCAT(u.first_name, ' ', u.last_name) AS tester_full_name
+            FROM public.missions m
+            JOIN public.systems s ON s.mission_id = m.id
+            JOIN public.layers l ON l.system_id = s.id
+            JOIN public.executions e ON e.layer_id = l.id
+            LEFT JOIN public.statuses st ON e.status_id = st.id
+            JOIN public.users u ON e.user_id = u.id
+            JOIN public.owners o ON s.owner_id = o.id
+            WHERE 
+               l.id = ?
+                AND e.id = ?
+            GROUP BY 
+                e.id, e.cntrl_modification, e.comment, e.control_owner, e.launched_at, e.ipe, e.effectiveness, e.design,
+                st.id, st.status_name,
+                m.id, mission_name,
+                l.id, l.name,
+                s.id, s.name,
+                o.full_name, o.email,
+                u.id, u.first_name, u.last_name
+            ",
+            [$layerId, $executionId]
+        );
+    
+        return $results[0] ?? null;  // Retourne le premier résultat ou null si vide
+    }
+    
     public function getExecutionsByMissionAndSystemAndTester($missionId, $userId, $appId)
     {
         // e.comment AS execution_remark,
