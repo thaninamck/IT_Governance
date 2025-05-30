@@ -101,6 +101,7 @@ export default function useRemediation(missionId,systemId,executionId, controlCo
   };
 
   const handleSendAction = async (selectedRow) => {
+    console.log('action selectedrow',selectedRow)
     if (!selectedRow || !selectedRow.ownerContact) {
       alert("Email manquant pour cet élément !");
       return;
@@ -108,7 +109,7 @@ export default function useRemediation(missionId,systemId,executionId, controlCo
 
     const templateParams = {
       to_email: selectedRow.ownerContact,
-      cc_email: selectedRow.ownerSystem_email || "",
+      cc_email: (selectedRow.ownerSystem_email && selectedRow.risk_owner && selectedRow.control_owner) || "",
       controlCode: selectedRow.controlCode,
       SystemName: selectedRow.SystemName,
       missionName: selectedRow.missionName,
