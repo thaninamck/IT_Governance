@@ -33,7 +33,8 @@ console.log("user",response.data)
         nom: user.firstName, // Concaténation du nom et du prénom
         prenom: user.lastName,
         fullName: `${user.firstName} ${user.lastName}`,
-        grade: user.position?.name,
+        //grade: user.position?.name,
+        grade: user.grade,
         position_id:user.position?.id,
         email: user.email,
         contact: user.phoneNumber,

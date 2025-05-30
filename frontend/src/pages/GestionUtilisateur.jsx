@@ -58,6 +58,7 @@ function GestionUtilisateur() {
     isModalOpen,
     setIsModalOpen,
   } = useUser();
+  console.log('users dataa',filteredRows)
   // Configuration des colonnes de la table
   const columnsConfig2 = [
     //{ field: 'utilisateur', headerName: 'Utilisateur', width: 180, editable: false },

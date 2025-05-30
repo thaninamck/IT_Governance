@@ -99,7 +99,7 @@ const handleNavigation = (path, key) => {
               {user?.fullName?.split(' ').map(n => n[0]).join('')}
             </div>
             <h3>{user?.fullName || 'Utilisateur'}</h3>
-            <span>{user?.position || 'Poste non défini'}</span>
+            <span>{user?.grade || 'Poste non défini'}</span>
           </div>
 
           <nav className="menu">
