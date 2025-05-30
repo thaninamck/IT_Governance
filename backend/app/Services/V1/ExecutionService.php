@@ -165,8 +165,11 @@ public function submitExecutionForFinalValidation($executionId)
         $executions->each(function ($execution) {
             $remediations = json_decode($execution->remediations ?? '[]', true);
             $remarks = json_decode($execution->remarks ?? '[]', true);
+
             $hasRemediations = !empty($remediations);
-            $hasRemark=!empty($remarks);
+            $hasRemark=array_filter($remarks, function ($r) {
+                return !empty($r['remark_id']); // ou ajouter plus de critères si besoin
+            });
             $validRemediations = array_filter($remediations, function ($r) {
                 return !empty($r['remediation_status_name']); // ou ajouter plus de critères si besoin
             });
@@ -232,7 +235,9 @@ public function submitExecutionForFinalValidation($executionId)
             $remediations = json_decode($execution->remediations ?? '[]', true);
             $remarks = json_decode($execution->remarks ?? '[]', true);
             $hasRemediations = !empty($remediations);
-            $hasRemark=!empty($remarks);
+            $hasRemark=array_filter($remarks, function ($r) {
+                return !empty($r['remark_id']); // ou ajouter plus de critères si besoin
+            });
             $validRemediations = array_filter($remediations, function ($r) {
                 return !empty($r['remediation_status_name']); // ou ajouter plus de critères si besoin
             });
@@ -291,7 +296,9 @@ public function submitExecutionForFinalValidation($executionId)
             $remediations = json_decode($execution->remediations ?? '[]', true);
             $remarks = json_decode($execution->remarks ?? '[]', true);
             $hasRemediations = !empty($remediations);
-            $hasRemark=!empty($remarks);
+            $hasRemark=array_filter($remarks, function ($r) {
+                return !empty($r['remark_id']); // ou ajouter plus de critères si besoin
+            });
             $validRemediations = array_filter($remediations, function ($r) {
                 return !empty($r['remediation_status_name']); // ou ajouter plus de critères si besoin
             });
