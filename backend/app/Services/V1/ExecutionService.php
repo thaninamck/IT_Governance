@@ -433,16 +433,18 @@ public function submitExecutionForFinalValidation($executionId)
                     if ($system) {
                         $systemId = $system->system_id;
                         $missionId = $system->mission_id;
+                        $missionName = $system->mission_name;
                     } else {
                         $systemId = null;
                         $missionId = null;
+
                     }
                     
                     
                     
                     $this->notificationService->sendNotification(
                         $executionToInsert['controlTester'],
-                        "Vous avez été assigné(e) à des contrôles pour la mission {$execution['missionName']}.",
+                        "Vous avez été assigné(e) à des contrôles pour la mission  $missionName ",
                         ['type' => 'affectation_cntrl', 'id' => $missionId,'systemId'=>$systemId],
                         "affectation_cntrl"
                     );
