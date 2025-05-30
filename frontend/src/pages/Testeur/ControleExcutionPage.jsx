@@ -782,7 +782,6 @@ function ControleExcutionPage() {
       steps: testScriptData,
       status_id: selectedMulti,
     };
-    console.log("payload", payload);
     await updateExecution(
       controleData.executionId,
       payload,
