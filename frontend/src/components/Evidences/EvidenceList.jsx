@@ -24,8 +24,10 @@ const handleDelete = (index) => {
         <div
           key={index}
           className={`flex relative w-[95%] flex-col mt-2 justify-center border border-gray-300 rounded-lg p-2 ${
-            file.evidence_id === deletingId ? "bg-gray-200 opacity-60 pointer-events-none" : "bg-white"
-          }`}        >
+            file.evidence_id !== undefined && file.evidence_id === deletingId
+            ? "bg-gray-200 opacity-60 pointer-events-none"
+            : "bg-white"
+                    }`}        >
           {/* Détails du fichier */}
           <div className="flex justify-between mx-4 ">
             <a
