@@ -37,6 +37,7 @@ import { Switch, FormControlLabel } from "@mui/material";
 
 function ControleExcutionPage() {
   const location = useLocation();
+  const { user } = useAuth();
   const controleData = location.state?.controleData || {};
   console.log("controoooole data", controleData);
   const {
@@ -75,7 +76,7 @@ function ControleExcutionPage() {
     setSelectedActionId,
     isAddingAnother,
     handleCloseForm,
-  } = useRemediation(controleData.missionId,controleData.systemId,controleData.executionId, controleData.controlCode);
+  } = useRemediation(controleData.missionId,controleData.systemId,controleData.executionId, controleData.controlCode,user);
 
   useEffect(() => {
     fetchRemediations();
@@ -85,7 +86,7 @@ function ControleExcutionPage() {
   const { mission, name, controlCode } = useParams();
 
   console.log(controleData);
-  const { user } = useAuth();
+  
   const handleRowClick = (rowData) => {
     navigate(
       `/missions/${mission}/${name}/${controlCode}/remediation/${rowData.actionName}`,

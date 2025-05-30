@@ -1,10 +1,11 @@
 import { useCallback, useEffect, useState } from "react";
 import { api } from "../Api";
+import { toast } from "react-toastify";
 
 import emailjs from "emailjs-com";
 emailjs.init("oAXuwpg74dQwm0C_s");
 
-export default function useRemediation(missionId,systemId,executionId, controlCode) {
+export default function useRemediation(missionId,systemId,executionId, controlCode,user) {
   
 
   const [action, setAction] = useState([]);
@@ -96,14 +97,14 @@ export default function useRemediation(missionId,systemId,executionId, controlCo
       await api.put(`/closeremediation/${selectedRow.id}`);
       await fetchRemediations();
     } catch (error) {
-      alert("Erreur lors de la clôture de la remediation.");
+      toast.error("Erreur lors de la clôture de la remediation.");
     }
   };
 
   const handleSendAction = async (selectedRow) => {
     console.log('action selectedrow',selectedRow)
     if (!selectedRow || !selectedRow.ownerContact) {
-      alert("Email manquant pour cet élément !");
+      toast.error("Email manquant pour cet élément !");
       return;
     }
 
@@ -117,15 +118,20 @@ export default function useRemediation(missionId,systemId,executionId, controlCo
       suivi: selectedRow.suivi,
       startDate: selectedRow.startDate,
       endDate: selectedRow.endDate,
+
+      // Infos dynamiques de l'utilisateur connecté
+  from_name: `${user.firstName} ${user.lastName}`,
+  from_email: user.email,
+  reply_to: user.email,
     };
 
     try {
       await emailjs.send("service_dg6av6d", "template_f4ojiam", templateParams);
-      alert(`E-mail envoyé à ${selectedRow.ownerContact} !`);
+      toast.success(`E-mail envoyé à ${selectedRow.ownerContact} !`);
       await api.put(`/updatestatusremediation/${selectedRow.id}`);
       await fetchRemediations();
     } catch (error) {
-      alert("Erreur lors de l'envoi de l'email.");
+      toast.error("Erreur lors de l'envoi de l'email.");
     }
   };
 
