@@ -53,28 +53,28 @@ function RevueListExecution( {dataFormat}) {
             headerName: "Propriétaire",
             expandable: true,
             width: 200,
-            customRenderCell: (params) => {
-                const handleCopy = () => {
-                    const email = params.row.systemOwnerEmail;
-                    if (email) {
-                        navigator.clipboard.writeText(email);
-                        alert(`Email copié : ${email}`);
-                    } else {
-                        alert("Email non disponible.");
-                    }
-                };
+            // customRenderCell: (params) => {
+            //     const handleCopy = () => {
+            //         const email = params.row.systemOwnerEmail;
+            //         if (email) {
+            //             navigator.clipboard.writeText(email);
+            //             alert(`Email copié : ${email}`);
+            //         } else {
+            //             alert("Email non disponible.");
+            //         }
+            //     };
 
-                return (
-                    <div
-                        onClick={handleCopy}
-                        title="Cliquez pour copier l'e-mail"
-                        className="flex items-center gap-2 text-blue-700 hover:text-blue-900 cursor-pointer"
-                    >
-                        <span>{params.row.executionControlOwner}</span>
-                        <ContentCopyIcon sx={{ fontSize: 16, width: '20px', height: '20px' }} />
-                    </div>
-                );
-            },
+            //     return (
+            //         <div
+            //             onClick={handleCopy}
+            //             title="Cliquez pour copier l'e-mail"
+            //             className="flex items-center gap-2 text-blue-700 hover:text-blue-900 cursor-pointer"
+            //         >
+            //             <span>{params.row.executionControlOwner}</span>
+            //             <ContentCopyIcon sx={{ fontSize: 16, width: '20px', height: '20px' }} />
+            //         </div>
+            //     );
+            // },
         },
 
         {
