@@ -152,7 +152,7 @@ function ConclusionRemediationSection({
         )}
 
         {showDecisionPopup && (
-          <div className="absolute top-25 left-1/2 -translate-x-1/2 translate-y-1/4 z-50 ">
+          <div className="absolute top-25 left-1/2 -translate-x-1/2 translate-y-[56%] z-50 ">
             <DecisionPopUp
               name="nouvelle action"
               text="Voulez-vous ajouter une autre action ?"
@@ -194,10 +194,10 @@ function ConclusionRemediationSection({
               className={`mt-6 flex-1 overflow-x-auto overflow-y-auto h-[400px] mx-10 transition-all }`}
             >
               {isDeletePopupOpen && (
-                <div className="absolute top-50 left-1/2 -translate-x-1/2 z-50 mt-6">
+                <div className="absolute top-45 left-1/2 -translate-x-1/2  translate-y-[-30%] z-50">
                   <DecisionPopUp
                     name={
-                      action.find((row) => row.id === selectedActionId)?.id ||
+                      action.find((row) => row.id === selectedActionId)?.actionName ||
                       "cette Action"
                     }
                     text="Êtes-vous sûr(e) de vouloir supprimer l'action "
