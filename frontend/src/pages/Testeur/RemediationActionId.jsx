@@ -250,7 +250,7 @@ function RemediationActionId({readOnly =false}) {
     </>
   )}
           </h1>
-        <div className='flex flex-row justify-between  w-[95%] py-6 '>
+        <div className='flex flex-row justify-between  w-[95%] pt-6 '>
           <InputForm
           readOnly
             type="date"
@@ -307,7 +307,8 @@ function RemediationActionId({readOnly =false}) {
         {actionData.files.length === 0 && (
           <p className="text-center text-gray-500 mt-4">Aucun fichier disponible.</p>
         )}
-        {openDeletePopup && (
+         {openDeletePopup && ( 
+        <div className="absolute top-45 left-1/2 -translate-x-1/2  translate-y-[-90%] z-50">
           <DecisionPopUp
             //loading={loading}
             handleDeny={() => setOpenDeletePopup(false)}
@@ -315,10 +316,11 @@ function RemediationActionId({readOnly =false}) {
             text="Confirmation de suppression"
             name="Êtes-vous sûr de vouloir supprimer ce fichier ?"
           />
-        )}
+          </div>
+        )} 
 
         <Separator text={'Suivi'} />
-
+        <div className='ml-8 pr-10'> 
         {/* <TextDisplay
           label=""
           content={actionData.suivi}
@@ -367,13 +369,19 @@ function RemediationActionId({readOnly =false}) {
             Enregistrement en cours...
           </div>
         )}
-
+</div>
 
 
         <Separator text={'Conclusion'} />
-        <div className='flex flex-row items-center gap-4  ml-2'>
-          <label className="mr-8 font-medium">Status</label>
-          <p>{actionData.statusName}</p>
+        <div className='ml-8 pr-10'> 
+        <div className='flex flex-row items-center   ml-2'>
+        <label className="text-gray-700 font-medium w-32">Status :</label>
+      <div className="w-[14%] border border-gray-300 rounded-md px-3 py-2 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+  style={{
+    boxShadow: "inset 0 -2px 4px rgba(0,0,0,0.1)", // effet ombre en bas
+  }}>
+          {actionData.statusName}
+          </div>
           {/* <SelectInput
           label=""
           options={statusOptions}
@@ -383,6 +391,7 @@ function RemediationActionId({readOnly =false}) {
           multiSelect={false}
           mt="mt-10"
         /> */}
+        </div>
         </div>
 
         {/* <div className="flex justify-end mx-16 mt-9 py-4  gap-5">
