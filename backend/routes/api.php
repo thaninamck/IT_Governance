@@ -170,7 +170,7 @@ Route::middleware(['auth:sanctum', ManagerMiddleware::class])
             Route::get('/missions/{mission}/workplanOptions', 'getWorkplanOptionsByMission');
             Route::post('/executions/deleteExecutions', 'deleteExecutions');
             Route::post('/executions/update-executions', 'updateMultipleExecutions');
-            Route::patch('/executions/submit-execution-for-final-validation/{executionID}', 'submitExecutionForFinalValidation');
+            Route::patch('missions/{mission}/executions/submit-execution-for-final-validation/{executionID}', 'submitExecutionForFinalValidation');
         });
 
         //ParticipationController Routes 

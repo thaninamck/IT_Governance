@@ -237,7 +237,7 @@ const {
         if(controleData.connectedUserProfile === "superviseur"){
         await submitExecutionForValidation(controleData?.missionId,controleData.executionId);
         }else if (controleData.connectedUserProfile === "manager"){
-          await submitExecutionForFinalValidation(controleData.executionId);
+          await submitExecutionForFinalValidation(controleData.missionId,controleData.executionId);
         }
         
       } catch (err) {
