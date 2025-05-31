@@ -456,11 +456,34 @@ const currentUserRole = JSON.parse(localStorage.getItem("User"))?.role;
 
         <div>
           <Separator text={"Conclusion"} />
-          <div className="flex items-center gap-14 py-7 ml-9">
-            <label className="font-medium">Status</label>
-            <p>{selectedMulti}</p>
-          </div>
-          <p className="mt-4 font-medium ml-16">Commentaire: {commentaire}</p>
+          <div className="flex flex-col gap-4 ml-9 mt-4">
+    {/* Status */}
+    <div className="flex items-center gap-4">
+      <label className="text-gray-700 font-medium w-32">Status :</label>
+      <div className="w-[18%] border border-gray-300 rounded-md px-3 py-2 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+  style={{
+    boxShadow: "inset 0 -2px 4px rgba(0,0,0,0.1)", // effet ombre en bas
+  }}>
+        {selectedMulti}
+      </div>
+    </div>
+
+    {/* Commentaire */}
+    <div className="flex items-start gap-4">
+      <label className="text-gray-700 font-medium w-32">Commentaire :</label>
+      <div
+  className="w-[80%] min-h-[80px] border border-gray-300 rounded-md px-3 py-2 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+  style={{
+    boxShadow: "inset 0 -2px 4px rgba(0,0,0,0.1)", // effet ombre en bas
+  }}
+>
+  {commentaire}
+</div>
+
+
+
+    </div>
+  </div>
         </div>
 
         <div>
@@ -479,27 +502,29 @@ const currentUserRole = JSON.parse(localStorage.getItem("User"))?.role;
           </div>
 
             ):(
-              <p className="text-gray-500 text-m pl-6">Aucune remédiation pour ce contrôle </p>
+              <p className="text-gray-500 text-m pl-9">Aucune remédiation pour ce contrôle </p>
             )
           }
           
 
           <div className="flex justify-end mt-8">
-          <button
-              className="bg-[var(--alert-red)] mr-16 text-white px-4 py-2 border-none"
-              onClick={handleCorrectRevue}
-            >
-              Ajuster
-            </button>
+  <button
+    className="bg-[var(--alert-red)] mr-16 text-white px-4 py-2 border-none shadow-bottom"
+    onClick={handleCorrectRevue}
+  >
+    Ajuster
+  </button>
 
-            <button
-              className="bg-[var(--success-green)] mr-16 text-white px-4 py-2 border-none"
-              onClick={handleValidateRevue}
-            >
-              valider
-            </button>
-           
-          </div>
+  <button
+    className="bg-[var(--success-green)] mr-16 text-white px-4 py-2 border-none shadow-bottom"
+    onClick={handleValidateRevue}
+  >
+    valider
+  </button>
+</div>
+
+
+
         </div>
 
       </div>
