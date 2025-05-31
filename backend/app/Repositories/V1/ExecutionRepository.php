@@ -220,12 +220,20 @@ public function getExecutionById($executionId)
             e.cntrl_modification AS execution_description,
             e.control_owner AS execution_control_owner,
             c.description AS control_description,
-             c.code AS control_code,
+            c.code AS control_code,
             st.id AS status_id,
             st.status_name AS status_name,
             mp.description AS major_process,
             sp.name AS sub_process,
             t.name AS type_name,
+
+            -- Ajout du systeme
+            s.id AS system_id,
+            s.name AS system_name,
+
+            -- Ajout de la mission
+            m.id AS mission_id,
+            m.mission_name AS mission_name,
 
             -- Steps ordonnés
             (
@@ -286,6 +294,11 @@ public function getExecutionById($executionId)
         LEFT JOIN public.cntrl_srcs cs ON cs.control_id = c.id
         LEFT JOIN public.sources so ON cs.source_id = so.id
 
+        -- Ajout des jointures pour récupérer le system et la mission
+        JOIN public.layers l ON e.layer_id = l.id
+        JOIN public.systems s ON l.system_id = s.id
+        JOIN public.missions m ON s.mission_id = m.id
+
         WHERE e.id = ?
 
         GROUP BY 
@@ -296,7 +309,9 @@ public function getExecutionById($executionId)
             st.id, st.status_name,
             mp.description,
             sp.name,
-            t.name
+            t.name,
+            s.id, s.name,
+            m.id, m.mission_name
     ", [$executionId]);
 }
 
