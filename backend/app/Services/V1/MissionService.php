@@ -337,7 +337,7 @@ public function getMissionById($id, $user)
     // Crée la structure personnalisée
     return [
         'id' => $mission->id,
-        'mission_name' => $mission->mission_name,
+        'missionName' => $mission->mission_name,
         'start_date' => $mission->start_date,
         'end_date' => $mission->end_date,
         'audit_start_date' => $mission->audit_start_date,
