@@ -83,8 +83,8 @@ class ClientController extends BaseController
                 'social_reason'=>'sometimes|string|max:255',
                 'correspondence'=>'sometimes|string|max:255',
                 'address'=>'sometimes|string|max:255',
-                'contact_1'=>'sometimes|string|max:255',
-                'contact_2'=>'sometimes|string|max:255',
+                'contact_1'=>'sometimes|nullable|string|max:255',
+                'contact_2'=>'sometimes|nullable|string|max:255',
             ];
 
             $validator=Validator::make($request->all(),$rules);
