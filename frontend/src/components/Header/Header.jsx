@@ -5,6 +5,7 @@ import icons from '../../assets/Icons'; // Importer l'objet contenant les icône
 import NotificationPopup from '../Notification/NotificationPopup';
 import { useAuth } from '../../Context/AuthContext';
 import useNotification from '../../Hooks/useNotification';
+import grcenterlogo1 from '../../../public/grcenterlogo1.png'
 
 function Header({user}) {
   const navigate = useNavigate();
@@ -28,7 +29,7 @@ const handleLogout = async () => {
     <div className='header_container'>
       {/* Logo */}
       <div className='header_logo' onClick={() => navigate('/')}>
-        <img src='./grcenterlogo1.png' alt='Mazars Logo' />
+        <img src={grcenterlogo1} alt='Mazars Logo' />
       </div>
 
       {/* Icons et utilisateur */}
