@@ -46,7 +46,7 @@ function RemediationActionId({readOnly =false}) {
     handleDelete,
     handleDeleteConfirm
   } = useAction(remediationData);
-
+  console.log('action data', actionData)
   //   const location = useLocation();
   //   const remediationData = location.state?.remediationData|| {};
   //   const [isSavingSuivi, setIsSavingSuivi] = useState(false);
@@ -240,7 +240,7 @@ function RemediationActionId({readOnly =false}) {
     <div>
       <Header user={user} />
       <div className='ml-5 mr-6 pb-9'>
-        <Breadcrumbs />
+        <Breadcrumbs  items={["Missions",actionData?.missionName ||"mission",actionData?.systemName ||'system',actionData?.controlCode || 'CTRL',actionData?.actionName ||"Action"]}/>
 
         <h1 className='text-xl text-center font-semibold py-4 text-[var(--blue-menu)]'>
         {readOnly && (

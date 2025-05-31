@@ -79,9 +79,10 @@ function MissionDetail() {
       <Header user={user} />
       <div className=" ml-5 mr-6 pb-9">
         {/* Afficher Breadcrumbs uniquement si le chemin correspond */}
-        {breadcrumbRoutes?.some((route) =>
+        {/* {breadcrumbRoutes?.some((route) =>
           location?.pathname?.startsWith(route)
-        ) && <Breadcrumbs />}
+        ) && <Breadcrumbs />} */}
+        <Breadcrumbs items={["Missions",missionData?.missionName || "mission"]} />
         {missionData && (
           <>
         <MissionInfo

@@ -684,9 +684,11 @@ function ControleExcutionPage() {
 
   const [overlayEnabled, setOverlayEnabled] = useState(true); // toggle admin
 
-  const shouldShowOverlay = (isToReview || isToValidate) && overlayEnabled;
-
-  return (
+  const shouldShowOverlay = (isToReview || isToValidate) && overlayEnabled;const items = controleData
+  ? ["Missions", controleData.missionName || "mission", controleData.systemName || "system", controleData.controlCode || "CTRL"]
+  : ["Missions", executionData?.[0]?.mission_name || "mission", executionData?.[0]?.system_name || "system", executionData?.[0]?.control_code || "CTRL"];
+  
+ return (
     <div className="  ">
       <Header user={user} />
       <div className="flex flex-row w-full justify-between">
@@ -714,7 +716,8 @@ function ControleExcutionPage() {
             <div className="flex flex-col  sm:flex-col">
               {/* Header avec breadcrumbs */}
               <div className="flex   flex-col sm:flex-row justify-between items-start sm:items-center px-4   ">
-                {location.pathname.includes("") && <Breadcrumbs />}
+                {/* {location.pathname.includes("") && <Breadcrumbs />} */}
+                <Breadcrumbs items={items}/>
               </div>
 
               {/* Statut, positionné proprement */}
