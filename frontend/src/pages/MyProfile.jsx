@@ -37,7 +37,7 @@ const MyProfile = () => {
                       
                       <div className="text-center mb-8">
                         <h2 className="text-xl font-semibold text-gray-800">{user?.fullName || 'Utilisateur'}</h2>
-                        <p className="text-blue-600 font-medium">{user?.grade || 'Poste non défini'}</p>
+                        <p className="text-blue-600 font-medium">{user?.position || 'Poste non défini'}</p>
                       </div>
                       
                       <div className="w-full space-y-4">
@@ -77,7 +77,7 @@ const MyProfile = () => {
                       </div>
                       <div>
                         <p className="text-sm text-gray-500">Grade</p>
-                        <p className="font-medium">{user?.grade}</p>
+                        <p className="font-medium">{user?.position}</p>
                       </div>
                       <div>
                         <p className="text-sm text-gray-500">Localisation</p>

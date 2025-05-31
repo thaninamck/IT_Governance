@@ -34,7 +34,7 @@ console.log("user",response.data)
         prenom: user.lastName,
         fullName: `${user.firstName} ${user.lastName}`,
         //grade: user.position?.name,
-        grade: user.grade,
+        grade: user.position ,
         position_id:user.position?.id,
         email: user.email,
         contact: user.phoneNumber,
