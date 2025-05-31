@@ -226,7 +226,7 @@ public function getsystemInfo($systemId)
      //$system;
     [
         'id' => $system->id,
-        'systemName' => $system->name,
+        'name' => $system->name,
         'description' => $system->description,
         'missionId' => $system->mission_id,
         'ownerId' => $system->owner_id,
@@ -255,7 +255,7 @@ public function getsystemById($userId,$systemId)
      //$system;
     [
         'id' => $system->id,
-        'systemName' => $system->name,
+        'name' => $system->name,
         'description' => $system->description,
         'missionId' => $system->mission_id,
        'missionName' => $system->mission?->mission_name,
