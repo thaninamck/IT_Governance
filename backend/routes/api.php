@@ -164,6 +164,7 @@ Route::middleware(['auth:sanctum', ManagerMiddleware::class])
     ->group(function () {
         // ExecutionController Routes
         Route::controller(ExecutionController::class)->group(function () {
+            Route::get('/revue/{mission}/getexecutionreviewedforManager', 'getexecutionReviewByManager');
             Route::post('/missions/{mission}/insert-executions', 'createExecutions');
             Route::get('/missions/{mission}/executions', 'getExecutionsByMission');
             Route::get('/missions/{mission}/workplanOptions', 'getWorkplanOptionsByMission');
