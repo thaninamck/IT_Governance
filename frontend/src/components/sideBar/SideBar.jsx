@@ -80,8 +80,8 @@ function SideBar({ user }) {
             <div className="avatar">
             {user?.fullName?.split(' ').map(n => n[0]).join('')}
             </div>
-            <h3>{user?.fullName || 'Utilisateur'}</h3>
-            <span>{user?.grade || 'Poste non défini'}</span>
+            <h3 className="my-2 text-xl">{user?.fullName || 'Utilisateur'}</h3>
+            <span className=" text-sm font-regular text-white">{user?.grade || 'Poste non défini'}</span>
           </div>
 
           <nav className="menu">
