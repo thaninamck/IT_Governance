@@ -152,7 +152,7 @@ function ConclusionRemediationSection({
         )}
 
         {showDecisionPopup && (
-          <div className="absolute top-25 left-1/2 -translate-x-1/2 translate-y-[-119%] z-50 ">
+          <div className="absolute top-25 left-1/2 -translate-x-1/2 translate-y-[-50%] z-50 ">
             <DecisionPopUp
               name="nouvelle action"
               text="Voulez-vous ajouter une autre action ?"
