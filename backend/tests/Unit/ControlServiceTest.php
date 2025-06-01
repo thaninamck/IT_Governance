@@ -193,14 +193,14 @@ class ControlServiceTest extends TestCase
     
         $result = $this->controlService->createControl($data);
     
-        Log::info('Résultat du control créé :', [
-            'id' => $result->id,
-            'code' => $result->code,
-            'description' => $result->description,
-            'type_id' => $result->type_id,
-            'major_id' => $result->major_id,
-            'sub_id' => $result->sub_id,
-        ]);
+        // Log::info('Résultat du control créé :', [
+        //     'id' => $result->id,
+        //     'code' => $result->code,
+        //     'description' => $result->description,
+        //     'type_id' => $result->type_id,
+        //     'major_id' => $result->major_id,
+        //     'sub_id' => $result->sub_id,
+        // ]);
     
         $this->assertInstanceOf(Control::class, $result);
         $this->assertEquals('C002', $result->code);

@@ -12,6 +12,7 @@ use App\Repositories\V1\SourceRepository;
 use App\Repositories\V1\StepTestScriptRepository;
 use App\Repositories\V1\SubProcessRepository;
 use App\Repositories\V1\TypeRepository;
+use Log;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use App\Models\Type;
@@ -64,6 +65,37 @@ class ControlServiceTest extends TestCase
         $this->assertEquals('Sécurité', $control->type->name);
         $this->assertEquals('MP001', $control->majorProcess->code);
         $this->assertEquals('SP001', $control->subProcess->code);
+    }
+
+
+    public function testCreateControlWithoutTestScript(): void
+    {
+        $service = new ControlService(
+            new StepTestScriptRepository,
+            new ControlRepository,
+            new MajorProcessRepository,
+            new SubProcessRepository,
+            new TypeRepository,
+            new SourceRepository
+        );
+        $data = [
+            'code' => 'C002',
+            'description' => 'Control without test script',
+            'test_script' => " ",
+
+            'type' => ['id' => 2, 'name' => 'Type2'],
+            'majorProcess' => ['code' => 'MP002', 'description' => 'Major Process 2'],
+            'subProcess' => ['id' => 2, 'code' => 'SP002', 'name' => 'Sub Process 2'],
+            'sources' => [],
+        ];
+        $control = $service->createControl($data);
+Log::info('Control created without test script', [
+            $control
+        ]);
+
+       
+        $this->assertEquals('C002', $control->code);
+        $this->assertCount(0, $control->sources);       
     }
 }
 
