@@ -3,10 +3,12 @@
 namespace App\Services\V1;
 
 use App\Models\Mission;
+use App\Models\Participation;
 use App\Models\Status;
 use App\Models\User;
 use App\Repositories\V1\MissionRepository;
 use App\Repositories\V1\StatusRepository;
+use App\Services\NotificationService;
 use Illuminate\Support\Facades\Log;
 
 class MissionService
@@ -14,13 +16,16 @@ class MissionService
     protected MissionRepository $missionRepository;
     protected StatusRepository $statusRepository;
     protected ParticipationService $participationService;
+    
+    protected NotificationService $notificationService;
 
 
-    public function __construct(MissionRepository $missionRepository, ParticipationService $participationService,StatusRepository $statusRepository)
+    public function __construct(MissionRepository $missionRepository, ParticipationService $participationService,StatusRepository $statusRepository,NotificationService $notificationService)
     {
         $this->missionRepository = $missionRepository;
         $this->participationService = $participationService;
         $this->statusRepository= $statusRepository;
+        $this->notificationService =$notificationService;
     }
 
     public function getAllMissions()
@@ -282,12 +287,50 @@ public function getMissionSystemsById($id){
     
         $status_id = $status->id;
     
-        return $this->missionRepository->acceptrequestStatus($id, $status_id);
+        $result=$this->missionRepository->acceptrequestStatus($id, $status_id);
+        $missionName =$this->missionRepository->findMissionById($id);
+        $managerId = Participation::where('mission_id', $id)
+        ->whereHas('profile', function ($query) {
+            $query->where('profile_name', 'manager');
+        })
+        ->pluck('user_id');
+
+    
+        $this->notificationService->sendNotification(
+            $managerId,
+           "Votre demande de clôture de la mission {$missionName->mission_name} a été acceptée.",
+
+            ['type' => 'accept_closeReq', 'id' => $id],
+            "accept_closeReq"
+        );
+    
+
+    return $result; 
     }
     
     public function refuseRequestStatus(int $id):Mission
     {
-        return $this->missionRepository->refuseRequestStatus($id);
+        $result=$this->missionRepository->refuseRequestStatus($id);
+
+        $missionName =$this->missionRepository->findMissionById($id);
+        $managerId = Participation::where('mission_id', $id)
+        ->whereHas('profile', function ($query) {
+            $query->where('profile_name', 'manager');
+        })
+        ->pluck('user_id');
+
+    
+        $this->notificationService->sendNotification(
+            $managerId,
+           "Votre demande de clôture de la mission {$missionName->mission_name} a été refusée.",
+
+            ['type' => 'refuse_closeReq', 'id' => $id],
+            "refuse_closeReq"
+        );
+    
+
+    return $result; 
+
     }
 
     public function stopMission(int $id): Mission
