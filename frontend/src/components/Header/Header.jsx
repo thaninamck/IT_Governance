@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import "./Header.css";
 import icons from '../../assets/Icons'; // Importer l'objet contenant les icônes
@@ -13,6 +13,7 @@ function Header({user}) {
  // const [unreadCount, setUnreadCount] = useState(3); // Example: Initial unread notifications count
 const { logout } = useAuth();
 const { unreadCount } = useNotification();
+const notificationRef = useRef(null);
 // const handleLogout = () => {
 //   logout();
 //   navigate("/login");
@@ -25,6 +26,22 @@ const handleLogout = async () => {
       console.error("Erreur lors de la déconnexion :", error);
   }
 };
+
+ // Fermer le popup si on clique en dehors
+ useEffect(() => {
+  const handleClickOutside = (event) => {
+    // Vérifier si le clic est à l'extérieur du conteneur
+    if (notificationRef.current && !notificationRef.current.contains(event.target)) {
+      setShowNotifications(false);
+    }
+  };
+
+  document.addEventListener('mousedown', handleClickOutside);
+
+  return () => {
+    document.removeEventListener('mousedown', handleClickOutside);
+  };
+}, []);
   return (
     <div className='header_container'>
       {/* Logo */}
@@ -42,7 +59,7 @@ const handleLogout = async () => {
         />
 
         {/* Notifications - Affichage du popup */}
-        <div className="notification_wrapper">
+        <div className="notification_wrapper"  ref={notificationRef}>
           <div className="notification_icon_container">
             {/* <icons.notifications 
               className="icon_notifications" 

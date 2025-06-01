@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import "./Header.css";
 import icons from '../../assets/Icons'; // Importer l'objet contenant les icônes
@@ -11,6 +11,7 @@ function HeaderBis() {
     const [showNotifications, setShowNotifications] = useState(false);
     //const [unreadCount, setUnreadCount] = useState(); // Exemple : 3 notifications non lues
     const { unreadCount } = useNotification();
+    const notificationRef = useRef(null);
     // Utiliser le contexte d'authentification
     const { logout } = useAuth();
 
@@ -23,13 +24,28 @@ function HeaderBis() {
             console.error("Erreur lors de la déconnexion :", error);
         }
     };
+ // Fermer le popup si on clique en dehors
+ useEffect(() => {
+  const handleClickOutside = (event) => {
+    // Vérifier si le clic est à l'extérieur du conteneur
+    if (notificationRef.current && !notificationRef.current.contains(event.target)) {
+      setShowNotifications(false);
+    }
+  };
+
+  document.addEventListener('mousedown', handleClickOutside);
+
+  return () => {
+    document.removeEventListener('mousedown', handleClickOutside);
+  };
+}, []);
 
     return (
       <div className='headerbis_container'>
         {/* Icons et utilisateur */}
         <div className="headerbis_icons">
           {/* Notifications - Affichage du popup */}
-          <div className="notification_wrapper">
+          <div className="notification_wrapper"  ref={notificationRef}>
             <div className="notification_icon_container">
             <icons.notifications 
   className={`icon_notifications ${unreadCount > 0 ? 'animate-pulse' : ''}`} 
