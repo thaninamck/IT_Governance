@@ -1483,7 +1483,7 @@ public function getUnbeganExecutionsByMission($id)
 {
     return DB::select(
         "SELECT DISTINCT e.id AS id,
-            cnt.code,
+                       cnt.code AS control_code,
             s.name AS system_name,
             COALESCE(NULLIF(e.cntrl_modification, ' '), cnt.description) AS description,
             e.control_owner AS owner,

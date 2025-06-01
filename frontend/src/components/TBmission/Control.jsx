@@ -62,7 +62,7 @@ function Control({ statusControl, data, grid_cols = 'grid-cols-1', size, statusC
     const styles = sizeStyles[size] || sizeStyles.medium;
     const columnsConfig2 = [
 
-        { field: "code", headerName: "Control Code", width: 100, expandable: true },
+        { field: "control_code", headerName: "Control Code", width: 100, expandable: true },
         { field: "description", headerName: "Description", width: 300, expandable: true },
         { field: "owner", headerName: "Owner", width: 120, expandable: true },
         { field: "system_name", headerName: "Système", width: 120, expandable: true },
