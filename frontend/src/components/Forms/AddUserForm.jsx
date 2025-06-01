@@ -54,7 +54,7 @@ function AddUserForm({
     const fetchGradesData = async () => {
       const fetchedGrades = await fetchGrades();
       setGrades(fetchedGrades);
-    };
+    };      
 
     fetchGradesData();
   }, [fetchGrades]);
