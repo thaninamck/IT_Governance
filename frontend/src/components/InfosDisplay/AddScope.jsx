@@ -129,16 +129,19 @@ function AddScope({ dataFormat,title, text, text1, onToggleForm, showForm, user,
         <hr className="flex-grow border-t border-[var(--blue-menu)]" />
       </div>
 
-      {(dataFormat?.profileName === 'manager'  || user?.role=== 'admin') &&
+     
         <div className="flex flex-row items-center gap-4 pl-6">
+        {(dataFormat?.profileName === 'manager'  || user?.role=== 'admin') ?
           <p className="text-[var(--status-gray)] text-s">{applications.length > 0 ? text1 : text}</p>
+        :<p className="text-[var(--status-gray)] text-s">{applications.length == 0 && text }</p>}
+          {(dataFormat?.profileName === 'manager'  || user?.role=== 'admin') &&
           <button
             onClick={onToggleForm}
             className="px-4 py-2 border-none bg-[var(--blue-menu)] text-white text-sm font-medium rounded"
           >
             Ajouter
-          </button>
-        </div>}
+          </button>}
+        </div>
 
       {showDecisionPopup && (
         <div className="absolute top-25 left-1/2 -translate-x-1/2 translate-y-1/4 z-50 ">
