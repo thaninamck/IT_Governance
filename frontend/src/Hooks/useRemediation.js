@@ -39,19 +39,23 @@ export default function useRemediation(missionId,systemId,executionId, controlCo
         const response = await api.put(`mission/${missionId}/app/${systemId}/execution/updateRemediation/${remediation.id}`, remediation);
         setAction(prev => prev.map(row => row.id === remediation.id ? response.data : row));
         setSelectedActionId(null);
+        toast.success("Remédiation mise à jour avec succès !");
         setShowRemediation(false);
       } else {
         if (!executionId || !controlCode) {
           throw new Error("executionId ou controlCode manquant");
+          toast.error("Erreur lors de la mise à jour de la remédiation");
         }
         const response = await api.post(`mission/${missionId}/app/${systemId}/execution/${executionId}/${controlCode}/createremediation`, remediation);
         setAction(prev => [...prev, response.data]);
         setShowDecisionPopup(true);
+        toast.success("Remédiation créé avec succès");
       }
        setSelectedActionId(null);
       setShowRemediation(false);
     } catch (error) {
       console.error("Erreur dans l'ajout/màj remediation:", error);
+      toast.error("Erreur lors de la création de la remédiation");
       throw error;
     }
   };
@@ -66,9 +70,11 @@ export default function useRemediation(missionId,systemId,executionId, controlCo
       if (selectedActionId !== null) {
         await api.delete(`mission/${missionId}/app/${systemId}/execution/deleteRemediation/${selectedActionId}`);
         setAction(prev => prev.filter(row => row.id !== selectedActionId));
+        toast.success("Remédiation suprimée avec succès");
       }
     } catch (error) {
       console.error("Erreur suppression remediation:", error);
+      toast.error("Erreur lors de  suppression de la remédiation");
     } finally {
       setIsDeletePopupOpen(false);
       setSelectedActionId(null);
