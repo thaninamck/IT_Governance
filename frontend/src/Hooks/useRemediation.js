@@ -109,14 +109,17 @@ export default function useRemediation(missionId,systemId,executionId, controlCo
 
   const handleSendAction = async (selectedRow) => {
     console.log('action selectedrow',selectedRow)
+  
     if (!selectedRow || !selectedRow.ownerContact) {
       toast.error("Email manquant pour cet élément !");
       return;
     }
-
+    console.log('riskowner',selectedRow.risk_owner)
     const templateParams = {
       to_email: selectedRow.ownerContact,
-      cc_email: (selectedRow.ownerSystem_email && selectedRow.risk_owner && selectedRow.control_owner) || "",
+      cc_email: [selectedRow.ownerSystem_email, selectedRow.risk_owner, selectedRow.control_owner]
+      .filter(Boolean)
+      .join(', '),
       controlCode: selectedRow.controlCode,
       SystemName: selectedRow.SystemName,
       missionName: selectedRow.missionName,
@@ -130,7 +133,7 @@ export default function useRemediation(missionId,systemId,executionId, controlCo
   from_email: user.email,
   reply_to: user.email,
     };
-
+console.log('templateparams',templateParams.cc_email)
     try {
       await emailjs.send("service_dg6av6d", "template_f4ojiam", templateParams);
       toast.success(`E-mail envoyé à ${selectedRow.ownerContact} !`);
