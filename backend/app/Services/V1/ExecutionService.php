@@ -43,13 +43,77 @@ class ExecutionService
     {
         return $this->executionRepository->getExecutionsByMission($missionId);
     }
+    // public function getBeganExecutionsByMission($missionId)
+    // {
+    //     return $this->executionRepository->getBeganExecutionsByMission($missionId);
+    // }
     public function getBeganExecutionsByMission($missionId)
-    {
-        return $this->executionRepository->getBeganExecutionsByMission($missionId);
-    }
+{
+    $executions = collect($this->executionRepository->getBeganExecutionsByMission($missionId));
+    
+    $executions->each(function ($execution) {
+        $remediations = json_decode($execution->remediations ?? '[]', true);
+        $remarks = json_decode($execution->remarks ?? '[]', true);
+
+        $hasRemediations = !empty($remediations);
+        $hasRemark = array_filter($remarks, function ($r) {
+            return !empty($r['remark_id']);
+        });
+        $validRemediations = array_filter($remediations, function ($r) {
+            return !empty($r['remediation_status_name']);
+        });
+        $allTerminated = true;
+        $hasNonTerminated = false;
+
+        foreach ($validRemediations as $remediation) {
+            $status = strtolower($remediation['remediation_status_name'] ?? '');
+            if ($status !== 'terminé') {
+                $allTerminated = false;
+                $hasNonTerminated = true;
+            }
+        }
+
+        $launchedAt = $execution->execution_launched_at;
+        $statusId = $execution->status_id ?? null;
+        $isToReview = $execution->execution_is_to_review ?? false;
+        $isToValidate = $execution->execution_is_to_validate ?? false;
+
+        // Règles métier combinées
+        if (is_null($launchedAt)) {
+            $execution->execution_status = 'Non commencé';
+        } elseif (!is_null($launchedAt) && is_null($statusId)) {
+            $execution->execution_status = 'En cours';
+        } elseif (!is_null($launchedAt) && !empty($validRemediations) && $hasNonTerminated && !is_null($statusId)) {
+            $execution->execution_status = 'En cours de remediation';
+        } elseif (!is_null($launchedAt) && $hasRemediations && $allTerminated && !is_null($statusId)) {
+            if (!$isToReview && !$isToValidate && !$hasRemark) {
+                $execution->execution_status = 'Terminé mais pas soumis';
+            } elseif (!$isToReview && !$isToValidate && $hasRemark) {
+                $execution->execution_status = 'A corriger';
+            } elseif ($isToReview && !$isToValidate) {
+                $execution->execution_status = 'En cours de revue';
+            } elseif (!$isToReview && $isToValidate) {
+                $execution->execution_status = 'En cours de validation';
+            } elseif ($isToReview && $isToValidate) {
+                $execution->execution_status = 'Terminé et validé';
+            }
+        } else {
+            $execution->execution_status = 'statut inconnu';
+        }
+    });
+
+    return $executions;
+}
     public function getUnbeganExecutionsByMission($missionId)
     {
-        return $this->executionRepository->getUnbeganExecutionsByMission($missionId);
+       // return $this->executionRepository->getUnbeganExecutionsByMission($missionId);
+        $executions = collect($this->executionRepository->getUnbeganExecutionsByMission($missionId));
+    
+        $executions->each(function ($execution) {
+            $execution->execution_status = 'Non commencé';
+        });
+    
+        return $executions;
     }
     public function createComment($data){
         return $this->commentRepository->createComment($data);
@@ -69,13 +133,129 @@ public function getExecutionById($executionId)
 {
     return $this->executionRepository->getExecutionById($executionId);
 }
+// public function geteffectiveExecutionsByMission($missionId)
+// {
+//     return $this->executionRepository->getEffectiveExecutionsByMission($missionId);
+// }
+
+// public function getIneffectiveExecutionsByMission($missionId)
+// {
+//     return $this->executionRepository->getIneffectiveExecutionsByMission($missionId);
+// }
 public function geteffectiveExecutionsByMission($missionId)
-{
-    return $this->executionRepository->getEffectiveExecutionsByMission($missionId);
-}
+ {
+    
+     $executions = collect($this->executionRepository->getEffectiveExecutionsByMission($missionId));
+    
+     $executions->each(function ($execution) {
+         $remediations = json_decode($execution->remediations ?? '[]', true);
+         $remarks = json_decode($execution->remarks ?? '[]', true);
+ 
+         $hasRemediations = !empty($remediations);
+         $hasRemark = array_filter($remarks, function ($r) {
+             return !empty($r['remark_id']);
+         });
+         $validRemediations = array_filter($remediations, function ($r) {
+             return !empty($r['remediation_status_name']);
+         });
+         $allTerminated = true;
+         $hasNonTerminated = false;
+ 
+         foreach ($validRemediations as $remediation) {
+             $status = strtolower($remediation['remediation_status_name'] ?? '');
+             if ($status !== 'terminé') {
+                 $allTerminated = false;
+                 $hasNonTerminated = true;
+             }
+         }
+ 
+         $launchedAt = $execution->execution_launched_at;
+         $statusId = $execution->status_id ?? null;
+         $isToReview = $execution->execution_is_to_review ?? false;
+         $isToValidate = $execution->execution_is_to_validate ?? false;
+ 
+         // Règles métier combinées
+         if (is_null($launchedAt)) {
+             $execution->execution_status = 'Non commencé';
+         } elseif (!is_null($launchedAt) && is_null($statusId)) {
+             $execution->execution_status = 'En cours';
+         } elseif (!is_null($launchedAt) && !empty($validRemediations) && $hasNonTerminated && !is_null($statusId)) {
+             $execution->execution_status = 'En cours de remediation';
+         } elseif (!is_null($launchedAt) && $hasRemediations && $allTerminated && !is_null($statusId)) {
+             if (!$isToReview && !$isToValidate && !$hasRemark) {
+                 $execution->execution_status = 'Terminé mais pas soumis';
+             } elseif (!$isToReview && !$isToValidate && $hasRemark) {
+                 $execution->execution_status = 'A corriger';
+             } elseif ($isToReview && !$isToValidate) {
+                 $execution->execution_status = 'En cours de revue';
+             } elseif (!$isToReview && $isToValidate) {
+                 $execution->execution_status = 'En cours de validation';
+             } elseif ($isToReview && $isToValidate) {
+                 $execution->execution_status = 'Terminé et validé';
+             }
+         } else {
+             $execution->execution_status = 'statut inconnu';
+         }
+     });
+ 
+     return $executions;
+ }
 public function getIneffectiveExecutionsByMission($missionId)
 {
-    return $this->executionRepository->getIneffectiveExecutionsByMission($missionId);
+    $executions = collect($this->executionRepository->getIneffectiveExecutionsByMission($missionId));
+    
+    $executions->each(function ($execution) {
+        $remediations = json_decode($execution->remediations ?? '[]', true);
+        $remarks = json_decode($execution->remarks ?? '[]', true);
+
+        $hasRemediations = !empty($remediations);
+        $hasRemark = array_filter($remarks, function ($r) {
+            return !empty($r['remark_id']);
+        });
+        $validRemediations = array_filter($remediations, function ($r) {
+            return !empty($r['remediation_status_name']);
+        });
+        $allTerminated = true;
+        $hasNonTerminated = false;
+
+        foreach ($validRemediations as $remediation) {
+            $status = strtolower($remediation['remediation_status_name'] ?? '');
+            if ($status !== 'terminé') {
+                $allTerminated = false;
+                $hasNonTerminated = true;
+            }
+        }
+
+        $launchedAt = $execution->execution_launched_at;
+        $statusId = $execution->status_id ?? null;
+        $isToReview = $execution->execution_is_to_review ?? false;
+        $isToValidate = $execution->execution_is_to_validate ?? false;
+
+        // Règles métier combinées
+        if (is_null($launchedAt)) {
+            $execution->execution_status = 'Non commencé';
+        } elseif (!is_null($launchedAt) && is_null($statusId)) {
+            $execution->execution_status = 'En cours';
+        } elseif (!is_null($launchedAt) && !empty($validRemediations) && $hasNonTerminated && !is_null($statusId)) {
+            $execution->execution_status = 'En cours de remediation';
+        } elseif (!is_null($launchedAt) && $hasRemediations && $allTerminated && !is_null($statusId)) {
+            if (!$isToReview && !$isToValidate && !$hasRemark) {
+                $execution->execution_status = 'Terminé mais pas soumis';
+            } elseif (!$isToReview && !$isToValidate && $hasRemark) {
+                $execution->execution_status = 'A corriger';
+            } elseif ($isToReview && !$isToValidate) {
+                $execution->execution_status = 'En cours de revue';
+            } elseif (!$isToReview && $isToValidate) {
+                $execution->execution_status = 'En cours de validation';
+            } elseif ($isToReview && $isToValidate) {
+                $execution->execution_status = 'Terminé et validé';
+            }
+        } else {
+            $execution->execution_status = 'statut inconnu';
+        }
+    });
+
+    return $executions;
 }
 public function submitExecutionForReview($missionId,$executionId)
 {
