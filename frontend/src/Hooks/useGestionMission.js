@@ -296,12 +296,15 @@ const handlePauseRow = async (selectedRow) => {
   const handleRowClick = (rowData) => {
 
     if((user?.role=== 'admin' && viewMode ==='user')|| user?.role==='user'){
+      if(rowData.status=== "clôturée" &&  user?.role==='user'){
+        return;
+      }else{
     navigate(`/missions/${rowData.missionName}`, { state: {  missionId: rowData.id, missionData: rowData } });
     console.log('Détails du contrôle sélectionné:', rowData);
     addBreadcrumb(rowData?.missionName, 
       `/missions/${rowData.missionName}`,
        { missionId: rowData.id, missionData: rowData });
-    }
+    }}
   };
 
   // Gérer la navigation vers le rapport d'une mission

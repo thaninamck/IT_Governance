@@ -355,7 +355,7 @@ function GestionMission() {
               rowsData={missionsToDisplay}
               checkboxSelection={false}
               // getRowLink={getRowLink}
-              onRowClick={activeView === "requeststatus" ? null : handleRowClick} 
+              onRowClick={activeView === "requeststatus" ? null  : handleRowClick} 
               headerTextBackground={"white"}
               headerBackground="var(--blue-menu)"
               // rowActions={rowActions}
