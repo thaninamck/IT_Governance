@@ -127,10 +127,10 @@ Route::middleware(['auth:sanctum', AdminMiddleware::class])
     
         });
         Route::controller(ExecutionController::class)->group(function () {
-            Route::get('/dashboard/missions/{mission}/effective-controls', 'getEffectiveExecutionsByMission'); //done
-            Route::get('/dashboard/missions/{mission}/ineffective-controls', 'getineffectiveExecutionsByMission'); //done
-            Route::get('/dashboard/missions/{mission}/began-controls', 'getBeganExecutionsByMission'); //done
-            Route::get('/dashboard/missions/{mission}/unbegan-controls', 'getUnbeganExecutionsByMission'); //done
+            // Route::get('/dashboard/missions/{mission}/effective-controls', 'getEffectiveExecutionsByMission'); //done
+            // Route::get('/dashboard/missions/{mission}/ineffective-controls', 'getineffectiveExecutionsByMission'); //done
+            // Route::get('/dashboard/missions/{mission}/began-controls', 'getBeganExecutionsByMission'); //done
+            // Route::get('/dashboard/missions/{mission}/unbegan-controls', 'getUnbeganExecutionsByMission'); //done
             Route::get('/revue/{missionId}/{appId}/getAllExecutionReviewAdmin', 'getAllExecutionReviewAdmin');
             Route::get('/revue/{missionId}/getAllExecutionReview', 'getAllExecutionReview');
 
@@ -164,12 +164,18 @@ Route::middleware(['auth:sanctum', ManagerMiddleware::class])
     ->group(function () {
         // ExecutionController Routes
         Route::controller(ExecutionController::class)->group(function () {
+            
+            Route::get('/dashboard/missions/{mission}/effective-controls', 'getEffectiveExecutionsByMission'); //done
+            Route::get('/dashboard/missions/{mission}/ineffective-controls', 'getineffectiveExecutionsByMission'); //done
+            Route::get('/dashboard/missions/{mission}/began-controls', 'getBeganExecutionsByMission'); //done
+            Route::get('/dashboard/missions/{mission}/unbegan-controls', 'getUnbeganExecutionsByMission');
+            Route::get('/revue/{mission}/getexecutionreviewedforManager', 'getexecutionReviewByManager');
             Route::post('/missions/{mission}/insert-executions', 'createExecutions');
             Route::get('/missions/{mission}/executions', 'getExecutionsByMission');
             Route::get('/missions/{mission}/workplanOptions', 'getWorkplanOptionsByMission');
             Route::post('/executions/deleteExecutions', 'deleteExecutions');
             Route::post('/executions/update-executions', 'updateMultipleExecutions');
-            Route::patch('/executions/submit-execution-for-final-validation/{executionID}', 'submitExecutionForFinalValidation');
+            Route::patch('missions/{mission}/executions/submit-execution-for-final-validation/{executionID}', 'submitExecutionForFinalValidation');
         });
 
         //ParticipationController Routes 

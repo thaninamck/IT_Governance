@@ -1,10 +1,11 @@
 import { useCallback, useEffect, useState } from "react";
 import { api } from "../Api";
+import { toast } from "react-toastify";
 
 import emailjs from "emailjs-com";
 emailjs.init("oAXuwpg74dQwm0C_s");
 
-export default function useRemediation(missionId,systemId,executionId, controlCode) {
+export default function useRemediation(missionId,systemId,executionId, controlCode,user) {
   
 
   const [action, setAction] = useState([]);
@@ -38,19 +39,23 @@ export default function useRemediation(missionId,systemId,executionId, controlCo
         const response = await api.put(`mission/${missionId}/app/${systemId}/execution/updateRemediation/${remediation.id}`, remediation);
         setAction(prev => prev.map(row => row.id === remediation.id ? response.data : row));
         setSelectedActionId(null);
+        toast.success("Remédiation mise à jour avec succès !");
         setShowRemediation(false);
       } else {
         if (!executionId || !controlCode) {
           throw new Error("executionId ou controlCode manquant");
+          toast.error("Erreur lors de la mise à jour de la remédiation");
         }
         const response = await api.post(`mission/${missionId}/app/${systemId}/execution/${executionId}/${controlCode}/createremediation`, remediation);
         setAction(prev => [...prev, response.data]);
         setShowDecisionPopup(true);
+        toast.success("Remédiation créé avec succès");
       }
        setSelectedActionId(null);
       setShowRemediation(false);
     } catch (error) {
       console.error("Erreur dans l'ajout/màj remediation:", error);
+      toast.error("Erreur lors de la création de la remédiation");
       throw error;
     }
   };
@@ -65,9 +70,11 @@ export default function useRemediation(missionId,systemId,executionId, controlCo
       if (selectedActionId !== null) {
         await api.delete(`mission/${missionId}/app/${systemId}/execution/deleteRemediation/${selectedActionId}`);
         setAction(prev => prev.filter(row => row.id !== selectedActionId));
+        toast.success("Remédiation suprimée avec succès");
       }
     } catch (error) {
       console.error("Erreur suppression remediation:", error);
+      toast.error("Erreur lors de  suppression de la remédiation");
     } finally {
       setIsDeletePopupOpen(false);
       setSelectedActionId(null);
@@ -96,19 +103,23 @@ export default function useRemediation(missionId,systemId,executionId, controlCo
       await api.put(`/closeremediation/${selectedRow.id}`);
       await fetchRemediations();
     } catch (error) {
-      alert("Erreur lors de la clôture de la remediation.");
+      toast.error("Erreur lors de la clôture de la remediation.");
     }
   };
 
   const handleSendAction = async (selectedRow) => {
+    console.log('action selectedrow',selectedRow)
+  
     if (!selectedRow || !selectedRow.ownerContact) {
-      alert("Email manquant pour cet élément !");
+      toast.error("Email manquant pour cet élément !");
       return;
     }
-
+    console.log('riskowner',selectedRow.risk_owner)
     const templateParams = {
       to_email: selectedRow.ownerContact,
-      cc_email: selectedRow.ownerSystem_email || "",
+      cc_email: [selectedRow.ownerSystem_email, selectedRow.risk_owner, selectedRow.control_owner]
+      .filter(Boolean)
+      .join(', '),
       controlCode: selectedRow.controlCode,
       SystemName: selectedRow.SystemName,
       missionName: selectedRow.missionName,
@@ -116,15 +127,20 @@ export default function useRemediation(missionId,systemId,executionId, controlCo
       suivi: selectedRow.suivi,
       startDate: selectedRow.startDate,
       endDate: selectedRow.endDate,
-    };
 
+      // Infos dynamiques de l'utilisateur connecté
+  from_name: `${user.firstName} ${user.lastName}`,
+  from_email: user.email,
+  reply_to: user.email,
+    };
+console.log('templateparams',templateParams.cc_email)
     try {
       await emailjs.send("service_dg6av6d", "template_f4ojiam", templateParams);
-      alert(`E-mail envoyé à ${selectedRow.ownerContact} !`);
+      toast.success(`E-mail envoyé à ${selectedRow.ownerContact} !`);
       await api.put(`/updatestatusremediation/${selectedRow.id}`);
       await fetchRemediations();
     } catch (error) {
-      alert("Erreur lors de l'envoi de l'email.");
+      toast.error("Erreur lors de l'envoi de l'email.");
     }
   };
 

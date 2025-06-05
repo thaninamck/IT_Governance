@@ -16,6 +16,7 @@ const NotificationBar = () => {
     error,
   } = useNotification();
 
+  console.log("filtrednotification", filteredNotifications)
   return (
     <div className="notificationBar">
       {/* Header */}

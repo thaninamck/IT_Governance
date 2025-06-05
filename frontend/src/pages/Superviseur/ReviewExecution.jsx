@@ -18,6 +18,8 @@ import { api } from '../../Api';
 import ExistingComment from '../../components/ExecutionPage/ExistingComment';
 import CommentButton from '../../components/ExecutionPage/CommentButton';
 
+import AssignmentIcon from '@mui/icons-material/Assignment';
+
 function ReviewExecution() {
   
   const [executionData, setExecutionData] = useState(null);
@@ -235,7 +237,7 @@ const {
         if(controleData.connectedUserProfile === "superviseur"){
         await submitExecutionForValidation(controleData?.missionId,controleData.executionId);
         }else if (controleData.connectedUserProfile === "manager"){
-          await submitExecutionForFinalValidation(controleData.executionId);
+          await submitExecutionForFinalValidation(controleData.missionId,controleData.executionId);
         }
         
       } catch (err) {
@@ -407,7 +409,14 @@ const currentUserRole = JSON.parse(localStorage.getItem("User"))?.role;
       <Header user={user} />
       <div className="ml-8 mr-6 pb-9 relative">
         {location.pathname.includes("") && <Breadcrumbs />}
+        <h1 className='text-xl text-center font-semibold py-4 text-[var(--blue-menu)]'>
         
+    <>
+      <AssignmentIcon  style={{ fontSize: 30, color: 'var(--blue-menu)' ,marginRight:'6px'}} />
+      Consultation
+    </>
+  
+          </h1>
         <DescriptionTestScriptSection
           description={executionData?.execution_description || ""}
           testScript={steps}
@@ -420,50 +429,108 @@ const currentUserRole = JSON.parse(localStorage.getItem("User"))?.role;
           readOnly={true}
         />
 
-        <div className="max-h-screen min-h-screen">
-          <div className="flex flex-col gap-14">
-            <div className="mr-6 ml-6">
-              <Separator text={"Evidences"} />
-            </div>
-            <div className="flex justify-center mt-4">
-              <ToggleButton selections={selections} readOnly={true} />
-            </div>
+<div className="max-h-screen">
+  <div className="flex flex-col gap-14">
+    <div className="mr-6 ml-6">
+      <Separator text={"Evidences"} />
+    </div>
+    <div className="flex justify-center mt-4">
+      <ToggleButton selections={selections} readOnly={true} />
+    </div>
 
-            <div className="w-full flex-1 p-5 relative mt-3 mb-3 ml-5 pr-14">
-              <Tabs value={activePanel} onChange={handleTabChange}>
-                <TabList className="w-full border-b">
-                  <Tab value={0}>Evidences</Tab>
-                  <Tab value={1}>Fiches de test</Tab>
-                </TabList>
+    <div className="w-full p-5 relative mt-3 mb-3 ml-2 pr-10"> {/* supprime flex-1 */}
+      <Tabs value={activePanel} onChange={handleTabChange}
+       sx={{backgroundColor: "white"}}
+      >
+        <TabList className="w-full border-b "
+        sx={{
+            padding: "0",
+            "& .MuiTab-root": {
+              fontWeight: "600",
+              textTransform: "capitalize",
+              padding: "10px 20px",
+              borderRadius: "8px 8px 0 0",
+              transition: "all 0.2s ease",
+              "&:hover": {
+                backgroundColor: "var(--blue-nav)",
+                color: "var(--blue-menu)",
+              },
+              "&[aria-selected='true']": {
+                backgroundColor: "var(--blue-nav)",
+                color: "var(--blue-menu)",
+                borderBottom: "2px solid var(--blue-menu)",
+              },
+            },
+          }}>
+          <Tab value={0}>Evidences</Tab>
+          <Tab value={1}>Fiches de test</Tab>
+        </TabList>
 
-                <TabPanel value={0}>
-                  <div style={{ overflow: "auto", maxHeight: "800px" }}>
-                    <EvidenceList files={evidences} getFile={getFileURL} readOnly={true}/>
-                    {evidences.length === 0 && <p className="text-center text-gray-500 mt-4">Aucun evidence disponible.</p>}
-                  </div>
-                </TabPanel>
-
-                <TabPanel value={1}>
-                  <div style={{ overflow: "auto", maxHeight: "800px" }}>
-                    <EvidenceList files={testFiles} getFile={getFileURL} readOnly={true} />
-                    {testFiles.length === 0 && <p className="text-center text-gray-500 mt-4">Aucune fiche de test disponible.</p>}
-                  </div>
-                </TabPanel>
-              </Tabs>
-            </div>
+        <TabPanel value={0}>
+          <div
+            style={{
+              overflow: evidences.length > 0 ? "auto" : "visible",
+              maxHeight: evidences.length > 0 ? "800px" : "none"
+            }}
+          >
+            <EvidenceList files={evidences} getFile={getFileURL} readOnly={true} />
+            {evidences.length === 0 && (
+              <p className="text-center text-gray-500 mt-4">Aucun evidence disponible.</p>
+            )}
           </div>
-        </div>
+        </TabPanel>
 
-        <div>
+        <TabPanel value={1}>
+          <div
+            style={{
+              overflow: testFiles.length > 0 ? "auto" : "visible",
+              maxHeight: testFiles.length > 0 ? "800px" : "none"
+            }}
+          >
+            <EvidenceList files={testFiles} getFile={getFileURL} readOnly={true} />
+            {testFiles.length === 0 && (
+              <p className="text-center text-gray-500 mt-4">Aucune fiche de test disponible.</p>
+            )}
+          </div>
+        </TabPanel>
+      </Tabs>
+    </div>
+  </div>
+</div>
+
+        <div className='ml-8 pr-10'> 
           <Separator text={"Conclusion"} />
-          <div className="flex items-center gap-14 py-7 ml-9">
-            <label className="font-medium">Status</label>
-            <p>{selectedMulti}</p>
-          </div>
-          <p className="mt-4 font-medium ml-16">Commentaire: {commentaire}</p>
+          <div className="flex flex-col gap-4 ml-9 mt-4">
+    {/* Status */}
+    <div className="flex items-center gap-4">
+      <label className="text-gray-700 font-medium w-32">Status :</label>
+      <div className="w-[18%] border border-gray-300 rounded-md px-3 py-2 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+  style={{
+    boxShadow: "inset 0 -2px 4px rgba(0,0,0,0.1)", // effet ombre en bas
+  }}>
+        {selectedMulti}
+      </div>
+    </div>
+
+    {/* Commentaire */}
+    <div className="flex items-start gap-4">
+      <label className="text-gray-700 font-medium w-32">Commentaire :</label>
+      <div
+  className="w-[80%] min-h-[80px] border border-gray-300 rounded-md px-3 py-2 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+  style={{
+    boxShadow: "inset 0 -2px 4px rgba(0,0,0,0.1)", // effet ombre en bas
+  }}
+>
+  {commentaire}
+</div>
+
+
+
+    </div>
+  </div>
         </div>
 
-        <div>
+        <div className='ml-8 pr-10'>
           <Separator text={"Remédiation"} />
           {
             action.length > 0 ? (
@@ -479,27 +546,29 @@ const currentUserRole = JSON.parse(localStorage.getItem("User"))?.role;
           </div>
 
             ):(
-              <p className="text-gray-500 text-m pl-6">Aucune remédiation pour ce contrôle </p>
+              <p className="text-gray-500 text-m pl-9">Aucune remédiation pour ce contrôle </p>
             )
           }
           
 
           <div className="flex justify-end mt-8">
-          <button
-              className="bg-[var(--alert-red)] mr-16 text-white px-4 py-2 border-none"
-              onClick={handleCorrectRevue}
-            >
-              Ajuster
-            </button>
+  <button
+    className="bg-[var(--alert-red)] mr-10 text-white px-6 py-2 border-none shadow-bottom"
+    onClick={handleCorrectRevue}
+  >
+    Ajuster
+  </button>
 
-            <button
-              className="bg-[var(--success-green)] mr-16 text-white px-4 py-2 border-none"
-              onClick={handleValidateRevue}
-            >
-              valider
-            </button>
-           
-          </div>
+  <button
+    className="bg-[var(--success-green)] mr-6 text-white px-6 py-2 border-none shadow-bottom"
+    onClick={handleValidateRevue}
+  >
+    valider
+  </button>
+</div>
+
+
+
         </div>
 
       </div>

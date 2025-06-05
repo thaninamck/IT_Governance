@@ -255,7 +255,8 @@ function DisplayControleAppID() {
     <div className="min-h-screen ">
       <Header user={user} />
       <div className="ml-5 mr-6 pb-9">
-        {breadcrumbRoutes.some((route) => location.pathname.startsWith(route)) && <Breadcrumbs />}
+        {/* {breadcrumbRoutes.some((route) => location.pathname.startsWith(route)) && <Breadcrumbs />} */}
+        <Breadcrumbs items={["Missions",AppData?.missionName || "mission", AppData?.name|| "system"]} />
         <AppInfo appId={AppData?.id} />
         <Separator text="List des Contrôles" />
         {

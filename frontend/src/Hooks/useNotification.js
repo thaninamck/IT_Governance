@@ -20,8 +20,14 @@ const useUser = () => {
       case "mission":
         const notifUrl = JSON.parse(notification.url); // Convertir en objet
         return `/missions/${notifUrl.id}`;
+      case "aff_mission":
+        return `/missions/${notification.url.id}`;
+      case "accept_closeReq":
+        return `/missions/${notification.url.id}`;
+      case "refuse_closeReq":
+        return `/missions/${notification.url.id}`;
       case "affectation_cntrl":
-        return `/wshkaaeyn before/${notification.url.id}`;//complete ici
+        return `/missions/${notification.url.id}/${notification.url.systemId}`;//complete ici
       case "cloture_mission":
         return `/missions`;
       case "review_cntrl":

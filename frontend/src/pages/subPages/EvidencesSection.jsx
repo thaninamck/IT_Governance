@@ -26,34 +26,52 @@ function EvidencesSection({
   deletingTestId
 }) {
   return (
-    <div className="min-h-screen flex flex-col gap-14">
+    <div className="max-h-screen flex flex-col gap-4">
       <div className="mr-6  ml-6 ">
         <Separator text={"Evidences"} />
       </div>
-      <div className="flex items-center justify-center mt-4 ">
+      <div className="flex items-center justify-center  ">
         <ToggleButton selections={selections}
         onSelectionChange={handleSelectionChange}
         onStatesChange={onStatesChange} />
       </div>
 
       {/* Contenu des onglets */}
-      <div className="w-full flex-1  p-5 relative  mt-3 mb-3 ml-5 pr-14 ">
+      <div className="w-full flex-1  p-5 relative   mb-3 ml-5 pr-14 ">
         <Tabs
           color="success"
           aria-label="Basic tabs"
           defaultValue={0}
           onChange={handleTabChange} // Ajout de l'événement onChange
           sx={{
-            "--Tabs-spacing": "5px",
-            "& .css-ed3i2m-JoyTabList-root": {
-              backgroundColor: "transparent",
+           
+              backgroundColor: "white",
               bgcolor:"white"
-            },
+            
           }}
         >
           <div className="flex justify-center ">
             {/* Liens en haut */}
-            <TabList className="w-full border-b">
+            <TabList className="w-full border-b"
+           sx={{
+            padding: "0",
+            "& .MuiTab-root": {
+              fontWeight: "600",
+              textTransform: "capitalize",
+              padding: "10px 20px",
+              borderRadius: "8px 8px 0 0",
+              transition: "all 0.2s ease",
+              "&:hover": {
+                backgroundColor: "var(--blue-nav)",
+                color: "var(--blue-menu)",
+              },
+              "&[aria-selected='true']": {
+                backgroundColor: "var(--blue-nav)",
+                color: "var(--blue-menu)",
+                borderBottom: "2px solid var(--blue-menu)",
+              },
+            },
+          }}>
               <Tab
                 sx={{ "--Tab-indicatorThickness": "2px", paddingRight: "8px",bgcolor:"white" }}
               >
@@ -69,7 +87,12 @@ function EvidencesSection({
             {/* Contenu des onglets */}
             <TabPanel sx={{bgcolor:"white"}} value={0} className="h-full flex-1 bg-white max-h-80  overflow-auto  w-full" 
            >
-              <div style={{ overflow: "auto", maxHeight: "800px" }}>
+             <div
+            style={{
+              overflow: evidenceFiles.length > 0 ? "auto" : "visible",
+              maxHeight: evidenceFiles.length > 0 ? "800px" : "none"
+            }}
+          >
                 <div className="py-6 ">
                   <FileUploader
                     onSave={(formData) =>
@@ -90,7 +113,12 @@ function EvidencesSection({
             </TabPanel>
 
             <TabPanel value={1} className="h-full flex-1 w-full bg-white max-h-80  overflow-auto ">
-              <div style={{ overflow: "auto", maxHeight: "800px" }}>
+            <div
+            style={{
+              overflow: testFiles.length > 0 ? "auto" : "visible",
+              maxHeight: testFiles.length > 0 ? "800px" : "none"
+            }}
+          >
                 <div className="py-6">
                   <FileUploader
                     onSave={(formData) =>

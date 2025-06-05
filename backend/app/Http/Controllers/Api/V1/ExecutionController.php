@@ -691,7 +691,7 @@ class ExecutionController extends BaseController
         }
     }
 
-    public function submitExecutionForFinalValidation($executionId)
+    public function submitExecutionForFinalValidation($mission,$executionId)
     {
         try {
             return $this->executionService->submitExecutionForFinalValidation($executionId) ? $this->sendResponse("Execution submitted successfully", [], 200) : $this->sendError("submitting execution failed", [], 404);

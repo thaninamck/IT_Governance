@@ -61,7 +61,7 @@ function ConclusionRemediationSection({
         <div className="mr-5 ml-8">
           <Separator text={"Conclusion"} />
         </div>
-        <div className="flex flex-row items-center gap-14 py-7 ml-9">
+        <div className="flex flex-row items-center gap-4 py-7 ml-9">
           <label className="mr-20 ml-8 font-medium">Status</label>
           {/* <label className="mr-20 ml-8 font-medium">{selectedMulti}</label> */}
           <SelectInput
@@ -85,15 +85,20 @@ function ConclusionRemediationSection({
           )}
         </div>
 
-        <div className="flex gap-20 mt-4 items-center font-medium justify-start">
-          <p className="  ml-16    ">Commentaire: </p>
-          <p>{commentaire}</p>
-        </div>
+        {/* <div className="flex items-start gap-16 ml-9">
+      <label className=" ml-8 font-medium">Commentaire :</label>
+      <textarea
+  className="w-[76%] min-h-[40px] border border-gray-300 rounded-md px-3 py-2 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition resize-none"
+  value={commentaire}
+  readOnly
+/>
+    </div> */}
 
-        <div className="flex flex-row gap-10 items-center mt-8 ml-8 ">
-          <label className=" font-medium  ml-8">modifier le commentaire</label>
-          <div className=" w-full pr-10  mr-8">
+        <div className="flex flex-row gap-10 items-center mt-4 ml-8 ">
+          <label className=" font-medium  ml-8">commentaire</label>
+          <div className=" w-full pr-8">
             <EditableTextarea
+            content={commentaire}
               placeholder="Saisir un commentaire ..."
               onSave={(newComment) => setCommentaire(newComment)}
             />
@@ -147,7 +152,7 @@ function ConclusionRemediationSection({
         )}
 
         {showDecisionPopup && (
-          <div className="absolute top-25 left-1/2 -translate-x-1/2 translate-y-1/4 z-50 ">
+          <div className="absolute top-25 left-1/2 -translate-x-1/2 translate-y-[-50%] z-50 ">
             <DecisionPopUp
               name="nouvelle action"
               text="Voulez-vous ajouter une autre action ?"
@@ -155,7 +160,7 @@ function ConclusionRemediationSection({
               handleDeny={() => handleDecisionResponse(false)}
             />
           </div>
-        )}
+         )} 
 
         {/* Table for Remédiations */}
         {action?.length > 0 && (
@@ -189,10 +194,10 @@ function ConclusionRemediationSection({
               className={`mt-6 flex-1 overflow-x-auto overflow-y-auto h-[400px] mx-10 transition-all }`}
             >
               {isDeletePopupOpen && (
-                <div className="absolute top-50 left-1/2 -translate-x-1/2 z-50 mt-6">
+                <div className="absolute top-45 left-1/2 -translate-x-1/2  translate-y-[-30%] z-50">
                   <DecisionPopUp
                     name={
-                      action.find((row) => row.id === selectedActionId)?.id ||
+                      action.find((row) => row.id === selectedActionId)?.actionName ||
                       "cette Action"
                     }
                     text="Êtes-vous sûr(e) de vouloir supprimer l'action "

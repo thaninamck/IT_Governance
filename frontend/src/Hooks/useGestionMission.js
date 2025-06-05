@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { PermissionRoleContext } from "../Context/permissionRoleContext";
 import { useBreadcrumb } from "../Context/BreadcrumbContext";
 import {api} from "../Api";
+import { toast } from "react-toastify";
 import useAuth from "./useAuth";
 
 
@@ -68,8 +69,10 @@ const useGestionMission = (user,viewMode,profile) => {
       const createdMission = response.data.mission;
       setRowsData2((prevRows) => [...prevRows, createdMission]);
       setIsModalOpen(false);
+      toast.success("mission créer avec succès");
     } catch (error) {
       console.error("Erreur lors de la création d'une mission:", error);
+      toast.error("Erreur lors de la création d'une mission");
     }
   };
 
@@ -257,7 +260,10 @@ const handlePauseRow = async (selectedRow) => {
       );
       setIsEditModalOpen(false);
       setSelectedMission(null);
+      toast.success("Mission mise à jour avec succès !");
+
     } catch (error) {
+      toast.error("Erreur lors de la mise à jour de la mission");
       console.error("Erreur lors de la mise à jour de la mission:", error);
     }
   };
@@ -275,7 +281,9 @@ const handlePauseRow = async (selectedRow) => {
       setFilteredRows((prevRows) =>
         prevRows.filter((row) => row.id !== selectedMissionId)
       );
+      toast.success("Mission supprimé avec succès !");
     } catch (error) {
+      toast.error("Erreur lors de la suppression de la mission");
       console.error("Erreur lors de la suppression de la mission:", error);
     }
     setIsDeletePopupOpen(false);
@@ -288,12 +296,15 @@ const handlePauseRow = async (selectedRow) => {
   const handleRowClick = (rowData) => {
 
     if((user?.role=== 'admin' && viewMode ==='user')|| user?.role==='user'){
+      if(rowData.status=== "clôturée" &&  user?.role==='user'){
+        return;
+      }else{
     navigate(`/missions/${rowData.missionName}`, { state: {  missionId: rowData.id, missionData: rowData } });
     console.log('Détails du contrôle sélectionné:', rowData);
     addBreadcrumb(rowData?.missionName, 
       `/missions/${rowData.missionName}`,
        { missionId: rowData.id, missionData: rowData });
-    }
+    }}
   };
 
   // Gérer la navigation vers le rapport d'une mission

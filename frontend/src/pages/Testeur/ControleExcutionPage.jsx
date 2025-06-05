@@ -8,6 +8,7 @@ import EvidencesSection from "../subPages/EvidencesSection";
 import MultiSelectButtons from "../../components/ToggleButtons";
 import AccessTimeFilledIcon from "@mui/icons-material/AccessTimeFilled";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import LockOpenRoundedIcon from '@mui/icons-material/LockOpenRounded';
 import { SquarePen } from "lucide-react";
 import DeleteOutlineRoundedIcon from "@mui/icons-material/DeleteOutlineRounded";
 import SendIcon from "@mui/icons-material/Send";
@@ -36,6 +37,7 @@ import { Switch, FormControlLabel } from "@mui/material";
 
 function ControleExcutionPage() {
   const location = useLocation();
+  const { user } = useAuth();
   const controleData = location.state?.controleData || {};
   console.log("controoooole data", controleData);
   const {
@@ -74,7 +76,7 @@ function ControleExcutionPage() {
     setSelectedActionId,
     isAddingAnother,
     handleCloseForm,
-  } = useRemediation(controleData.missionId,controleData.systemId,controleData.executionId, controleData.controlCode);
+  } = useRemediation(controleData.missionId,controleData.systemId,controleData.executionId, controleData.controlCode,user);
 
   useEffect(() => {
     fetchRemediations();
@@ -84,7 +86,7 @@ function ControleExcutionPage() {
   const { mission, name, controlCode } = useParams();
 
   console.log(controleData);
-  const { user } = useAuth();
+  
   const handleRowClick = (rowData) => {
     navigate(
       `/missions/${mission}/${name}/${controlCode}/remediation/${rowData.actionName}`,
@@ -356,9 +358,7 @@ function ControleExcutionPage() {
     },
     {
       icon: (
-        <DeleteOutlineRoundedIcon
-          sx={{ color: "var(--alert-red)", marginRight: "5px" }}
-        />
+        <LockOpenRoundedIcon sx={{ marginRight: "5px" }} />
       ),
       label: "cloturé",
       onClick: (selectedRow) => handleCloseRow(selectedRow),
@@ -590,177 +590,7 @@ function ControleExcutionPage() {
 
   const handleSave = async () => {
     console.log("test");
-    //   const doc = new jsPDF();
-    //   let yOffset = 30; // Position verticale initiale
-
-    //   // Fonction pour vérifier si une nouvelle page est nécessaire
-    //   const addNewPageIfNeeded = (offset) => {
-    //     if (offset > doc.internal.pageSize.height - 20) {
-    //       // 20 est une marge
-    //       doc.addPage();
-    //       return 30; // Réinitialiser la position verticale
-    //     }
-    //     return offset;
-    //   };
-
-    //   doc.setFontSize(18);
-    //   doc.text("Rapport de Contrôle", 105, 20, { align: "center" });
-    //   doc.setFontSize(12);
-    //   doc.text(`Date: ${new Date().toLocaleDateString()}`, 14, 30);
-
-    //   // Tableau récapitulatif des informations principales
-    //   autoTable(doc, {
-    //     startY: yOffset,
-    //     head: [["Champ", "Valeur"]],
-    //     body: [
-    //       ["Type:", type],
-    //       ["Major Process:", majorProcess],
-    //       ["Sub Process:", subProcess],
-    //       ["Description", description],
-    //       ["Test Script", testScript],
-    //       ["Status", selectedMulti],
-    //       ["Commentaire", commentaire],
-    //       ["Critères", JSON.stringify(localSelections)],
-    //     ],
-    //     didDrawPage: (data) => {
-    //       yOffset = data.cursor.y + 10; // Mettre à jour la position verticale après le tableau
-    //     },
-    //   });
-
-    //   // Vérifier si une nouvelle page est nécessaire
-    //   yOffset = addNewPageIfNeeded(yOffset);
-
-    //   // Liste des remédiations sous forme de tableau
-    //   autoTable(doc, {
-    //     startY: yOffset,
-    //     head: [
-    //       [
-    //         "ID",
-    //         "Description",
-    //         "Contact",
-    //         "Date Début",
-    //         "Date Fin",
-    //         "Suivi",
-    //         "Status",
-    //       ],
-    //     ],
-    //     body: action.map((item) => [
-    //       item.id,
-    //       item.description,
-    //       item.contact,
-    //       item.dateField,
-    //       item.dateField1,
-    //       item.suivi,
-    //       item.status,
-    //     ]),
-    //     didDrawPage: (data) => {
-    //       yOffset = data.cursor.y + 10; // Mettre à jour la position verticale après le tableau
-    //     },
-    //   });
-    //   // Vérifier si une nouvelle page est nécessaire
-    //   yOffset = addNewPageIfNeeded(yOffset);
-
-    //   //    Ajout des données du test script
-    //   autoTable(doc, {
-    //     startY: yOffset,
-    //     head: [["Étape", "Phrase", "Validée", "Commentaire"]],
-    //     body: testScriptData.map((item, index) => [
-    //       index + 1,
-    //       item.phrase,
-    //       item.isChecked ? "Oui" : "Non", // Afficher "Oui" ou "Non" pour la validation
-    //       item.comment || "Aucun commentaire", // Afficher "Aucun commentaire" si le commentaire est vide
-    //     ]),
-    //     didDrawPage: (data) => {
-    //       yOffset = data.cursor.y + 10; // Mettre à jour la position verticale après le tableau
-    //     },
-    //   });
-    //   // Vérifier si une nouvelle page est nécessaire
-    //   yOffset = addNewPageIfNeeded(yOffset);
-
-    //   // Ajout des fichiers de preuves (evidences)
-    //   if (evidenceFiles.length > 0) {
-    //     doc.text("Fichiers de preuves (Evidences):", 14, yOffset);
-    //     yOffset += 10;
-    //     evidenceFiles.forEach((file, index) => {
-    //       doc.text(`- ${file.name}`, 20, yOffset);
-    //       yOffset += 10;
-    //       yOffset = addNewPageIfNeeded(yOffset); // Vérifier si une nouvelle page est nécessaire
-    //     });
-    //   } else {
-    //     doc.text("Aucun fichier de preuve (Evidence) disponible.", 14, yOffset);
-    //     yOffset += 10;
-    //   }
-
-    //   // Vérifier si une nouvelle page est nécessaire
-    //   yOffset = addNewPageIfNeeded(yOffset);
-
-    //   // Ajout des fichiers de test
-    //   if (testFiles.length > 0) {
-    //     doc.text("Fichiers de test:", 14, yOffset);
-    //     yOffset += 10;
-    //     testFiles.forEach((file, index) => {
-    //       doc.text(`- ${file.name}`, 20, yOffset);
-    //       yOffset += 10;
-    //       yOffset = addNewPageIfNeeded(yOffset); // Vérifier si une nouvelle page est nécessaire
-    //     });
-    //   } else {
-    //     doc.text("Aucun fichier de test disponible.", 14, yOffset);
-    //     yOffset += 10;
-    //   }
-    //   // Créer un fichier ZIP
-    //   const zip = new JSZip();
-
-    //   // Générer le PDF
-    //   const pdfBlob = doc.output("blob");
-
-    //   // Ajouter le PDF au ZIP
-    //   zip.file("rapport_controle.pdf", pdfBlob);
-
-    //   // Ajouter les fichiers de preuves (evidences) au ZIP
-    //   for (const file of evidenceFiles) {
-    //     if (file instanceof File || file instanceof Blob) {
-    //       zip.file(`evidences/${file.name}`, file);
-    //     }
-    //   }
-    //   // Ajouter les fichiers de preuves (evidences) au ZIP
-    //   for (const file of testFiles) {
-    //     if (file instanceof File || file instanceof Blob) {
-    //       zip.file(`testFile/${file.name}`, file);
-    //     }
-    //   }
-    //   // Générer le fichier ZIP et le télécharger
-    //   const zipBlob = await zip.generateAsync({ type: "blob" });
-    //   saveAs(zipBlob, "rapport_controle.zip");
-
-    //   setShowPopup(true);
-
-    //   console.log(
-    //     "Type:",
-    //     type,
-    //     "Major Process:",
-    //     majorProcess,
-    //     "Sub Process:",
-    //     subProcess,
-    //     "Description:",
-    //     description,
-    //     "TestScript:",
-    //     testScript,
-    //     "Test Script Data:",
-    //     testScriptData,
-    //     "Evidence Files:",
-    //     evidenceFiles,
-    //     "Test Files:",
-    //     testFiles,
-    //     "status:",
-    //     selectedMulti,
-    //     "Commentaire:",
-    //     commentaire,
-    //     "remediation:",
-    //     action,
-    //     "critere:",
-    //     localSelections
-    //   );
-    //   //setIsEditing(false); // Quitter le mode édition après la sauvegarde
+    
   };
 
   const handleSubmit = () => {
@@ -857,9 +687,11 @@ useEffect(() => {
 
   const [overlayEnabled, setOverlayEnabled] = useState(true); // toggle admin
 
-  const shouldShowOverlay = (isToReview || isToValidate) && overlayEnabled;
-
-  return (
+  const shouldShowOverlay = (isToReview || isToValidate) && overlayEnabled;const items = controleData
+  ? ["Missions", controleData.missionName || "mission", controleData.systemName || "system", controleData.controlCode || "CTRL"]
+  : ["Missions", executionData?.[0]?.mission_name || "mission", executionData?.[0]?.system_name || "system", executionData?.[0]?.control_code || "CTRL"];
+  
+ return (
     <div className="  ">
       <Header user={user} />
       <div className="flex flex-row w-full justify-between">
@@ -887,7 +719,8 @@ useEffect(() => {
             <div className="flex flex-col  sm:flex-col">
               {/* Header avec breadcrumbs */}
               <div className="flex   flex-col sm:flex-row justify-between items-start sm:items-center px-4   ">
-                {location.pathname.includes("") && <Breadcrumbs />}
+                {/* {location.pathname.includes("") && <Breadcrumbs />} */}
+                <Breadcrumbs items={items}/>
               </div>
 
               {/* Statut, positionné proprement */}

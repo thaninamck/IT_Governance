@@ -62,11 +62,53 @@ function Control({ statusControl, data, grid_cols = 'grid-cols-1', size, statusC
     const styles = sizeStyles[size] || sizeStyles.medium;
     const columnsConfig2 = [
 
-        { field: "code", headerName: "Control Code", width: 100, expandable: true },
+        { field: "control_code", headerName: "Control Code", width: 100, expandable: true },
         { field: "description", headerName: "Description", width: 300, expandable: true },
         { field: "owner", headerName: "Owner", width: 120, expandable: true },
         { field: "system_name", headerName: "Système", width: 120, expandable: true },
         { field: "layer", headerName: "Layer", width: 100, expandable: true },
+        {
+            field: "execution_status",
+            headerName: "État d'exécution",
+            width: 150,
+            expandable: true,
+            customRenderCell: (params) => {
+              const status = params.value?.toLowerCase();
+              let colorClass = "text-gray-800";
+              let label = params.value;
+              
+              if (status === "non commencé") {
+                colorClass = "text-gray-500";
+              } else if (status === "en cours") {
+                colorClass = "text-blue-500";
+              } else if (status === "en cours de remediation") {
+                colorClass = "text-orange-400";
+              } else if (status === "terminé mais pas soumis") {
+                colorClass = "text-yellow-400";
+              } else if (status === "en cours de revue") {
+                colorClass = "text-purple-500";
+              } else if (status === "terminé et validé") {
+                colorClass = "text-green-500";
+              } else if (status === "a coriger") {
+                colorClass = "text-red-500";
+              } else if (status === "en cours de validation") {
+                colorClass = "text-green-700";
+              }
+              
+          
+              return (
+                <div className='flex items-center justify-center w-full'>
+                <span
+                  className={`text-sm text-center  ${colorClass}`}
+                 
+                >
+                  {label}
+                </span>
+                </div>
+              );
+            },
+          }
+      ,    
         { field: "status", headerName: "Status", width: 150, expandable: true },
         { field: "testeur", headerName: "Tester", width: 150, expandable: true }]
 

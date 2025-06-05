@@ -220,12 +220,20 @@ public function getExecutionById($executionId)
             e.cntrl_modification AS execution_description,
             e.control_owner AS execution_control_owner,
             c.description AS control_description,
-             c.code AS control_code,
+            c.code AS control_code,
             st.id AS status_id,
             st.status_name AS status_name,
             mp.description AS major_process,
             sp.name AS sub_process,
             t.name AS type_name,
+
+            -- Ajout du systeme
+            s.id AS system_id,
+            s.name AS system_name,
+
+            -- Ajout de la mission
+            m.id AS mission_id,
+            m.mission_name AS mission_name,
 
             -- Steps ordonnés
             (
@@ -286,6 +294,11 @@ public function getExecutionById($executionId)
         LEFT JOIN public.cntrl_srcs cs ON cs.control_id = c.id
         LEFT JOIN public.sources so ON cs.source_id = so.id
 
+        -- Ajout des jointures pour récupérer le system et la mission
+        JOIN public.layers l ON e.layer_id = l.id
+        JOIN public.systems s ON l.system_id = s.id
+        JOIN public.missions m ON s.mission_id = m.id
+
         WHERE e.id = ?
 
         GROUP BY 
@@ -296,7 +309,9 @@ public function getExecutionById($executionId)
             st.id, st.status_name,
             mp.description,
             sp.name,
-            t.name
+            t.name,
+            s.id, s.name,
+            m.id, m.mission_name
     ", [$executionId]);
 }
 
@@ -644,6 +659,52 @@ public function getExecutionById($executionId)
         return $nonDeletable;
     }
 
+    public function getsystemIdByExecutionIdAndMissionIdAndLayerId($layerId, $executionId)
+    {
+        $results = DB::select(
+            "
+            SELECT 
+                e.id AS execution_id, 
+                e.cntrl_modification AS execution_modification,
+                e.comment AS execution_comment,
+                e.control_owner AS execution_control_owner,
+                m.id AS mission_id, 
+                mission_name,
+                l.id AS layer_id,
+                l.name AS layer_name,
+                st.id AS status_id,
+                st.status_name,
+                s.id AS system_id,
+                s.name AS system_name,
+                o.full_name AS system_owner_full_name,
+                o.email AS system_owner_email,
+                u.id AS user_id,
+                CONCAT(u.first_name, ' ', u.last_name) AS tester_full_name
+            FROM public.missions m
+            JOIN public.systems s ON s.mission_id = m.id
+            JOIN public.layers l ON l.system_id = s.id
+            JOIN public.executions e ON e.layer_id = l.id
+            LEFT JOIN public.statuses st ON e.status_id = st.id
+            JOIN public.users u ON e.user_id = u.id
+            JOIN public.owners o ON s.owner_id = o.id
+            WHERE 
+               l.id = ?
+                AND e.id = ?
+            GROUP BY 
+                e.id, e.cntrl_modification, e.comment, e.control_owner, e.launched_at, e.ipe, e.effectiveness, e.design,
+                st.id, st.status_name,
+                m.id, mission_name,
+                l.id, l.name,
+                s.id, s.name,
+                o.full_name, o.email,
+                u.id, u.first_name, u.last_name
+            ",
+            [$layerId, $executionId]
+        );
+    
+        return $results[0] ?? null;  // Retourne le premier résultat ou null si vide
+    }
+    
     public function getExecutionsByMissionAndSystemAndTester($missionId, $userId, $appId)
     {
         // e.comment AS execution_remark,
@@ -1176,19 +1237,123 @@ public function getExecutionById($executionId)
     }
 
 
-    public function getEffectiveExecutionsByMission($id)
+//     public function getEffectiveExecutionsByMission($id)
+// {
+//     $results = DB::select('
+//         SELECT 
+//             DISTINCT cnt.id,
+//             m.id,
+//             cnt.code,
+//             COALESCE(NULLIF(e.cntrl_modification, \'\'), cnt.description) AS description,
+//             e.control_owner AS owner,
+//             stt.status_name AS status,
+//             e.id AS id,
+//             l.name AS layer,
+//             CONCAT(u.first_name, \' \', u.last_name) AS testeur
+//         FROM public.missions m 
+//         JOIN public.systems s ON s.mission_id = m.id
+//         LEFT JOIN public.layers l ON s.id = l.system_id
+//         JOIN public.executions e ON e.layer_id = l.id
+//         LEFT JOIN public.statuses stt ON stt.id = e.status_id
+//         JOIN public.step_executions ON step_executions.execution_id = e.id
+//         JOIN public.step_test_scripts ON step_test_scripts.id = step_executions.step_id
+//         JOIN public.controls cnt ON cnt.id = step_test_scripts.control_id
+//         JOIN public.users u ON u.id = e.user_id
+//         WHERE stt.status_name = \'applied\' AND m.id = ?
+//         ORDER BY m.id
+//     ', [$id]);
+
+//     return $results;
+// }
+// public function getIneffectiveExecutionsByMission($id)
+// {
+//     $results = DB::select('
+//         SELECT 
+//         DISTINCT cnt.id,
+//             m.id,
+//             cnt.code,
+//             COALESCE(NULLIF(e.cntrl_modification, \'\'), cnt.description) AS description,
+//             e.control_owner AS owner,
+//             stt.status_name AS status,
+//             l.name AS layer,
+//              e.id AS id,
+//             CONCAT(u.first_name, \' \', u.last_name) AS testeur
+//         FROM public.missions m 
+//         JOIN public.systems s ON s.mission_id = m.id
+//         LEFT JOIN public.layers l ON s.id = l.system_id
+//         JOIN public.executions e ON e.layer_id = l.id
+//         LEFT JOIN public.statuses stt ON stt.id = e.status_id
+//         JOIN public.step_executions ON step_executions.execution_id = e.id
+//         JOIN public.step_test_scripts ON step_test_scripts.id = step_executions.step_id
+//         JOIN public.controls cnt ON cnt.id = step_test_scripts.control_id
+//         JOIN public.users u ON u.id = e.user_id
+//         WHERE stt.status_name IS DISTINCT FROM \'applied\'  AND stt.status_name IS NOT NULL 
+
+//         AND m.id = ?
+//         ORDER BY cnt.code
+//     ', [$id]);
+
+//     return $results;
+// }
+
+
+// public function getBeganExecutionsByMission($id)
+// {
+//     return DB::select(
+//         "SELECT DISTINCT e.id AS id,
+//             cnt.code,
+//             s.name AS system_name,
+//             COALESCE(NULLIF(e.cntrl_modification, ' '), cnt.description) AS description,
+//             e.control_owner AS owner,
+//             stt.status_name AS status,
+//             l.name AS layer,
+//             CONCAT(u.first_name, ' ', u.last_name) AS testeur
+//         FROM public.missions m 
+//         JOIN public.systems s ON s.mission_id = m.id
+//         LEFT JOIN public.layers l ON s.id = l.system_id
+//         JOIN public.executions e ON e.layer_id = l.id
+//         LEFT JOIN public.statuses stt ON stt.id = e.status_id
+//         JOIN public.step_executions ON step_executions.execution_id = e.id
+//         JOIN public.step_test_scripts ON step_test_scripts.id = step_executions.step_id
+//         JOIN public.controls cnt ON cnt.id = step_test_scripts.control_id
+//         JOIN public.users u ON u.id = e.user_id
+//         WHERE e.launched_at IS NOT NULL AND m.id = ?
+//         ORDER BY cnt.code", [$id]
+//     );
+// }
+
+public function getEffectiveExecutionsByMission($id)
 {
-    $results = DB::select('
+    return DB::select('
         SELECT 
-            DISTINCT cnt.id,
-            m.id,
-            cnt.code,
+            e.id AS id,
+            cnt.id AS control_id,
+            cnt.code AS control_code,
+             s.name AS system_name,
+            m.id AS mission_id,
             COALESCE(NULLIF(e.cntrl_modification, \'\'), cnt.description) AS description,
             e.control_owner AS owner,
             stt.status_name AS status,
-            e.id AS id,
             l.name AS layer,
-            CONCAT(u.first_name, \' \', u.last_name) AS testeur
+            CONCAT(u.first_name, \' \', u.last_name) AS testeur,
+            e.launched_at AS execution_launched_at,
+            e.is_to_review AS execution_is_to_review,
+            e.is_to_validate AS execution_is_to_validate,
+            stt.id AS status_id,
+            
+            json_agg(DISTINCT jsonb_build_object(
+                \'remediation_id\', rmd.id,
+                \'remediation_description\', rmd.description,
+                \'remediation_status_name\', rs.status_name
+            )) AS remediations,
+            
+            json_agg(DISTINCT jsonb_build_object(
+                \'remark_id\', rm.id,
+                \'remark_text\', rm.text,
+                \'remark_y\', rm.y,
+                \'remark_user_id\', rm.user_id
+            )) AS remarks
+            
         FROM public.missions m 
         JOIN public.systems s ON s.mission_id = m.id
         LEFT JOIN public.layers l ON s.id = l.system_id
@@ -1198,25 +1363,49 @@ public function getExecutionById($executionId)
         JOIN public.step_test_scripts ON step_test_scripts.id = step_executions.step_id
         JOIN public.controls cnt ON cnt.id = step_test_scripts.control_id
         JOIN public.users u ON u.id = e.user_id
+        LEFT JOIN public.remediations rmd ON rmd.execution_id = e.id
+        LEFT JOIN public.statuses rs ON rmd.status_id = rs.id
+        LEFT JOIN public.remarks rm ON rm.execution_id = e.id
         WHERE stt.status_name = \'applied\' AND m.id = ?
-        ORDER BY m.id
+        GROUP BY 
+            e.id, cnt.id, cnt.code,s.name, m.id, e.cntrl_modification, cnt.description,
+            e.control_owner, stt.status_name, l.name, u.first_name, u.last_name,
+            e.launched_at, e.is_to_review, e.is_to_validate, stt.id
+        ORDER BY cnt.code
     ', [$id]);
-
-    return $results;
 }
 public function getIneffectiveExecutionsByMission($id)
 {
-    $results = DB::select('
+    return DB::select('
         SELECT 
-        DISTINCT cnt.id,
-            m.id,
-            cnt.code,
+            e.id AS id,
+            cnt.id AS control_id,
+            cnt.code AS control_code,
+             s.name AS system_name,
+            m.id AS mission_id,
             COALESCE(NULLIF(e.cntrl_modification, \'\'), cnt.description) AS description,
             e.control_owner AS owner,
             stt.status_name AS status,
             l.name AS layer,
-             e.id AS id,
-            CONCAT(u.first_name, \' \', u.last_name) AS testeur
+            CONCAT(u.first_name, \' \', u.last_name) AS testeur,
+            e.launched_at AS execution_launched_at,
+            e.is_to_review AS execution_is_to_review,
+            e.is_to_validate AS execution_is_to_validate,
+            stt.id AS status_id,
+            
+            json_agg(DISTINCT jsonb_build_object(
+                \'remediation_id\', rmd.id,
+                \'remediation_description\', rmd.description,
+                \'remediation_status_name\', rs.status_name
+            )) AS remediations,
+            
+            json_agg(DISTINCT jsonb_build_object(
+                \'remark_id\', rm.id,
+                \'remark_text\', rm.text,
+                \'remark_y\', rm.y,
+                \'remark_user_id\', rm.user_id
+            )) AS remarks
+            
         FROM public.missions m 
         JOIN public.systems s ON s.mission_id = m.id
         LEFT JOIN public.layers l ON s.id = l.system_id
@@ -1226,28 +1415,49 @@ public function getIneffectiveExecutionsByMission($id)
         JOIN public.step_test_scripts ON step_test_scripts.id = step_executions.step_id
         JOIN public.controls cnt ON cnt.id = step_test_scripts.control_id
         JOIN public.users u ON u.id = e.user_id
-        WHERE stt.status_name IS DISTINCT FROM \'applied\'  AND stt.status_name IS NOT NULL 
-
-        AND m.id = ?
+        LEFT JOIN public.remediations rmd ON rmd.execution_id = e.id
+        LEFT JOIN public.statuses rs ON rmd.status_id = rs.id
+        LEFT JOIN public.remarks rm ON rm.execution_id = e.id
+        WHERE stt.status_name IS DISTINCT FROM \'applied\' 
+          AND stt.status_name IS NOT NULL
+          AND m.id = ?
+        GROUP BY 
+            e.id, cnt.id, cnt.code,s.name, m.id, e.cntrl_modification, cnt.description,
+            e.control_owner, stt.status_name, l.name, u.first_name, u.last_name,
+            e.launched_at, e.is_to_review, e.is_to_validate, stt.id
         ORDER BY cnt.code
     ', [$id]);
-
-    return $results;
 }
-
-
-
 public function getBeganExecutionsByMission($id)
 {
-    return DB::select(
-        "SELECT DISTINCT e.id AS id,
-            cnt.code,
+    return DB::select("
+        SELECT 
+            e.id AS id,
+            cnt.code AS control_code,
             s.name AS system_name,
             COALESCE(NULLIF(e.cntrl_modification, ' '), cnt.description) AS description,
             e.control_owner AS owner,
             stt.status_name AS status,
             l.name AS layer,
-            CONCAT(u.first_name, ' ', u.last_name) AS testeur
+            CONCAT(u.first_name, ' ', u.last_name) AS testeur,
+            e.launched_at AS execution_launched_at,
+            e.is_to_review AS execution_is_to_review,
+            e.is_to_validate AS execution_is_to_validate,
+            stt.id AS status_id,
+            
+            json_agg(DISTINCT jsonb_build_object(
+                'remediation_id', rmd.id,
+                'remediation_description', rmd.description,
+                'remediation_status_name', rs.status_name
+            )) AS remediations,
+            
+            json_agg(DISTINCT jsonb_build_object(
+                'remark_id', rm.id,
+                'remark_text', rm.text,
+                'remark_y', rm.y,
+                'remark_user_id', rm.user_id
+            )) AS remarks
+            
         FROM public.missions m 
         JOIN public.systems s ON s.mission_id = m.id
         LEFT JOIN public.layers l ON s.id = l.system_id
@@ -1257,16 +1467,23 @@ public function getBeganExecutionsByMission($id)
         JOIN public.step_test_scripts ON step_test_scripts.id = step_executions.step_id
         JOIN public.controls cnt ON cnt.id = step_test_scripts.control_id
         JOIN public.users u ON u.id = e.user_id
+        LEFT JOIN public.remediations rmd ON rmd.execution_id = e.id
+        LEFT JOIN public.statuses rs ON rmd.status_id = rs.id
+        LEFT JOIN public.remarks rm ON rm.execution_id = e.id
         WHERE e.launched_at IS NOT NULL AND m.id = ?
-        ORDER BY cnt.code", [$id]
-    );
+        GROUP BY 
+            e.id, cnt.code, s.name, e.cntrl_modification, cnt.description,
+            e.control_owner, stt.status_name, l.name, u.first_name, u.last_name,
+            e.launched_at, e.is_to_review, e.is_to_validate, stt.id
+        ORDER BY cnt.code
+    ", [$id]);
 }
 
 public function getUnbeganExecutionsByMission($id)
 {
     return DB::select(
         "SELECT DISTINCT e.id AS id,
-            cnt.code,
+                       cnt.code AS control_code,
             s.name AS system_name,
             COALESCE(NULLIF(e.cntrl_modification, ' '), cnt.description) AS description,
             e.control_owner AS owner,

@@ -21,11 +21,12 @@ const firstconnection=infos.firstconnection;
     const hasUpperCase = /[A-Z]/.test(password);
     const hasLowerCase = /[a-z]/.test(password);
     const hasNumber = /[0-9]/.test(password);
+    const hasSpecialChar = /[@$!%_*?&]/.test(password);
     const isLongEnough = password.length >= 12;
 
-    if (isLongEnough && hasUpperCase && hasLowerCase && hasNumber) {
+    if (isLongEnough && hasUpperCase && hasLowerCase && hasNumber && hasSpecialChar) {
       return "excellent";
-    } else if (isLongEnough && (hasUpperCase || hasLowerCase || hasNumber)) {
+    } else if (isLongEnough && (hasUpperCase || hasLowerCase || hasNumber || hasSpecialChar)) {
       return "moyen";
     } else {
       return "faible";
@@ -105,48 +106,54 @@ const firstconnection=infos.firstconnection;
     }
   };
 
+ 
   return (
-    <div className='mx-6'>
-      <div className="bg-white rounded-lg shadow-lg p-4 flex flex-col items-center w-1/2 justify-self-center gap-4 ">
+    <div className="flex justify-center items-center px-4 py-8 ">
+      <div className="bg-white rounded-lg shadow-lg p-4 flex flex-col items-center w-full max-w-xl gap-4">
         <PasswordIcon sx={{ color: 'var(--blue-menu)', fontSize: '4rem' }} />
         <h1 className="text-lg md:text-xl lg:text-2xl font-semibold text-[var(--blue-menu)] text-center">
           Nouveau mot de passe
         </h1>
-        <p className="text-gray-600 text-center">Définissez votre nouveau mot de passe.</p>
-
-        <InputForm 
-          type="password" 
-          label="Nouveau mot de passe" 
-          placeholder="Mot de passe" 
-          width="450px"
+        <p className="text-gray-600 text-center text-sm">Définissez votre nouveau mot de passe.</p>
+<div className="w-full flex flex-col gap-4">
+        <InputForm
+          type="password"
+          label="Nouveau mot de passe"
+          placeholder="Mot de passe"
+          width="100%"
           flexDirection="flex-col"
-          value={password} 
+          value={password}
           onChange={(e) => {
             setPassword(e.target.value);
             setPasswordStrength(checkPasswordStrength(e.target.value));
-          }} 
+          }}
         />
-        <InputForm 
-          type="password" 
-          label="Confirmer" 
+        <InputForm
+          type="password"
+          label="Confirmer"
           placeholder="Confirmez le mot de passe"
-          width="450px"
+          width="100%"
           flexDirection="flex-col"
           value={confirmPassword}
-          onChange={(e) => setConfirmPassword(e.target.value)} 
+          onChange={(e) => setConfirmPassword(e.target.value)}
         />
-        {errorMessage && <p className="text-red-500 mt-2">{errorMessage}</p>}
+</div>
+        {/* Message avec les règles */}
+        <p className="text-xs text-gray-500 text-center max-w-sm">
+          Le mot de passe doit contenir au moins 12 caractères, une majuscule, une minuscule, un chiffre et un caractère spécial (@$!%_*?&).
+        </p>
+
+        {errorMessage && <p className="text-red-500 text-sm mt-2 text-center">{errorMessage}</p>}
 
         <button
-          className="w-[41%] mt-4 border-none bg-[var(--blue-menu)] hover:bg-[var(--blue-conf)] text-white font-medium py-2 px-6 rounded-lg transition duration-300 ease-in-out text-sm md:text-base lg:text-lg"
-          onClick={firstconnection?firstLoginChangePassword:ForgotPasswordChange}
+          className="w-full mt-4 border-none bg-[var(--blue-menu)] hover:bg-[var(--blue-conf)] text-white font-medium py-2 px-6 rounded-lg transition duration-300 ease-in-out text-sm md:text-base"
+          onClick={firstconnection ? firstLoginChangePassword : ForgotPasswordChange}
           disabled={loading}
         >
           {loading ? "Changement en cours..." : "Valider"}
         </button>
 
-        {error && <p className="text-red-500 mt-2">{error}</p>}
-
+        {error && <p className="text-red-500 text-sm mt-2 text-center">{error}</p>}
       </div>
     </div>
   );

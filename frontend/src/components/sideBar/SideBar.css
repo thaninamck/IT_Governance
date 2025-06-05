@@ -44,14 +44,15 @@
   }
   
   .avatar {
-    width: 60px;
-    height: 60px;
+    width: 70px;
+    height: 70px;
     margin: 0 auto 10px;
-    background-color: var(--blue-nav);
+    background-color: white;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
+<<<<<<< HEAD
     font-size: 1.2rem;
     font-weight: bold;
     color: white;
@@ -74,11 +75,16 @@
     font-size: 1rem;
     color: white;
   }
-  
-  .user-info span {
-    color: var(--status-gray);
-    font-size: 0.8rem;
+=======
+    font-size: 1.5rem;
+    font-weight:600;
+    color:var(--blue-menu) ;
   }
+  
+ 
+>>>>>>> 1c6fee71b3b15b6cb77420da53a7d47a6b903f02
+  
+ 
   
   
   .menu {

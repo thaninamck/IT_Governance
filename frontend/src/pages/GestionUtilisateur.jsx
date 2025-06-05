@@ -58,6 +58,7 @@ function GestionUtilisateur() {
     isModalOpen,
     setIsModalOpen,
   } = useUser();
+  console.log('users dataa',filteredRows)
   // Configuration des colonnes de la table
   const columnsConfig2 = [
     //{ field: 'utilisateur', headerName: 'Utilisateur', width: 180, editable: false },
@@ -134,11 +135,11 @@ const confirmDeleteApp = () => {
 };*/
 
   const rowActions = [
-    {
-      icon: <PersonOutlineRounded sx={{ marginRight: "8px" }} />,
-      label: "Voir Profile",
-      onClick: handleEditRow,
-    },
+    // {
+    //   icon: <PersonOutlineRounded sx={{ marginRight: "8px" }} />,
+    //   label: "Voir Profile",
+    //   onClick: handleEditRow,
+    // },
     {
       icon: <SquarePen className="mr-2" />,
       label: "Modifier",
@@ -274,7 +275,7 @@ const confirmDeleteApp = () => {
           <DecisionPopUp
             loading={loading}
             name={
-              filteredRows.find((row) => row.id === selectedAppId)?.username ||
+              filteredRows.find((row) => row.id === selectedAppId)?.fullName||
               "cet utilisateur"
             }
             text="Êtes-vous sûr(e) de vouloir supprimer l'utilisateur "
@@ -289,7 +290,7 @@ const confirmDeleteApp = () => {
           <DecisionPopUp
             loading={loading}
             name={
-              filteredRows.find((row) => row.id === selectedAppId)?.username ||
+              filteredRows.find((row) => row.id === selectedAppId)?.fullName ||
               "ce utilisateur"
             }
             text="Êtes-vous sûr(e) de vouloir réinisialiser le mot de passe "
