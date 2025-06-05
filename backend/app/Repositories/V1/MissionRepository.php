@@ -428,10 +428,9 @@ class MissionRepository
 
         FROM public.missions m 
         JOIN public.clients c ON c.id = m.client_id
-        JOIN public.statuses st ON m.status_id = st.id
-        JOIN public.systems s ON s.mission_id = m.id
+        LEFT JOIN public.systems s ON s.mission_id = m.id
         LEFT JOIN public.layers l ON s.id = l.system_id
-        JOIN public.executions e ON e.layer_id = l.id
+        LEFT JOIN public.executions e ON e.layer_id = l.id
         LEFT JOIN public.statuses stt ON stt.id = e.status_id
 
         WHERE st.status_name = \'en_cours\'
