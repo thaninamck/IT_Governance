@@ -10,6 +10,7 @@ use App\Repositories\V1\StepTestScriptRepository;
 use App\Services\NotificationService;
 use App\Services\V1\EvidenceService;
 use App\Services\V1\ExecutionService;
+use Mockery;
 use PHPUnit\Framework\MockObject\MockObject;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
@@ -53,6 +54,12 @@ class ExecutionServiceTest extends TestCase
         );
     }
     
+    protected function tearDown(): void
+{
+    Mockery::close();
+    parent::tearDown();
+}
+
     public function test_create_execution(): void
 {
     $executionData = [
@@ -221,6 +228,4 @@ public function test_create_execution_without_control_tester(): void
     $result = $this->service->createExecutions($data);
     $this->assertSame($fakeExecution, $result);
 }
-
-    
 }
