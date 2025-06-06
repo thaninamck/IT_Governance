@@ -52,7 +52,6 @@
     display: flex;
     align-items: center;
     justify-content: center;
-<<<<<<< HEAD
     font-size: 1.2rem;
     font-weight: bold;
     color: white;
@@ -75,14 +74,6 @@
     font-size: 1rem;
     color: white;
   }
-=======
-    font-size: 1.5rem;
-    font-weight:600;
-    color:var(--blue-menu) ;
-  }
-  
- 
->>>>>>> 1c6fee71b3b15b6cb77420da53a7d47a6b903f02
   
  
   
