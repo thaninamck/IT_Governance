@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="C:\Users\tmecherak\Desktop\IT_Governance\backend\phpunit.xml" tests="22" assertions="91" errors="3" failures="2" skipped="0" time="12.537045">
+    <testsuite name="Unit" tests="9" assertions="51" errors="0" failures="1" skipped="0" time="4.684432">
+      <testsuite name="Tests\Unit\AdminDashboardTest" file="C:\Users\tmecherak\Desktop\IT_Governance\backend\tests\Unit\AdminDashboardTest.php" tests="1" assertions="4" errors="0" failures="0" skipped="0" time="2.298886">
+        <testcase name="test_calculate_returns_correct_format" file="C:\Users\tmecherak\Desktop\IT_Governance\backend\tests\Unit\AdminDashboardTest.php" line="27" class="Tests\Unit\AdminDashboardTest" classname="Tests.Unit.AdminDashboardTest" assertions="4" time="2.298886"/>
+      </testsuite>
+      <testsuite name="Tests\Unit\ControlServiceTest" file="C:\Users\tmecherak\Desktop\IT_Governance\backend\tests\Unit\ControlServiceTest.php" tests="3" assertions="12" errors="0" failures="1" skipped="0" time="1.278755">
+        <testcase name="testCreateControlWithType" file="C:\Users\tmecherak\Desktop\IT_Governance\backend\tests\Unit\ControlServiceTest.php" line="50" class="Tests\Unit\ControlServiceTest" classname="Tests.Unit.ControlServiceTest" assertions="5" time="0.980575">
+          <failure type="PHPUnit\Framework\ExpectationFailedException">Tests\Unit\ControlServiceTest::testCreateControlWithType&#13;
+Expectation failed for method name is "sync" when invoked 1 time
+Parameter 0 for invocation Illuminate\Database\Eloquent\Relations\BelongsToMany::sync([], true) does not match expected value.
+Failed asserting that two arrays are equal.
+--- Expected
++++ Actual
+@@ @@
+ Array (
+-    0 =&gt; 1
+-    1 =&gt; 2
+ )
+&#13;
+C:\Users\tmecherak\Desktop\IT_Governance\backend\app\Services\V1\ControlService.php:198
+C:\Users\tmecherak\Desktop\IT_Governance\backend\tests\Unit\ControlServiceTest.php:122</failure>
+        </testcase>
+        <testcase name="testCreateControlWithoutTestScript" file="C:\Users\tmecherak\Desktop\IT_Governance\backend\tests\Unit\ControlServiceTest.php" line="141" class="Tests\Unit\ControlServiceTest" classname="Tests.Unit.ControlServiceTest" assertions="6" time="0.132158"/>
+        <testcase name="testCreateControlWithRepositoryException" file="C:\Users\tmecherak\Desktop\IT_Governance\backend\tests\Unit\ControlServiceTest.php" line="210" class="Tests\Unit\ControlServiceTest" classname="Tests.Unit.ControlServiceTest" assertions="1" time="0.166022"/>
+      </testsuite>
+      <testsuite name="Tests\Unit\ExampleTest" file="C:\Users\tmecherak\Desktop\IT_Governance\backend\tests\Unit\ExampleTest.php" tests="1" assertions="1" errors="0" failures="0" skipped="0" time="0.078363">
+        <testcase name="test_that_true_is_true" file="C:\Users\tmecherak\Desktop\IT_Governance\backend\tests\Unit\ExampleTest.php" line="12" class="Tests\Unit\ExampleTest" classname="Tests.Unit.ExampleTest" assertions="1" time="0.078363"/>
+      </testsuite>
+      <testsuite name="Tests\Unit\ExecutionServiceTest" file="C:\Users\tmecherak\Desktop\IT_Governance\backend\tests\Unit\ExecutionServiceTest.php" tests="3" assertions="22" errors="0" failures="0" skipped="0" time="0.976432">
+        <testcase name="test_create_execution" file="C:\Users\tmecherak\Desktop\IT_Governance\backend\tests\Unit\ExecutionServiceTest.php" line="63" class="Tests\Unit\ExecutionServiceTest" classname="Tests.Unit.ExecutionServiceTest" assertions="12" time="0.685163"/>
+        <testcase name="test_create_execution_with_unmodified_descriptions" file="C:\Users\tmecherak\Desktop\IT_Governance\backend\tests\Unit\ExecutionServiceTest.php" line="136" class="Tests\Unit\ExecutionServiceTest" classname="Tests.Unit.ExecutionServiceTest" assertions="6" time="0.142157"/>
+        <testcase name="test_create_execution_without_control_tester" file="C:\Users\tmecherak\Desktop\IT_Governance\backend\tests\Unit\ExecutionServiceTest.php" line="190" class="Tests\Unit\ExecutionServiceTest" classname="Tests.Unit.ExecutionServiceTest" assertions="4" time="0.149112"/>
+      </testsuite>
+      <testsuite name="Tests\Unit\ManagerReportCalculatorTest" file="C:\Users\tmecherak\Desktop\IT_Governance\backend\tests\Unit\ManagerReportCalculatorTest.php" tests="1" assertions="12" errors="0" failures="0" skipped="0" time="0.051997">
+        <testcase name="test_calculate" file="C:\Users\tmecherak\Desktop\IT_Governance\backend\tests\Unit\ManagerReportCalculatorTest.php" line="25" class="Tests\Unit\ManagerReportCalculatorTest" classname="Tests.Unit.ManagerReportCalculatorTest" assertions="12" time="0.051997"/>
+      </testsuite>
+    </testsuite>
+    <testsuite name="Feature" tests="13" assertions="40" errors="3" failures="1" skipped="0" time="7.852613">
+      <testsuite name="Tests\Feature\AdminDashboardTest" file="C:\Users\tmecherak\Desktop\IT_Governance\backend\tests\Feature\AdminDashboardTest.php" tests="1" assertions="4" errors="0" failures="0" skipped="0" time="1.184748">
+        <testcase name="test_integration_manager_report" file="C:\Users\tmecherak\Desktop\IT_Governance\backend\tests\Feature\AdminDashboardTest.php" line="20" class="Tests\Feature\AdminDashboardTest" classname="Tests.Feature.AdminDashboardTest" assertions="4" time="1.184748"/>
+      </testsuite>
+      <testsuite name="Tests\Unit\AuthControllerTest" file="C:\Users\tmecherak\Desktop\IT_Governance\backend\tests\Feature\AuthControllerTest.php" tests="5" assertions="23" errors="0" failures="1" skipped="0" time="2.312955">
+        <testcase name="it_requires_email_and_password_to_login" file="C:\Users\tmecherak\Desktop\IT_Governance\backend\tests\Feature\AuthControllerTest.php" line="27" class="Tests\Unit\AuthControllerTest" classname="Tests.Unit.AuthControllerTest" assertions="2" time="0.235083">
+          <failure type="PHPUnit\Framework\ExpectationFailedException">Tests\Unit\AuthControllerTest::it_requires_email_and_password_to_login&#13;
+Unable to find JSON: &#13;
+&#13;
+[{
+    "success": false,
+    "message": "Validation of data failed",
+    "data": {
+        "email": [
+            "The email field is required."
+        ],
+        "password": [
+            "The password field is required."
+        ],
+        "captchaValue": [
+            "The captcha value field is required."
+        ]
+    }
+}]&#13;
+&#13;
+within response JSON:&#13;
+&#13;
+[{
+    "success": false,
+    "message": "Validation of data failed",
+    "data": {
+        "email": [
+            "The email field is required."
+        ],
+        "password": [
+            "The password field is required."
+        ]
+    }
+}].&#13;
+&#13;
+
+Failed asserting that an array has the subset Array &amp;0 [
+    'success' =&gt; false,
+    'message' =&gt; 'Validation of data failed',
+    'data' =&gt; Array &amp;1 [
+        'email' =&gt; Array &amp;2 [
+            0 =&gt; 'The email field is required.',
+        ],
+        'password' =&gt; Array &amp;3 [
+            0 =&gt; 'The password field is required.',
+        ],
+        'captchaValue' =&gt; Array &amp;4 [
+            0 =&gt; 'The captcha value field is required.',
+        ],
+    ],
+].
+--- Expected
++++ Actual
+@@ @@
+     array (
+       0 =&gt; 'The password field is required.',
+     ),
+-    'captchaValue' =&gt; 
+-    array (
+-      0 =&gt; 'The captcha value field is required.',
+-    ),
+   ),
+ )
+&#13;
+C:\Users\tmecherak\Desktop\IT_Governance\backend\vendor\laravel\framework\src\Illuminate\Testing\Constraints\ArraySubset.php:81
+C:\Users\tmecherak\Desktop\IT_Governance\backend\vendor\laravel\framework\src\Illuminate\Testing\Assert.php:36
+C:\Users\tmecherak\Desktop\IT_Governance\backend\vendor\laravel\framework\src\Illuminate\Testing\AssertableJsonString.php:318
+C:\Users\tmecherak\Desktop\IT_Governance\backend\vendor\laravel\framework\src\Illuminate\Testing\TestResponse.php:750
+C:\Users\tmecherak\Desktop\IT_Governance\backend\tests\Feature\AuthControllerTest.php:31</failure>
+        </testcase>
+        <testcase name="it_logs_in_a_user_with_valid_credentials" file="C:\Users\tmecherak\Desktop\IT_Governance\backend\tests\Feature\AuthControllerTest.php" line="55" class="Tests\Unit\AuthControllerTest" classname="Tests.Unit.AuthControllerTest" assertions="14" time="1.032182"/>
+        <testcase name="it_fails_to_login_with_invalid_credentials" file="C:\Users\tmecherak\Desktop\IT_Governance\backend\tests\Feature\AuthControllerTest.php" line="94" class="Tests\Unit\AuthControllerTest" classname="Tests.Unit.AuthControllerTest" assertions="2" time="0.272663"/>
+        <testcase name="it_fails_to_login_a_blocked_user" file="C:\Users\tmecherak\Desktop\IT_Governance\backend\tests\Feature\AuthControllerTest.php" line="120" class="Tests\Unit\AuthControllerTest" classname="Tests.Unit.AuthControllerTest" assertions="2" time="0.103300"/>
+        <testcase name="test_it_logs_out_a_user" file="C:\Users\tmecherak\Desktop\IT_Governance\backend\tests\Feature\AuthControllerTest.php" line="152" class="Tests\Unit\AuthControllerTest" classname="Tests.Unit.AuthControllerTest" assertions="3" time="0.669728"/>
+      </testsuite>
+      <testsuite name="Tests\Feature\ControlServiceTest" file="C:\Users\tmecherak\Desktop\IT_Governance\backend\tests\Feature\ControlServiceTest.php" tests="2" assertions="8" errors="0" failures="0" skipped="0" time="0.712702">
+        <testcase name="test_it_creates_control_with_all_relations" file="C:\Users\tmecherak\Desktop\IT_Governance\backend\tests\Feature\ControlServiceTest.php" line="29" class="Tests\Feature\ControlServiceTest" classname="Tests.Feature.ControlServiceTest" assertions="6" time="0.437341"/>
+        <testcase name="testCreateControlWithoutTestScript" file="C:\Users\tmecherak\Desktop\IT_Governance\backend\tests\Feature\ControlServiceTest.php" line="71" class="Tests\Feature\ControlServiceTest" classname="Tests.Feature.ControlServiceTest" assertions="2" time="0.275361"/>
+      </testsuite>
+      <testsuite name="Tests\Feature\ExampleTest" file="C:\Users\tmecherak\Desktop\IT_Governance\backend\tests\Feature\ExampleTest.php" tests="1" assertions="1" errors="0" failures="0" skipped="0" time="2.649844">
+        <testcase name="test_the_application_returns_a_successful_response" file="C:\Users\tmecherak\Desktop\IT_Governance\backend\tests\Feature\ExampleTest.php" line="13" class="Tests\Feature\ExampleTest" classname="Tests.Feature.ExampleTest" assertions="1" time="2.649844"/>
+      </testsuite>
+      <testsuite name="Tests\Feature\ExecutionServiceTest" file="C:\Users\tmecherak\Desktop\IT_Governance\backend\tests\Feature\ExecutionServiceTest.php" tests="3" assertions="0" errors="3" failures="0" skipped="0" time="0.843961">
+        <testcase name="test_create_executions_integration" file="C:\Users\tmecherak\Desktop\IT_Governance\backend\tests\Feature\ExecutionServiceTest.php" line="20" class="Tests\Feature\ExecutionServiceTest" classname="Tests.Feature.ExecutionServiceTest" assertions="0" time="0.435212">
+          <error type="Illuminate\Database\QueryException">Tests\Feature\ExecutionServiceTest::test_create_executions_integration&#13;
+Illuminate\Database\QueryException: SQLSTATE[23502]: Not null violation: 7 ERREUR:  une valeur NULL viole la contrainte NOT NULL de la colonne « position_id » dans la relation « users »
+DETAIL:  La ligne en échec contient (5, Toubal, Karim, ulueilwitz@example.org, $2y$04$Iy/o7DEDHQx0XxER.4380ODaLchM3kT7te1lM/Uw7.K6Ctg31TMnq, 0, +1-214-568-3446, f, 1977-08-21 02:55:30, null, null, t, 2025-06-08 14:25:21, 2025-06-08 14:25:21, DFJebmq3MT). (Connection: pgsql, SQL: insert into "users" ("first_name", "last_name", "email", "password", "remember_token", "is_active", "phone_number", "last_activity", "position_id", "role", "updated_at", "created_at") values (Toubal, Karim, ulueilwitz@example.org, $2y$04$Iy/o7DEDHQx0XxER.4380ODaLchM3kT7te1lM/Uw7.K6Ctg31TMnq, DFJebmq3MT, 0, +1-214-568-3446, 1977-08-21 02:55:30, ?, 0, 2025-06-08 14:25:21, 2025-06-08 14:25:21) returning "id")
+&#13;
+C:\Users\tmecherak\Desktop\IT_Governance\backend\vendor\laravel\framework\src\Illuminate\Database\Connection.php:823
+C:\Users\tmecherak\Desktop\IT_Governance\backend\vendor\laravel\framework\src\Illuminate\Database\Connection.php:777
+C:\Users\tmecherak\Desktop\IT_Governance\backend\vendor\laravel\framework\src\Illuminate\Database\Connection.php:396
+C:\Users\tmecherak\Desktop\IT_Governance\backend\vendor\laravel\framework\src\Illuminate\Database\Connection.php:383
+C:\Users\tmecherak\Desktop\IT_Governance\backend\vendor\laravel\framework\src\Illuminate\Database\Query\Processors\PostgresProcessor.php:24
+C:\Users\tmecherak\Desktop\IT_Governance\backend\vendor\laravel\framework\src\Illuminate\Database\Query\Builder.php:3766
+C:\Users\tmecherak\Desktop\IT_Governance\backend\vendor\laravel\framework\src\Illuminate\Database\Eloquent\Builder.php:2140
+C:\Users\tmecherak\Desktop\IT_Governance\backend\vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1359
+C:\Users\tmecherak\Desktop\IT_Governance\backend\vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1324
+C:\Users\tmecherak\Desktop\IT_Governance\backend\vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1163
+C:\Users\tmecherak\Desktop\IT_Governance\backend\vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:352
+C:\Users\tmecherak\Desktop\IT_Governance\backend\vendor\laravel\framework\src\Illuminate\Collections\Traits\EnumeratesValues.php:261
+C:\Users\tmecherak\Desktop\IT_Governance\backend\vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:347
+C:\Users\tmecherak\Desktop\IT_Governance\backend\vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:303
+C:\Users\tmecherak\Desktop\IT_Governance\backend\tests\Feature\ExecutionServiceTest.php:25</error>
+        </testcase>
+        <testcase name="test_create_execution_with_unmodified_control_and_modified_risk" file="C:\Users\tmecherak\Desktop\IT_Governance\backend\tests\Feature\ExecutionServiceTest.php" line="68" class="Tests\Feature\ExecutionServiceTest" classname="Tests.Feature.ExecutionServiceTest" assertions="0" time="0.280604">
+          <error type="Illuminate\Database\QueryException">Tests\Feature\ExecutionServiceTest::test_create_execution_with_unmodified_control_and_modified_risk&#13;
+Illuminate\Database\QueryException: SQLSTATE[23502]: Not null violation: 7 ERREUR:  une valeur NULL viole la contrainte NOT NULL de la colonne « position_id » dans la relation « users »
+DETAIL:  La ligne en échec contient (6, Hafri, Sara, keith.mayer@example.net, $2y$04$Iy/o7DEDHQx0XxER.4380ODaLchM3kT7te1lM/Uw7.K6Ctg31TMnq, 0, (480) 944-1202, f, 1998-06-28 20:48:14, null, null, t, 2025-06-08 14:25:21, 2025-06-08 14:25:21, WBTvboS24E). (Connection: pgsql, SQL: insert into "users" ("first_name", "last_name", "email", "password", "remember_token", "is_active", "phone_number", "last_activity", "position_id", "role", "updated_at", "created_at") values (Hafri, Sara, keith.mayer@example.net, $2y$04$Iy/o7DEDHQx0XxER.4380ODaLchM3kT7te1lM/Uw7.K6Ctg31TMnq, WBTvboS24E, 0, (480) 944-1202, 1998-06-28 20:48:14, ?, 0, 2025-06-08 14:25:21, 2025-06-08 14:25:21) returning "id")
+&#13;
+C:\Users\tmecherak\Desktop\IT_Governance\backend\vendor\laravel\framework\src\Illuminate\Database\Connection.php:823
+C:\Users\tmecherak\Desktop\IT_Governance\backend\vendor\laravel\framework\src\Illuminate\Database\Connection.php:777
+C:\Users\tmecherak\Desktop\IT_Governance\backend\vendor\laravel\framework\src\Illuminate\Database\Connection.php:396
+C:\Users\tmecherak\Desktop\IT_Governance\backend\vendor\laravel\framework\src\Illuminate\Database\Connection.php:383
+C:\Users\tmecherak\Desktop\IT_Governance\backend\vendor\laravel\framework\src\Illuminate\Database\Query\Processors\PostgresProcessor.php:24
+C:\Users\tmecherak\Desktop\IT_Governance\backend\vendor\laravel\framework\src\Illuminate\Database\Query\Builder.php:3766
+C:\Users\tmecherak\Desktop\IT_Governance\backend\vendor\laravel\framework\src\Illuminate\Database\Eloquent\Builder.php:2140
+C:\Users\tmecherak\Desktop\IT_Governance\backend\vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1359
+C:\Users\tmecherak\Desktop\IT_Governance\backend\vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1324
+C:\Users\tmecherak\Desktop\IT_Governance\backend\vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1163
+C:\Users\tmecherak\Desktop\IT_Governance\backend\vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:352
+C:\Users\tmecherak\Desktop\IT_Governance\backend\vendor\laravel\framework\src\Illuminate\Collections\Traits\EnumeratesValues.php:261
+C:\Users\tmecherak\Desktop\IT_Governance\backend\vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:347
+C:\Users\tmecherak\Desktop\IT_Governance\backend\vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:303
+C:\Users\tmecherak\Desktop\IT_Governance\backend\tests\Feature\ExecutionServiceTest.php:72</error>
+        </testcase>
+        <testcase name="test_create_execution_with_no_modifications" file="C:\Users\tmecherak\Desktop\IT_Governance\backend\tests\Feature\ExecutionServiceTest.php" line="109" class="Tests\Feature\ExecutionServiceTest" classname="Tests.Feature.ExecutionServiceTest" assertions="0" time="0.128145">
+          <error type="Illuminate\Database\QueryException">Tests\Feature\ExecutionServiceTest::test_create_execution_with_no_modifications&#13;
+Illuminate\Database\QueryException: SQLSTATE[23502]: Not null violation: 7 ERREUR:  une valeur NULL viole la contrainte NOT NULL de la colonne « position_id » dans la relation « users »
+DETAIL:  La ligne en échec contient (7, Ouakli, Sif Ali, edythe50@example.org, $2y$04$Iy/o7DEDHQx0XxER.4380ODaLchM3kT7te1lM/Uw7.K6Ctg31TMnq, 0, 1-251-702-3350, t, 2004-01-07 06:29:02, null, null, t, 2025-06-08 14:25:21, 2025-06-08 14:25:21, 7zxtsfa7IB). (Connection: pgsql, SQL: insert into "users" ("first_name", "last_name", "email", "password", "remember_token", "is_active", "phone_number", "last_activity", "position_id", "role", "updated_at", "created_at") values (Ouakli, Sif Ali, edythe50@example.org, $2y$04$Iy/o7DEDHQx0XxER.4380ODaLchM3kT7te1lM/Uw7.K6Ctg31TMnq, 7zxtsfa7IB, 1, 1-251-702-3350, 2004-01-07 06:29:02, ?, 0, 2025-06-08 14:25:21, 2025-06-08 14:25:21) returning "id")
+&#13;
+C:\Users\tmecherak\Desktop\IT_Governance\backend\vendor\laravel\framework\src\Illuminate\Database\Connection.php:823
+C:\Users\tmecherak\Desktop\IT_Governance\backend\vendor\laravel\framework\src\Illuminate\Database\Connection.php:777
+C:\Users\tmecherak\Desktop\IT_Governance\backend\vendor\laravel\framework\src\Illuminate\Database\Connection.php:396
+C:\Users\tmecherak\Desktop\IT_Governance\backend\vendor\laravel\framework\src\Illuminate\Database\Connection.php:383
+C:\Users\tmecherak\Desktop\IT_Governance\backend\vendor\laravel\framework\src\Illuminate\Database\Query\Processors\PostgresProcessor.php:24
+C:\Users\tmecherak\Desktop\IT_Governance\backend\vendor\laravel\framework\src\Illuminate\Database\Query\Builder.php:3766
+C:\Users\tmecherak\Desktop\IT_Governance\backend\vendor\laravel\framework\src\Illuminate\Database\Eloquent\Builder.php:2140
+C:\Users\tmecherak\Desktop\IT_Governance\backend\vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1359
+C:\Users\tmecherak\Desktop\IT_Governance\backend\vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1324
+C:\Users\tmecherak\Desktop\IT_Governance\backend\vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1163
+C:\Users\tmecherak\Desktop\IT_Governance\backend\vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:352
+C:\Users\tmecherak\Desktop\IT_Governance\backend\vendor\laravel\framework\src\Illuminate\Collections\Traits\EnumeratesValues.php:261
+C:\Users\tmecherak\Desktop\IT_Governance\backend\vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:347
+C:\Users\tmecherak\Desktop\IT_Governance\backend\vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:303
+C:\Users\tmecherak\Desktop\IT_Governance\backend\tests\Feature\ExecutionServiceTest.php:113</error>
+        </testcase>
+      </testsuite>
+      <testsuite name="Tests\Feature\ManagerReportTest" file="C:\Users\tmecherak\Desktop\IT_Governance\backend\tests\Feature\ManagerReportTest.php" tests="1" assertions="4" errors="0" failures="0" skipped="0" time="0.148403">
+        <testcase name="test_integration_manager_report" file="C:\Users\tmecherak\Desktop\IT_Governance\backend\tests\Feature\ManagerReportTest.php" line="21" class="Tests\Feature\ManagerReportTest" classname="Tests.Feature.ManagerReportTest" assertions="4" time="0.148403"/>
+      </testsuite>
+    </testsuite>
+  </testsuite>
+</testsuites>

@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Models\Control;
 use App\Models\Layer;
 use App\Models\Mission;
+use App\Models\Position;
 use App\Models\Risk;
 use App\Models\System;
 use App\Models\User;
@@ -22,8 +23,10 @@ class ExecutionServiceTest extends TestCase
         // Création des entités nécessaires
         $system = System::factory()->create();
         $layer = Layer::factory()->create(['system_id' => $system->id]);
-        $controlTester = User::factory()->create();
-        $controlOwner =User::factory()->create();
+        $position = Position::factory()->create();
+        $controlTester = User::factory()->create(
+            ['position_id' => $position->id]
+        );        $controlOwner =User::factory()->create();
         $riskOwner = User::factory()->create();
         $control = Control::factory()->create();
         $risk = Risk::factory()->create();
@@ -69,7 +72,10 @@ class ExecutionServiceTest extends TestCase
 {
     $system = System::factory()->create();
     $layer = Layer::factory()->create(['system_id' => $system->id]);
-    $controlTester = User::factory()->create();
+    $position = Position::factory()->create();
+    $controlTester = User::factory()->create(
+        ['position_id' => $position->id]
+    );
     $controlOwner = User::factory()->create();
     $riskOwner = User::factory()->create();
     $control = Control::factory()->create();
@@ -110,8 +116,10 @@ public function test_create_execution_with_no_modifications(): void
 {
     $system = System::factory()->create();
     $layer = Layer::factory()->create(['system_id' => $system->id]);
-    $controlTester = User::factory()->create();
-    $controlOwner = User::factory()->create();
+    $position = Position::factory()->create();
+    $controlTester = User::factory()->create(
+        ['position_id' => $position->id]
+    );    $controlOwner = User::factory()->create();
     $riskOwner = User::factory()->create();
     $control = Control::factory()->create();
     $risk = Risk::factory()->create();

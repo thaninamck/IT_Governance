@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="C:\Users\tmecherak\Desktop\IT_Governance\backend\phpunit.xml" tests="22" assertions="102" errors="0" failures="0" skipped="0" time="25.053731">
+    <testsuite name="Unit" tests="9" assertions="56" errors="0" failures="0" skipped="0" time="7.830872">
+      <testsuite name="Tests\Unit\AdminDashboardTest" file="C:\Users\tmecherak\Desktop\IT_Governance\backend\tests\Unit\AdminDashboardTest.php" tests="1" assertions="4" errors="0" failures="0" skipped="0" time="3.445606">
+        <testcase name="test_calculate_returns_correct_format" file="C:\Users\tmecherak\Desktop\IT_Governance\backend\tests\Unit\AdminDashboardTest.php" line="27" class="Tests\Unit\AdminDashboardTest" classname="Tests.Unit.AdminDashboardTest" assertions="4" time="3.445606"/>
+      </testsuite>
+      <testsuite name="Tests\Unit\ControlServiceTest" file="C:\Users\tmecherak\Desktop\IT_Governance\backend\tests\Unit\ControlServiceTest.php" tests="3" assertions="17" errors="0" failures="0" skipped="0" time="3.269803">
+        <testcase name="testCreateControlWithType" file="C:\Users\tmecherak\Desktop\IT_Governance\backend\tests\Unit\ControlServiceTest.php" line="50" class="Tests\Unit\ControlServiceTest" classname="Tests.Unit.ControlServiceTest" assertions="10" time="3.048005"/>
+        <testcase name="testCreateControlWithoutTestScript" file="C:\Users\tmecherak\Desktop\IT_Governance\backend\tests\Unit\ControlServiceTest.php" line="141" class="Tests\Unit\ControlServiceTest" classname="Tests.Unit.ControlServiceTest" assertions="6" time="0.025198"/>
+        <testcase name="testCreateControlWithRepositoryException" file="C:\Users\tmecherak\Desktop\IT_Governance\backend\tests\Unit\ControlServiceTest.php" line="210" class="Tests\Unit\ControlServiceTest" classname="Tests.Unit.ControlServiceTest" assertions="1" time="0.196600"/>
+      </testsuite>
+      <testsuite name="Tests\Unit\ExampleTest" file="C:\Users\tmecherak\Desktop\IT_Governance\backend\tests\Unit\ExampleTest.php" tests="1" assertions="1" errors="0" failures="0" skipped="0" time="0.069106">
+        <testcase name="test_that_true_is_true" file="C:\Users\tmecherak\Desktop\IT_Governance\backend\tests\Unit\ExampleTest.php" line="12" class="Tests\Unit\ExampleTest" classname="Tests.Unit.ExampleTest" assertions="1" time="0.069106"/>
+      </testsuite>
+      <testsuite name="Tests\Unit\ExecutionServiceTest" file="C:\Users\tmecherak\Desktop\IT_Governance\backend\tests\Unit\ExecutionServiceTest.php" tests="3" assertions="22" errors="0" failures="0" skipped="0" time="0.980965">
+        <testcase name="test_create_execution" file="C:\Users\tmecherak\Desktop\IT_Governance\backend\tests\Unit\ExecutionServiceTest.php" line="63" class="Tests\Unit\ExecutionServiceTest" classname="Tests.Unit.ExecutionServiceTest" assertions="12" time="0.653183"/>
+        <testcase name="test_create_execution_with_unmodified_descriptions" file="C:\Users\tmecherak\Desktop\IT_Governance\backend\tests\Unit\ExecutionServiceTest.php" line="136" class="Tests\Unit\ExecutionServiceTest" classname="Tests.Unit.ExecutionServiceTest" assertions="6" time="0.111798"/>
+        <testcase name="test_create_execution_without_control_tester" file="C:\Users\tmecherak\Desktop\IT_Governance\backend\tests\Unit\ExecutionServiceTest.php" line="190" class="Tests\Unit\ExecutionServiceTest" classname="Tests.Unit.ExecutionServiceTest" assertions="4" time="0.215984"/>
+      </testsuite>
+      <testsuite name="Tests\Unit\ManagerReportCalculatorTest" file="C:\Users\tmecherak\Desktop\IT_Governance\backend\tests\Unit\ManagerReportCalculatorTest.php" tests="1" assertions="12" errors="0" failures="0" skipped="0" time="0.065392">
+        <testcase name="test_calculate" file="C:\Users\tmecherak\Desktop\IT_Governance\backend\tests\Unit\ManagerReportCalculatorTest.php" line="25" class="Tests\Unit\ManagerReportCalculatorTest" classname="Tests.Unit.ManagerReportCalculatorTest" assertions="12" time="0.065392"/>
+      </testsuite>
+    </testsuite>
+    <testsuite name="Feature" tests="13" assertions="46" errors="0" failures="0" skipped="0" time="17.222859">
+      <testsuite name="Tests\Feature\AdminDashboardTest" file="C:\Users\tmecherak\Desktop\IT_Governance\backend\tests\Feature\AdminDashboardTest.php" tests="1" assertions="4" errors="0" failures="0" skipped="0" time="6.685185">
+        <testcase name="test_integration_manager_report" file="C:\Users\tmecherak\Desktop\IT_Governance\backend\tests\Feature\AdminDashboardTest.php" line="20" class="Tests\Feature\AdminDashboardTest" classname="Tests.Feature.AdminDashboardTest" assertions="4" time="6.685185"/>
+      </testsuite>
+      <testsuite name="Tests\Unit\AuthControllerTest" file="C:\Users\tmecherak\Desktop\IT_Governance\backend\tests\Feature\AuthControllerTest.php" tests="5" assertions="23" errors="0" failures="0" skipped="0" time="5.780673">
+        <testcase name="it_requires_email_and_password_to_login" file="C:\Users\tmecherak\Desktop\IT_Governance\backend\tests\Feature\AuthControllerTest.php" line="27" class="Tests\Unit\AuthControllerTest" classname="Tests.Unit.AuthControllerTest" assertions="2" time="3.580809"/>
+        <testcase name="it_logs_in_a_user_with_valid_credentials" file="C:\Users\tmecherak\Desktop\IT_Governance\backend\tests\Feature\AuthControllerTest.php" line="55" class="Tests\Unit\AuthControllerTest" classname="Tests.Unit.AuthControllerTest" assertions="14" time="1.528589"/>
+        <testcase name="it_fails_to_login_with_invalid_credentials" file="C:\Users\tmecherak\Desktop\IT_Governance\backend\tests\Feature\AuthControllerTest.php" line="94" class="Tests\Unit\AuthControllerTest" classname="Tests.Unit.AuthControllerTest" assertions="2" time="0.105863"/>
+        <testcase name="it_fails_to_login_a_blocked_user" file="C:\Users\tmecherak\Desktop\IT_Governance\backend\tests\Feature\AuthControllerTest.php" line="120" class="Tests\Unit\AuthControllerTest" classname="Tests.Unit.AuthControllerTest" assertions="2" time="0.115500"/>
+        <testcase name="test_it_logs_out_a_user" file="C:\Users\tmecherak\Desktop\IT_Governance\backend\tests\Feature\AuthControllerTest.php" line="152" class="Tests\Unit\AuthControllerTest" classname="Tests.Unit.AuthControllerTest" assertions="3" time="0.449911"/>
+      </testsuite>
+      <testsuite name="Tests\Feature\ControlServiceTest" file="C:\Users\tmecherak\Desktop\IT_Governance\backend\tests\Feature\ControlServiceTest.php" tests="2" assertions="8" errors="0" failures="0" skipped="0" time="0.439763">
+        <testcase name="test_it_creates_control_with_all_relations" file="C:\Users\tmecherak\Desktop\IT_Governance\backend\tests\Feature\ControlServiceTest.php" line="29" class="Tests\Feature\ControlServiceTest" classname="Tests.Feature.ControlServiceTest" assertions="6" time="0.314162"/>
+        <testcase name="testCreateControlWithoutTestScript" file="C:\Users\tmecherak\Desktop\IT_Governance\backend\tests\Feature\ControlServiceTest.php" line="71" class="Tests\Feature\ControlServiceTest" classname="Tests.Feature.ControlServiceTest" assertions="2" time="0.125601"/>
+      </testsuite>
+      <testsuite name="Tests\Feature\ExampleTest" file="C:\Users\tmecherak\Desktop\IT_Governance\backend\tests\Feature\ExampleTest.php" tests="1" assertions="1" errors="0" failures="0" skipped="0" time="1.820870">
+        <testcase name="test_the_application_returns_a_successful_response" file="C:\Users\tmecherak\Desktop\IT_Governance\backend\tests\Feature\ExampleTest.php" line="13" class="Tests\Feature\ExampleTest" classname="Tests.Feature.ExampleTest" assertions="1" time="1.820870"/>
+      </testsuite>
+      <testsuite name="Tests\Feature\ExecutionServiceTest" file="C:\Users\tmecherak\Desktop\IT_Governance\backend\tests\Feature\ExecutionServiceTest.php" tests="3" assertions="6" errors="0" failures="0" skipped="0" time="2.369730">
+        <testcase name="test_create_executions_integration" file="C:\Users\tmecherak\Desktop\IT_Governance\backend\tests\Feature\ExecutionServiceTest.php" line="21" class="Tests\Feature\ExecutionServiceTest" classname="Tests.Feature.ExecutionServiceTest" assertions="2" time="2.049880"/>
+        <testcase name="test_create_execution_with_unmodified_control_and_modified_risk" file="C:\Users\tmecherak\Desktop\IT_Governance\backend\tests\Feature\ExecutionServiceTest.php" line="71" class="Tests\Feature\ExecutionServiceTest" classname="Tests.Feature.ExecutionServiceTest" assertions="2" time="0.153535"/>
+        <testcase name="test_create_execution_with_no_modifications" file="C:\Users\tmecherak\Desktop\IT_Governance\backend\tests\Feature\ExecutionServiceTest.php" line="115" class="Tests\Feature\ExecutionServiceTest" classname="Tests.Feature.ExecutionServiceTest" assertions="2" time="0.166315"/>
+      </testsuite>
+      <testsuite name="Tests\Feature\ManagerReportTest" file="C:\Users\tmecherak\Desktop\IT_Governance\backend\tests\Feature\ManagerReportTest.php" tests="1" assertions="4" errors="0" failures="0" skipped="0" time="0.126638">
+        <testcase name="test_integration_manager_report" file="C:\Users\tmecherak\Desktop\IT_Governance\backend\tests\Feature\ManagerReportTest.php" line="21" class="Tests\Feature\ManagerReportTest" classname="Tests.Feature.ManagerReportTest" assertions="4" time="0.126638"/>
+      </testsuite>
+    </testsuite>
+  </testsuite>
+</testsuites>

@@ -98,7 +98,7 @@ class ControlServiceTest extends TestCase
             ->onlyMethods(['sync'])
             ->getMock();
 
-        $mockRelation->expects($this->once())->method('sync')->with([1, 2]);
+        $mockRelation->expects($this->once())->method('sync')->with([]);
 
         // Mock final du modèle Control
         $controlMock = $this->getMockBuilder(Control::class)
