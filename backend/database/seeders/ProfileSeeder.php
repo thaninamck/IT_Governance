@@ -12,6 +12,9 @@ class ProfileSeeder extends Seeder
      */
     public function run(): void
     {
-        Profile::factory()->count(3)->create();
-    }
+        $profiles = ['testeur', 'superviseur', 'manageur'];
+
+        foreach ($profiles as $name) {
+            Profile::create(['profile_name' => $name]);
+        }    }
 }
