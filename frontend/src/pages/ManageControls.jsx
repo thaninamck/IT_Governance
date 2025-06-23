@@ -25,6 +25,7 @@ import AddControlForm from "../components/Forms/AddControleForm";
 
 import DecisionPopUp from "../components/PopUps/DecisionPopUp";
 import { useAuth } from "../Context/AuthContext";
+import ExportButton from "../components/ExportButton";
 const ManageControls = () => {
   const { user } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
@@ -702,6 +703,13 @@ const formatRisksData = (data) => {
                       Supprimer
                     </Button>
                   )}
+                     
+          <ExportButton
+            rowsData={risksData}
+            columns={riskColumnsConfig}
+            fileName="risques"
+          />
+        
                   {isFormOpen && (
                     <AddRisqueForm
                       title="Ajouter un nouveau risque"
@@ -794,6 +802,11 @@ const formatRisksData = (data) => {
                       Supprimer
                     </Button>
                   )}
+                   <ExportButton
+            rowsData={controlsData}
+            columns={controlColumnsConfig}
+            fileName="controles"
+          />
                 </div>
 
                 <div
