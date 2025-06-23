@@ -134,13 +134,12 @@ console.log("userssssssssssssss",response.data)
         await api.post(`/reset-user`, selectedUserToReset);
         //await api.post(`/reset-user/${selectedAppId}`);
         // 🔹 Envoi du mail avec le nouveau mot de passe
-        await emailjs.send(
-          "service_qm58mng",
-          "template_g520ynb",
+        await  emailjs.send(
+          "service_5gbh03k",
+          "template_lq4laio",
           { email: selectedUserToReset.email, password: selectedUserToReset.new_password },
-          "jhF4FXcRjk6PSE78R"
+          "BTjaihQ7JDUofn8e2"
         );
-
         setFilteredRows((prevRows) =>
           prevRows.map((row) =>
             row.id === selectedAppId ? { ...row, password: newPassword } : row
