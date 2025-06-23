@@ -92,6 +92,7 @@ class AuthController extends BaseController
             $rules = [
                 'email' => 'required|email',
                 'password' => 'required',
+                // 'captchaValue' => 'required',
             ];
             
             $messages = [];
@@ -113,10 +114,10 @@ class AuthController extends BaseController
             }
             
 
-             //$recaptchaData = $this->recaptchaService->verify($request);
-             //if (!$recaptchaData) {
-             //return $this->sendError("Recaptcha verification failed", ["recaptcha" => ["Invalid reCAPTCHA response"]]);
-             //}
+            //  $recaptchaData = $this->recaptchaService->verify($request);
+            //  if (!$recaptchaData) {
+            //  return $this->sendError("Recaptcha verification failed", ["recaptcha" => ["Invalid reCAPTCHA response"]]);
+            //  }
 
             $user = User::where('email', $request->email)->first();
             if (!$user || !Hash::check($request->password, $user->password)) {
@@ -135,7 +136,7 @@ class AuthController extends BaseController
                 'token' => $accessToken,
                 'user' => new UserResource($user),
                 'must_change_password' => $user->must_change_password
-            ], 'Logged in successfully!');
+            ], 'Logged in successfully!',200);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,

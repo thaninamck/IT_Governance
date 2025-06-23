@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { authApi, api,fileApi } from "../Api"; // Importer l'instance Axios pour les requêtes authentifiées
 import { toast } from "react-toastify";
 import { useRef, useEffect } from "react";
-
+import { useLocation } from "react-router-dom";
 
 const AuthContext = createContext(null);
 
@@ -57,35 +57,32 @@ export const AuthProvider = ({ children }) => {
   //   }
       
   // }, [navigate]);
+  const location = useLocation(); // ✔️ Appelé en dehors de useEffect
 
   useEffect(() => {
     const token = getCurrentToken();
     const expiry = localStorage.getItem("token_expiry");
     const storedUser = localStorage.getItem("User");
   
+    const publicPaths = [
+      "/changePw", "/pw", "/otp", "/changePWForm",
+      "/stepEmailForm", "/stepVerificationCode", "/stepNewPassword",
+      "/firstconnection"
+    ];
+    const isPublicPath = publicPaths.includes(location.pathname);
+  
     if (token && expiry && new Date().getTime() < parseInt(expiry)) {
       if (storedUser) {
         setUser(JSON.parse(storedUser));
-      } else {
-        // Si pas d'utilisateur stocké mais token valide, on fetch les infos
-        // fetchUser().catch(() => {
-        //   // En cas d'erreur, on déconnecte
-        //   localStorage.removeItem("token");
-        //   localStorage.removeItem("token_expiry");
-        //   localStorage.removeItem("user");
-        //   setUser(null);
-        //   navigate("/login");
-        // });
       }
     } else {
-      // Token invalide ou expiré
       localStorage.removeItem("token");
       localStorage.removeItem("token_expiry");
       localStorage.removeItem("User");
       setUser(null);
-      navigate("/login");
+      if (!isPublicPath) navigate("/login");
     }
-  }, [navigate]);
+  }, [navigate, location.pathname]); // 🔁 Ajoute location.pathname ici
   const loginUser = async (credentials) => {
     setLoading(true);
     setError(null);

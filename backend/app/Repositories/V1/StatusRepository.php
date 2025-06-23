@@ -8,7 +8,7 @@ class StatusRepository
 {
     public function getExecutionStatusOptions()
     {
-        return Status::where('entity', 'control')
+        return Status::where('entity', 'execution')
                      ->select('id', 'status_name')
                      ->get();
     }

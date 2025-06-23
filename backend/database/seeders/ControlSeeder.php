@@ -18,7 +18,7 @@ class ControlSeeder extends Seeder
         }
 
         Control::factory()
-            ->count(4)
+            ->count(300)
             ->create()
             ->each(function (Control $control) {
                 for ($i = 1; $i <= rand(1, 4); $i++) {

@@ -2,6 +2,8 @@
 
 namespace Tests\Unit;
 
+use App\Models\Position;
+use Log;
 use Tests\TestCase;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
@@ -52,16 +54,22 @@ class AuthControllerTest extends TestCase
     #[Test]
     public function it_logs_in_a_user_with_valid_credentials()
     {
+        $this->withoutExceptionHandling();
+        $position=Position::factory()->create();
         $user = User::factory()->create([
             'password' => Hash::make('password123'),
+            'position_id' => $position->id,
+            'is_active' => true,
+            'must_change_password' => false,
         ]);
 
-        $this->postJson('/api/login', [
+        $response=$this->postJson('/api/login', [
             'email' => $user->email,
             'password' => 'password123',
             'captchaValue' => 'fake-value'
-        ])
-        ->assertStatus(200)
+        ]);
+       
+        $response->assertStatus(200)
         ->assertJsonStructure([
             'token',
             'user' => [
@@ -70,7 +78,7 @@ class AuthControllerTest extends TestCase
                 'lastName',
                 'email',
                 'phoneNumber',
-                'grade',
+                'position' ,
                 'role',
                 'lastActivity',
                 'isActive',
@@ -85,29 +93,70 @@ class AuthControllerTest extends TestCase
     #[Test]
     public function it_fails_to_login_with_invalid_credentials()
 {
-    $user = User::factory()->create([
-        'password' => Hash::make('password123'),
-    ]);
+    $position=Position::factory()->create();
+        $user = User::factory()->create([
+            'password' => Hash::make('password123'),
+            'position_id' => $position->id, 
+            'is_active' => true,
+            'must_change_password' => false,
+        ]);
 
-    $this->postJson('/api/login', [
+    $response=$this->postJson('/api/login', [
         'email' => $user->email,
         'password' => 'wrongpassword',
         'captchaValue' => 'fake-value'
-    ])
-    ->assertStatus(401) 
+    ]);
+    Log::info('Response: ', ['response' => $response->json()]);
+   $response ->assertStatus(401) 
     ->assertJson([
         'success' => false,
         'message' => 'Incorrect data',
         
     ]);
+    Log::info('Response: ', ['response' => $response->json()]);
 }
 
+#[Test]
+public function it_fails_to_login_a_blocked_user()
+{
+    $position=Position::factory()->create();
+        $user = User::factory()->create([
+            'password' => Hash::make('password123'),
+            'position_id' => $position->id, 
+            'is_active' => false,
+            'must_change_password' => false,
+        ]);
+
+    $response=$this->postJson('/api/login', [
+        'email' => $user->email,
+'password' => 'password123',
+        'captchaValue' => 'fake-value'
+    ]);
+Log::info('Response: ', ['response' => $response->json()]);
+    $response->assertStatus(403)
+    
+    ->assertJson([
+        'success' => false,
+        'message' => 'User Blocked',
+        'data' => [
+            'Blocked' => [
+                'this user is blocked temporarelly please wait until the admin unblocks you',
+            ],
+        ],
+    ]);
+
+
+}
 
     #[Test]
     public function test_it_logs_out_a_user()
 {
     
-    $user = User::factory()->create();
+    $position=Position::factory()->create();
+    $user = User::factory()->create([
+        'password' => Hash::make('password123'),
+        'position_id' => $position->id, 
+    ]);
 
     //  Simuler une connexion
     $this->actingAs($user);

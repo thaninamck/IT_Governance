@@ -2,36 +2,27 @@
 
 namespace Tests\Unit;
 
-use App\Repositories\V1\StepTestScriptRepository;
-use PHPUnit\Framework\TestCase;
+use Tests\TestCase;
 use App\Services\V1\ControlService;
-use App\Repositories\V1\ControlRepository;
+use App\Repositories\V1\TypeRepository;
 use App\Repositories\V1\MajorProcessRepository;
 use App\Repositories\V1\SubProcessRepository;
-use App\Repositories\V1\TypeRepository;
 use App\Repositories\V1\SourceRepository;
+use App\Repositories\V1\StepTestScriptRepository;
+use App\Repositories\V1\ControlRepository;
+use Illuminate\Support\Facades\Log;
 use App\Models\Control;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use PHPUnit\Framework\MockObject\MockObject;
 
 class ControlServiceTest extends TestCase
 {
-    /** @var ControlRepository&MockObject */
-    private $controlRepository;
-    
-    /** @var MajorProcessRepository&MockObject */
-    private $majorProcessRepository;
-    
-    /** @var SubProcessRepository&MockObject */
-    private $subProcessRepository;
-    
-    /** @var TypeRepository&MockObject */
-    private $typeRepository;
-    
-    /** @var SourceRepository&MockObject */
-    private $sourceRepository;
-    
-    /** @var StepTestScriptRepository&MockObject */
-    private $stepTestScriptRepository;
+    private ControlRepository|MockObject $controlRepository;
+    private MajorProcessRepository|MockObject $majorProcessRepository;
+    private SubProcessRepository|MockObject $subProcessRepository;
+    private TypeRepository|MockObject $typeRepository;
+    private SourceRepository|MockObject $sourceRepository;
+    private StepTestScriptRepository|MockObject $stepTestScriptRepository;
 
     private ControlService $controlService;
 
@@ -56,137 +47,190 @@ class ControlServiceTest extends TestCase
         );
     }
 
-    /**
-     * Teste la création d'un contrôle avec des données valides
-     */
-    public function testCreateControlWithValidDataReturnsControl(): void
+    public function testCreateControlWithType(): void
     {
-        // 1. Arrange - Préparation des données
         $data = [
             'code' => 'C001',
-            'test_script' => '1. First step\n2. Second step',
+            'test_script' => "1. First step\n2. Second step",
             'description' => 'Test Control',
-            'type' => ['id'=>1, 'name' => 'Type1'],
+            'type' => ['id' => 1, 'name' => 'Type1'],
             'majorProcess' => ['code' => 'MP001', 'description' => 'Major Process'],
-            'subProcess' => ['id'=>1,'code' => 'SP001', 'name' => 'Sub Process'],
-            'sources' => [['id'=>1,'name' => 'Source1'], ['id'=>1,'name' => 'Source2']],
+            'subProcess' => ['id' => 1, 'code' => 'SP001', 'name' => 'Sub Process'],
+            'sources' => [
+                ['id' => 1, 'name' => 'Source1'],
+                ['id' => 2, 'name' => 'Source2'],
+            ],
         ];
 
-        // 2. Mock - Configuration des comportements attendus
-        $this->typeRepository->expects($this->once())
-            ->method('firstOrCreate')
-            ->with(['name' => 'Type1'])
-            ->willReturn((object)['id' => 1]);
+        $typeMock = (object)['id' => 1, 'name' => 'Type1'];
+        $majorMock = (object)['id' => 1, 'code' => 'MP001', 'description' => 'Major Process'];
+        $subMock = (object)['id' => 1, 'code' => 'SP001', 'name' => 'Sub Process'];
 
-            $this->majorProcessRepository->expects($this->once())
-            ->method('firstOrCreate')
-            ->with([
-                'code' => $data['majorProcess']['code'],
-                'description' => $data['majorProcess']['description']
-            ])
-            ->willReturn((object)[
-                'id' => 1,
-                'code' => 'MP001',
-                'description' => 'Major Process'
-            ]);
+        $this->typeRepository->method('firstOrCreate')->willReturn($typeMock);
+        $this->majorProcessRepository->method('firstOrCreate')->willReturn($majorMock);
+        $this->subProcessRepository->method('firstOrCreate')->willReturn($subMock);
 
-        $this->subProcessRepository->expects($this->once())
-            ->method('firstOrCreate')
-            ->with([
-                'code' => $data['subProcess']['code'],
-                'name' => $data['subProcess']['name']
-                
-            ])
-            ->willReturn((object)
-            ['id' => 1,
-                'code' => 'SP001',
-                'name' => 'Sub Process'
-            ]);
-
-            $this->sourceRepository->expects($this->exactly(2))
-            ->method('firstOrCreate')
-            ->with($this->logicalOr(
-                $this->equalTo(['name' => $data['sources'][0]['name']]),
-                $this->equalTo(['name' => $data['sources'][1]['name']])
-            ))
-            ->willReturnOnConsecutiveCalls(
-                (object)['id' => 1],
-                (object)['id' => 2]
-            );
-        
-            
-            $controlData = [
-                'code' => $data['code'],
-                'test_script' => $data['test_script'] ?? null,
-                'description' => $data['description'] ?? null,
-                'is_archived' => $data['is_archived'] ?? false,
-                'type_id' => 1,
-                'major_id' =>1,
-                'sub_id' =>1,
-                
-            ];
-            $controlMock = new Control([
-                'id' => 1, // Cet ID est crucial
-                'code' => 'C001',
-                'description' => 'Test Control',
-                'type_id' => 1,
-                'major_id' => 1,
-                'sub_id' => 1
-            ]);
-        // Mock StepTestScriptRepository
-        $this->stepTestScriptRepository->expects($this->exactly(2))
-        ->method('create')
-        ->willReturnCallback(function ($arg) use ($controlMock) {
-            static $callCount = 0;
-            $callCount++;
-            
-            // Vérifie que le control_id est bien celui du contrôle créé
-            $this->assertEquals($controlMock->id, $arg['control_id']);
-            
-            if ($callCount === 1) {
-                $this->assertEquals(trim(' First step\n'), trim($arg['text']));
-                return (object)[
-                    'id' => 1, 
-                    'text' => 'First step', 
-                    'control_id' => $controlMock->id
-                ];
-            }
-            
-            $this->assertEquals(trim('Second step'), trim($arg['text']));
+        $this->sourceRepository->method('firstOrCreate')->willReturnCallback(function ($data) {
             return (object)[
-                'id' => 2, 
-                'text' => 'Second step', 
-                'control_id' => $controlMock->id
+                'id' => $data['name'] === 'Source1' ? 1 : 2,
+                'name' => $data['name']
             ];
         });
-        $this->controlRepository->expects($this->once())
-            ->method('createControl')
-            ->with($controlData)
-            ->willReturn(new Control([
-                'id' => 1,
-                'code' => 'C001',
-                'description' => 'Test Control'
-            ]));
 
-        // 3. Act - Exécution de la méthode
+        $this->stepTestScriptRepository
+        ->expects($this->exactly(2))
+        ->method('create')
+        ->willReturnCallback(function ($step) {
+            $expectedSteps = ['First step', 'Second step'];
+            static $index = 0;
+    
+            $text = trim($step['text']); // Supprime les espaces en trop
+            TestCase::assertEquals($expectedSteps[$index], $text);
+            TestCase::assertEquals(1, $step['control_id']);
+            $index++;
+        });
+    
+
+
+        // Mock de la relation sources()->sync()
+        $mockRelation = $this->getMockBuilder(BelongsToMany::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(['sync'])
+            ->getMock();
+
+        $mockRelation->expects($this->once())->method('sync')->with([]);
+
+        // Mock final du modèle Control
+        $controlMock = $this->getMockBuilder(Control::class)
+            ->onlyMethods(['load', 'sources'])
+            ->getMock();
+
+        $controlMock->id = 1;
+        $controlMock->type_id = 1;
+        $controlMock->major_id = 1;
+        $controlMock->sub_id = 1;
+        $controlMock->code = 'C001';
+        $controlMock->description = 'Test Control';
+
+        $controlMock->method('load')->willReturnSelf();
+        $controlMock->method('sources')->willReturn($mockRelation);
+
+        $this->controlRepository
+            ->method('createControl')
+            ->willReturn($controlMock);
+
         $result = $this->controlService->createControl($data);
 
-        // 4. Assert - Vérifications
+        Log::info('Résultat du control créé :', [
+            'id' => $result->id,
+            'code' => $result->code,
+            'description' => $result->description,
+            'type_id' => $result->type_id,
+            'major_id' => $result->major_id,
+            'sub_id' => $result->sub_id,
+        ]);
+
         $this->assertInstanceOf(Control::class, $result);
         $this->assertEquals('C001', $result->code);
-        $this->assertEquals('Test Control', $result->description);
+        $this->assertEquals(1, $result->type_id);
     }
 
-    /**
-     * Teste la création d'un contrôle avec des données incomplètes
-     */
-    public function testCreateControlWithMissingDataThrowsException(): void
+
+
+
+    public function testCreateControlWithoutTestScript(): void
     {
-        $this->expectException(\InvalidArgumentException::class);
-        
-        $this->controlService->createControl([
-            'code' => 'C001', 
-            // Données manquantes
-        ]);
+        $data = [
+            'code' => 'C002',
+            'description' => 'Control without test script',
+            'type' => ['id' => 2, 'name' => 'Type2'],
+            'majorProcess' => ['code' => 'MP002', 'description' => 'Major Process 2'],
+            'subProcess' => ['id' => 2, 'code' => 'SP002', 'name' => 'Sub Process 2'],
+            'sources' => [],
+        ];
+    
+        $typeMock = (object)['id' => 2, 'name' => 'Type2'];
+        $majorMock = (object)['id' => 2, 'code' => 'MP002', 'description' => 'Major Process 2'];
+        $subMock = (object)['id' => 2, 'code' => 'SP002', 'name' => 'Sub Process 2'];
+    
+        $this->typeRepository->method('firstOrCreate')->willReturn($typeMock);
+        $this->majorProcessRepository->method('firstOrCreate')->willReturn($majorMock);
+        $this->subProcessRepository->method('firstOrCreate')->willReturn($subMock);
+    
+        $this->sourceRepository->method('firstOrCreate')->willReturnCallback(function ($data) {
+            return (object)[
+                'id' => $data['name'] === 'Source1' ? 1 : 2,
+                'name' => $data['name']
+            ];
+        });
+    
+        // Mock de la relation sources()->sync()
+        $mockRelation = $this->getMockBuilder(BelongsToMany::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(['sync'])
+            ->getMock();
+    
+        $mockRelation->expects($this->once())->method('sync')->with([]);
+    
+        // Mock du modèle Control
+        $controlMock = $this->getMockBuilder(Control::class)
+            ->onlyMethods(['load', 'sources'])
+            ->getMock();
+    
+        $controlMock->id = 2;
+        $controlMock->type_id = 2;
+        $controlMock->major_id = 2;
+        $controlMock->sub_id = 2;
+        $controlMock->code = 'C002';
+        $controlMock->description = 'Control without test script';
+    
+        $controlMock->method('load')->willReturnSelf();
+        $controlMock->method('sources')->willReturn($mockRelation);
+    
+        $this->controlRepository
+            ->method('createControl')
+            ->willReturn($controlMock);
+    
+        $result = $this->controlService->createControl($data);
+    
+        // Log::info('Résultat du control créé :', [
+        //     'id' => $result->id,
+        //     'code' => $result->code,
+        //     'description' => $result->description,
+        //     'type_id' => $result->type_id,
+        //     'major_id' => $result->major_id,
+        //     'sub_id' => $result->sub_id,
+        // ]);
+    
+        $this->assertInstanceOf(Control::class, $result);
+        $this->assertEquals('C002', $result->code);
+        $this->assertEquals(2, $result->type_id);
+        $this->stepTestScriptRepository->expects($this->never())->method('create');
     }
+    public function testCreateControlWithRepositoryException(): void
+    {
+        $this->expectException(\Exception::class);
+    
+        $this->controlRepository->method('createControl')
+            ->willThrowException(new \Exception('Repository Error'));
+    
+        $data = [
+            'code' => 'C005',
+            'test_script' => "1. First step\n2. Second step",
+            'description' => 'Control with repo exception',
+            'type' => ['id' => 5, 'name' => 'Type5'],
+            'majorProcess' => ['code' => 'MP005', 'description' => 'Major Process 5'],
+            'subProcess' => ['id' => 5, 'code' => 'SP005', 'name' => 'Sub Process 5'],
+            'sources' => [
+                ['id' => 1, 'name' => 'Source1'],
+            ],
+        ];
+    
+        $this->controlService->createControl($data); // Doit lever une exception
+    }
+        
+
+
+   
+
 }

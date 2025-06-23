@@ -58,7 +58,6 @@ class ExecutionController extends BaseController
                 'executions.*.riskModified' => 'required|boolean',
                 'executions.*.riskOwner' => 'nullable|string',
             ];
-            \Log::info('Request Data:', $request->all());
 
             $validator = Validator::make($request->all(), $rules);
 

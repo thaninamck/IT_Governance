@@ -242,7 +242,7 @@ const rowsData3 = [
           <Route path='/revue/revueExecution/:controlCode/remediation/:id' element={<RemediationActionId  readOnly={true}/>} />
           <Route path='/listcontrole' element={<ListControle/>}></Route>
           <Route path='/pw' element={<ForgotPw/>}></Route>
-          <Route path='/stepEmailForm' element={<StepEmailForm/>}></Route>
+          <Route path='/StepEmailFormilForm' element={<StepEmailForm/>}></Route>
           <Route path='/stepVerificationCode' element={<StepVerificationCode/>}></Route>
           <Route path='/stepNewPassword' element={<StepNewPassword/>}></Route>
           <Route path='/firstconnection' element={<ChangePasswordAfterFirstLogin/>}></Route>

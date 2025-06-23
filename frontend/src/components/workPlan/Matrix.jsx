@@ -668,7 +668,7 @@ const {profile}=useProfile();
     };
 
     // Appeler la fonction pour supprimer les exécutions
-    const undeletableIds = await deleteExecutions(idsToDelete);
+    const undeletableIds = (await deleteExecutions(idsToDelete)) || [];
     if (undeletableIds.length > 0) {
       // Mettre à jour flattenedData pour ne garder que les exécutions non supprimées
       setFlattenedData((prevData) =>

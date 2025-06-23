@@ -446,7 +446,7 @@ function ControleExcutionPage() {
 
     for (const file of files) {
       if (file.size > MAX_FILE_SIZE) {
-        alert(`Le fichier ${file.name} dépasse la taille maximale de 50MB.`);
+        toast.warn(`Le fichier ${file.name} dépasse la taille maximale de 50MB.`);
         return;
       }
       totalSize += file.size;
@@ -612,7 +612,6 @@ function ControleExcutionPage() {
       steps: testScriptData,
       status_id: selectedMulti,
     };
-    console.log("payload", payload);
     await updateExecution(
       controleData.executionId,
       payload,
@@ -630,6 +629,10 @@ function ControleExcutionPage() {
   // };
 
   // Check if all remediations are done
+useEffect(() => {
+  console.warn("deleted evidece", deletedEvidence);
+  console.warn("deleted test file", deletedTestFile);
+}, [deletedEvidence, deletedTestFile]);
 
   const isAllRemediationDone =
     selectedMulti != null &&

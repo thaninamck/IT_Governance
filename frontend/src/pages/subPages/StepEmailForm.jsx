@@ -38,10 +38,10 @@ function StepEmailForm({ onNext, onSetExpirationTime, errorMessage }) {
       };
 
       await emailjs.send(
-        "service_qm58mng", // Service ID
-        "template_5r4hycr", // Template ID
+        "service_5gbh03k", // Service ID
+        "template_vlo3sm2", // Template ID
         templateParams,
-        "jhF4FXcRjk6PSE78R"
+        "BTjaihQ7JDUofn8e2"
       );
 
       onSetExpirationTime(expirationTime);

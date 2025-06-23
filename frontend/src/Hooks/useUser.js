@@ -26,15 +26,15 @@ const useUser = () => {
     setError(null);
     try {
       const response = await api.get("/users"); // Récupération des utilisateurs depuis l'API
-console.log("user",response.data)
+console.log("userssssssssssssss",response.data)
       // Transformation des données
       const transformedUsers = response.data.map((user) => ({
         id: user.id,
         nom: user.firstName, // Concaténation du nom et du prénom
         prenom: user.lastName,
         fullName: `${user.firstName} ${user.lastName}`,
-        //grade: user.position?.name,
-        grade: user.position ,
+       
+        grade: user.position.name,
         position_id:user.position?.id,
         email: user.email,
         contact: user.phoneNumber,
@@ -134,13 +134,12 @@ console.log("user",response.data)
         await api.post(`/reset-user`, selectedUserToReset);
         //await api.post(`/reset-user/${selectedAppId}`);
         // 🔹 Envoi du mail avec le nouveau mot de passe
-        await emailjs.send(
-          "service_qm58mng",
-          "template_g520ynb",
+        await  emailjs.send(
+          "service_5gbh03k",
+          "template_lq4laio",
           { email: selectedUserToReset.email, password: selectedUserToReset.new_password },
-          "jhF4FXcRjk6PSE78R"
+          "BTjaihQ7JDUofn8e2"
         );
-
         setFilteredRows((prevRows) =>
           prevRows.map((row) =>
             row.id === selectedAppId ? { ...row, password: newPassword } : row
@@ -240,10 +239,10 @@ console.log("user",response.data)
         { id: response.data.user.id, ...newUser },
       ]);
       await emailjs.send(
-        "service_qm58mng",
-        "template_g520ynb",
+        "service_5gbh03k",
+        "template_lq4laio",
         { email: formattedUser.email, password: formattedUser.password },
-        "jhF4FXcRjk6PSE78R"
+        "BTjaihQ7JDUofn8e2"
       );
       toast.success("Utilisateur ajouté avec succès !");
     } catch (error) {

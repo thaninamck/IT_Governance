@@ -10,13 +10,20 @@ class StatusSeeder extends Seeder
     {
         // Liste des statuts à créer pour chaque entité
         $statuses = [
-            
             'execution' => [
                 'applied',
                 'not applied',
                 'not applicable',
                 'not tested',
                 'partially applied',
+            ],
+            'mission' => [
+                'non_commencee',
+                'en_cours',
+            ],
+            'remediation' => [
+                'Terminé',
+                'en cours',
             ],
         ];
 
@@ -25,7 +32,7 @@ class StatusSeeder extends Seeder
             foreach ($statusNames as $statusName) {
                 DB::table('statuses')->insert([
                     'status_name' => $statusName,
-                    'entity' => 'control',
+                    'entity' => $entity, // Correction ici
                     'created_at' => now(),
                     'updated_at' => now(),
                 ]);

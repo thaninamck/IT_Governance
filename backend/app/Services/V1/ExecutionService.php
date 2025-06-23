@@ -613,9 +613,7 @@ public function submitExecutionForFinalValidation($executionId)
                         'executionId' => $lastExecution->id
                     ]);
                     $system =$this->executionRepository->getsystemIdByExecutionIdAndMissionIdAndLayerId( $execution['layerId'], $lastExecution->id);
-                    Log::info("Résultat system_id et mission_id", [
-                        'system' => $system
-                    ]);
+                  
                     
                     if ($system) {
                         $systemId = $system->system_id;
