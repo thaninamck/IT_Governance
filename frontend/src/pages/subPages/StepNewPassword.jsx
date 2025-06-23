@@ -49,7 +49,7 @@ const firstconnection=infos.firstconnection;
     const strength = checkPasswordStrength(password);
     if (strength === "faible") {
       toast.warn("Le mot de passe est trop faible. Il doit contenir au moins 12 caractères, une majuscule, une minuscule et un chiffre.");
-      setErrorMessage(msg);
+      
       return;
     }
 
