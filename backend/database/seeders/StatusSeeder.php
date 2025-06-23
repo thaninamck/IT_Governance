@@ -19,6 +19,11 @@ class StatusSeeder extends Seeder
             ],
             'mission' => [
                 'non_commencee',
+                'en_cours',
+            ],
+            'remediation' => [
+                'Terminé',
+                'en cours',
             ],
         ];
 
