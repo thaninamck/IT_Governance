@@ -383,7 +383,7 @@ class MissionRepository
             })
             ->whereHas('status', function($query) {
             $query->where('entity', 'mission')
-                  ->whereIn('status_name', ['non_commencee', 'en_cours', 'clôturée']);
+                  ->whereIn('status_name', ['non_commencee', 'en_cours', 'clôturée','en_retard']);
         })
             ->get();
         // $missions = Mission::forUser($userId)->get();
