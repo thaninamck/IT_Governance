@@ -51,7 +51,7 @@ function SignUpForm({ title, username, password, onUsernameChange, onPasswordCha
       {/* Lien "Mot de passe oublié ?" */}
       <div
         className="flex items-center justify-center cursor-pointer"
-        onClick={() => {navigate('/pw');console.log("izan")}}
+        onClick={() => {navigate('/pw')}}
       >
         <span className="text-subfont-gray text-sm mt-2 hover:underline">
           Mot de passe oublié ?
