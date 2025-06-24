@@ -984,9 +984,28 @@ public function getExecutionById($executionId)
         return true;
     }
     //superviseur
-    public function getexecutionReviewBySuperviseur($missionId)
-    {
-        return Execution::with([
+    // public function getexecutionReviewBySuperviseur($missionId)
+    // {
+    //     return Execution::with([
+    //         'user',
+    //         'user.participations.profile',
+    //         'status',
+    //         'layer',
+    //         'layer.system',
+    //         'layer.system.mission',
+    //         'coverage',
+    //         'steps.control'
+    //     ])
+    //         ->where('is_to_review', true)
+    //         ->where('is_to_validate', false)
+    //         ->whereHas('layer.system.mission', function ($query) use ($missionId) {
+    //             $query->where('id', $missionId);
+    //         })
+    //         ->get();
+    // }
+ public function getExecutionReviewBySuperviseur($missionId)
+{
+    return Execution::with([
             'user',
             'user.participations.profile',
             'status',
@@ -996,13 +1015,28 @@ public function getExecutionById($executionId)
             'coverage',
             'steps.control'
         ])
-            ->where('is_to_review', true)
-            ->where('is_to_validate', false)
-            ->whereHas('layer.system.mission', function ($query) use ($missionId) {
-                $query->where('id', $missionId);
-            })
-            ->get();
-    }
+        ->select('executions.*')
+        ->selectRaw("
+            COALESCE(NULLIF(executions.cntrl_modification, ''), controls.description) AS effective_description
+        ")
+        ->join('layers', 'executions.layer_id', '=', 'layers.id')
+        ->join('systems', 'layers.system_id', '=', 'systems.id')
+        ->join('missions', 'systems.mission_id', '=', 'missions.id')
+        ->leftJoin('step_executions as se', 'executions.id', '=', 'se.execution_id')
+        ->leftJoin('step_test_scripts as sts', 'se.step_id', '=', 'sts.id')
+        ->leftJoin('controls', 'sts.control_id', '=', 'controls.id')
+        ->where('executions.is_to_review', true)
+        ->where('executions.is_to_validate', false)
+        ->where('missions.id', $missionId)
+        ->groupBy('executions.id', 'controls.description', 'executions.cntrl_modification')
+        ->get()
+        ->map(function($exec) {
+            $exec->description = $exec->effective_description;
+            unset($exec->effective_description);
+            return $exec;
+        });
+}
+
     //admin
     public function getAllExecutionReview($missionId)
     {
@@ -1094,9 +1128,27 @@ public function getExecutionById($executionId)
 
 
     //manager
-    public function getexecutionReviewByManager($missionId)
-    {
-        return Execution::with([
+    // public function getexecutionReviewByManager($missionId)
+    // {
+    //     return Execution::with([
+    //         'user',
+    //         'user.participations.profile',
+    //         'status',
+    //         'layer',
+    //         'layer.system',
+    //         'layer.system.mission',
+    //         'coverage',
+    //         'steps.control'
+    //     ])->where('is_to_review', false)
+    //         ->where('is_to_validate', true)
+    //         ->whereHas('layer.system.mission', function ($query) use ($missionId) {
+    //             $query->where('id', $missionId);
+    //         })
+    //         ->get();
+    // }
+public function getexecutionReviewByManager($missionId)
+{
+    return Execution::with([
             'user',
             'user.participations.profile',
             'status',
@@ -1105,13 +1157,28 @@ public function getExecutionById($executionId)
             'layer.system.mission',
             'coverage',
             'steps.control'
-        ])->where('is_to_review', false)
-            ->where('is_to_validate', true)
-            ->whereHas('layer.system.mission', function ($query) use ($missionId) {
-                $query->where('id', $missionId);
-            })
-            ->get();
-    }
+        ])
+        ->select('executions.*')
+        ->selectRaw("
+            COALESCE(NULLIF(executions.cntrl_modification, ''), controls.description) AS effective_description
+        ")
+        ->join('layers', 'executions.layer_id', '=', 'layers.id')
+        ->join('systems', 'layers.system_id', '=', 'systems.id')
+        ->join('missions', 'systems.mission_id', '=', 'missions.id')
+        ->leftJoin('step_executions as se', 'executions.id', '=', 'se.execution_id')
+        ->leftJoin('step_test_scripts as sts', 'se.step_id', '=', 'sts.id')
+        ->leftJoin('controls', 'sts.control_id', '=', 'controls.id')
+        ->where('executions.is_to_review', false)
+        ->where('executions.is_to_validate', true)
+        ->where('missions.id', $missionId)
+        ->groupBy('executions.id', 'controls.description', 'executions.cntrl_modification')
+        ->get()
+        ->map(function($exec) {
+            $exec->description = $exec->effective_description;
+            unset($exec->effective_description);
+            return $exec;
+        });
+}
 
     // public function getmissionReviewManager($userId)
     // {
