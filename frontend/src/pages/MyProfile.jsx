@@ -9,6 +9,7 @@ import SideBarStdr from "../components/sideBar/SideBarStdr";
 
 const MyProfile = () => {
   const { user, viewMode } = useAuth();
+  console.log('usertttt',user?.position?.name)
   
   return (
     <div className="flex min-h-screen bg-gray-50">
@@ -24,7 +25,7 @@ const MyProfile = () => {
         <main className="flex-1 overflow-y-auto px-8 mt-2">
           <div className="max-w-6xl mx-auto">
             <div className="bg-white rounded-xl shadow-sm px-8 py-4">
-              <h1 className="text-2xl font-bold text-gray-800 mb-2">Mon Profil</h1>
+              <h1 className="text-xl font-bold text-gray-800 mb-2">Mon Profil</h1>
               
               <div className="flex flex-col lg:flex-row gap-12">
                 {/* Profile Card */}
@@ -35,9 +36,9 @@ const MyProfile = () => {
                         {user?.fullName?.split(' ').map(n => n[0]).join('')}
                       </div>
                       
-                      <div className="text-center mb-8">
+                      <div className="text-center mb-6">
                         <h2 className="text-xl font-semibold text-gray-800">{user?.fullName || 'Utilisateur'}</h2>
-                        <p className="text-blue-600 font-medium">{user?.position || 'Poste non défini'}</p>
+                        <p className="text-blue-600 font-medium">{user?.position?.name || 'Poste non défini'}</p>
                       </div>
                       
                       <div className="w-full space-y-4">
@@ -77,7 +78,7 @@ const MyProfile = () => {
                       </div>
                       <div>
                         <p className="text-sm text-gray-500">Grade</p>
-                        <p className="font-medium">{user?.position}</p>
+                        <p className="font-medium">{user?.position?.name}</p>
                       </div>
                       <div>
                         <p className="text-sm text-gray-500">Localisation</p>
