@@ -46,7 +46,7 @@
   .avatar {
     width: 70px;
     height: 70px;
-    margin: 0 auto 10px;
+    margin: 2px auto 10px;
     background-color: white;
     border-radius: 50%;
     display: flex;
@@ -54,7 +54,7 @@
     justify-content: center;
     font-size: 1.2rem;
     font-weight: bold;
-    color: white;
+    color:var(--blue-menu);
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -80,7 +80,7 @@
   
   .menu {
     flex-grow: 1;
-    margin: 20px 0;
+    padding: 20px 0;
     overflow-y: scroll;
     scrollbar-width: none; /* Firefox */
     -ms-overflow-style: none; /* IE/Edge */
