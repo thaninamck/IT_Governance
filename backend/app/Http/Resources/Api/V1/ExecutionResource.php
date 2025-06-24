@@ -185,7 +185,8 @@ public static function structuredResponse($executions)
         return [
             'id' => $execution->id,
             'executionId' => $execution->id,
-            'executionModification' => $execution->cntrl_modification,
+           // 'executionModification' => $execution->cntrl_modification,
+            'executionModification' => $execution->description,
             'executionEffectiveness' => $execution->effectiveness,
             'executionDesign' => $execution->design,
             'executionLaunchedAt' => $execution->launched_at,
