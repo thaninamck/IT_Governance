@@ -168,12 +168,15 @@ function ControleExcutionPage() {
         }));
 
         setExecutionData(parsedData);
+        setExecutionStatus(parsedData?.[0]?.status_name)
         console.log("executionData", executionData);
+          console.log("executionData sttttt", executionStatus);
       }
     };
 
     if (controleData.executionId) {
       fetchData();
+     //  setExecutionStatus(executionData?.[0].status_name)
     }
   }, [controleData.executionId, controleData.missionId]);
   //const [evidences, setEvidences] = useState([]);
