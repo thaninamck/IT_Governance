@@ -246,6 +246,13 @@ function GestionMission() {
       ),
       label: "Voir rapport",
       onClick: handleViewReport,
+       disabled: (selectedRow) => {
+        console.log("selectedRow", selectedRow); // Ce log s'exécutera quand la ligne est évaluée
+        return (
+          !selectedRow || 
+          selectedRow.profileName !== 'manager' 
+        );
+      },
     },
   ];
 
