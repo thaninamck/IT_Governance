@@ -9,7 +9,7 @@ const DecisionPopUp = ({ name, text, loading, handleConfirm, handleDeny }) => {
 >
     <div
       className="rounded-lg w-auto h-auto bg-white drop-shadow-lg text-black
-        flex flex-col justify-around gap-4 p-6 z-50"
+        flex flex-col justify-around gap-4 p-6 z-60"
     >
       <div
         onClick={!loading ? handleDeny : null} // Désactiver la fermeture pendant le chargement
