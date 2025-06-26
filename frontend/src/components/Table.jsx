@@ -158,7 +158,7 @@ function Table({
     const isAnyCellExpanded = Object.keys(expandedCells).some(
       (key) => key.startsWith(`${params.id}-`) && expandedCells[key]
     );
-    return isAnyCellExpanded ? "auto" : 100; // Par défaut 50px, auto si une cellule est étendue
+    return isAnyCellExpanded ? "auto" : 70; // Par défaut 50px, auto si une cellule est étendue
   };
 
   const columns = [
@@ -381,7 +381,7 @@ function Table({
             borderBottom: "1px solid #ddd",
             whiteSpace: "normal",
             wordWrap: "break-word",
-            overflow: "auto",
+          //  overflow: "auto",
             textOverflow: "clip",
             alignItems: "center", // Centrer le contenu verticalement
             display: "flex",

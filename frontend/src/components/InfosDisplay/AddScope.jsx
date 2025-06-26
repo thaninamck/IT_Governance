@@ -62,7 +62,7 @@ function AddScope({ dataFormat,title, text, text1, onToggleForm, showForm, user,
             ))}
             
             {!showAll && layers.length > maxVisible && (
-              <div className="flex items-center">
+              <div className="flex items-center ">
                 <div 
                   onClick={(e) => {
                     e.stopPropagation();
@@ -72,7 +72,16 @@ function AddScope({ dataFormat,title, text, text1, onToggleForm, showForm, user,
                   title={layers.slice(maxVisible).map(l => l.name).join(', ')}
                 >
                   +{layers.length - maxVisible} more
-                  <div className="absolute hidden group-hover:block z-10 bottom-full left-0 mb-2 p-2 bg-white shadow-lg rounded max-w-xs max-h-60 overflow-y-auto">
+                 <div
+  className="absolute z-10 bottom-full left-0 mb-2 p-2 bg-white shadow-lg rounded max-w-xs"
+  style={{
+    maxHeight: "150px", 
+    overflowY: "auto",   
+    display: "block"    
+  }}
+>
+
+
                     {layers.slice(maxVisible).map((layer, index) => (
                       <div key={index} className="px-2 py-1 text-xs">
                         {layer.name}
@@ -91,7 +100,7 @@ function AddScope({ dataFormat,title, text, text1, onToggleForm, showForm, user,
                 }}
                 className="ml-1 border-none text-xs text-gray-400  hover:text-gray-600"
               >
-               ▲ close
+               ▲ Fermer
               </button>
             )}
           </div>
