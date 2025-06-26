@@ -92,9 +92,9 @@ function MissionDetail() {
         />
 
         <AddScope
-          title={"Scope Application"}
+          title={"Périmètre applicatif"}
           text={"Aucune application ajoutée pour le moment"}
-          text1={"Ajouter d'autre application "}
+          text1={"Ajouter d'autre applications "}
           onToggleForm={handleToggleForm} // Passe la fonction en prop
           showForm={showForm}
           user={user}
