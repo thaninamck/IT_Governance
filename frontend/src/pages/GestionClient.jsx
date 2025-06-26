@@ -26,12 +26,12 @@ function GestionClient() {
   }, [user, viewMode, changeViewMode]);
     // Configuration des colonnes pour la table
     const columnsConfig = [
-        { field: 'commercialName', headerName: 'Nom', width: 250 },
-        { field: 'socialReason', headerName: 'Raison Social', width: 220 },
+        { field: 'commercialName', headerName: 'Nom', width: 250,expandable: true, maxInitialLength: 20 },
+        { field: 'socialReason', headerName: 'Raison Social', width: 220 ,expandable: true, maxInitialLength: 20},
         { field: 'correspondence', headerName: 'Secteur', width: 250, expandable: true, maxInitialLength: 20 },
         { field: 'address', headerName: 'Email', width: 250, expandable: true, maxInitialLength: 20 },
-        { field: 'contact1', headerName: 'Contact 1', width: 150 },
-        { field: 'contact2', headerName: 'Contact 2', width: 150 },
+        { field: 'contact1', headerName: 'Contact 1', width: 150 ,expandable: true, maxInitialLength: 20},
+        { field: 'contact2', headerName: 'Contact 2', width: 150 ,expandable: true, maxInitialLength: 20},
         { field: 'actions', headerName: 'Actions', width: 80 },
     ];
 
