@@ -45,8 +45,8 @@ const handleLogout = async () => {
   return (
     <div className='header_container'>
       {/* Logo */}
-      <div className='header_logo' onClick={() => navigate('/')}>
-        <img src={grcenterlogo1} alt='Mazars Logo' />
+      <div className='header_logo' onClick={() => navigate('/missions')}>
+        <img src={grcenterlogo1} alt='Mazars Logo'  />
       </div>
 
       {/* Icons et utilisateur */}
