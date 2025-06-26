@@ -25,7 +25,7 @@ function SignUpForm({ title, username, password, onUsernameChange, onPasswordCha
       <InputForm
         type="text"
         label=""
-        placeholder="Nom d'utilisateur"
+        placeholder="Email"
         width="400px"
         flexDirection="flex-col"
         value={username}
