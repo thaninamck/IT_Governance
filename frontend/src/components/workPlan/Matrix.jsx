@@ -196,13 +196,13 @@ const {profile}=useProfile();
     },
     {
       field: "applicationLayer",
-      headerName: "Layer",
+      headerName: "Couche",
       width: 150,
       editable: false,
     },
     {
       field: "applicationOwner",
-      headerName: "Owner",
+      headerName: "Propriétaire",
       width: 150,
       editable: false,
     },
@@ -224,7 +224,7 @@ const {profile}=useProfile();
     // ? [
     {
       field: "riskCheckbox",
-      headerName: "Select Risk",
+      headerName: " Sélectionner risque",
       width: 150,
       renderCell: (params) => (
         <Checkbox
@@ -237,11 +237,11 @@ const {profile}=useProfile();
     //]
     //: []),
 
-    { field: "riskCode", headerName: "Risk Code", width: 150, editable: false },
-    { field: "riskName", headerName: "Risk Name", width: 150, editable: false },
+    { field: "riskCode", headerName: "Code Risque", width: 150, editable: false },
+    { field: "riskName", headerName: "Nom Risque", width: 150, editable: false },
     {
       field: "riskDescription",
-      headerName: "Risk Description",
+      headerName: "Description Risque",
       width: 350,
       editable: true,
     },
@@ -256,7 +256,7 @@ const {profile}=useProfile();
     //   editable: true}]),
     {
       field: "riskOwner",
-      headerName: "Risk Owner",
+      headerName: "Propriétaire risque",
       width: 150,
       editable: true,
     },
@@ -279,7 +279,7 @@ const {profile}=useProfile();
     // ? [
     {
       field: "controlCheckbox",
-      headerName: "Select Control",
+      headerName: " Sélectionner contrôle",
       width: 150,
       renderCell: (params) => (
         <Checkbox
@@ -293,13 +293,13 @@ const {profile}=useProfile();
     // : [])
     {
       field: "controlCode",
-      headerName: "Control Code",
+      headerName: "code contrôle",
       width: 150,
       editable: false,
     },
     {
       field: "controlDescription",
-      headerName: "Control Description",
+      headerName: "Description contrôle",
       width: 200,
       editable: true,
     },
@@ -323,13 +323,13 @@ const {profile}=useProfile();
     },
     {
       field: "testScript",
-      headerName: "Test Script",
+      headerName: "Script de test",
       width: 150,
       editable: false,
     },
     {
       field: "controlOwner",
-      headerName: "Control Owner",
+      headerName: "Propriétaire contrôle",
       width: 150,
       editable: true,
     },
@@ -1023,7 +1023,7 @@ const {profile}=useProfile();
         <div className="flex flex-wrap items-center justify-between gap-4 bg-white border border-gray-200 shadow-md rounded-xl px-6 py-4 mx-4 mb-6">
           {/* Owner */}
           <div className="flex items-center gap-2">
-            <label className="text-sm font-semibold text-gray-800">Owner</label>
+            <label className="text-sm font-semibold text-gray-800">Propriétaire</label>
             <div className="flex items-center bg-white border border-gray-300 rounded-md px-3 py-2 w-60 shadow-sm">
               <User className="text-gray-500 mr-2" size={16} />
               <input
@@ -1036,7 +1036,7 @@ const {profile}=useProfile();
             </div>
             <button
               onClick={handleUpdateOwner}
-              className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition"
+              className="border-none bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition"
             >
               Ajouter
             </button>
@@ -1088,7 +1088,7 @@ const {profile}=useProfile();
           {atLeastOneApp && (
             <button
               onClick={() => setSaveWork(true)}
-              className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition"
+              className="border-none bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition"
             >
               Valider
             </button>
@@ -1100,7 +1100,7 @@ const {profile}=useProfile();
       <div className="flex justify-end mx-4 gap-3">
         {(selectedRows.length > 0 && unlockModification) && (
           <button
-            className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 flex items-center gap-2 transition"
+            className=" border-none bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 flex items-center gap-2 transition"
             onClick={
               fromScopeModification
                 ? handleShowDeleteExecutionConfirmation
@@ -1115,14 +1115,14 @@ const {profile}=useProfile();
           selectedRows.length > 0 &&
           (modify ? (
             <button
-              className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 flex items-center gap-2 transition"
+              className="border-none bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 flex items-center gap-2 transition"
               onClick={handleModifyLines}
             >
               Modifier
             </button>
           ) : (
             <button
-              className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 flex items-center gap-2 transition"
+              className=" border-none bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 flex items-center gap-2 transition"
               onClick={handleSaveModifictaion}
             >
               Enregistrer les modifications
