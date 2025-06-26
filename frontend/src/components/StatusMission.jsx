@@ -22,7 +22,7 @@ function StatusMission({ status }) {
             color: "var(--await-orange)",
         },
         en_retard: {
-            label: "En cours retardé",
+            label: "En cours-retardée",
             icon: <ErrorOutlineIcon  />, // Rouge
             color: "var(--alert-red)",
         },
@@ -43,7 +43,7 @@ function StatusMission({ status }) {
             color: "#E53935",
         },
         en_attente: {
-            label: "En standby ",
+            label: "En pause ",
             icon: <PauseCircleIcon   />, // Rouge
             color: "#cccccc",
         },
