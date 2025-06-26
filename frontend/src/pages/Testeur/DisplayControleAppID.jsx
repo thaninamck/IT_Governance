@@ -79,7 +79,7 @@ function DisplayControleAppID() {
     { field: "riskCode", headerName: "Code risque", width: 98, expandable: true },
     { field: "riskDescription", headerName: "Description risque", width: 200, expandable: true },
     { field: "controlCode", headerName: "Code contrôle", width: 100, expandable: true },
-    { field: "controlDescription", headerName: "Description contrôle", width: 200, expandable: true },
+    { field: "controlDescription", headerName: "Description contrôle", width: 200, expandable: true},
     { field: "executionControlOwner", headerName: "Propriétaire", width: 120, expandable: true },
     { field: "layerName", headerName: "Couche", width: 100, expandable: true },
     {
