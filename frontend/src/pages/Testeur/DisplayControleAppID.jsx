@@ -76,15 +76,15 @@ function DisplayControleAppID() {
 
   console.log("appDATA",appData)
   const columnsConfig2 = [
-    { field: "riskCode", headerName: "Risk Code", width: 80, expandable: true },
-    { field: "riskDescription", headerName: "Risk Description", width: 200, expandable: true },
-    { field: "controlCode", headerName: "Control Code", width: 100, expandable: true },
-    { field: "controlDescription", headerName: "Description", width: 200, expandable: true },
-    { field: "executionControlOwner", headerName: "Owner", width: 120, expandable: true },
-    { field: "layerName", headerName: "Layer", width: 100, expandable: true },
+    { field: "riskCode", headerName: "Code risque", width: 98, expandable: true },
+    { field: "riskDescription", headerName: "Description risque", width: 200, expandable: true },
+    { field: "controlCode", headerName: "Code contrôle", width: 100, expandable: true },
+    { field: "controlDescription", headerName: "Description contrôle", width: 200, expandable: true },
+    { field: "executionControlOwner", headerName: "Propriétaire", width: 120, expandable: true },
+    { field: "layerName", headerName: "Couche", width: 100, expandable: true },
     {
       field: "executionEtat",
-      headerName: "État d'exécution",
+      headerName: "État d’exécution",
       width: 150,
       expandable: true,
       customRenderCell: (params) => {
@@ -124,8 +124,8 @@ function DisplayControleAppID() {
       },
     }
 ,    
-    { field: "statusName", headerName: "Status", width: 150, expandable: true },
-    { field: "userFullName", headerName: "Tester", width: 150, expandable: true },
+    { field: "statusName", headerName: "Statut", width: 130, expandable: true },
+    { field: "userFullName", headerName: "Testeur", width: 150, expandable: true },
     {
       field: "Lancer",
       headerName: "Action",
@@ -258,7 +258,7 @@ function DisplayControleAppID() {
         {/* {breadcrumbRoutes.some((route) => location.pathname.startsWith(route)) && <Breadcrumbs />} */}
         <Breadcrumbs items={["Missions",AppData?.missionName || "mission", AppData?.name|| "system"]} />
         <AppInfo appId={AppData?.id} />
-        <Separator text="List des Contrôles" />
+        <Separator text="Liste des Contrôles" />
         {
           (AppData?.profile === 'manager' || AppData?.profile === 'superviseur' || user?.role === 'admin') ? (
             appData.length > 0 ? (
@@ -316,8 +316,8 @@ function DisplayControleAppID() {
             },
           }}
         >
-          <Tab disableIndicator>Exécuter</Tab>
-          <Tab disableIndicator>Corriger</Tab>
+          <Tab disableIndicator> À exécuter</Tab>
+          <Tab disableIndicator>À corriger</Tab>
         </TabList>
 
         <div className="bg-white py-4 rounded-b-lg">

@@ -31,13 +31,13 @@ function AddScope({ dataFormat,title, text, text1, onToggleForm, showForm, user,
   console.log('applications',applications)
   const { addBreadcrumb } = useBreadcrumb();
   const columnsConfig = [
-    { field:'name', headerName: 'Nom', width: 160, editable: true },
-    { field: 'description', headerName: 'Description', editable: true, width: 220, expandable: true },
-    { field: 'ownerName', headerName: 'Owner', width: 200 },
-    { field: 'ownerContact', headerName: 'Contact', width: 200 },
+    { field:'name', headerName: 'Nom de l’application', width: 167, editable: true },
+    { field: 'description', headerName: 'Description', editable: true, width: 250, expandable: true },
+    { field: 'ownerName', headerName: 'Propriétaire', width: 170 },
+    { field: 'ownerContact', headerName: 'Contact', width: 230 },
     {
       field: "layers",
-      headerName: "Couche",
+      headerName: "Couches",
       width: 200,
       expandable: true,
       customRenderCell: (params) => {

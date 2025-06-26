@@ -50,7 +50,7 @@ function ConclusionRemediationSection({
   }));
 
   const fallbackStatuses = [
-    { label: "Aucun status trouvé pour le moment ", value: 0 },
+    { label: "Aucun statut trouvé pour le moment ", value: 0 },
   ];
 
   const showSave = !(isToReview || isToValidate);
@@ -62,7 +62,7 @@ function ConclusionRemediationSection({
           <Separator text={"Conclusion"} />
         </div>
         <div className="flex flex-row items-center gap-4 py-7 ml-9">
-          <label className="mr-20 ml-8 font-medium">Status</label>
+          <label className="mr-20 ml-8 font-medium">Statut</label>
           {/* <label className="mr-20 ml-8 font-medium">{selectedMulti}</label> */}
           <SelectInput
             label=""

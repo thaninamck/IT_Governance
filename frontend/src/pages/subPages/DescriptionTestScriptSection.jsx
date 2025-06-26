@@ -24,7 +24,7 @@ function DescriptionTestScriptSection({
       <div className="grid  grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4 w-full my-6  px-6 py-6 bg-white  rounded-xl">
         <InputForm
           type="text"
-          label="Type"
+          label="Type du contrôle "
           placeholder=""
           width="100%"
           flexDirection="flex-col"
@@ -33,7 +33,7 @@ function DescriptionTestScriptSection({
         />
         <InputForm
           type="text"
-          label="Owner"
+          label="Propriétaire"
           placeholder=""
           width="100%"
           flexDirection="flex-col"
@@ -42,7 +42,7 @@ function DescriptionTestScriptSection({
         />
         <InputForm
           type="text"
-          label="Sources"
+          label="Source du contrôle "
           placeholder=""
           width="100%"
           flexDirection="flex-col"
@@ -64,7 +64,7 @@ function DescriptionTestScriptSection({
         />
         <InputForm
           type="text"
-          label="Description"
+          label="Description du contrôle "
           placeholder=""
           width="100%"
           flexDirection="flex-col"
