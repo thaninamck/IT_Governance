@@ -254,7 +254,7 @@ function RemediationActionId({readOnly =false}) {
           <InputForm
           readOnly
             type="date"
-            label="Date Début"
+            label="Date de début"
             width="250px"
             flexDirection="flex-row gap-4 items-center mb-2 "
             value={actionData.startDate}
@@ -264,7 +264,7 @@ function RemediationActionId({readOnly =false}) {
           <InputForm
           readOnly
             type="date"
-            label="Date Fin"
+            label="Date de fin"
             width="250px"
             flexDirection="flex-row gap-4 items-center mb-2"
             value={actionData.endDate}

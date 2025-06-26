@@ -140,15 +140,15 @@ const {
               width: 300,
             },
             { field: "ownerContact", headerName: "Contact", width: 250 },
-            { field: "startDate", headerName: "Date début", width: 200 },
-            { field: "endDate", headerName: "Date Fin", width: 200 },
+            { field: "startDate", headerName: "Date de début", width: 200 },
+            { field: "endDate", headerName: "Date de Fin", width: 200 },
             {
               field: "suivi",
               headerName: "Suivi",
               editable: true,
               width: 300,
             },
-            { field: "statusName", headerName: "Status", width: 180 },
+            { field: "statusName", headerName: "Statut", width: 180 },
         
           ];
         
