@@ -651,19 +651,53 @@ const formatRisksData = (data) => {
         {/* Contenu des onglets */}
         <div className="w-full flex-1  relative   ">
           <Tabs
-            color="success"
-            aria-label="Basic tabs"
-            defaultValue={0}
-            sx={{
-              "--Tabs-spacing": "5px",
-              "& .css-ed3i2m-JoyTabList-root": {
-                backgroundColor: "transparent",
-              },
-            }}
+            // color="success"
+            // aria-label="Basic tabs"
+            // defaultValue={0}
+            // sx={{
+            //   "--Tabs-spacing": "5px",
+            //   "& .css-ed3i2m-JoyTabList-root": {
+            //     backgroundColor: "transparent",
+            //   },
+            // }}
+            color = "success"
+              aria-label="Control Tabs"
+        defaultValue={0}
+      
+        sx={{
+          "--Tabs-spacing": "0px",
+          backgroundColor: "transparent",
+          width: "100%",
+        }}
           >
             <div className="flex  justify-start">
               {/* Liens en haut */}
-              <TabList className="w-full border-b">
+              <TabList 
+             className="w-full "
+             sx={{
+
+           // borderBottom: "1px solid #e0e0e0",
+           // backgroundColor: "#f9fafb",
+           // padding: "0.5rem 0",
+           
+            "& .MuiTab-root": {
+              fontWeight: "600",
+              textTransform: "capitalize",
+              padding: "10px 20px",
+              borderRadius: "8px 8px 0 0",
+              transition: "all 0.2s ease",
+              "&:hover": {
+                backgroundColor: "#e0f2fe",
+                color: "#1e40af",
+              },
+              "&[aria-selected='true']": {
+                backgroundColor: "#dbeafe",
+                color: "#1e40af",
+                borderBottom: "2px solid #1e40af",
+              },
+            },
+          }}
+              >
                 <Tab sx={{ "--Tab-indicatorThickness": "2px" }}>Risques</Tab>
                 <Tab sx={{ "--Tab-indicatorThickness": "2px" }}>Contrôles</Tab>
               </TabList>
