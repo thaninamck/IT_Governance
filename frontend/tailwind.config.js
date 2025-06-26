@@ -30,12 +30,22 @@ module.exports = withMT({
           '0%': { transform: 'translateX(0)' },
           '100%': { transform: 'translateX(100%)' },
         },
+        float: {
+      '0%, 100%': { transform: 'translateY(0)' },
+      '50%': { transform: 'translateY(-10px)' },
+    },
+     fadeIn: {
+      from: { opacity: '0', transform: 'translateY(10px)' },
+      to: { opacity: '1', transform: 'translateY(0)' },
+    },
       },
       // Définir les animations
       animation: {
-        slideInRight: 'slideInRight 0.1s ease-out ',
-        slideOutRight: 'slideOutRight 0.5s ease-in',
-      },
+    slideInRight: 'slideInRight 0.1s ease-out',
+    slideOutRight: 'slideOutRight 0.5s ease-in',
+    float: 'float 3s ease-in-out infinite',
+    fadeIn: 'fadeIn 1.2s ease-in-out',
+  },
     },
   },
   plugins: [],
