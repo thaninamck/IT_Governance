@@ -10,7 +10,7 @@ function HeaderSettings({ activeTab, setActiveTab, renderTabContent }) {
           onClick={() => setActiveTab("logs")}
           className={`px-4 py-2 ${activeTab === "logs" ? "border-none" : "rounded-none text-[var(--subfont-gray)] border-none bg-[#F9F9F9]"}`}
         >
-          Logs
+          Journaux
         </button>
         <button
           onClick={() => setActiveTab("password")}

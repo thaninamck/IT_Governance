@@ -10,9 +10,9 @@ function Logs() {
   const columnslogs = [
     { field: 'date_heure', headerName: 'Date_Heure', width: 180 },
     { field: 'utilisateur', headerName: 'Utilisateur', width: 160 },
-    { field: 'ip', headerName: 'ip Address', width: 150 },
+    { field: 'ip', headerName: 'Ip Address', width: 150 },
     { field: 'mac', headerName: 'Mac Address', width: 150 },
-    { field: 'profile', headerName: 'Profile', width: 180 },
+    { field: 'profile', headerName: 'Profil', width: 180 },
     { field: 'action', headerName: 'Action', width: 260, expandable: true },
     { field: 'mission', headerName: 'Mission', width: 120 },
   ];

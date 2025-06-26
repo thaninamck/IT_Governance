@@ -39,7 +39,7 @@ function Settings() {
       <div className="flex-1 flex flex-col h-screen overflow-y-auto">
         <HeaderBis />
         <HeaderWithAction 
-        title="Settings" 
+        title="Paramètres" 
         bg_transparent='bg-transparent'
         user={user}
         />

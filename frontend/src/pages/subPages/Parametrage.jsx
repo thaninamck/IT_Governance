@@ -21,7 +21,7 @@ function Parametrage() {
         onAdd={(newItem) => console.log("Nouvelle catégorie ajoutée:", newItem)} /> */}
         <AddStatusForm
         title="Gérer les Status"
-        label="Status"
+        label="Statut"
         label1="entité"
         placeholder="Nom du catégorie"
         options={[
@@ -52,7 +52,7 @@ function Parametrage() {
         onAdd={(newItem) => console.log("Nouvelle source ajoutée:", newItem)}
       />
       <DynamicAddForm
-        title="Gérer les Types du controle"
+        title="Gérer les Types du contrôle"
         label="Type"
         placeholder="Nom du Type"
         fetchEndpoint="/getctrltypes"
