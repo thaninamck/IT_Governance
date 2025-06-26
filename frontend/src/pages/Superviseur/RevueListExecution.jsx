@@ -44,8 +44,8 @@ function RevueListExecution( {dataFormat}) {
     const [filteredRows, setFilteredRows] = useState([]);
     const [systemName, setSystemName] = useState();
     const columnsConfig2 = [
-        { field: "controlCode", headerName: "Code", width: 170 },
-        { field: "executionModification", headerName: "Control", width: 170, expandable: true },
+        { field: "controlCode", headerName: "Code", width: 120 ,expandable: true, maxInitialLength: 20},
+        { field: "executionModification", headerName: "contrôle", width: 200, expandable: true },
         { field: "majorProcess", headerName: "Major Process", width: 200, expandable: true },
         { field: "subProcess", headerName: "Sub Process", width: 220, expandable: true },
         {
@@ -81,7 +81,7 @@ function RevueListExecution( {dataFormat}) {
             field: "executionStatus",
             headerName: "Statut",
             expandable: true,
-            width: 160,
+            width: 100,
             customRenderCell: (params) => {
                 const colorMap = {
                     "applied": "text-green-500",
@@ -99,12 +99,12 @@ function RevueListExecution( {dataFormat}) {
                 );
             },
         },
-        { field: "testerName", headerName: "Testeur", width: 220 },
+        { field: "testerName", headerName: "Testeur", width: 180 },
         {
             field: "consulter",
             headerName: "Consulter",
             expandable: true,
-            width: 160,
+            width: 150,
             customRenderCell: (params) => (
                 <button
                     onClick={() => navigate(`/revue/${params.row.missionName}/${params.row.controlCode}`, { state: { controleData: params.row } })}
@@ -211,7 +211,7 @@ function RevueListExecution( {dataFormat}) {
                             <CheckCircleOutlineIcon fontSize="small" color="primary" />
                             Liste des contrôles exécutés
                         </div>} />
-                        <div className="flex-1 mr-10 overflow-x-auto overflow-y-auto h-[400px] transition-all">
+                        <div className="ml-9 flex-1 mr-6 overflow-x-auto overflow-y-auto h-[400px] transition-all">
                         <Table
                             key={JSON.stringify(revueMissionData)}
                             columnsConfig={columnsConfig2}
