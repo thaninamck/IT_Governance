@@ -1165,7 +1165,7 @@ const {profile}=useProfile();
                   style={{ width: 500 }}
                   className="border border-subfont-gray"
                 >
-                  Application
+                  Applications
                 </TableCell>
 
                 {/* Risques */}
