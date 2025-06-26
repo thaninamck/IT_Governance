@@ -14,7 +14,7 @@ function SideBar({ user }) {
 
   const menuItems = {
     admin: [
-      { key: "profile", label: "Profile", path: "/myprofile" },
+      { key: "profile", label: "Profil", path: "/myprofile" },
       { key: "dashboard", label: "Tableau de Bord", path: "/dashboard" },
       { key: "utilisateurs", label: "Utilisateurs", path: "/utilisateurs" },
       { key: "Référentiels", label: "Référentiels", path: "/controlsManager" },
@@ -25,12 +25,12 @@ function SideBar({ user }) {
       { key: "platforme", label: "Platforme", path: "/missionsUserViewMode" },
     ],
     testeur: [
-      { key: "profile", label: "Profile", path: "/myprofile" },
+      { key: "profile", label: "Profil", path: "/myprofile" },
       { key: "missions", label: "Missions", path: "/missions" },
       { key: "notification", label: "Notification", path: "/notification" },
     ],
     manager: [
-      { key: "profile", label: "Profile", path: "/myprofile" },
+      { key: "profile", label: "Profil", path: "/myprofile" },
       { key: "missions", label: "Missions", path: "/missions" },
       { key: "notification", label: "Notification", path: "/notification" },
       { key: "revue", label: "Revue", path: "/revue" },
