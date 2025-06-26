@@ -104,10 +104,10 @@ function GestionMission() {
     { field: "missionName", headerName: "Mission", width: 200, expandable: true},
     ...(user?.role === "admin"
       ? [{ field: "manager", headerName: "Manager", width: 200 ,expandable: true,}]
-      : [{ field: "profileName", headerName: "Profile", width: 150,expandable: true, }]
+      : [{ field: "profileName", headerName: "Profil", width: 150,expandable: true, }]
     ),
     { field: "startDate", headerName: "Date de début", width: 150 ,expandable: true,},
-    { field: "endDate", headerName: "Date fin", width: 150,expandable: true, },
+    { field: "endDate", headerName: "Date de fin", width: 150,expandable: true, },
     {
       field: "auditPeriod",
       headerName: "Période auditée",
@@ -120,7 +120,7 @@ function GestionMission() {
     },
     {
       field: "status",
-      headerName: "Status",
+      headerName: "Statut",
       width: 220,expandable: true,
       customRenderCell: (params) => {
         return <StatusMission status={params.row.status} />;
@@ -158,42 +158,21 @@ function GestionMission() {
 
   // Actions sur les lignes de la table
   const rowActions = [
-    ...(user?.role === "admin"
-      ? [
-        {
-          icon: <ArchiveRoundedIcon sx={{ marginRight: "5px" }} />,
-          label: "archivée",
-          onClick: handleArchiverRow,
-          disabled: (selectedRow) =>
-            !selectedRow || !["clôturée", "en_retard"].includes(selectedRow.status),
-        },
-      ]
-      : []),
-      ...(user?.role === "user" ||user?.role==="admin"
+     ...(user?.role === "admin" 
         ? [
     {
-      icon: <LockOpenRoundedIcon sx={{ marginRight: "5px" }} />,
-      label: "Clôturée",
-      onClick: handleCloturerRow,
-      disabled: (selectedRow) => {
-        console.log("selectedRow", selectedRow); // Ce log s'exécutera quand la ligne est évaluée
-        return (
-          !selectedRow || 
-          selectedRow.profileName !== 'manager' ||  
-          !["en_cours", "en_retard"].includes(selectedRow.status)
-        );
-      },
-      
-      
+      icon: <SquarePen className="mr-2" />,
+      label: "Modifier",
+      onClick: handleEditRow,
     },
-  
   ]
   : []),
+   
     ...(user?.role === "admin"
       ? [
         {
           icon: <HighlightOffRoundedIcon sx={{ marginRight: "5px" }} />,
-          label: "Annulée",
+          label: "Annuler",
           onClick: handleCancelRow,
           disabled: (selectedRow) =>
             !selectedRow ||
@@ -211,22 +190,15 @@ function GestionMission() {
               <PauseCircleOutlineRoundedIcon sx={{ marginRight: "5px" }} />
             ),
           label: (selectedRow) =>
-            selectedRow?.status === "en_attente" ? "Reprendre" : "Pause",
+            selectedRow?.status === "en_attente" ? "Reprendre" : "Mettre en pause",
           onClick: handlePauseRow,
           disabled: (selectedRow) =>
             !selectedRow || !["en_cours", "en_attente", "non_commencee"].includes(selectedRow.status),
         },
       ]
       : []),
-      ...(user?.role === "admin" 
-        ? [
-    {
-      icon: <SquarePen className="mr-2" />,
-      label: "Modifier",
-      onClick: handleEditRow,
-    },
-  ]
-  : []),
+     
+
     ...(user?.role === "admin"
       ? [
         {
@@ -235,7 +207,7 @@ function GestionMission() {
               sx={{ color: "var(--alert-red)", marginRight: "5px" }}
             />
           ),
-          label: "Supprimer mission",
+          label: "Supprimer la mission",
           onClick: handleDeleteRow,
         },
       ]
@@ -254,6 +226,39 @@ function GestionMission() {
         );
       },
     },
+
+     ...(user?.role === "admin"
+      ? [
+        {
+          icon: <ArchiveRoundedIcon sx={{ marginRight: "5px" }} />,
+          label: "archiver",
+          onClick: handleArchiverRow,
+          disabled: (selectedRow) =>
+            !selectedRow || !["clôturée", "en_retard"].includes(selectedRow.status),
+        },
+      ]
+      : []),
+      ...(user?.role === "user" ||user?.role==="admin"
+        ? [
+    {
+      icon: <LockOpenRoundedIcon sx={{ marginRight: "5px" }} />,
+      label: "Clôturer",
+      onClick: handleCloturerRow,
+      disabled: (selectedRow) => {
+        console.log("selectedRow", selectedRow); // Ce log s'exécutera quand la ligne est évaluée
+        return (
+          !selectedRow || 
+          //selectedRow.profileName !== 'manager' || 
+           
+          !["en_cours", "en_retard"].includes(selectedRow.status)
+        );
+      },
+      
+      
+    },
+  
+  ]
+  : []),
   ];
 
   console.log('mission to display',missionsToDisplay)
@@ -335,7 +340,7 @@ function GestionMission() {
     <TabList sx={{ gap: 0 }}>
       <Tab value="active" sx={tabStyles}>Missions Actives</Tab>
       <Tab value="archived" sx={tabStyles}>Missions Archivées</Tab>
-      <Tab value="requeststatus" sx={tabStyles}>Request status mission</Tab>
+      <Tab value="requeststatus" sx={tabStyles}>Gestion des demandes liées au statut des missions</Tab>
     </TabList>
   </Tabs>
 )}
