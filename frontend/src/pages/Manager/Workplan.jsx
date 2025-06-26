@@ -567,7 +567,7 @@ const Workplan = () => {
                 className={
                   appEmpty
                     ? "hidden"
-                    : "bg-blue-menu w-auto h-auto p-2 text-white mr-2 mb-2 hover:bg-blue-conf"
+                    : "border-none bg-blue-menu w-auto h-auto p-2 text-white mr-2 mb-2 hover:bg-blue-conf"
                 }
                 onClick={handleopenConfirmationDialog}
               >
