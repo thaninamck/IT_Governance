@@ -121,7 +121,8 @@ console.log("user",response.data.user)
       } else if (error.response?.status === 403) {
         setError("Votre compte est temporairement bloqué. Veuillez contacter l'administrateur.");
       } else if(error.response?.status === 422) {
-        setError(error.response.data.data.password[0])
+       //setError(error.response.data.data.password[0])
+       setError("Identifiants incorrects.");
       }
       
       else {
