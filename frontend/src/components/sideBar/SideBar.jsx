@@ -15,13 +15,13 @@ function SideBar({ user }) {
   const menuItems = {
     admin: [
       { key: "profile", label: "Profile", path: "/myprofile" },
-      { key: "dashboard", label: "Dashboard", path: "/dashboard" },
+      { key: "dashboard", label: "Tableau de Bord", path: "/dashboard" },
       { key: "utilisateurs", label: "Utilisateurs", path: "/utilisateurs" },
       { key: "Référentiels", label: "Référentiels", path: "/controlsManager" },
       { key: "missions", label: "Missions", path: "/missions" },
       { key: "clients", label: "Clients", path: "/clients" },
       { key: "notification", label: "Notification", path: "/notification" },
-      { key: "settings", label: "Settings", path: "/settings" },
+      { key: "settings", label: "Paramètres", path: "/settings" },
       { key: "platforme", label: "Platforme", path: "/missionsUserViewMode" },
     ],
     testeur: [
