@@ -207,7 +207,7 @@ function transformExecutionsToAppStructure(executions) {
   {/* Titre avec icône */}
   <div className="flex items-center gap-2 mb-4">
     <PlusCircle className="text-[var(--blue-menu)] w-5 h-5" />
-    <h2 className="text-l font-semibold text-[var(--blue-menu)]">Scope Contrôle</h2>
+    <h2 className="text-l font-semibold text-[var(--blue-menu)]"> Périmètre du contrôle</h2>
     <hr className="flex-grow border-t border-[var(--blue-menu)]" />
   </div>
 
@@ -221,7 +221,7 @@ function transformExecutionsToAppStructure(executions) {
           <div className="flex justify-end pr-5 gap-4 mb-2">
             <button
               onClick={handleAddMatrix}
-              className="px-4 py-2 border-none bg-[var(--blue-menu)] text-white text-sm font-medium rounded"
+              className=" px-4 py-2 border-none bg-[var(--blue-menu)] text-white text-sm font-medium rounded"
             >
               Ajouter
             </button>
