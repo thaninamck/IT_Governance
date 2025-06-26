@@ -92,13 +92,13 @@ const MissionInfo = ({ dataFormat, user, missionId }) => {
           />
           
           <InfoDisplayComponent
-            label="Date début"
+            label="Date de début"
             BoxContent={missionData.start_date || "Non défini"}
             icon={<EventIcon className="text-gray-500" />}
           />
           
           <InfoDisplayComponent
-            label="Date fin"
+            label="Date de fin"
             BoxContent={missionData.end_date || "Non défini"}
             icon={<EventAvailableIcon className="text-gray-500" />}
           />
