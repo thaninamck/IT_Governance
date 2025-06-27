@@ -3,6 +3,7 @@
 namespace App\Repositories\V1;
 
 use App\Models\Remediation;
+use App\Models\Status;
 
 class RemediationRepository
 {
@@ -87,8 +88,11 @@ class RemediationRepository
             return null;
         }
         
+        $in_progress_status=Status::where('status_name', 'en cours')
+            ->where('entity', 'remediation')
+            ->pluck('id'); // Specify the column to retrieve, e.g., 'id'
          // Mettre à jour le statut de la remediation
-         $remediation->status_id = 17; //close remediation
+         $remediation->status_id = $in_progress_status; //close remediation
          $remediation->save();
 
         return $remediation;

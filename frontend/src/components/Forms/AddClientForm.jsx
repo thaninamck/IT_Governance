@@ -41,17 +41,17 @@ function AddClientForm({ title, isOpen, onClose, initialValues, onClientCreated 
     }
   
     // Regex numéro algérien : commence par 05, 06 ou 07 et 10 chiffres
-    const phoneRegex = /^(05|06|07)[0-9]{8}$/;
+    // const phoneRegex = /^(05|06|07)[0-9]{8}$/;
   
-    if (clientData.contact_2 && !phoneRegex.test(clientData.contact_2)) {
-      setError('Contact 2 doit être un numéro algérien valide.');
-      return;
-    }
+    // if (clientData.contact_2 && !phoneRegex.test(clientData.contact_2)) {
+    //   setError('Contact 2 doit être un numéro algérien valide.');
+    //   return;
+    // }
   
-    if (clientData.contact_3 && !phoneRegex.test(clientData.contact_3)) {
-      setError('Contact 3 doit être un numéro algérien valide.');
-      return;
-    }
+    // if (clientData.contact_3 && !phoneRegex.test(clientData.contact_3)) {
+    //   setError('Contact 3 doit être un numéro algérien valide.');
+    //   return;
+    // }
   
     setError('');
   
