@@ -128,7 +128,22 @@ const formatRisksData = (data) => {
   }));
 };
 
+const findControlByCode = (controlsData, code) => {
+  return controlsData.find((control) => control.code === code);
+};
+const findIdByName = (list, name) => {
+  const found = list.find((item) => {
+    if (!item) return false;
+    if (Array.isArray(item)) {
+      return item[1] === name;
+    } else if (typeof item === "object") {
+      return item.name === name;
+    }
+    return false;
+  });
 
+  return found ? (Array.isArray(found) ? found[0] : found.id) : null;
+};
   const formatControlsData = (data, controlsData) => {
     if (!Array.isArray(data) || data.length < 2) return { controls: [] };
     if (!Array.isArray(controlsData)) {

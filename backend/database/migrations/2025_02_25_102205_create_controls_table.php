@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('controls', function (Blueprint $table) {
             $table->id();
             $table->string('code', 255);
-            $table->string('description', 255);
+            $table->text('description');
 
             $table->boolean('is_archived');
             $table->foreignId('type_id')->constrained('types');
