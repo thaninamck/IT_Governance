@@ -32,22 +32,36 @@ function AddClientForm({ title, isOpen, onClose, initialValues, onClientCreated 
   }, [initialValues]);
 
   const handleSubmit = (e) => {
-    e.preventDefault(); // Empêcher le rechargement
-    if (!clientData.commercial_name|| !clientData.social_reason || !clientData.correspondence || !clientData.address || !clientData.contact_1) {
+    e.preventDefault();
+  
+    // Vérifier les champs obligatoires
+    if (!clientData.commercial_name || !clientData.social_reason || !clientData.correspondence || !clientData.address || !clientData.contact_1) {
       setError('Veuillez remplir tous les champs obligatoires.');
-      return; // Empêcher la soumission
+      return;
     }
-    setError(''); // Réinitialiser les erreurs si tout est bon
-
-    console.log(clientData)
+  
+    // Regex numéro algérien : commence par 05, 06 ou 07 et 10 chiffres
+    const phoneRegex = /^(05|06|07)[0-9]{8}$/;
+  
+    if (clientData.contact_2 && !phoneRegex.test(clientData.contact_2)) {
+      setError('Contact 2 doit être un numéro algérien valide.');
+      return;
+    }
+  
+    if (clientData.contact_3 && !phoneRegex.test(clientData.contact_3)) {
+      setError('Contact 3 doit être un numéro algérien valide.');
+      return;
+    }
+  
+    setError('');
+  
+    console.log(clientData);
     onClientCreated(clientData);
-    console.log('after', clientData)
+    console.log('after', clientData);
     setLoading(false);
     onClose();
-    setError(''); // Réinitialiser les erreurs si tout est bon
-
-
   };
+  
 
 
   return (
@@ -110,7 +124,8 @@ function AddClientForm({ title, isOpen, onClose, initialValues, onClientCreated 
           <InputForm
             type="text"
             label="Contact 1"
-            placeholder="Numéro de téléphone"
+            placeholder="Numéro de téléphone   ex: 0551234567"
+
             width="200px"
             required={true}
             flexDirection="flex-col"
@@ -120,7 +135,7 @@ function AddClientForm({ title, isOpen, onClose, initialValues, onClientCreated 
           <InputForm
             type="text"
             label="Contact 2"
-            placeholder="Numéro de téléphone"
+            placeholder="Numéro de téléphone ex: 0551234567"
             width="200px"
 
             flexDirection="flex-col"
