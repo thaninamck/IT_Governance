@@ -56,7 +56,8 @@ function Logs() {
           columnsConfig={columnslogs}
           rowsData={filteredLogs}
           checkboxSelection={false}
-          headerBackground="var(--blue-nav)"
+         headerTextBackground={"white"}
+              headerBackground="var(--blue-menu)"
 
         />
       </div>)}

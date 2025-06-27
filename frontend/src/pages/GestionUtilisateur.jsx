@@ -240,7 +240,8 @@ const confirmDeleteApp = () => {
               columnsConfig={columnsConfig2}
               rowsData={filteredRows}
               checkboxSelection={false}
-              headerBackground="var(--blue-nav)"
+             headerTextBackground={"white"}
+              headerBackground="var(--blue-menu)"
               statusOptions={statusOptions}
               statusColors={statusColors}
               rowActions={rowActions}

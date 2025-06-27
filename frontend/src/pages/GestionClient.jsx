@@ -104,7 +104,13 @@ function GestionClient() {
             </p>
           ) : (
                 <div className={`flex-1 overflow-x-auto overflow-y-auto h-[400px] transition-all ${isDeletePopupOpen ? 'blur-sm' : ''}`}>
-                    <Table key={JSON.stringify(filtereRows)} columnsConfig={columnsConfig} rowsData={filtereRows} checkboxSelection={false} headerBackground="var(--blue-nav)" rowActions={rowActions} />
+                    <Table key={JSON.stringify(filtereRows)} 
+                    columnsConfig={columnsConfig}
+                     rowsData={filtereRows}
+                      checkboxSelection={false}
+                     headerTextBackground={"white"}
+              headerBackground="var(--blue-menu)"
+                       rowActions={rowActions} />
                 </div>
           )}
             </div>
