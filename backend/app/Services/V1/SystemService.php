@@ -2,6 +2,7 @@
 
 namespace App\Services\V1;
 
+use App\Models\Mission;
 use App\Models\System;
 use App\Repositories\V1\LayerRepository;
 use App\Repositories\V1\MissionRepository;
@@ -98,7 +99,21 @@ foreach ($data['layerName'] as $layerName) {
 // Charger les layers pour la réponse
 $system->load('layers');
 
+$mission = Mission::with('systems', 'status')->find($missionId);
 
+if ($mission && $mission->systems->count() > 0 && $mission->status->status_name == 'non_commencee') {
+   $enCoursStatus = \App\Models\Status::where('status_name', 'en_cours')
+            ->where('entity', 'mission')
+            ->first();
+
+    if ($enCoursStatus) {
+        $mission->status_id = $enCoursStatus->id;
+        $mission->save();
+
+        \Log::info("✅ Mission '{$mission->mission_name}' mise à jour automatiquement à 'en cours' après ajout d'un système.");
+    } else {
+        \Log::warning("⚠️ Statut 'en cours' introuvable lors de la création du système.");
+    }}
        
         return $system;
 
