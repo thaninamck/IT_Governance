@@ -239,7 +239,10 @@ const useReferentiel = () => {
       const response = await api.post("/insert-control", controlData);
       toast.success("Contrôle ajouté avec succès !");
       console.log(response.data)
-      setControlsData((prev) => [...prev, { ...response.data }]);
+      setControlsData((prev) => [...prev, { 
+        ...response.data,
+        testScript: controlData.test_script,
+      }]);
     } catch (error) {
       setError("Erreur lors de l'ajout du contrôle.");
       toast.error("Échec de l'ajout du contrôle !");

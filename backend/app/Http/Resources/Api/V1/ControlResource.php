@@ -27,6 +27,7 @@ class ControlResource extends JsonResource
 
             'subProcessCode' => $this->subProcess->code ?? null,
             'sources' => $this->sources->map(fn($source) => [$source->id, $source->name])->toArray(),
-            'testScript' => $this->test_script,];
+            'testScript' => $this->test_script 
+         ];
     }
 }

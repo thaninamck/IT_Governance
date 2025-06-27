@@ -199,7 +199,7 @@ class ControlService
 
         }
 
-        return $control->load(['type', 'majorProcess', 'subProcess', 'sources']);
+        return $control->load(['type', 'majorProcess', 'subProcess', 'sources','steps']);
     }
 
 
