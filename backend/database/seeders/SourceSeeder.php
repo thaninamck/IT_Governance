@@ -13,8 +13,9 @@ class SourceSeeder extends Seeder
      */
     public function run(): void
     {
-        Source::factory()
-            ->count(4)
-            ->create();
+        $sources=['ITGC', 'RNSI','ISO27001', 'ISO27002'];
+       foreach ($sources as $source) {
+        Source::firstOrCreate(['source_name' => $source]);
+       }
     }
 }

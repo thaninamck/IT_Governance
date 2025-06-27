@@ -76,7 +76,7 @@ function GestionClient() {
             {/* Contenu principal */}
             <div className="flex-1 flex flex-col h-screen overflow-y-auto">
                 <HeaderBis />
-                <HeaderWithAction title="Client" buttonLabel="Créer un Client" onButtonClick={openModal} user={user} />
+                <HeaderWithAction title="Clients" buttonLabel="Créer un Client" onButtonClick={openModal} user={user} />
 
                 {/* Barre de recherche */}
                 <div className="flex items-center justify-center mb-6">
