@@ -4,6 +4,7 @@ namespace App\Repositories\V1;
 
 use App\Models\Remediation;
 use App\Models\Status;
+use Log;
 
 class RemediationRepository
 {
@@ -73,9 +74,12 @@ class RemediationRepository
         if(!$remediation){
             return null;
         }
-        
+        $finished_status=Status::where('status_name', 'Terminé')
+        ->where('entity', 'remediation')
+        ->pluck('id')
+        ->first();
          // Mettre à jour le statut de la remediation
-         $remediation->status_id = 1; //close remediation
+         $remediation->status_id =  $finished_status; //close remediation
          $remediation->save();
 
         return $remediation;
@@ -90,7 +94,9 @@ class RemediationRepository
         
         $in_progress_status=Status::where('status_name', 'en cours')
             ->where('entity', 'remediation')
-            ->pluck('id'); // Specify the column to retrieve, e.g., 'id'
+            ->pluck('id')
+            ->first();
+            Log::info("in_progress_status: " . $in_progress_status);
          // Mettre à jour le statut de la remediation
          $remediation->status_id = $in_progress_status; //close remediation
          $remediation->save();
