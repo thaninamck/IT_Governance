@@ -766,6 +766,7 @@ function Table({
         loading={loading}
         disableRowSelectionOnClick
         checkboxSelection={checkboxSelection}
+        
         autoHeight={autoHeight}
         sx={{
          // height,

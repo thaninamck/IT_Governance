@@ -194,7 +194,7 @@ const useReferentiel = () => {
     try {
       const response = await api.get("/controls");
       setControlsData(response.data);
-      console.log("controls data ",response.data);
+      console.log("controlsssssssssssssssssssssssssss data ",response.data);
     } catch (error) {
       setError("Erreur lors de la récupération des contrôles.");
     } finally {

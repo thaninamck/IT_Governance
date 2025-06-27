@@ -26,6 +26,9 @@ class DatabaseSeeder extends Seeder
         ]);
         
         $this->call([
+            TypeSeeder::class,
+            SubProcessSeeder::class,
+            MajorProcessSeeder::class,
             PositionSeeder::class,
             SystemSeeder::class,
             MissionSeeder::class,
@@ -42,8 +45,7 @@ class DatabaseSeeder extends Seeder
             ProfileSeeder::class,
             ParticipationSeeder::class,
             
-            SubProcessSeeder::class,
-            MajorProcessSeeder::class,
+           
             ControlSeeder::class,
         ]);
     }

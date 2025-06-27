@@ -513,10 +513,27 @@ const formatRisksData = (data) => {
       width: 200,
       editable: false,
       expandable: true,
-      renderCell: (params) =>
-        Array.isArray(params.value)
-          ? params.value.map((s) => s[0][0] || "Unknown").join(", ")
-          : "No sources", // Gestion des valeurs absentes ou non conformes
+      renderCell: (params) => {
+        if (!params.value) return <span style={{color: 'gray'}}>Aucune source</span>;
+        
+        try {
+          const sourceNames = params.value.map(item => {
+            // Vérification robuste du format [number, string]
+            if (Array.isArray(item) && item.length >= 2 && typeof item[1] === 'string') {
+              return item[1];
+            }
+            console.warn('Format de source invalide:', item);
+            return null;
+          }).filter(Boolean);
+  
+          return sourceNames.length > 0 
+            ? sourceNames.join(", ") 
+            : <span style={{color: 'gray'}}>Format invalide</span>;
+        } catch (error) {
+          console.error('Erreur dans renderCell:', error);
+          return <span style={{color: 'red'}}>Erreur</span>;
+        }
+      }
     },
     { field: "actions", headerName: "Actions", width: 80 },
   ];

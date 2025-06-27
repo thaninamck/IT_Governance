@@ -2,9 +2,8 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+
 use Illuminate\Database\Seeder;
-use App\Models\SubProcess;
 use App\Models\MajorProcess;
 
 class MajorProcessSeeder extends Seeder
@@ -14,12 +13,19 @@ class MajorProcessSeeder extends Seeder
      */
     public function run(): void
     {
-        MajorProcess::factory()
-            ->count(5)
-            ->create()
-           
+        $majors = [
+            ['code' => 'P15.22', 'description' => 'IT General Controls'],
+            ['code' => 'P15.23', 'description' => 'Gestion des changements'],
+            ['code' => 'P15.24', 'description' => 'Gestion des incidents'],
+            ['code' => 'P15.25', 'description' => 'Gestion des configurations'],
+            ['code' => 'P15.26', 'description' => 'Gestion des opérations'],
+        ];
 
-                
-            ;
+        foreach ($majors as $major) {
+            MajorProcess::firstOrCreate([
+                'code' => $major['code'],
+                'description' => $major['description'],
+            ]);
+        }
     }
 }
