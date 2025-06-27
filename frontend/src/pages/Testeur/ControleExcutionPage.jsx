@@ -354,6 +354,19 @@ function ControleExcutionPage() {
     { field: "actions", headerName: "Action", width: 60 },
   ];
 
+  const hasAlerts = action.some(
+  (row) =>
+    row.statusName === "en cours" &&
+    (!row.suivi || row.suivi.trim() === "")
+);
+const filteredColumnsConfig = columnsConfig.filter((col) => {
+  // Masquer la colonne "alert" si aucune alerte n’est présente
+  if (col.field === "alert" && !hasAlerts) {
+    return false;
+  }
+  return true;
+});
+
   useEffect(() => {
     if (controleData.executionId) {
       fetchRemediations();
@@ -817,7 +830,8 @@ useEffect(() => {
               handleValidate={handleValidate}
               statusOptions={statusOptions}
               statusColors={statusColors}
-              columnsConfig={columnsConfig}
+           //   columnsConfig={columnsConfig}
+               columnsConfig={filteredColumnsConfig}
               isValidateDisabled={isValidateDisabled}
               showRemediation={showRemediation}
               setShowRemediation={setShowRemediation}
