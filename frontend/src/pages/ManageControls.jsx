@@ -796,6 +796,7 @@ const findIdByName = (list, name) => {
                       fichier Excel ?
                     </p>
                   ) : (
+                    <div className="w-full overflow-auto ">
                     <Table
                       columnsConfig={riskColumnsConfig}
                       rowsData={risksData}
@@ -806,6 +807,7 @@ const findIdByName = (list, name) => {
                       allterRowcolors={true}
                       className="w-full"
                     />
+                    </div>
                   )}
 
                   {openMultipleDeleteDialog && (
