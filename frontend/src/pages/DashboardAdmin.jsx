@@ -136,7 +136,7 @@ function DashboardAdmin() {
     ))
   ) : (
     <div className="flex flex-col items-center  text-gray-500 mt-14">
-      <AssignmentTurnedInIcon style={{ fontSize: 80 }} />
+      <AssignmentTurnedInIcon style={{ fontSize: 60 }} />
       <p className="mt-2 text-lg">Aucune mission en cours pour le moment</p>
     </div>
   )}

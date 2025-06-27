@@ -170,7 +170,7 @@ function AddStatusForm({ title, label, label1, placeholder, options, onAdd }) {
               {error && <p className="text-red-500 text-sm">{error}</p>}
               <form className="flex flex-row items-end justify-between gap-6" onSubmit={handleSubmit}>
                 <SelectInput
-                  label="Entity"
+                  label="Entité"
                   options={entityOptions}
                   value={selectedValueEntity}
                   onChange={(e) => {
