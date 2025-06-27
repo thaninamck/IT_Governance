@@ -8,6 +8,8 @@ import HeaderWithAction from '../components/Header/HeaderWithAction';
 import { api } from '../Api';
 import { useDashboard } from '../Hooks/useDashboard';
 import Spinner from '../components/Spinner';
+import AssignmentTurnedInIcon from '@mui/icons-material/AssignmentTurnedIn';
+
 
 //const TOTAL_CARDS = 10; // Exemple de 10 missions
 //const ITEMS_PER_PAGE = 3;
@@ -124,15 +126,22 @@ function DashboardAdmin() {
                     </div>
 
                     {/* Cartes */}
-                    <div className="mt-12 flex flex-wrap mb-8 justify-center gap-6 px-2 sm:px-4 md:px-4 lg:px-6 transition-all duration-500">
-                        {(!missionData || loading) ? (
-                            <div><Spinner /></div>
-                        ) : (
-                            currentMissions?.map((mission, index) => (
-                                <MissionCards data={mission} key={mission.id || index} size={cardsSize} />
-                            ))
-                        )}
-                    </div>
+
+<div className="mt-12 flex flex-wrap mb-8 justify-center gap-6 px-2 sm:px-4 md:px-4 lg:px-6 transition-all duration-500">
+  {loading ? (
+    <div><Spinner /></div>
+  ) : currentMissions && currentMissions.length > 0 ? (
+    currentMissions.map((mission, index) => (
+      <MissionCards data={mission} key={mission.id || index} size={cardsSize} />
+    ))
+  ) : (
+    <div className="flex flex-col items-center  text-gray-500 mt-14">
+      <AssignmentTurnedInIcon style={{ fontSize: 80 }} />
+      <p className="mt-2 text-lg">Aucune mission en cours pour le moment</p>
+    </div>
+  )}
+</div>
+
 
                     {/* Flèche droite */}
                     <div
