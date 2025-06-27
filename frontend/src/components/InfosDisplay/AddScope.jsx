@@ -195,7 +195,8 @@ function AddScope({ dataFormat,title, text, text1, onToggleForm, showForm, user,
             rowsData={applications}
             checkboxSelection={false}
             onRowClick={handleRowClick}
-            headerBackground="var(--blue-nav)"
+            headerTextBackground={"white"}
+              headerBackground="var(--blue-menu)"
             rowActions={rowActions}
             onCellEditCommit={(params) => {
               setApplications((prev) =>
