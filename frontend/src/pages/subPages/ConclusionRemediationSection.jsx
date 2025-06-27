@@ -169,7 +169,7 @@ function ConclusionRemediationSection({
               <Separator text={"Remédiation"} />
             </div>
            
-            <div className="flex justify-end m-3 py-6 mr-8 gap-5">
+            <div className="flex justify-end pb-6 mr-8 gap-5">
               <button
                 onClick={() => setShowRemediation((prevState) => !prevState)}
                 className='text-[var(--blue-menu)] px-3 py-2 border-[var(--blue-menu)]'
@@ -178,8 +178,8 @@ function ConclusionRemediationSection({
               </button>
             </div>
 
-            <div className="flex justify-end m-3 py-6 gap-5">
-              {/*  hadi commentitha w hatit wahda foug 
+           {/* <div className="flex justify-end m-3 py-6 gap-5">
+                hadi commentitha w hatit wahda foug 
             {showSave && (
               <button
                 onClick={() => setShowRemediation((prevState) => !prevState)}
@@ -187,11 +187,11 @@ function ConclusionRemediationSection({
               >
                 Créer une remédiation <AddCircleOutlineRoundedIcon />
               </button>
-            )} */}
+            )} 
 
-            </div>
+            </div>*/}
             <div
-              className={`mt-6 flex-1 overflow-x-auto overflow-y-auto h-[400px] mx-10 transition-all }`}
+              className={` flex-1 overflow-x-auto overflow-y-auto h-[400px] mx-10 transition-all }`}
             >
               {isDeletePopupOpen && (
                 <div className="absolute top-45 left-1/2 -translate-x-1/2  translate-y-[-30%] z-50">
@@ -214,7 +214,8 @@ function ConclusionRemediationSection({
                 checkboxSelection={false}
                 onRowClick={handleRowClick}
                 rowActions={rowActions}
-                headerBackground="var(--blue-nav)"
+                headerTextBackground={"white"}
+              headerBackground="var(--blue-menu)"
                 statusOptions={statusOptions}
                 statusColors={statusColors}
                 onCellEditCommit={(params) => {

@@ -26,6 +26,7 @@ import VisibilityIcon from "@mui/icons-material/Visibility"; // ou RateReviewIco
 import { useAuth } from "../../Context/AuthContext";
 import { api } from "../../Api";
 import useRemediation from "../../Hooks/useRemediation";
+import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 
 import CommentButton from "../../components/ExecutionPage/CommentButton";
 import ExistingComment from "../../components/ExecutionPage/ExistingComment";
@@ -88,6 +89,9 @@ function ControleExcutionPage() {
   console.log(controleData);
   
   const handleRowClick = (rowData) => {
+     if (rowData.statusName === "Non Commencée") {
+    return; // Désactiver le clic
+  }
     navigate(
       `/missions/${mission}/${name}/${controlCode}/remediation/${rowData.actionName}`,
       {
@@ -308,26 +312,30 @@ function ControleExcutionPage() {
   }, [existingComments]);
 
   const columnsConfig = [
-    { field: "actionName", headerName: "Nom", width: 250, editable: true },
+    { field: "actionName", headerName: "Nom de l'action", width: 200, editable: true },
     {
       field: "description",
       headerName: "Description",
       editable: true,
-      width: 300,
+      width: 250,
+      disableRowClick: true,
     },
-    { field: "ownerContact", headerName: "Contact", width: 250 },
-    { field: "startDate", headerName: "Date début", width: 200 },
-    { field: "endDate", headerName: "Date Fin", width: 200 },
+    { field: "ownerContact", headerName: "Contact", width: 220,expandable: true },
+    { field: "startDate", headerName: "Date de début", width: 110,expandable: true },
+    { field: "endDate", headerName: "Date de Fin", width: 110,expandable: true },
     {
       field: "suivi",
       headerName: "Suivi",
       editable: true,
-      width: 300,
+      width: 230,
+      expandable: true,
     },
     {
       field: "alert",
       headerName: "Alerte",
-      width: 300,
+      width: 290,
+      expandable: true,
+      maxInitialLength: 20,
       customRenderCell: (params) => {
         const { statusName, suivi } = params.row;
         const isAlert =
@@ -335,14 +343,15 @@ function ControleExcutionPage() {
 
         return isAlert ? (
           <div style={{ color: "red", fontWeight: "bold", fontSize: "12px" }}>
+            <WarningAmberIcon/>
             Cette remédiation n’a pas encore été traitée
           </div>
         ) : null;
       },
     },
 
-    { field: "statusName", headerName: "Status", width: 180 },
-    { field: "actions", headerName: "Action", width: 80 },
+    { field: "statusName", headerName: "Statut", width: 130 ,expandable: true,},
+    { field: "actions", headerName: "Action", width: 60 },
   ];
 
   useEffect(() => {
@@ -366,8 +375,9 @@ function ControleExcutionPage() {
       label: "cloturé",
       onClick: (selectedRow) => handleCloseRow(selectedRow),
       disabled: (selectedRow) =>
-        selectedRow.statusName === "en cours" &&
-        (!selectedRow.suivi || selectedRow.suivi.trim() === ""),
+       ( selectedRow.statusName === "en cours" &&
+        (!selectedRow.suivi || selectedRow.suivi.trim() === ""))||
+         ["Non Commencée"].includes(selectedRow.statusName),
     },
     {
       icon: <SquarePen className="mr-2 w-[20px] h-[20px]" />,
