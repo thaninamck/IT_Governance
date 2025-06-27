@@ -81,7 +81,7 @@ function RevueListExecution( {dataFormat}) {
             field: "executionStatus",
             headerName: "Statut",
             expandable: true,
-            width: 100,
+            width: 130,
             customRenderCell: (params) => {
                 const colorMap = {
                     "applied": "text-green-500",
@@ -217,8 +217,8 @@ function RevueListExecution( {dataFormat}) {
                             columnsConfig={columnsConfig2}
                             rowsData={revueMissionData}
                             checkboxSelection={false}
-                           // headerTextBackground={"black"}
-                            headerBackground="var(--blue-nav)"
+                            headerTextBackground={"white"}
+              headerBackground="var(--blue-menu)"
                            
                         />
                         </div>
