@@ -110,9 +110,9 @@ if ($mission && $mission->systems->count() > 0 && $mission->status->status_name 
         $mission->status_id = $enCoursStatus->id;
         $mission->save();
 
-        \Log::info("✅ Mission '{$mission->mission_name}' mise à jour automatiquement à 'en cours' après ajout d'un système.");
+        \Log::info(" Mission '{$mission->mission_name}' mise à jour automatiquement à 'en cours' après ajout d'un système.");
     } else {
-        \Log::warning("⚠️ Statut 'en cours' introuvable lors de la création du système.");
+        \Log::warning("Statut 'en cours' introuvable lors de la création du système.");
     }}
        
         return $system;
