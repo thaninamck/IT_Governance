@@ -74,7 +74,7 @@ function DisplayControleAppID() {
   const [correctionExecution, setCorrectionExecution] = useState([]);
   const [activePanel, setActivePanel] = useState("executer");
 
-  console.log("appDATA",appData)
+  
   const columnsConfig2 = [
     { field: "riskCode", headerName: "Code risque", width: 98, expandable: true },
     { field: "riskDescription", headerName: "Description risque", width: 200, expandable: true },
@@ -104,7 +104,7 @@ function DisplayControleAppID() {
           colorClass = "text-purple-500";
         } else if (status === "terminé et validé") {
           colorClass = "text-green-500";
-        } else if (status === "a coriger") {
+        } else if (status === "à corriger") {
           colorClass = "text-red-500";
         } else if (status === "en cours de validation") {
           colorClass = "text-green-700";
