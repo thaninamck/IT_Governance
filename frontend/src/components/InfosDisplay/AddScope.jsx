@@ -122,11 +122,11 @@ function AddScope({ dataFormat,title, text, text1, onToggleForm, showForm, user,
   const navigate = useNavigate(); // Hook pour la navigation
   const handleRowClick = (rowData) => {
     navigate(`/missions/${missionName}/${rowData.name}`, { state: {appId: rowData.id, AppData: rowData } });
-    console.log('Détails du app sélectionné:', rowData);
+   
 
     addBreadcrumb(rowData?.name, `/missions/${missionName}/${rowData.name}`, 
       { appId: rowData.id, AppData: rowData });
-    console.log('appId:', rowData.id);
+   
   };
 
 

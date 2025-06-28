@@ -13,7 +13,7 @@ import {
 } from '@mui/material';
 
 const DisplayEquipe = ({ equipe: initialEquipe, missionId, onTeamUpdate, user,profileName }) => {  
-  console.log("ppname",profileName)
+  
   const [localEquipe, setLocalEquipe] = useState(initialEquipe);
   const [openDialog, setOpenDialog] = useState(false);
   const [memberToDelete, setMemberToDelete] = useState(null);

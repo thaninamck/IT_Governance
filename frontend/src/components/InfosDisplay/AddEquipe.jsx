@@ -4,6 +4,7 @@ import SingleOptionSelect from '../Selects/SingleOptionSelect';
 import { api } from '../../Api';
 import useUser from '../../Hooks/useNotification';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
+import { toast } from 'react-toastify';
 
 
 const AddEquipe = ({ missionId, onMemberAdded }) => {
@@ -103,12 +104,14 @@ const AddEquipe = ({ missionId, onMemberAdded }) => {
   const handleSubmit = async () => {
 
     if (Object.keys(errors).length > 0) {
-      alert("Corrigez les erreurs avant de soumettre.");
+     // alert("Corrigez les erreurs avant de soumettre.");
+      toast.error("Corrigez les erreurs avant de soumettre.");
       return;
     }
 
     if (collaborators.some(c => !c.member || !c.role)) {
-      alert("Veuillez remplir tous les champs.");
+      //alert("Veuillez remplir tous les champs.");
+      toast.error("Veuillez remplir tous les champs.");
       return;
     }
 
@@ -145,7 +148,8 @@ const AddEquipe = ({ missionId, onMemberAdded }) => {
 
     } catch (error) {
       console.error("Erreur:", error);
-      alert("Erreur lors de l'ajout");
+      toast.error("Un membre ne peut pas avoir deux profils dans la même mission.");
+     // alert("Erreur lors de l'ajout");
     }
   };
 
