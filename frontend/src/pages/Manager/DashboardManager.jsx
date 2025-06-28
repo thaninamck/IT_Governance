@@ -326,6 +326,7 @@ const exportToPDF = async (missionName = "Mission") => {
           </div>
         </div>
         <div  className="flex justify-end mr-14">
+         { activeView === "DB_Standard" && (
           <button
           data-html2canvas-ignore
             onClick={() => exportToPDF(missionReportData?.mission_name)}
@@ -333,7 +334,7 @@ const exportToPDF = async (missionName = "Mission") => {
           >
             <Download size={18} />
             PDF
-          </button>
+          </button>)}
         </div>
         {activeView === "DB_Standard" &&
           (loading || !missionReportData ? (

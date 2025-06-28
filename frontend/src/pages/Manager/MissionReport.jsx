@@ -154,6 +154,7 @@ const data =
 
 <div className="flex justify-end mr-14">
   <button
+  data-html2canvas-ignore
     onClick={() => exportToPDF(missionName)}
     className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-medium px-4 py-2 rounded-lg shadow-sm transition"
   >
