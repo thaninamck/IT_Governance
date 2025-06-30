@@ -32,6 +32,7 @@ function StepEmailForm({ onNext, onSetExpirationTime, errorMessage }) {
       }
 
       const templateParams = {
+        from_email:"grcenter.forvismazars@gmail.com",
         email,
         from_name: "Forvis Mazars - Plateforme GRCenter",
         passcode: code,
