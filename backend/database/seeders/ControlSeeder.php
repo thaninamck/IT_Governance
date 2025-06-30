@@ -25,7 +25,7 @@ class ControlSeeder extends Seeder
         }
 
         Control::factory()
-            ->count(300)
+            ->count(4)
             ->make() // on utilise make() pour pouvoir assigner les champs manuellement
             ->each(function ($control) {
                 // On sélectionne des IDs existants aléatoires

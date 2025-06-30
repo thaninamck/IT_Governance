@@ -33,14 +33,7 @@ class ControlFactory extends Factory
         ];
 
         return [
-            'code' => sprintf(
-                'P%d.%02d.%02d.%s.%d',
-                $this->faker->numberBetween(10, 99),
-                $this->faker->numberBetween(10, 99),
-                $this->faker->numberBetween(1, 31),
-                $this->faker->randomLetter(),
-                $this->faker->numberBetween(1, 5)
-            ),
+            'code' => $this->faker->unique()->regexify('P[1-9][0-9]\.[1-9][0-9]\.(0[1-9]|[12][0-9]|3[01])\.[a-e]\.[1-5]'),
             'is_archived' => $this->faker->boolean(0),
             'description' => $this->faker->randomElement($descriptions),
             // 'type_id' => Type::factory(),
