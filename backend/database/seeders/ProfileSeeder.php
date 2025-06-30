@@ -12,7 +12,7 @@ class ProfileSeeder extends Seeder
      */
     public function run(): void
     {
-        $profiles = ['testeur', 'superviseur', 'manageur'];
+        $profiles = ['testeur', 'superviseur', 'manager'];
 
         foreach ($profiles as $name) {
             Profile::create(['profile_name' => $name]);
