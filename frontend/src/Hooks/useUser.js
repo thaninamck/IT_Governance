@@ -231,7 +231,7 @@ console.log("userssssssssssssss",response.data)
     try {
       setLoading(true);
       setError(null);
-      console.log("user to create",formattedUser)
+      
       const response = await api.post("/insert-user", formattedUser);
       console.log("response", response);
       setFilteredRows((prevRows) => [
