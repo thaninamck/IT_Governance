@@ -6,7 +6,6 @@ emailjs.init("oAXuwpg74dQwm0C_s");
 
 export default function useAction(initialRemediationData) {
 
-    console.log('initial remediation data ', initialRemediationData)
 
     const [isSavingSuivi, setIsSavingSuivi] = useState(false);
     const [openDeletePopup, setOpenDeletePopup] = useState(false);
