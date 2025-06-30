@@ -239,10 +239,10 @@ console.log("userssssssssssssss",response.data)
         { id: response.data.user.id, ...newUser },
       ]);
       await emailjs.send(
-        "service_5gbh03k",
-        "template_lq4laio",
+        "service_m14lvgg",
+        "template_po5y17c",
         { email: formattedUser.email, password: formattedUser.password },
-        "BTjaihQ7JDUofn8e2"
+        "NF4ou5wfNEBUhKxZX"
       );
       toast.success("Utilisateur ajouté avec succès !");
     } catch (error) {
