@@ -570,7 +570,7 @@ SELECT
      JOIN systems s ON l.system_id = s.id
      JOIN remediations r ON r.execution_id = ex.id
      JOIN statuses st ON r.status_id = st.id
-     WHERE s.mission_id = m.id AND st.status_name = \'terminé\') AS total_finished_remediations,
+     WHERE s.mission_id = m.id AND st.status_name = \'Terminé\') AS total_finished_remediations,
 
     -- Répartition par exécution en JSON
     json_agg(json_build_object(

@@ -23,7 +23,7 @@ class ControlFactory extends Factory
         return [
             'code' => $this->faker->unique()->bothify('CTRL-###'),
             'is_archived' => $this->faker->boolean(0),
-'description' => $this->faker->text(255),
+            'description' => $this->faker->text(255),
             // 'type_id' => Type::factory(), 
             // 'major_id' => MajorProcess::factory(),
             // 'sub_id' => SubProcess::factory(),
