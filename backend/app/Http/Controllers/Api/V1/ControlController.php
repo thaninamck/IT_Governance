@@ -65,18 +65,18 @@ class ControlController extends BaseController
     try {
         $rules = [
             'description' => 'nullable|string',
-            'code' => 'required|string|max:255',
+            'code' => 'required|string',
             'test_script' => 'nullable|string', 
             'type' => 'nullable|array', 
             'type.id' => 'nullable', 
-            'type.name' => 'nullable|string|max:255',
+            'type.name' => 'nullable|string',
             'majorProcess' => 'nullable|array',
-            'majorProcess.code' => 'nullable|string|max:255',
+            'majorProcess.code' => 'nullable|string',
             'majorProcess.description' => 'nullable|string',
             'subProcess' => 'nullable|array',
             'subProcess.id' => 'nullable',
-            'subProcess.code' => 'nullable|string|max:255',
-            'subProcess.name' => 'nullable|string|max:255',
+            'subProcess.code' => 'nullable|string',
+            'subProcess.name' => 'nullable|string',
             'sources' => 'nullable|array',
             'sources.*.id' => 'nullable',
             'sources.*.name' => 'nullable',
@@ -217,7 +217,6 @@ class ControlController extends BaseController
 
         $createdControls = [];
         foreach ($controlsData as $controlData) {
-            Log::debug('Control data :',  [$controlData]);
             $createdControls[] = new ControlResource($this->controlService->createControl($controlData));
 
             // Enregistrement des logs
