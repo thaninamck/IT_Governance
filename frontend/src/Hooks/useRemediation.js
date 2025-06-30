@@ -3,7 +3,7 @@ import { api } from "../Api";
 import { toast } from "react-toastify";
 
 import emailjs from "emailjs-com";
-emailjs.init("oAXuwpg74dQwm0C_s");
+emailjs.init("NF4ou5wfNEBUhKxZX");
 
 export default function useRemediation(missionId,systemId,executionId, controlCode,user) {
   
@@ -114,8 +114,9 @@ export default function useRemediation(missionId,systemId,executionId, controlCo
       toast.error("Email manquant pour cet élément !");
       return;
     }
-    console.log('riskowner',selectedRow.risk_owner)
+    
     const templateParams = {
+      from_email:"grcenter.forvismazars@gmail.com",
       to_email: selectedRow.ownerContact,
       cc_email: [selectedRow.ownerSystem_email, selectedRow.risk_owner, selectedRow.control_owner]
       .filter(Boolean)
@@ -135,7 +136,7 @@ export default function useRemediation(missionId,systemId,executionId, controlCo
     };
 console.log('templateparams',templateParams.cc_email)
     try {
-      await emailjs.send("service_dg6av6d", "template_f4ojiam", templateParams);
+      await emailjs.send("service_m14lvgg", "template_z91ui9t", templateParams);
       toast.success(`E-mail envoyé à ${selectedRow.ownerContact} !`);
       await api.put(`/updatestatusremediation/${selectedRow.id}`);
       await fetchRemediations();
